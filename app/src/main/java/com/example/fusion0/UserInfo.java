@@ -1,7 +1,5 @@
 package com.example.fusion0;
 
-import java.util.ArrayList;
-
 public class UserInfo {
     String firstName, lastName, email, phoneNumber;
 
