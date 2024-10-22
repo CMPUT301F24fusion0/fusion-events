@@ -2,6 +2,7 @@ package com.example.fusion0;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +12,9 @@ import com.google.firebase.FirebaseApp;
 public class MainActivity extends AppCompatActivity {
 
     private TextView textField;
+    private LoginManagement loginManagement;
+    private Boolean loginState;
+    private Button profileButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,17 +24,25 @@ public class MainActivity extends AppCompatActivity {
         // Initialize firebase in app
         FirebaseApp.initializeApp(this);
 
-        LoginManagement loginManagement = LoginManagement.getInstance();
+        loginManagement = new LoginManagement();
+        loginState = loginManagement.loggedIn();
 
-        if (loginManagement.getCurrentUser() == null) {
-            Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(loginIntent);
-            finish();
+        // Managing State
+        if (loginState) {
+            // Grey out icons
+            // Disallow user from using icons
+            // Prompt user to upload QR code image
         } else {
-            TextView textField = findViewById(R.id.textField);
-            textField.setText("Hello World");
+            // Give icons colour
+            // Allow user to visit other pages
         }
 
+        // Profile Button
+        profileButton = findViewById(R.id.profileButton);
+
+        profileButton.setOnClickListener(view -> {
+
+        });
 
     }
 }
