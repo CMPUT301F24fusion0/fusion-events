@@ -14,7 +14,7 @@ public class Firebase {
         void onCallback(UserInfo user);
     }
 
-    private CollectionReference usersRef;
+    private final CollectionReference usersRef;
 
     public Firebase() {
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
