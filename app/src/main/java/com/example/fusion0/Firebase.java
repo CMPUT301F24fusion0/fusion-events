@@ -52,7 +52,7 @@ public class Firebase {
         ArrayList<String> fields = new ArrayList<String>(
                 Arrays.asList("first name", "last name", "phone number", "email"));
 
-        if (!fields.contains(field)) {
+        if (!fields.contains(field.toLowerCase())) {
             throw new IllegalArgumentException("The field you've tried to change is not valid");
         }
 

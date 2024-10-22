@@ -4,12 +4,14 @@ import java.util.HashMap;
 
 public class UserInfo {
     String firstName, lastName, email, phoneNumber;
+    Firebase firebase;
 
     public UserInfo(String first, String last, String email, String phoneNumber) {
         this.firstName = first;
         this.lastName = last;
         this.email = email;
         this.phoneNumber = parsed(phoneNumber);
+        this.firebase = new Firebase();
     }
 
     public UserInfo(String first, String last, String email) {
@@ -44,6 +46,8 @@ public class UserInfo {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+        firebase.editUser(this.getEmail(), "first name", firstName);
+
     }
 
     public String getLastName() {
@@ -52,6 +56,7 @@ public class UserInfo {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+        firebase.editUser(this.getEmail(), "last name", lastName);
     }
 
     public String getEmail() {
@@ -60,6 +65,7 @@ public class UserInfo {
 
     public void setEmail(String email) {
         this.email = email;
+        firebase.editUser(this.getEmail(), "email", email);
     }
 
     public String getPhoneNumber() {
@@ -68,5 +74,6 @@ public class UserInfo {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+        firebase.editUser(this.getEmail(), "phone number", phoneNumber);
     }
 }
