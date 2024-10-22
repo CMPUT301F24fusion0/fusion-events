@@ -1,5 +1,7 @@
 package com.example.fusion0;
 
+import java.util.HashMap;
+
 public class UserInfo {
     String firstName, lastName, email, phoneNumber;
 
@@ -17,12 +19,23 @@ public class UserInfo {
     }
 
     private String parsed(String phoneNumber) {
-        for (char num: phoneNumber.toCharArray()) {
+        for (char num: phoneNumber.trim().toCharArray()) {
             if (!Character.isDigit(num)) {
                 phoneNumber = phoneNumber.replace(String.valueOf(num), "");
             }
         }
         return phoneNumber;
+    }
+
+    public HashMap<String,Object> user() {
+        HashMap<String, Object> user = new HashMap<>();
+
+        user.put("First Name", this.firstName);
+        user.put("Last Name", this.lastName);
+        user.put("Email", this.email);
+        user.put("Phone Number", this.phoneNumber);
+
+        return user;
     }
 
     public String getFirstName() {
