@@ -30,10 +30,10 @@ public class UserInfo {
     public HashMap<String,Object> user() {
         HashMap<String, Object> user = new HashMap<>();
 
-        user.put("First Name", this.firstName);
-        user.put("Last Name", this.lastName);
-        user.put("Email", this.email);
-        user.put("Phone Number", this.phoneNumber);
+        user.put("first name", this.firstName);
+        user.put("last name", this.lastName);
+        user.put("email", this.email);
+        user.put("phone number", this.phoneNumber);
 
         return user;
     }

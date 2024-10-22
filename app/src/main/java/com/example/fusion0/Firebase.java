@@ -3,6 +3,8 @@ package com.example.fusion0;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 
@@ -46,11 +48,24 @@ public class Firebase {
                 });
     }
 
-    public void editUser(String field, String newItem, String email) {
+    public void editUser(String email, String field, String newField) {
+        ArrayList<String> fields = new ArrayList<String>(
+                Arrays.asList("first name", "last name", "phone number", "email"));
 
+        if (!fields.contains(field)) {
+            throw new IllegalArgumentException("The field you've tried to change is not valid");
+        }
+
+        usersRef.document(email).update(field, newField)
+                .addOnSuccessListener(ref -> {
+                    System.out.println("Update Successful");
+                })
+                .addOnFailureListener(e -> {
+                    System.out.println("Failure" + e.getMessage());
+                });
     }
 
-    public void deleteUser(String email) {
+    public void deleteUser(String email, String field, String newField) {
         usersRef.document(email).delete()
                 .addOnSuccessListener(documentReference -> {
                     System.out.println("Successfully deleted");
