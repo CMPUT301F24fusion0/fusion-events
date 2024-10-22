@@ -11,11 +11,11 @@ public class Firebase {
     public interface Callback {
         void onCallback(UserInfo user);
     }
-     private FirebaseFirestore db;
+
     private CollectionReference usersRef;
 
     public Firebase() {
-        db = FirebaseFirestore.getInstance();
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
     }
 
@@ -31,7 +31,7 @@ public class Firebase {
                 });
     }
 
-    public void getUser(String email, Callback callback) {
+    public void findUser(String email, Callback callback) {
         usersRef.document(email).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -43,6 +43,20 @@ public class Firebase {
                 })
                 .addOnFailureListener(error -> {
                     System.out.println("Failure" + error.getMessage());
+                });
+    }
+
+    public void editUser(String field, String newItem, String email) {
+
+    }
+
+    public void deleteUser(String email) {
+        usersRef.document(email).delete()
+                .addOnSuccessListener(documentReference -> {
+                    System.out.println("Successfully deleted");
+                })
+                .addOnFailureListener(e -> {
+                    System.out.println("Failure" + e.getMessage());
                 });
     }
 }

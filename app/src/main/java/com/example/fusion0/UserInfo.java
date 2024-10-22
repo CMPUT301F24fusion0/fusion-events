@@ -18,13 +18,13 @@ public class UserInfo {
         this.email = email;
     }
 
-    private String parsed(String phoneNumber) {
-        for (char num: phoneNumber.trim().toCharArray()) {
+    private String parsed(String phone) {
+        for (char num: phone.trim().toCharArray()) {
             if (!Character.isDigit(num)) {
-                phoneNumber = phoneNumber.replace(String.valueOf(num), "");
+                phone = phone.replace(String.valueOf(num), "");
             }
         }
-        return phoneNumber;
+        return phone;
     }
 
     public HashMap<String,Object> user() {
