@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
         profileButton = findViewById(R.id.profileButton);
 
         profileButton.setOnClickListener(view -> {
-
+            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+            startActivity(intent);
         });
 
     }
