@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/appBackground">
 
     <ImageButton
         android:id="@+id/backButton"
@@ -30,40 +31,212 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/profileImage">
 
         <TextView
-            android:id="@+id/fullName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Name" />
+            android:text="@string/personalInfo"
+            android:textSize="23sp"
+            android:textColor="@color/textColor"
+            android:textStyle="bold"
+            android:fontFamily="@font/raleway_medium"/>
         
-        <Space
+        <View
             android:layout_width="match_parent"
-            android:layout_height="12dp" />
+            android:layout_height="1dp"
+            android:background="@color/textColor"
+            android:layout_marginBottom="5dp" />
 
-        <TextView
-            android:id="@+id/emailAddress"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="johndoe@gmail.com" />
+            android:background="@drawable/rect_background"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/person_drawable"
+                    app:tint="@color/textColor" />
+
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp" />
+
+                <TextView
+                    android:id="@+id/fullName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="bottom"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:text="Alice Smith"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp" />
+
+                <EditText
+                    android:id="@+id/editFullName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter Full Name"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:textSize="17sp"
+                    android:textColor="@color/textColor"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginVertical="5dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/email_drawable"
+                    app:tint="@color/textColor" />
+
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp" />
+
+                <TextView
+                    android:id="@+id/emailAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="alicesmith@gmail.com"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="bottom"
+                    android:textSize="17sp"
+                    android:textColor="@color/textColor"/>
+
+                <EditText
+                    android:id="@+id/editEmailAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter Email"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:textSize="17sp"
+                    android:textColor="@color/textColor"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginVertical="5dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/phone_drawable"
+                    app:tint="@color/textColor" />
+
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp" />
+
+                <TextView
+                    android:id="@+id/phoneNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="123-456-789"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="bottom"
+                    android:textSize="17sp"
+                    android:textColor="@color/textColor"/>
+
+                <EditText
+                    android:id="@+id/editPhoneNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter Phone Number"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:textSize="17sp"
+                    android:textColor="@color/textColor"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="15dp"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:text="Save"
+            android:gravity="center"
+            android:padding="10dp"
+            android:fontFamily="@font/raleway_semibold"
+            android:backgroundTint="@color/textColor"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone"/>
 
         <Space
-            android:layout_width="match_parent"
-            android:layout_height="12dp" />
+            android:layout_width="50dp"
+            android:layout_height="0dp" />
 
-        <TextView
-            android:id="@+id/phoneNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="123-456-789" />
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:text="Cancel"
+            android:gravity="center"
+            android:fontFamily="@font/raleway_semibold"
+            android:backgroundTint="@color/red"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
 
-
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/editButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/edit_drawable"
+        android:contentDescription="Edit"
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:backgroundTint="@color/textFieldColor"
+        app:tint="@color/textColor"
+        app:rippleColor="@color/textColor" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
