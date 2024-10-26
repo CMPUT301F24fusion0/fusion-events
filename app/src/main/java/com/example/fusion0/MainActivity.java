@@ -1,50 +1,49 @@
 package com.example.fusion0;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.FirebaseApp;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText firstName, lastName, email, phoneNumber;
+    private TextView textField;
+    private LoginManagement loginManagement;
+    private Boolean loginState;
+    private Button profileButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // Initialize firebase in app
         FirebaseApp.initializeApp(this);
-        setContentView(R.layout.registration); // Set the layout for the activity
 
-        // Initialize EditText fields
-        firstName = findViewById(R.id.firstName);
-        lastName = findViewById(R.id.lastName);
-        email = findViewById(R.id.email);
-        phoneNumber = findViewById(R.id.phone);
+        loginManagement = new LoginManagement();
+        loginState = loginManagement.loggedIn();
 
-        Button confirm = findViewById(R.id.confirm);
+        // Managing State
+        if (loginState) {
+            // Grey out icons
+            // Disallow user from using icons
+            // Prompt user to upload QR code image
+        } else {
+            // Give icons colour
+            // Allow user to visit other pages
+        }
 
-        confirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onRegisterButtonClick(view);
-            }
+        // Profile Button
+        profileButton = findViewById(R.id.profileButton);
+
+        profileButton.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+            startActivity(intent);
         });
-    }
 
-    public void onRegisterButtonClick(View view) {
-        FirebaseApp.initializeApp(this);
-        // This method should be triggered by a button click
-        String first = firstName.getText().toString();
-        String last = lastName.getText().toString();
-        String emails = email.getText().toString();
-        String phone = phoneNumber.getText().toString();
-
-        // Assuming Firebase is properly initialized
-        new Firebase().addUser(new UserInfo(first, last, emails, phone));
     }
 }

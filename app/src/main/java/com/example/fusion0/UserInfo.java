@@ -6,6 +6,10 @@ public class UserInfo {
     String firstName, lastName, email, phoneNumber;
     Firebase firebase;
 
+    public UserInfo() {
+    }
+
+
     public UserInfo(String first, String last, String email, String phoneNumber) {
         this.firstName = first;
         this.lastName = last;
