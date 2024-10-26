@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/registration">
 
 
     <EditText
@@ -25,41 +26,54 @@
         android:id="@+id/lastName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:autofillHints="blah"
+        android:autofillHints="last name"
         android:ems="10"
+        android:hint="last name"
         android:inputType="text"
+        android:minHeight="48dp"
         android:text="last name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/email"
-        tools:ignore="DuplicateClickableBoundsCheck"
-        tools:layout_editor_absoluteY="319dp"
-        android:hint="blah"/>
+        app:layout_constraintTop_toBottomOf="@id/firstName"
+        tools:ignore="DuplicateClickableBoundsCheck" />
 
     <EditText
         android:id="@+id/email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:autofillHints="blah"
+        android:autofillHints="email"
         android:ems="10"
-        android:hint="blah"
+        android:hint="email"
         android:inputType="textEmailAddress"
         android:minHeight="48dp"
         app:layout_constraintBottom_toTopOf="@+id/phone"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lastName" />
 
     <EditText
         android:id="@+id/phone"
-        android:autofillHints="blah"
-        android:hint="blah"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:autofillHints="blah"
         android:ems="10"
+        android:hint="phone"
         android:inputType="phone"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/email" />
+
+    <Button
+        android:id="@+id/confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/email"/>
+        app:layout_constraintTop_toBottomOf="@+id/phone" />
 </androidx.constraintlayout.widget.ConstraintLayout>

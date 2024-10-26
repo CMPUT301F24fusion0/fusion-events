@@ -11,7 +11,8 @@ import java.util.HashMap;
 public class Firebase {
     // Adapted from https://stackoverflow.com/questions/48499310/how-to-return-a-documentsnapshot-as-a-result-of-a-method
     public interface Callback {
-        void onCallback(UserInfo user);
+        void onSuccess(UserInfo user);
+        void onFailure(String error);
     }
 
     private final CollectionReference usersRef;
@@ -38,13 +39,15 @@ public class Firebase {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         UserInfo user = documentSnapshot.toObject(UserInfo.class);
-                        callback.onCallback(user);
+                        callback.onSuccess(user);
                     } else {
                         System.out.println("not found");
+                        callback.onFailure("not found");
                     }
                 })
                 .addOnFailureListener(error -> {
                     System.out.println("Failure" + error.getMessage());
+                    callback.onFailure(error.getMessage());
                 });
     }
 
