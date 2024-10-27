@@ -36,6 +36,7 @@ public class Firebase {
                 });
     }
 
+    // Should use DeviceID
     public void findUser(String email, Callback callback) {
         usersRef.document(email).get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -53,6 +54,7 @@ public class Firebase {
                 });
     }
 
+    // DeviceID
     public void editUser(String email, String field, String newField) {
         ArrayList<String> fields = new ArrayList<String>(
                 Arrays.asList("first name", "last name", "phone number", "email"));
@@ -70,6 +72,7 @@ public class Firebase {
                 });
     }
 
+    // DeviceID
     public void deleteUser(String email) {
         usersRef.document(email).delete()
                 .addOnSuccessListener(documentReference -> {

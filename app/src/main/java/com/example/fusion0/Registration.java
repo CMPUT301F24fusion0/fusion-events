@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 
 public class Registration extends Fragment {
     EditText firstName, lastName, email, phoneNumber;
+    Firebase firebase;
 
     @Override
     public View onCreateView(
@@ -22,6 +23,7 @@ public class Registration extends Fragment {
         lastName = view.findViewById(R.id.lastName);
         email = view.findViewById(R.id.email);
         phoneNumber = view.findViewById(R.id.phone);
+        firebase = new Firebase();
 
         return view;
     }
@@ -34,6 +36,20 @@ public class Registration extends Fragment {
         String emails = email.getText().toString();
         String phone = phoneNumber.getText().toString();
 
-        new Firebase().addUser(new UserInfo(first, last, emails, phone, false));
+        firebase.findUser(emails, new Firebase.Callback() {
+            @Override
+            public void onSuccess(UserInfo user) {
+                if (user == null) {
+                    System.out.println("This user already exists.");
+                } else {
+                    firebase.addUser(user);
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+                System.out.println(error);
+            }
+        });
     }
 }

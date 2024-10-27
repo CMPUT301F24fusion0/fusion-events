@@ -3,6 +3,7 @@ package com.example.fusion0;
 import com.google.firebase.firestore.PropertyName;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class UserInfo {
     String firstName, lastName, email, phoneNumber;
@@ -95,5 +96,26 @@ public class UserInfo {
 
     private void updateUser(String field, String newItem) {
         if (edit) firebase.editUser(this.getEmail(), field, newItem);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+
+        if (!(obj instanceof UserInfo)) {
+            return false;
+        }
+
+        UserInfo user = (UserInfo) obj;
+        // Eventually changed to deviceID
+        return Objects.equals(this.getEmail(), user.getEmail());
+    }
+
+    @Override
+    public int hashCode() {
+        // Eventually changed to deviceID
+        return Objects.hash(this.getEmail());
     }
 }
