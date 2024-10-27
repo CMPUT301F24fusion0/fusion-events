@@ -1,9 +1,5 @@
 package com.example.fusion0;
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-
 import com.google.firebase.firestore.PropertyName;
 
 import java.util.HashMap;
