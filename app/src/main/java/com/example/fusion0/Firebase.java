@@ -1,7 +1,5 @@
 package com.example.fusion0;
 
-import android.util.Log;
-
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -9,9 +7,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-
+/**
+ * This class serves as the connection to the Firebase. It includes common CRUD operations.
+ */
 public class Firebase {
-    // Adapted from https://stackoverflow.com/questions/48499310/how-to-return-a-documentsnapshot-as-a-result-of-a-method
+    /**
+     * This interface is needed due to the asynchronous nature of Firestore.
+     *      Adapted from <a href="https://stackoverflow.com/questions/48499310/how-to-return-a-documentsnapshot-as-a-result-of-a-method">...</a>
+     */
     public interface Callback {
         void onSuccess(UserInfo user);
         void onFailure(String error);
@@ -19,11 +22,19 @@ public class Firebase {
 
     private final CollectionReference usersRef;
 
+    /**
+     * Initializes the database as well as the users collection.
+     */
     public Firebase() {
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
     }
 
+    /**
+     * This method takes in a UserInfo object and adds it to the database.
+     * @param userInfo contains the UserInfo object that is to be added to the database
+     * TODO: Use DeviceID
+     */
     public void addUser(UserInfo userInfo) {
         HashMap<String, Object> user = userInfo.user();
         String email = userInfo.getEmail();
@@ -36,7 +47,12 @@ public class Firebase {
                 });
     }
 
-    // Should use DeviceID
+    /**
+     * This method finds the user and will return the UserInfo object through the callback
+     * @param email is the primary key for each user and each user has a unique email
+     * @param callback is the interface needed due to the asynchronous nature of Firebase
+     * TODO: Use DeviceID
+     */
     public void findUser(String email, Callback callback) {
         usersRef.document(email).get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -54,7 +70,13 @@ public class Firebase {
                 });
     }
 
-    // DeviceID
+    /**
+     * Uses the primary key to find the user then allows for the editing of any field
+     * @param email used as the primary key, used to identify each user
+     * @param field is the field that is to be changed (i.e. first name, last name, etc.)
+     * @param newField is the new attribute for the user
+     * TODO: UserID should be primary key
+     */
     public void editUser(String email, String field, String newField) {
         ArrayList<String> fields = new ArrayList<String>(
                 Arrays.asList("first name", "last name", "phone number", "email"));
@@ -72,7 +94,11 @@ public class Firebase {
                 });
     }
 
-    // DeviceID
+    /**
+     * Finds the user and then deletes them.
+     * @param email is the primary key used to find the user
+     * TODO: DeviceID should be primary key
+     */
     public void deleteUser(String email) {
         usersRef.document(email).delete()
                 .addOnSuccessListener(documentReference -> {
