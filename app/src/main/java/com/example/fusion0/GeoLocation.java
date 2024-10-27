@@ -43,11 +43,13 @@ public class GeoLocation implements LocationListener {
     private LocationManager locationManager;
     private Location userLocation;
     private Location eventLocation;
-    private double EVENT_RADIUS_KM = 5.0;
+    private double acceptableRadius;
 
-    public GeoLocation(Context context, Location eventLocation) {
+    //In the case you want to compare users location to the event location and provide a acceptableRadius
+    public GeoLocation(Context context, Location eventLocation, double acceptableRadius) {
         this.context = context;
         this.eventLocation = eventLocation;
+        this.acceptableRadius = acceptableRadius;
     }
 
     //In the case you only want to get the users location not check if they're close to the event
@@ -93,7 +95,7 @@ public class GeoLocation implements LocationListener {
     //Checks if the user is within the event radius
     public boolean canRegister(Location userLocation) {
         double distance = userLocation.distanceTo(eventLocation);
-        return distance <= EVENT_RADIUS_KM;
+        return distance <= acceptableRadius;
     }
 
     //Get the users location if needed
