@@ -1,5 +1,7 @@
 package com.example.fusion0;
 
+import android.util.Log;
+
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -68,7 +70,7 @@ public class Firebase {
                 });
     }
 
-    public void deleteUser(String email, String field, String newField) {
+    public void deleteUser(String email) {
         usersRef.document(email).delete()
                 .addOnSuccessListener(documentReference -> {
                     System.out.println("Successfully deleted");

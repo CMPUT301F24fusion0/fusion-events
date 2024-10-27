@@ -34,6 +34,6 @@ public class Registration extends Fragment {
         String emails = email.getText().toString();
         String phone = phoneNumber.getText().toString();
 
-        new Firebase().addUser(new UserInfo(first, last, emails, phone));
+        new Firebase().addUser(new UserInfo(first, last, emails, phone, false));
     }
 }
