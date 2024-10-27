@@ -14,13 +14,13 @@ public class UserInfo {
         this.edit = false;
     }
 
-    public UserInfo(String first, String last, String email, String phoneNumber, Boolean edit) {
+    public UserInfo(String first, String last, String email, String phoneNumber) {
         this.firstName = first;
         this.lastName = last;
         this.email = email;
         this.phoneNumber = parsed(phoneNumber);
         this.firebase = new Firebase();
-        this.edit = edit;
+        this.edit = false;
     }
 
     public UserInfo(String first, String last, String email) {
@@ -95,7 +95,7 @@ public class UserInfo {
     }
 
     private void updateUser(String field, String newItem) {
-        if (edit) firebase.editUser(this.getEmail(), field, newItem);
+        if (edit) firebase.editUser(this, field, newItem);
     }
 
     @Override
@@ -117,5 +117,9 @@ public class UserInfo {
     public int hashCode() {
         // Eventually changed to deviceID
         return Objects.hash(this.getEmail());
+    }
+
+    public void editMode(boolean changeEdit) {
+        this.edit = changeEdit;
     }
 }

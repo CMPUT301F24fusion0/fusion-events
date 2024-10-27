@@ -2,6 +2,7 @@ package com.example.fusion0;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,12 +73,12 @@ public class Firebase {
 
     /**
      * Uses the primary key to find the user then allows for the editing of any field
-     * @param email used as the primary key, used to identify each user
+     * @param user represents the user to be changed
      * @param field is the field that is to be changed (i.e. first name, last name, etc.)
      * @param newField is the new attribute for the user
      * TODO: UserID should be primary key
      */
-    public void editUser(String email, String field, String newField) {
+    public void editUser(UserInfo user, String field, String newField) {
         ArrayList<String> fields = new ArrayList<String>(
                 Arrays.asList("first name", "last name", "phone number", "email"));
 
@@ -85,9 +86,21 @@ public class Firebase {
             throw new IllegalArgumentException("The field you've tried to change is not valid");
         }
 
-        usersRef.document(email).update(field, newField)
+        usersRef.document(user.getEmail()).update(field, newField)
                 .addOnSuccessListener(ref -> {
                     System.out.println("Update Successful");
+                    user.editMode(true);
+                    switch (field.toLowerCase()) {
+                        case "first name":
+                            user.setFirstName(newField);
+                        case "last name":
+                            user.setLastName(newField);
+                        case "email":
+                            user.setEmail(newField);
+                        case "phone number":
+                            user.setPhoneNumber(newField);
+                    }
+
                 })
                 .addOnFailureListener(e -> {
                     System.out.println("Failure" + e.getMessage());
