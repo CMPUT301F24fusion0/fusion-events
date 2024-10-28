@@ -1,9 +1,5 @@
 package com.example.fusion0;
 
-import static java.security.AccessController.getContext;
-
-import android.provider.Settings;
-
 import com.google.firebase.firestore.PropertyName;
 
 import java.util.HashMap;
@@ -31,14 +27,14 @@ public class UserInfo {
      * @param email email address
      * @param phoneNumber phone number
      */
-    public UserInfo(String first, String last, String email, String phoneNumber, String deviceID) {
+    public UserInfo(String first, String last, String email, String phoneNumber, String dID) {
         this.firstName = first;
         this.lastName = last;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.firebase = new Firebase();
         this.edit = false;
-        this.deviceID = deviceID;
+        this.deviceID = dID;
     }
 
     /**
@@ -47,13 +43,13 @@ public class UserInfo {
      * @param last last name
      * @param email email address
      */
-    public UserInfo(String first, String last, String email, String deviceID) {
+    public UserInfo(String first, String last, String email, String dID) {
         this.firstName = first;
         this.lastName = last;
         this.email = email;
         this.firebase = new Firebase();
         this.edit = false;
-        this.deviceID = deviceID;
+        this.deviceID = dID;
     }
 
     /**

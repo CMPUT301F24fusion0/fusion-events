@@ -1,13 +1,11 @@
 package com.example.fusion0;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.UUID;
 
 /**
  * This class serves as the connection to the Firebase. It includes common CRUD operations.
@@ -40,23 +38,6 @@ public class Firebase {
     }
 
     /**
-     * Gets a device ID and can pass it through the callback
-     * @param dIDCallback callback used to pass the device ID
-     */
-    public void deviceID(DIDCallback dIDCallback) {
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        auth.signInAnonymously()
-                .addOnCompleteListener(complete -> {
-                    if (complete.isSuccessful()) {
-                        String deviceID = UUID.randomUUID().toString();
-                        dIDCallback.onSuccess(deviceID);
-                    } else {
-                        throw new RuntimeException(complete.getException());
-                    }
-                });
-    }
-
-    /**
      * This method takes in a UserInfo object and adds it to the database.
      * @param userInfo contains the UserInfo object that is to be added to the database
      */
@@ -80,8 +61,7 @@ public class Firebase {
                         UserInfo user = documentSnapshot.toObject(UserInfo.class);
                         callback.onSuccess(user);
                     } else {
-                        System.out.println("not found");
-                        callback.onFailure("not found");
+                        callback.onSuccess(null);
                     }
                 })
                 .addOnFailureListener(error -> {
