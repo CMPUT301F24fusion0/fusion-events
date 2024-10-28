@@ -22,6 +22,9 @@ public class Firebase {
         void onFailure(String error);
     }
 
+    /**
+     * This interface is used to use the device ID in different classes.
+     */
     public interface DIDCallback {
         void onSuccess(String dID);
     }
@@ -36,7 +39,10 @@ public class Firebase {
         usersRef = db.collection("users");
     }
 
-
+    /**
+     * Gets a device ID and can pass it through the callback
+     * @param dIDCallback callback used to pass the device ID
+     */
     public void deviceID(DIDCallback dIDCallback) {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         auth.signInAnonymously()

@@ -68,7 +68,15 @@ public class Registration extends Fragment {
         });
     }
 
-
+    /**
+     * Checks if a user already exists, if they don't then a new account is created
+     * @param firebase firebase instance
+     * @param dID device id
+     * @param first first name
+     * @param last last name
+     * @param emails email
+     * @param phone phone number
+     */
     private void registration(Firebase firebase, String dID, String first, String last, String emails, String phone) {
         firebase.findUser(dID, new Firebase.Callback() {
             /**
