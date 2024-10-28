@@ -1,11 +1,13 @@
 package com.example.fusion0;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * This class serves as the connection to the Firebase. It includes common CRUD operations.
@@ -20,41 +22,53 @@ public class Firebase {
         void onFailure(String error);
     }
 
+    public interface DIDCallback {
+        void onSuccess(String dID);
+    }
+
     private final CollectionReference usersRef;
 
     /**
      * Initializes the database as well as the users collection.
      */
     public Firebase() {
-        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
+    }
+
+
+    public void deviceID(DIDCallback dIDCallback) {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth.signInAnonymously()
+                .addOnCompleteListener(complete -> {
+                    if (complete.isSuccessful()) {
+                        String deviceID = UUID.randomUUID().toString();
+                        dIDCallback.onSuccess(deviceID);
+                    } else {
+                        throw new RuntimeException(complete.getException());
+                    }
+                });
     }
 
     /**
      * This method takes in a UserInfo object and adds it to the database.
      * @param userInfo contains the UserInfo object that is to be added to the database
-     * TODO: Use DeviceID
      */
     public void addUser(UserInfo userInfo) {
         HashMap<String, Object> user = userInfo.user();
-        String email = userInfo.getEmail();
-        usersRef.document(email).set(user)
-                .addOnSuccessListener(documentReference -> {
-                    System.out.println("Success");
-                })
-                .addOnFailureListener(error -> {
-                    System.out.println("Failure" + error.getMessage());
-                });
+        String dID = userInfo.getDeviceID();
+        usersRef.document(dID).set(user)
+                .addOnSuccessListener(documentReference -> System.out.println("Success"))
+                .addOnFailureListener(error -> System.out.println("Failure" + error.getMessage()));
     }
 
     /**
      * This method finds the user and will return the UserInfo object through the callback
-     * @param email is the primary key for each user and each user has a unique email
+     * @param dID is the primary key for each user and each user has a unique device ID
      * @param callback is the interface needed due to the asynchronous nature of Firebase
-     * TODO: Use DeviceID
      */
-    public void findUser(String email, Callback callback) {
-        usersRef.document(email).get()
+    public void findUser(String dID, Callback callback) {
+        usersRef.document(dID).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         UserInfo user = documentSnapshot.toObject(UserInfo.class);
@@ -75,49 +89,48 @@ public class Firebase {
      * @param user represents the user to be changed
      * @param field is the field that is to be changed (i.e. first name, last name, etc.)
      * @param newField is the new attribute for the user
-     * TODO: UserID should be primary key
      */
     public void editUser(UserInfo user, String field, String newField) {
-        ArrayList<String> fields = new ArrayList<String>(
-                Arrays.asList("first name", "last name", "phone number", "email"));
+        ArrayList<String> fields = new ArrayList<>(
+                Arrays.asList("first name", "last name", "phone number", "email", "did"));
 
         if (!fields.contains(field.toLowerCase())) {
             throw new IllegalArgumentException("The field you've tried to change is not valid");
         }
 
-        usersRef.document(user.getEmail()).update(field, newField)
+        usersRef.document(user.getDeviceID()).update(field, newField)
                 .addOnSuccessListener(ref -> {
                     System.out.println("Update Successful");
                     user.editMode(true);
                     switch (field.toLowerCase()) {
                         case "first name":
                             user.setFirstName(newField);
+                            break;
                         case "last name":
                             user.setLastName(newField);
+                            break;
                         case "email":
                             user.setEmail(newField);
+                            break;
                         case "phone number":
                             user.setPhoneNumber(newField);
+                            break;
+                        case "did":
+                            user.setDeviceID(newField);
+                            break;
                     }
 
                 })
-                .addOnFailureListener(e -> {
-                    System.out.println("Failure" + e.getMessage());
-                });
+                .addOnFailureListener(e -> System.out.println("Failure" + e.getMessage()));
     }
 
     /**
      * Finds the user and then deletes them.
-     * @param email is the primary key used to find the user
-     * TODO: DeviceID should be primary key
+     * @param dID is the primary key used to find the user
      */
-    public void deleteUser(String email) {
-        usersRef.document(email).delete()
-                .addOnSuccessListener(documentReference -> {
-                    System.out.println("Successfully deleted");
-                })
-                .addOnFailureListener(e -> {
-                    System.out.println("Failure" + e.getMessage());
-                });
+    public void deleteUser(String dID) {
+        usersRef.document(dID).delete()
+                .addOnSuccessListener(documentReference -> System.out.println("Successfully deleted"))
+                .addOnFailureListener(e -> System.out.println("Failure" + e.getMessage()));
     }
 }

@@ -1,5 +1,9 @@
 package com.example.fusion0;
 
+import static java.security.AccessController.getContext;
+
+import android.provider.Settings;
+
 import com.google.firebase.firestore.PropertyName;
 
 import java.util.HashMap;
@@ -9,7 +13,7 @@ import java.util.Objects;
  * This class contains the information for users.
  */
 public class UserInfo {
-    String firstName, lastName, email, phoneNumber;
+    String firstName, lastName, email, phoneNumber, deviceID;
     Firebase firebase;
     Boolean edit;
 
@@ -27,13 +31,14 @@ public class UserInfo {
      * @param email email address
      * @param phoneNumber phone number
      */
-    public UserInfo(String first, String last, String email, String phoneNumber) {
+    public UserInfo(String first, String last, String email, String phoneNumber, String deviceID) {
         this.firstName = first;
         this.lastName = last;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.firebase = new Firebase();
         this.edit = false;
+        this.deviceID = deviceID;
     }
 
     /**
@@ -42,12 +47,13 @@ public class UserInfo {
      * @param last last name
      * @param email email address
      */
-    public UserInfo(String first, String last, String email) {
+    public UserInfo(String first, String last, String email, String deviceID) {
         this.firstName = first;
         this.lastName = last;
         this.email = email;
         this.firebase = new Firebase();
         this.edit = false;
+        this.deviceID = deviceID;
     }
 
     /**
@@ -56,13 +62,30 @@ public class UserInfo {
      */
     public HashMap<String,Object> user() {
         HashMap<String, Object> user = new HashMap<>();
-
+        user.put("dID", this.deviceID);
         user.put("email", this.email);
         user.put("first name", this.firstName);
         user.put("last name", this.lastName);
         user.put("phone number", this.phoneNumber);
 
         return user;
+    }
+
+    /**
+     * Gets device id
+     * @return device id
+     */
+    public String getDeviceID() {
+        return deviceID;
+    }
+
+    /**
+     * Sets device ID
+     * @param deviceID the device ID
+     */
+    public void setDeviceID(String deviceID) {
+        updateUser("DID", deviceID);
+        this.deviceID = deviceID;
     }
 
     /**
@@ -167,8 +190,7 @@ public class UserInfo {
         }
 
         UserInfo user = (UserInfo) obj;
-        // Eventually changed to deviceID
-        return Objects.equals(this.getEmail(), user.getEmail());
+        return Objects.equals(this.getDeviceID(), user.getDeviceID());
     }
 
     /**
@@ -178,7 +200,7 @@ public class UserInfo {
     @Override
     public int hashCode() {
         // Eventually changed to deviceID
-        return Objects.hash(this.getEmail());
+        return Objects.hash(this.getDeviceID());
     }
 
     /**

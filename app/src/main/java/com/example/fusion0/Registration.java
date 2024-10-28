@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -16,9 +17,10 @@ import androidx.fragment.app.Fragment;
 public class Registration extends Fragment {
     EditText firstName, lastName, email, phoneNumber;
     Firebase firebase;
+    Button register;
 
     /**
-     * This class initializes the input fields and an instance of the Firebase class.
+     * This method initializes the input fields and an instance of the Firebase class.
      * @param inflater The LayoutInflater object that can be used to inflate
      * any views in the fragment,
      * @param container If non-null, this is the parent view that the fragment's
@@ -39,6 +41,7 @@ public class Registration extends Fragment {
         lastName = view.findViewById(R.id.lastName);
         email = view.findViewById(R.id.email);
         phoneNumber = view.findViewById(R.id.phone);
+        register = view.findViewById(R.id.confirm);
         firebase = new Firebase();
 
         return view;
@@ -54,12 +57,20 @@ public class Registration extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        String first = firstName.getText().toString();
-        String last = lastName.getText().toString();
-        String emails = email.getText().toString();
-        String phone = phoneNumber.getText().toString();
 
-        firebase.findUser(emails, new Firebase.Callback() {
+        register.setOnClickListener(v-> {
+            String first = firstName.getText().toString().trim();
+            String last = lastName.getText().toString().trim();
+            String emails = email.getText().toString().trim();
+            String phone = phoneNumber.getText().toString().trim();
+
+            firebase.deviceID(dID -> registration(firebase, dID, first, last, emails, phone));
+        });
+    }
+
+
+    private void registration(Firebase firebase, String dID, String first, String last, String emails, String phone) {
+        firebase.findUser(dID, new Firebase.Callback() {
             /**
              * This method checks to see if the same user already exists, if it doesn't then the new
              * user is able to create their account
@@ -67,10 +78,15 @@ public class Registration extends Fragment {
              */
             @Override
             public void onSuccess(UserInfo user) {
+                UserInfo newUser;
                 if (user != null) {
                     System.out.println("This user already exists.");
                 } else {
-                    UserInfo newUser = new UserInfo(first, last, emails, phone);
+                    if (!phone.isEmpty()) {
+                        newUser = new UserInfo(first, last, emails, phone, dID);
+                    } else {
+                        newUser = new UserInfo(first, last, emails, dID);
+                    }
                     firebase.addUser(newUser);
                 }
             }
@@ -85,4 +101,5 @@ public class Registration extends Fragment {
             }
         });
     }
+
 }
