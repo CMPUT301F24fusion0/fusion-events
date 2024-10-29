@@ -3,17 +3,21 @@ package com.example.fusion0;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
 public class FacilitiesInfo {
     public String address;
     public String facilityName;
     public String owner; //organizer/deviceId
     ArrayList<String> events;
+    Firebase firebase;
+
 
     public FacilitiesInfo(String address, String facilityName, String owner, ArrayList<String> events ){
         this.address = address;
         this.facilityName = facilityName;
         this.owner = owner;
         this.events = events;
+        this.firebase = new Firebase();
     }
 
     public HashMap<String,Object> facility() {
@@ -58,6 +62,11 @@ public class FacilitiesInfo {
     public void setEvents(ArrayList<String> events) {
         this.events = events;
     }
+
+    public void updateFacility(HashMap<String,Object> facility){
+        firebase.editFacility(this, facility);
+    }
+
 
 
 }
