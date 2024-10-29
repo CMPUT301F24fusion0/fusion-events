@@ -20,13 +20,6 @@ public class Firebase {
         void onFailure(String error);
     }
 
-    /**
-     * This interface is used to use the device ID in different classes.
-     */
-    public interface DIDCallback {
-        void onSuccess(String dID);
-    }
-
     private final CollectionReference usersRef;
 
     /**
