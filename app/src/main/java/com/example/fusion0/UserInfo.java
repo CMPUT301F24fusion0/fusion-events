@@ -71,6 +71,7 @@ public class UserInfo {
      * Gets device id
      * @return device id
      */
+    @PropertyName("dID")
     public String getDeviceID() {
         return deviceID;
     }
@@ -79,6 +80,7 @@ public class UserInfo {
      * Sets device ID
      * @param deviceID the device ID
      */
+    @PropertyName("dID")
     public void setDeviceID(String deviceID) {
         updateUser("DID", deviceID);
         this.deviceID = deviceID;
