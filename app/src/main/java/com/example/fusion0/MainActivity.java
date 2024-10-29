@@ -1,6 +1,8 @@
 package com.example.fusion0;
 
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
@@ -9,12 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.FirebaseApp;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView textField;
     private LoginManagement loginManagement;
     private Boolean loginState;
     private Button profileButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
