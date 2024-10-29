@@ -1,11 +1,14 @@
 package com.example.fusion0;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class Firebase {
@@ -97,6 +100,31 @@ public class Firebase {
                 System.out.println("Entrant already exists in the waiting list");
             }
         });
+    }
+
+
+    public void sampleAttendees(String eventId, int numToSelect) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("events").document(eventId).collection("waitingList")
+                .whereEqualTo("status", "waiting") // only users who are waiting
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<DocumentSnapshot> entrants = task.getResult().getDocuments();
+                        Collections.shuffle(entrants); // Randomize order for lottery
+
+                        List<DocumentSnapshot> chosenEntrants = entrants.subList(0, Math.min(numToSelect, entrants.size()));
+                        for (DocumentSnapshot entrant : chosenEntrants) {
+                            entrant.getReference().update("status", "chosen");
+                            //ADD notification helper function or Firebase Cloud Messaging
+                        }
+
+                        System.out.println(numToSelect + " entrants chosen for event " + eventId);
+                    } else {
+                        System.out.println("Error sampling attendees: " + task.getException());
+                    }
+                });
     }
 
 }
