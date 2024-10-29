@@ -28,6 +28,10 @@ public class Firebase {
     }
 
     private final CollectionReference usersRef;
+    private final CollectionReference eventsRef;
+    private final CollectionReference organizersRef;
+    private final CollectionReference facilitiesRef;
+
 
     /**
      * Initializes the database as well as the users collection.
@@ -35,6 +39,91 @@ public class Firebase {
     public Firebase() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
+        eventsRef = db.collection("events");
+        organizersRef = db.collection("organizers");
+        facilitiesRef = db.collection("facilities");
+    }
+
+    public void addFacility(FacilitiesInfo facilitiesInfo){
+        HashMap<String, Object> facility = facilitiesInfo.facility();
+        String facilityName = facilitiesInfo.getFacilityName();
+        String deviceId = facilitiesInfo.getOwner();
+        organizersRef.document(deviceId).collection("facilities").document(facilityName).set(facility)
+                .addOnSuccessListener(documentReference -> {
+                    System.out.println("Success");
+                })
+                .addOnFailureListener(error -> {
+                    System.out.println("Failure" + error.getMessage());
+                });
+    }
+
+    public void editFacility(){
+
+    }
+
+    public void deleteFacility(String deviceId, String facilityName){
+        organizersRef.document(deviceId).
+                collection("facilities").document(facilityName).delete().addOnSuccessListener(documentReference -> {
+            System.out.println("Success");
+        }).addOnFailureListener(error -> {
+            System.err.println("Failure " + error.getMessage());
+        });
+
+    }
+
+
+    public void addOrganizer(OrganizerActivity organizerActivity){
+        HashMap<String, Object> organizer = organizerActivity.organizer();
+        String deviceId = organizerActivity.getDeviceId();
+        organizersRef.document(deviceId).set(organizer)
+                .addOnSuccessListener(documentReference -> {
+                    System.out.println("Success");
+                })
+                .addOnFailureListener(error -> {
+                    System.out.println("Failure" + error.getMessage());
+                });
+
+    }
+
+    public void editOrganizer(){}
+
+    public void deleteOrganizer(String deviceId){
+        organizersRef.document(deviceId).delete().addOnSuccessListener(documentReference -> {
+            System.out.println("Success");
+        }).addOnFailureListener(error -> {
+            System.err.println("Failure " + error.getMessage());
+        });
+    }
+
+    public void addEvent(EventActivity eventActivity){
+        HashMap<String, Object> event = eventActivity.event();
+        String eventName = eventActivity.getEventName();
+        String deviceId = eventActivity.getOrganizer();
+        String facilityName = eventActivity.getFacilityName();
+
+        organizersRef.document(deviceId)
+                .collection("facilities")
+                .document(facilityName)
+                .collection("events").document(eventName).set(event).addOnSuccessListener(documentReference -> {
+            System.out.println("Success");
+        }).addOnFailureListener(error -> {
+            System.err.println("Failure " + error.getMessage());
+        });
+    }
+
+
+    public void editEvent(){
+
+    }
+
+    public void deleteEvent(String eventName, String facilityName, String deviceId){
+        organizersRef.document(deviceId).
+                collection("facilities").document(facilityName).
+                collection("events").document(eventName).delete().addOnSuccessListener(documentReference -> {
+            System.out.println("Success");
+        }).addOnFailureListener(error -> {
+            System.err.println("Failure " + error.getMessage());
+        });
     }
 
     /**
