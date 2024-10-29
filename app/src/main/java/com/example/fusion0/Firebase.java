@@ -33,7 +33,6 @@ public class Firebase {
     private final CollectionReference organizersRef;
     private final CollectionReference facilitiesRef;
 
-
     /**
      * Initializes the database as well as the users collection.
      */
@@ -113,9 +112,7 @@ public class Firebase {
                             user.setDeviceID(newField);
                             break;
                     }
-
-                })
-                .addOnFailureListener(e -> System.out.println("Failure" + e.getMessage()));
+                  .addOnFailureListener(e -> System.out.println("Failure" + e.getMessage()));
     }
 
     /**
@@ -267,4 +264,42 @@ public class Firebase {
     }
 
 
+
+                })
+                .addOnFailureListener(e -> System.out.println("Failure" + e.getMessage()));
+    }
+
+    /**
+     * Finds the user and then deletes them.
+     * @param dID is the primary key used to find the user
+     */
+    public void deleteUser(String dID) {
+        usersRef.document(dID).delete()
+                .addOnSuccessListener(documentReference -> System.out.println("Successfully deleted"))
+                .addOnFailureListener(e -> System.out.println("Failure" + e.getMessage()));
+    }
+
+    public void addEntrantToWaitingList(String eventId, String entrantId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Reference to the event's waiting list
+        CollectionReference waitingListRef = db.collection("events")
+                .document(eventId)
+                .collection("waitingList");
+
+        // Create entrant data with a "waiting" status
+        HashMap<String, Object> entrantData = new HashMap<>();
+        entrantData.put("status", "waiting");
+
+        // Add entrant to the waiting list only if they are not already present
+        waitingListRef.document(entrantId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && !task.getResult().exists()) {
+                waitingListRef.document(entrantId).set(entrantData)
+                        .addOnSuccessListener(aVoid -> System.out.println("Entrant added to waiting list"))
+                        .addOnFailureListener(e -> System.out.println("Error adding entrant: " + e));
+            } else {
+                System.out.println("Entrant already exists in the waiting list");
+            }
+        });
+    }
 }
