@@ -2,6 +2,8 @@ package com.example.fusion0;
 
 import android.net.Uri;
 
+import com.google.android.gms.auth.api.signin.internal.Storage;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
@@ -11,6 +13,7 @@ import com.google.firebase.storage.StorageReference;
  * ManageImageProfile class handles image upload, retrieval, and existence checks
  * in Firebase Storage for user profile images.
  */
+
 public class ManageImageProfile {
 
     private FirebaseAuth auth;
@@ -99,6 +102,8 @@ public class ManageImageProfile {
             userImageRef.getDownloadUrl()
                     .addOnSuccessListener(uri -> callback.onImageRetrieved(uri))
                     .addOnFailureListener(callback::onFailure);
+
         }
     }
 }
+

@@ -1,6 +1,9 @@
 package com.example.fusion0;
 
 import android.content.Intent;
+
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,6 +19,9 @@ import com.google.firebase.FirebaseApp;
 public class MainActivity extends AppCompatActivity {
 
     // UI components and login management
+
+public class MainActivity extends AppCompatActivity {
+
     private TextView textField;
     private LoginManagement loginManagement;
     private Boolean loginState;
@@ -31,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         // Initialize Firebase for the app
         FirebaseApp.initializeApp(this);

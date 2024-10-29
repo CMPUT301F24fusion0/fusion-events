@@ -2,6 +2,7 @@ package com.example.fusion0;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+
 /**
  * LoginManagement class manages user authentication state.
  */
@@ -13,9 +14,11 @@ public class LoginManagement {
     /**
      * Constructor initializes Firebase Authentication instance.
      */
+  
     public LoginManagement() {
         auth = FirebaseAuth.getInstance();
     }
+
 
     /**
      * Checks if the user is currently logged in.
@@ -26,3 +29,4 @@ public class LoginManagement {
         return auth.getCurrentUser() != null;
     }
 }
+

@@ -32,10 +32,13 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView fullName;
     private TextView emailAddress;
     private TextView phoneNumber;
+  
     private EditText editFullName;
     private EditText editEmailAddress;
     private EditText editPhoneNumber;
-    private ImageView profileImage;
+
+    // Image related fields
+    private CircleImageView profileImage;
     private ImageButton backButton;
     private FloatingActionButton editButton;
     private Button saveButton;
@@ -61,17 +64,19 @@ public class ProfileActivity extends AppCompatActivity {
         fullName = findViewById(R.id.fullName);
         emailAddress = findViewById(R.id.emailAddress);
         phoneNumber = findViewById(R.id.phoneNumber);
+
         editFullName = findViewById(R.id.editFullName);
         editEmailAddress = findViewById(R.id.editEmailAddress);
         editPhoneNumber = findViewById(R.id.editPhoneNumber);
+      
         profileImage = findViewById(R.id.profileImage);
         backButton = findViewById(R.id.backButton);
         editButton = findViewById(R.id.editButton);
         saveButton = findViewById(R.id.saveButton);
         cancelButton = findViewById(R.id.cancelButton);
 
-        profileManager = new ProfileManagement();
-        manageImage = new ManageImageProfile();
+        profileManager = new ProfileManagement();  // Manages user data retrieval
+        manageImage = new ManageImageProfile();  // Handles image upload and retrieval from Firebase
 
         // SECTION 2: Load User Data from Firebase
         profileManager.getUserData(new ProfileManagement.UserDataCallback() {
@@ -98,12 +103,13 @@ public class ProfileActivity extends AppCompatActivity {
         manageImage.checkImageExists(new ManageImageProfile.ImageCheckCallback() {
             @Override
             public void onImageExists() {
+                // If the image exists, retrieve and load it into the profileImage ImageView
                 manageImage.getImage(new ManageImageProfile.ImageRetrievedCallback() {
                     @Override
                     public void onImageRetrieved(Uri uri) {
                         Glide.with(ProfileActivity.this)
                                 .load(uri)
-                                .into(profileImage);
+                                .into(profileImage);  // Glide is used to load the image
                     }
 
                     @Override
@@ -115,6 +121,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onImageDoesNotExist() {
+                // If no image is found, display a default image
                 profileImage.setImageResource(R.drawable.default_profile_image);
             }
         });
@@ -168,7 +175,9 @@ public class ProfileActivity extends AppCompatActivity {
      * Toggles between view mode and edit mode by managing the visibility of
      * TextViews and EditTexts, as well as edit controls (save/cancel buttons).
      */
+
     private void toggleViewMode() {
+        // Hide EditTexts and show TextViews
         fullName.setVisibility(View.VISIBLE);
         emailAddress.setVisibility(View.VISIBLE);
         phoneNumber.setVisibility(View.VISIBLE);
@@ -189,6 +198,7 @@ public class ProfileActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
+
         startActivityForResult(intent, 100);
     }
 
