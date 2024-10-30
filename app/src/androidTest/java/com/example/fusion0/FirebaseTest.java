@@ -3,10 +3,8 @@ package com.example.fusion0;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import com.google.firebase.Firebase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.auth.User;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,13 +15,10 @@ public class FirebaseTest {
     private CollectionReference usersRef;
     private UserFirestore firebase;
 
-    public void initDb() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        usersRef = db.collection("users");
-    }
-
     @Before
     public void firebase() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        usersRef = db.collection("users");
         firebase = new UserFirestore();
     }
 
@@ -36,7 +31,6 @@ public class FirebaseTest {
      */
     @Test
     public void collectionTest() {
-        initDb();
         usersRef
                 .limit(1)
                 .get()
@@ -53,7 +47,6 @@ public class FirebaseTest {
     @Test
     public void addTest() {
         firebase.addUser(newUser());
-        initDb();
         usersRef
                 .document("1234")
                 .get()
@@ -84,9 +77,34 @@ public class FirebaseTest {
         });
     }
 
+    @Test
+    public void editTest() {
+        firebase.editUser(newUser(), "first name", "Harvey");
+        usersRef
+                .document("1234")
+                .get()
+                .addOnSuccessListener(task -> {
+                    if (task.exists()) {
+                        if (!(Objects.equals(task.getString("first name"), "Harvey"))) {
+                            fail();
+                        }
+                    } else {
+                        fail();
+                    }
+                });
+    }
 
+    @Test
+    public void deleteTest() {
+        firebase.deleteUser("1234");
+        usersRef
+                .document("1234")
+                .get()
+                .addOnSuccessListener(task -> {
+                    if (task.exists()) {
+                        fail();
+                    }
+                });
 
-
-
-
+    }
 }
