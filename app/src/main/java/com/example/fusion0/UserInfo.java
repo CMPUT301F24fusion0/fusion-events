@@ -10,7 +10,7 @@ import java.util.Objects;
  */
 public class UserInfo {
     String firstName, lastName, email, phoneNumber, deviceID;
-    Firebase firebase;
+    UserFirestore firebase;
     Boolean edit;
 
     /**
@@ -32,7 +32,7 @@ public class UserInfo {
         this.lastName = last;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.firebase = new Firebase();
+        this.firebase = new UserFirestore();
         this.edit = false;
         this.deviceID = dID;
     }
@@ -47,7 +47,7 @@ public class UserInfo {
         this.firstName = first;
         this.lastName = last;
         this.email = email;
-        this.firebase = new Firebase();
+        this.firebase = new UserFirestore();
         this.edit = false;
         this.deviceID = dID;
     }
