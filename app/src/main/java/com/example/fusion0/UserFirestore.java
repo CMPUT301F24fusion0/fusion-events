@@ -10,7 +10,7 @@ import java.util.HashMap;
 /**
  * This class serves as the connection to the Firebase. It includes common CRUD operations.
  */
-public class Firebase {
+public class UserFirestore {
     /**
      * This interface is needed due to the asynchronous nature of Firestore.
      *      Adapted from <a href="https://stackoverflow.com/questions/48499310/how-to-return-a-documentsnapshot-as-a-result-of-a-method">...</a>
@@ -20,19 +20,12 @@ public class Firebase {
         void onFailure(String error);
     }
 
-    /**
-     * This interface is used to use the device ID in different classes.
-     */
-    public interface DIDCallback {
-        void onSuccess(String dID);
-    }
-
     private final CollectionReference usersRef;
 
     /**
      * Initializes the database as well as the users collection.
      */
-    public Firebase() {
+    public UserFirestore() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
     }
@@ -46,7 +39,10 @@ public class Firebase {
         String dID = userInfo.getDeviceID();
         usersRef.document(dID).set(user)
                 .addOnSuccessListener(documentReference -> System.out.println("Success"))
-                .addOnFailureListener(error -> System.out.println("Failure" + error.getMessage()));
+                .addOnFailureListener(error -> {
+                    System.out.println("Fail" + error.getMessage());
+                }
+                );
     }
 
     /**
