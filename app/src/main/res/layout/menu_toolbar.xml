@@ -16,6 +16,14 @@
         android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@+id/toolbar"
         tools:ignore="MissingConstraints">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:scrollbars="vertical"
+            android:text="@string/paragraph"
+            android:textSize="20sp">
+        </TextView>
 
     </ScrollView>
 
@@ -73,7 +81,6 @@
             android:background="@android:color/white"
             android:contentDescription="person"
             android:src="@drawable/ic_grey_person" />
-
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
