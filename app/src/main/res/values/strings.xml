@@ -6,6 +6,8 @@
 
     <!-- Strings used for the Profile page -->
     <string name="personalInfo">Personal Info</string>
+  
+    <!-- Strings used for the Registration page -->
     <string name="phone">Phone</string>
     <string name="submit">Submit</string>
     <string name="email">Email</string>
