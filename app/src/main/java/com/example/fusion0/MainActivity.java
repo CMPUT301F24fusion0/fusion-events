@@ -1,6 +1,9 @@
 package com.example.fusion0;
 
 import android.content.Intent;
+
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
@@ -9,6 +12,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.FirebaseApp;
 
+/**
+ * The MainActivity serves as the main entry point for the app. It manages the login state
+ * and directs users to the Profile page, initializing Firebase and LoginManagement to handle user sessions.
+ */
 public class MainActivity extends AppCompatActivity {
 
     private TextView textField;
@@ -16,34 +23,38 @@ public class MainActivity extends AppCompatActivity {
     private Boolean loginState;
     private Button profileButton;
 
+    /**
+     * Initializes the MainActivity and manages user session and state.
+     * Sets up Firebase, handles login state, and initializes the profile button to access the ProfileActivity.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize firebase in app
+
+        // Initialize Firebase for the app
         FirebaseApp.initializeApp(this);
 
+        // Instantiate login manager and retrieve login state
         loginManagement = new LoginManagement();
         loginState = loginManagement.loggedIn();
 
-        // Managing State
+        // Managing user login state
         if (loginState) {
-            // Grey out icons
-            // Disallow user from using icons
-            // Prompt user to upload QR code image
+            // Manage UI for logged-in state (e.g., greyed-out icons, restricted features)
         } else {
-            // Give icons colour
-            // Allow user to visit other pages
+            // Manage UI for logged-out state (e.g., enable icons, grant access to other views)
         }
 
-        // Profile Button
+        // Initialize profile button to navigate to ProfileActivity
         profileButton = findViewById(R.id.profileButton);
 
         profileButton.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
             startActivity(intent);
         });
-
     }
 }
