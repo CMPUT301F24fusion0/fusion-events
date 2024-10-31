@@ -181,6 +181,38 @@ public class EventActivity {
 
         return startTime;
     }
+    public void setStartTime(Time startTime) {
+
+
+        this.startTime = startTime;
+    }
+
+
+    public Time getEndTime() {
+
+
+        return endTime;
+    }
+
+
+    public void setEndTime(Time endTime) {
+
+
+        this.endTime = endTime;
+    }
+
+
+
+
+    public ArrayList<String> getEntrants() {
+        return entrants;
+    }
+
+
+    public void setEntrants(ArrayList<String> entrants) {
+        this.entrants = entrants;
+    }
+
 
 }
 
