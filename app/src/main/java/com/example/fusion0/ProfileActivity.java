@@ -17,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * Manages the user profile page, including displaying and editing user information
  * such as name, email, phone number, and profile image.

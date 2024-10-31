@@ -18,10 +18,6 @@ import com.google.firebase.FirebaseApp;
  */
 public class MainActivity extends AppCompatActivity {
 
-    // UI components and login management
-
-public class MainActivity extends AppCompatActivity {
-
     private TextView textField;
     private LoginManagement loginManagement;
     private Boolean loginState;
