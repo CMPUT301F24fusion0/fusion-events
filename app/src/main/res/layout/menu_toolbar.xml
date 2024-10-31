@@ -10,9 +10,8 @@
 
     <ScrollView
         android:id="@+id/scroll_container"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:minHeight="1000dp"
         android:fillViewport="true"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@+id/toolbar"
@@ -22,10 +21,12 @@
             android:layout_height="wrap_content"
             android:background="#FFFFFF"
             android:scrollbars="vertical"
+            android:text="@string/paragraph"
             android:textSize="20sp">
         </TextView>
 
     </ScrollView>
+
 
     <LinearLayout
         android:id="@+id/toolbar"
@@ -46,15 +47,13 @@
 
 
         <ImageButton
-            android:id="@+id/toolbar_camera"
+            android:id="@+id/toolbar_qrscanner"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/white"
             android:contentDescription="search"
-            android:src="@drawable/ic_grey_camera" />
-
-
+            android:src="@drawable/ic_grey_qrscanner" />
 
         <ImageButton
             android:id="@+id/toolbar_add"
