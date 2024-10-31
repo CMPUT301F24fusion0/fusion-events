@@ -11,7 +11,12 @@
     <string name="phone">Phone</string>
     <string name="submit">Submit</string>
     <string name="email">Email</string>
-    <string name="last_name">Last Name</string>
-    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name:</string>
+    <string name="first_name">First Name:</string>
+    <string name="register">Register</string>
+    <string name="firstName">John</string>
+    <string name="lastName">Doe</string>
+    <string name="phone_number_optional">Phone Number (Optional):</string>
+    <string name="email_lable">Email:</string>
 
 </resources>

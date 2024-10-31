@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment;
  */
 public class Registration extends Fragment {
     EditText firstName, lastName, email, phoneNumber;
-    Firebase firebase;
+    UserFirestore firebase;
     Button register;
 
     /**
@@ -43,7 +43,7 @@ public class Registration extends Fragment {
         email = view.findViewById(R.id.email);
         phoneNumber = view.findViewById(R.id.phone);
         register = view.findViewById(R.id.confirm);
-        firebase = new Firebase();
+        firebase = new UserFirestore();
 
         return view;
     }
@@ -79,7 +79,7 @@ public class Registration extends Fragment {
      * @param phone phone number
      */
     private void registration(String dID, String first, String last, String emails, String phone) {
-        firebase.findUser(dID, new Firebase.Callback() {
+        firebase.findUser(dID, new UserFirestore.Callback() {
             /**
              * This method checks to see if the same user already exists, if it doesn't then the new
              * user is able to create their account
