@@ -26,7 +26,7 @@ public class FirebaseTest {
     }
 
     /**
-     * Ensure the collection is successfully completed.
+     * Ensure the collection is successfully created.
      */
     @Test
     public void collectionTest() {
