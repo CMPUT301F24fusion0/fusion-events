@@ -8,6 +8,24 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+
+/**
+ * The {@code Waitlist} class provides methods to manage and interact with the
+ * waiting list for events. It allows adding entrants to the waiting list and
+ * randomly selecting a specified number of attendees from the waiting list
+ * for an event.
+ *
+ * <p>This class is intended to handle all waiting list-related operations,
+ * separate from user management and other event functionalities.</p>
+ *
+ * <p>Usage example:
+ * <pre>
+ *     Waitlist waitlist = new Waitlist();
+ *     waitlist.addEntrantToWaitingList("eventId123", "entrantId456");
+ *     waitlist.sampleAttendees("eventId123", 5);
+ * </pre>
+ * </p>
+ */
 public class Waitlist {
 
 
