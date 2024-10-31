@@ -17,6 +17,7 @@ import com.google.firebase.FirebaseApp;
  * The MainActivity serves as the main entry point for the app. It manages the login state
  * and directs users to the Profile page, initializing Firebase and LoginManagement to handle user sessions.
  */
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView textField;
@@ -63,5 +64,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
             startActivity(intent);
         });
+
     }
 }
