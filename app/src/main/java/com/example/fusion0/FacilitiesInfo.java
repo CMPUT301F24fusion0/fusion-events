@@ -2,22 +2,26 @@ package com.example.fusion0;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 
 public class FacilitiesInfo {
+    public String facilityID;
     public String address;
     public String facilityName;
     public String owner; //organizer/deviceId
     ArrayList<String> events;
-    Firebase firebase;
+    EventFirebase firebase;
+
 
 
     public FacilitiesInfo(String address, String facilityName, String owner, ArrayList<String> events ){
+        this.facilityID = UUID.randomUUID().toString();
         this.address = address;
         this.facilityName = facilityName;
         this.owner = owner;
         this.events = events;
-        this.firebase = new Firebase();
+        this.firebase = new EventFirebase();
     }
 
     public HashMap<String,Object> facility() {
@@ -29,6 +33,10 @@ public class FacilitiesInfo {
         facility().put("events", this.events);
 
         return facility;
+    }
+
+    public String getFacilityID() {
+        return facilityID;
     }
 
     public String getFacilityName() {

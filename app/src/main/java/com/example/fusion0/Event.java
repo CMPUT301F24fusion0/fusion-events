@@ -39,27 +39,12 @@ public class Event {
      * @param eventDate The date of the event.
      */
     public Event(String eventName, String eventDate) {
-        this.eventId = UUID.randomUUID().toString();  // Generating unique event ID
+        this.eventId = UUID.randomUUID().toString();
         this.eventName = eventName;
         this.eventDate = eventDate;
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
-    }
-
-    /**
-     * Prepares the event data as a HashMap for Firestore storage.
-     * This method converts the event details (ID, name, date) into a format
-     * that can be stored in Firestore.
-     *
-     * @return A HashMap containing the event's data.
-     */
-    public HashMap<String, Object> eventData() {
-        HashMap<String, Object> event = new HashMap<>();
-        event.put("eventId", eventId);
-        event.put("eventName", eventName);
-        event.put("eventDate", eventDate);
-        return event;
     }
 
     /**
@@ -79,15 +64,5 @@ public class Event {
                 .addOnFailureListener(e -> System.out.println("Error adding event: " + e.getMessage()));
     }
 
-    /**
-     * Deletes the event from Firestore by eventId.
-     * This method removes the event with the given ID from the "events" collection.
-     *
-     * @param eventId The unique ID of the event to be deleted.
-     */
-    public void deleteEvent(String eventId) {
-        eventsRef.document(eventId).delete()
-                .addOnSuccessListener(aVoid -> System.out.println("Event deleted successfully"))
-                .addOnFailureListener(e -> System.out.println("Error deleting event: " + e.getMessage()));
-    }
+
 }

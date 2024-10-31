@@ -3,18 +3,18 @@ package com.example.fusion0;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class OrganizerActivity {
+public class OrganizerInfo {
     ArrayList<String> events;
     ArrayList<String>  facilities;
     public String deviceId;
-    Firebase firebase;
+    EventFirebase firebase;
 
 
-    public OrganizerActivity(ArrayList<String> events, ArrayList<String> facilities, String deviceId){
+    public OrganizerInfo(ArrayList<String> events, ArrayList<String> facilities, String deviceId){
         this.events = events;
         this.deviceId = deviceId;
         this.facilities = facilities;
-        this.firebase = new Firebase();
+        this.firebase = new EventFirebase();
 
     }
 

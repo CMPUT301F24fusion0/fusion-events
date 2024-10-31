@@ -1,18 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/profileButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Profile"
-        android:layout_gravity="center"
-        android:backgroundTint="@color/cardview_dark_background"/>
+    <!-- fix height -->
 
+    <ScrollView
+        android:id="@+id/scroll_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:background="@color/white"
+        >
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:scrollbars="vertical"
+                android:text="@string/random_paragraph"
+                android:textSize="20sp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:background="@android:color/white">
+
+        <ImageButton
+            android:id="@+id/toolbar_home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/home2"
+            android:src="@drawable/ic_blue_home"
+            android:background="@android:color/white"/>
+
+        <ImageButton
+            android:id="@+id/toolbar_search"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/search"
+            android:src="@drawable/ic_grey_search"
+            android:background="@android:color/white"/>
+
+        <ImageButton
+            android:id="@+id/toolbar_add"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/add"
+            android:src="@drawable/ic_grey_add"
+            android:background="@android:color/white"/>
+
+        <ImageButton
+            android:id="@+id/toolbar_likes"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/likes"
+            android:src="@drawable/ic_grey_favourite"
+            android:background="@android:color/white"/>
+
+        <ImageButton
+            android:id="@+id/toolbar_profile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/person"
+            android:src="@drawable/ic_grey_person"
+            android:background="@android:color/white"/>
+    </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
