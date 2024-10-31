@@ -23,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
     private Boolean loginState;
     private Button profileButton;
 
+    g
+
     /**
      * Initializes the MainActivity and manages user session and state.
      * Sets up Firebase, handles login state, and initializes the profile button to access the ProfileActivity.
