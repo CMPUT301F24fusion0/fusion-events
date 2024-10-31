@@ -26,6 +26,7 @@ import java.util.List;
  * </pre>
  * </p>
  */
+
 public class Waitlist {
 
 
@@ -97,4 +98,4 @@ public class Waitlist {
                     }
                 });
 
-}
+}}
