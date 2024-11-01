@@ -63,7 +63,33 @@
                 android:drawablePadding="12dp"
                 android:padding="12dp">
             </EditText>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Upload Poster"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp"
+                android:layout_marginBottom="2dp" />
 
+            <ImageView
+                android:id="@+id/uploaded_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginBottom="8dp"
+                android:contentDescription="@string/uploaded_image_desc"
+                android:visibility="gone"
+                android:scaleType="centerCrop" />
+
+            <Button
+                android:id="@+id/upload_image_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Choose Image"
+                android:backgroundTint="@color/figmaBlue"
+                app:cornerRadius="5dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -95,39 +121,16 @@
                 android:textColor="@color/figmaBlue"
                 android:textFontWeight="600"
                 android:textSize="20sp"
-                android:layout_marginBottom="2dp">
+                android:layout_marginBottom="2dp"
+                android:visibility="gone">
             </TextView>
-
-
-            <LinearLayout
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/autocomplete_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-
-                <AutoCompleteTextView
-                    android:id="@+id/address"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:hint="Enter address"
-                    android:background="@drawable/custom_input"
-                    android:drawablePadding="12dp"
-                    android:padding="12dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    />
-
-
-                <Button
-                    android:id="@+id/button_find_address"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Search"
-                    android:backgroundTint="@color/figmaBlue"
-                    app:cornerRadius="5dp"
-                    android:textSize="13sp"/>
-            </LinearLayout>
-
+                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                android:visibility="gone"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -175,8 +178,9 @@
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:textColor="@android:color/darker_gray"
-                android:visibility="invisible">
+                android:visibility="gone">
             </TextView>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -202,7 +206,7 @@
                         android:textFontWeight="600"
                         android:textSize="15sp"
                         android:layout_marginBottom="2dp"
-                        android:visibility="invisible" />
+                        android:visibility="gone" />
                     <TextView
                         android:id="@+id/start_time_text"
                         android:layout_width="wrap_content"
@@ -213,7 +217,7 @@
                         android:textFontWeight="600"
                         android:textSize="15sp"
                         android:layout_marginTop="8dp"
-                        android:visibility="invisible" />
+                        android:visibility="gone" />
 
 
                     <Button
@@ -243,7 +247,7 @@
                         android:textFontWeight="600"
                         android:textSize="15sp"
                         android:layout_marginBottom="2dp"
-                        android:visibility="invisible" />
+                        android:visibility="gone" />
                     <TextView
                         android:id="@+id/end_time_text"
                         android:layout_width="wrap_content"
@@ -254,7 +258,7 @@
                         android:textFontWeight="600"
                         android:textSize="15sp"
                         android:layout_marginTop="8dp"
-                        android:visibility="invisible" />
+                        android:visibility="gone" />
 
 
                     <Button
