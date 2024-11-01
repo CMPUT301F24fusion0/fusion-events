@@ -32,6 +32,18 @@ import java.util.Locale;
 
 public class EventActivity extends AppCompatActivity {
     private static final String TAG = "EventActivity";
+=======
+import android.widget.TextView;
+import android.widget.TimePicker;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.sql.Time;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
+public class EventActivity extends AppCompatActivity{
     private EditText eventName;
     private EditText description;
     private Calendar startDateCalendar;
@@ -51,8 +63,12 @@ public class EventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_event);
 
+
         eventName = findViewById(R.id.EventName);
         uploadedImageView = findViewById(R.id.uploaded_image_view);
+
+        eventName = findViewById(R.id.EventName);
+
         description = findViewById(R.id.Description);
         dateRequirementsTextView = findViewById(R.id.date_requirements_text);
         startDateTextView = findViewById(R.id.start_date_text);
@@ -63,6 +79,7 @@ public class EventActivity extends AppCompatActivity {
         addButton = findViewById(R.id.add_button);
         exitButton = findViewById(R.id.exit_button);
 
+
         uploadImage();
         newFacility();
         StartDateButtonHandling();
@@ -70,7 +87,6 @@ public class EventActivity extends AppCompatActivity {
         AddEvent();
         ExitButtonHandling();
     }
-
 
     private void uploadImage(){
         Button uploadImageButton = findViewById(R.id.upload_image_button);
@@ -120,6 +136,7 @@ public class EventActivity extends AppCompatActivity {
             }
         });
     }
+
     private void StartDateButtonHandling() {
         Button startDateButton = findViewById(R.id.start_date_button);
         TextView startDateTextView = findViewById(R.id.start_date_text);
@@ -147,6 +164,7 @@ public class EventActivity extends AppCompatActivity {
                             startDateTextView.setText(selectedDate);
                             startDateTextView.setVisibility(View.VISIBLE);
                             dateRequirementsTextView.setVisibility(View.GONE);
+
                             int hour = calendar.get(Calendar.HOUR_OF_DAY);
                             int minute = calendar.get(Calendar.MINUTE);
                             TimePickerDialog timePickerDialog = new TimePickerDialog(com.example.fusion0.EventActivity.this, new TimePickerDialog.OnTimeSetListener() {
@@ -160,11 +178,13 @@ public class EventActivity extends AppCompatActivity {
                                         dateRequirementsTextView.setText("Start Time Must Be Now or Later.");
                                         dateRequirementsTextView.setVisibility(View.VISIBLE);
                                         startTimeTextView.setVisibility(View.GONE);
+
                                     } else {
                                         String selectedTime = String.format(Locale.US, "%02d:%02d", selectedHour, selectedMinute);
                                         startTimeTextView.setText(selectedTime);
                                         startTimeTextView.setVisibility(View.VISIBLE);
                                         dateRequirementsTextView.setVisibility(View.GONE);
+
                                     }
                                 }
                             }, hour, minute, true);
@@ -223,6 +243,7 @@ public class EventActivity extends AppCompatActivity {
                             endDateTextView.setText(selectedDate);
                             endDateTextView.setVisibility(View.VISIBLE);
                             dateRequirementsTextView.setVisibility(View.GONE);
+
                             int hour = calendar.get(Calendar.HOUR_OF_DAY);
                             int minute = calendar.get(Calendar.MINUTE);
                             TimePickerDialog timePickerDialog = new TimePickerDialog(com.example.fusion0.EventActivity.this, new TimePickerDialog.OnTimeSetListener() {
@@ -235,11 +256,14 @@ public class EventActivity extends AppCompatActivity {
                                         dateRequirementsTextView.setText("End Time Must Be After Start Time.");
                                         dateRequirementsTextView.setVisibility(View.VISIBLE);
                                         endTimeTextView.setVisibility(View.GONE);
+
                                     } else {
                                         String selectedTime = String.format(Locale.US, "%02d:%02d", selectedHour, selectedMinute);
                                         endTimeTextView.setText(selectedTime);
                                         endTimeTextView.setVisibility(View.VISIBLE);
+
                                         dateRequirementsTextView.setVisibility(View.GONE);
+
                                     }
                                 }
                             }, hour, minute, true);
