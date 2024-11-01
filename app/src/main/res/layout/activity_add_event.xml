@@ -79,7 +79,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_marginBottom="8dp"
-                android:contentDescription="TODO"
+                android:contentDescription="@string/uploaded_image_desc"
                 android:visibility="gone"
                 android:scaleType="centerCrop" />
 
@@ -124,7 +124,6 @@
                 android:textSize="20sp"
                 android:layout_marginBottom="2dp"
                 android:visibility="gone">
-
             </TextView>
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/autocomplete_fragment"
