@@ -8,75 +8,78 @@
     android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
-    <ScrollView
-        android:id="@+id/scroll_container"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/toolbar"
-        android:layout_weight="1"
-        android:fillViewport="true"
-        android:scrollbars="vertical">
+        android:layout_height="match_parent">
 
-        <TextView
+        <ScrollView
+            android:id="@+id/scroll_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#FFFFFF"
-            android:scrollbars="vertical"
-            android:text="@string/paragraph"
-            android:textSize="20sp" />
-    </ScrollView>
-
-    <LinearLayout
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_gravity="bottom"
-        android:orientation="horizontal">
-
-        <ImageButton
-            android:id="@+id/toolbar_home"
-            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@android:color/white"
-            android:contentDescription="home"
-            android:src="@drawable/ic_blue_home" />
+            android:layout_above="@id/toolbar"
+            android:fillViewport="true"
+            android:scrollbars="vertical">
 
-        <ImageButton
-            android:id="@+id/toolbar_search"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@android:color/white"
-            android:contentDescription="search"
-            android:src="@drawable/ic_grey_search" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:scrollbars="vertical"
+                android:text="@string/paragraph"
+                android:textSize="20sp" />
+        </ScrollView>
 
-        <ImageButton
-            android:id="@+id/toolbar_add"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@android:color/white"
-            android:contentDescription="add"
-            android:src="@drawable/ic_grey_add" />
+        <LinearLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/toolbar_favourite"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@android:color/white"
-            android:contentDescription="favourite"
-            android:src="@drawable/ic_grey_favourite" />
+            <ImageButton
+                android:id="@+id/toolbar_home"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/white"
+                android:contentDescription="home"
+                android:src="@drawable/ic_blue_home" />
 
-        <ImageButton
-            android:id="@+id/toolbar_person"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@android:color/white"
-            android:contentDescription="person"
-            android:src="@drawable/ic_grey_person" />
-    </LinearLayout>
+            <ImageButton
+                android:id="@+id/toolbar_search"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/white"
+                android:contentDescription="search"
+                android:src="@drawable/ic_grey_search" />
 
+            <ImageButton
+                android:id="@+id/toolbar_add"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/white"
+                android:contentDescription="add"
+                android:src="@drawable/ic_grey_add" />
+
+            <ImageButton
+                android:id="@+id/toolbar_favourite"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/white"
+                android:contentDescription="favourite"
+                android:src="@drawable/ic_grey_favourite" />
+
+            <ImageButton
+                android:id="@+id/toolbar_person"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/white"
+                android:contentDescription="person"
+                android:src="@drawable/ic_grey_person" />
+        </LinearLayout>
+    </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
