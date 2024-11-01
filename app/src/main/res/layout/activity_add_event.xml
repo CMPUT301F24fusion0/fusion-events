@@ -79,7 +79,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_marginBottom="8dp"
-                android:contentDescription="TODO"
+                android:contentDescription="@string/uploaded_image_desc"
                 android:visibility="gone"
                 android:scaleType="centerCrop" />
 
@@ -132,23 +132,6 @@
                 android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
                 android:visibility="gone"
                 />
-
-            <TextView
-                android:id="@+id/geolocation_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Enable Geolocation"
-                android:textSize="16sp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="8dp"/>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/geolocation_switchcompat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textOn="Geolocation Enabled"
-                android:textOff="Geolocation Disabled"
-                android:checked="false" />
 
             <TextView
                 android:layout_width="wrap_content"
