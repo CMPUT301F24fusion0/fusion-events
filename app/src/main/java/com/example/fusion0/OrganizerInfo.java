@@ -3,24 +3,13 @@ package com.example.fusion0;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 
 public class OrganizerInfo {
-    ArrayList<EventInfo> events;
-    ArrayList<FacilitiesInfo>  facilities;
+    ArrayList<String> events;
+    ArrayList<String>  facilities;
     public String deviceId;
     EventFirebase firebase;
-    private ArrayList<String> eventsNames;
-    private ArrayList<String> facilitiesNames;
-
-
-    public OrganizerInfo(){
-        this.events = new ArrayList<>();
-        this.deviceId = "deviceID";
-        this.facilities = new ArrayList<>();
-        this.firebase = new EventFirebase();
-    }
 
     /**
      * Default constructor for the OrganizerInfo class
@@ -30,9 +19,14 @@ public class OrganizerInfo {
         this.events = new ArrayList<>();
         this.deviceId = deviceId;
         this.facilities = new ArrayList<>();
+        facilities.add("Add Facility");
         this.firebase = new EventFirebase();
     }
 
+    public OrganizerInfo(){
+        this.firebase = new EventFirebase();
+
+    }
 
 
     /**
@@ -41,9 +35,9 @@ public class OrganizerInfo {
      */
     public HashMap<String,Object> organizer() {
         HashMap<String, Object> organizer = new HashMap<>();
-        organizer.put("deviceId", this.deviceId);
         organizer.put("events", this.events);
         organizer.put("facilities", this.facilities);
+        organizer.put("deviceId", this.deviceId);
         return organizer;
     }
 
@@ -51,7 +45,7 @@ public class OrganizerInfo {
      * Gets Events
      * @return events of the organizer
      */
-    public ArrayList<EventInfo> getEvents() {
+    public ArrayList<String> getEvents() {
         return events;
     }
 
@@ -59,21 +53,23 @@ public class OrganizerInfo {
      * Sets events
      * @param events a list of events
      */
-    public void setEvents(ArrayList<EventInfo> events) {
+    public void setEvents(ArrayList<String> events) {
         this.events = events;
+        updateOrganizer(organizer());
     }
 
     /**
      * Gets facilities
      * @return a list of strings that are facilities
      */
-    public ArrayList<FacilitiesInfo> getFacilities() {
+    public ArrayList<String> getFacilities() {
         return facilities;
     }
 
 
-    public void setFacilities(ArrayList<FacilitiesInfo> facilities) {
+    public void setFacilities(ArrayList<String> facilities) {
         this.facilities = facilities;
+        updateOrganizer(organizer());
     }
 
     /**
@@ -91,37 +87,22 @@ public class OrganizerInfo {
      */
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
+        updateOrganizer(organizer());
     }
 
-    public String getFacilityIdByName(String facilityName) {
-        for (FacilitiesInfo facility : facilities) {
-            if (facility.getFacilityName().equals(facilityName)) {
-                return facility.getFacilityID(); // Return the ID if names match
-            }
+
+    /**
+     * Calls upon firebase to edit the organizer as need be
+     */
+
+    public void updateOrganizer(HashMap<String,Object> organizer){
+        String deviceId = (String) organizer.get("deviceId");
+        if (deviceId == null || deviceId.isEmpty()) {
+            System.err.println("Error: Device ID is null or empty in updateOrganizer.");
+            return;
         }
-        return null; // Return null if no match is found
+        firebase.editOrganizer(this);
     }
-
-    public ArrayList<String> getEventsNames() {
-        ArrayList<String> eventsName = new ArrayList<>();
-        if (events != null) {
-            for (EventInfo event : events) {
-                eventsName.add(event.getEventName());
-            }
-        }
-        return eventsName;
-    }
-
-    public ArrayList<String> getFacilitiesNames() {
-        ArrayList<String> facilitiesName = new ArrayList<>();
-        if (facilities != null) {
-            for (FacilitiesInfo facility : facilities) {
-                facilitiesName.add(facility.getFacilityName());
-            }
-        }
-        return facilitiesName;
-    }
-
 
 
 }
