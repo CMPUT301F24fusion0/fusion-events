@@ -61,16 +61,15 @@ public class EventActivity extends AppCompatActivity {
     private Spinner spinnerFacilities;
     private OrganizerInfo organizer;
     private FacilitiesInfo facility;
-    private FacilitiesInfo newFacility = null;
-
 
     private String deviceID;
     private String address;
     private String facilityName;
     private Date startDate;
     private Date endDate;
-    private String eventPoster;
-
+    private String startTime;
+    private String endTime;
+    private Uri eventPoster;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,18 +92,14 @@ public class EventActivity extends AppCompatActivity {
         exitButton = findViewById(R.id.exit_button);
 
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        Log.d(TAG, "Device ID: " + deviceID);
 
         validateOrganizer();
         uploadPoster();
-
         StartDateButtonHandling();
-
         EndDateButtonHandling();
         AddEvent();
         ExitButtonHandling();
     }
-
 
 
     private void validateOrganizer() {
@@ -118,6 +113,7 @@ public class EventActivity extends AppCompatActivity {
                     organizer = organizerInfo;
                 }
                 handleFacility(organizer);
+
             }
             @Override
             public void onFailure(String error) {
@@ -136,7 +132,7 @@ public class EventActivity extends AppCompatActivity {
                         Uri imageUri = result.getData().getData();
                         uploadedImageView.setVisibility(View.VISIBLE);
                         uploadedImageView.setImageURI(imageUri);
-                        eventPoster = imageUri.toString();
+                        eventPoster = imageUri;
                     }
                 }
         );
@@ -148,23 +144,8 @@ public class EventActivity extends AppCompatActivity {
     }
 
     private void handleFacility(OrganizerInfo organizer){
-        ArrayList<String> facilityNames = new ArrayList<>();
-
-        if (organizer.getFacilities() != null){
-            ArrayList<FacilitiesInfo> facilities = organizer.getFacilities();
-            for (FacilitiesInfo f : facilities) {
-                if (f != null) {
-                    facilityNames.add(f.getFacilityName());
-                } else {
-                    Log.e(TAG, "Found a null facility in the list.");
-                }
-            }
-        }
-
-        facilityNames.add("Add Facility");
-
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, facilityNames);
+                android.R.layout.simple_spinner_item, organizer.getFacilities());
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
@@ -177,8 +158,7 @@ public class EventActivity extends AppCompatActivity {
                 if (selectedFacility.equals("Add Facility")){
                     addFacility();
                 }else{
-                    String facilityID = organizer.getFacilityIdByName(selectedFacility);
-                    EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
+                    EventFirebase.findFacility(selectedFacility, new EventFirebase.FacilityCallback() {
                         @Override
                         public void onSuccess(FacilitiesInfo existingFacility) {
                             facility = existingFacility;
@@ -206,7 +186,7 @@ public class EventActivity extends AppCompatActivity {
         addFacilityText.setVisibility(View.VISIBLE);
 
         if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
+            Places.initialize(getApplicationContext(), "AIzaSyDinZhBZ1IaUO8Rcxqq5Tsli7tKnsJhyzg");
         }
 
         // Initialize the AutocompleteSupportFragment.
@@ -222,8 +202,6 @@ public class EventActivity extends AppCompatActivity {
             public void onPlaceSelected(@NonNull Place place) {
                 address = place.getFormattedAddress();
                 facilityName = place.getDisplayName();
-                newFacility = new FacilitiesInfo(address, facilityName, deviceID);
-                facility = newFacility;
             }
 
             @Override
@@ -403,35 +381,19 @@ public class EventActivity extends AppCompatActivity {
                 throw new RuntimeException(e);
             }
 
-            if (newFacility != null){
-                EventFirebase.addFacility(newFacility);
-            }
-
             EventFirebase.addEvent(newEvent);
-
-            ArrayList<EventInfo> eventsList = organizer.getEvents();
-            eventsList.add(newEvent);
+            ArrayList<String> eventsList = organizer.getEvents();
+            eventsList.add(newEvent.eventID);
             organizer.setEvents(eventsList);
-            EventFirebase.editOrganizer(organizer);
 
 
-            ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
-            facilitiesList.add(facility);
+            ArrayList<String> facilitiesList = organizer.getFacilities();
+            facilitiesList.add(facilityName);
             organizer.setFacilities(facilitiesList);
-            EventFirebase.editOrganizer(organizer);
-
-            ArrayList<String> facilityEventsList = facility.getEvents();
-            facilityEventsList.add(newEvent.eventID);
-            facility.setEvents(facilityEventsList);
-            EventFirebase.editFacility(facility);
-
-            Intent intent = new Intent(EventActivity.this, MainActivity.class);
-            startActivity(intent);
-            });
+        });
     }
 
     private void ExitButtonHandling() {
-
         exitButton.setOnClickListener(v -> finish());
     }
 }
