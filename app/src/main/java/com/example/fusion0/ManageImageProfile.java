@@ -82,6 +82,13 @@ public class ManageImageProfile {
     }
 
     /**
+     * Generates a determninistic drawable based on the user's first name and uploads it.
+     *
+     * @param context the context needed for image generation
+     * @return the URI of the uploaded image
+     */
+
+    /**
      * Retrieves the image URL from Firebase Storage for the current user.
      *
      * @param callback the callback for handling image retrieval success or failure

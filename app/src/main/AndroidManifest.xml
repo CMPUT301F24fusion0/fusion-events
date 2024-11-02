@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -18,18 +19,24 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Fusion0"
         tools:targetApi="31">
+
+        <!-- MainActivity can remain here, but it won't be the launcher -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Fusion0">
+        </activity>
+
+        <!-- Make QRActivity the launcher activity -->
+        <activity
+            android:name=".QRActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Fusion0">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".EventActivity" />
 
         <activity android:name=".ProfileActivity" />
     </application>
