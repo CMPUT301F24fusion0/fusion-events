@@ -1,18 +1,18 @@
 package com.example.fusion0;
 
+import android.media.Image;
+import android.net.Uri;
+
 import com.google.zxing.WriterException;
 
+import java.net.URI;
 import java.util.HashMap;
-
-
 
 
 import java.util.Date;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.UUID;
-
-
 
 
 public class EventInfo {
@@ -22,20 +22,21 @@ public class EventInfo {
     private String description;
     private String address;
     private String facilityName;
-    private Integer capacity;
+    private String capacity;
     private Date startDate;
     private Date endDate;
-    private Time startTime;
-    private Time endTime;
+    private String startTime;
+    private String endTime;
     ArrayList<String> entrants;
     ArrayList<String> chosenEntrants;
     ArrayList<String> cancelledEntrants;
-    //private Image eventPoster;
-    private QRCode qrCode;
+    private Uri eventPoster;
+    QRCode qrCode;
     EventFirebase firebase;
+    private Long acceptedCount;
 
 
-    public EventInfo(String organizer, String eventName, String address, String facilityName, Integer capacity, String description, Date startDate, Date endDate, Time startTime, Time endTime, String qrCode) throws WriterException {
+    public EventInfo(String organizer, String eventName, String address, String facilityName, String capacity, String description, Date startDate, Date endDate, String startTime, String endTime, Uri eventPoster) throws WriterException {
         this.eventID = UUID.randomUUID().toString();
         this.organizer = organizer;
         this.eventName = eventName;
@@ -52,6 +53,8 @@ public class EventInfo {
         this.chosenEntrants = new ArrayList<>();
         this.cancelledEntrants = new ArrayList<>();
         this.firebase = new EventFirebase();
+        this.acceptedCount = 0L;
+        this.eventPoster = eventPoster;
     }
 
 
@@ -71,6 +74,8 @@ public class EventInfo {
         event.put("chosenEntrants", this.chosenEntrants);
         event.put("cancelledEntrants", this.cancelledEntrants);
         event.put("qrCode",this.qrCode);
+        event.put("description", this.description);
+        event.put("eventPoster", this.eventPoster);
         return event;
     }
 
@@ -78,7 +83,6 @@ public class EventInfo {
     public String getEventID(){
         return eventID;
     }
-
 
     public String getOrganizer(){
         return organizer;
@@ -135,14 +139,21 @@ public class EventInfo {
     }
 
 
-    public Integer getCapacity() {
+    public String getCapacity() {
         return capacity;
     }
 
-
-    public void setCapacity(Integer capacity) {
+    public void setCapacity(String capacity) {
         this.capacity = capacity;
         updateEvent(event());
+    }
+
+    public Long getAcceptedCount() {
+        return acceptedCount;
+    }
+
+    public void setAcceptedCount(Long acceptedCount) {
+        this.acceptedCount = acceptedCount;
     }
 
 
@@ -168,28 +179,26 @@ public class EventInfo {
     }
 
 
-    public Time getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
 
-    public void setStartTime(Time startTime) {
+    public void setStartTime(String startTime) {
         this.startTime = startTime;
         updateEvent(event());
     }
 
 
-    public Time getEndTime() {
+    public String getEndTime() {
         return endTime;
     }
 
 
-    public void setEndTime(Time endTime) {
+    public void setEndTime(String endTime) {
         this.endTime = endTime;
         updateEvent(event());
     }
-
-
 
 
     public ArrayList<String> getEntrants() {
@@ -229,9 +238,28 @@ public class EventInfo {
         return qrCode;
     }
 
-    public void updateEvent(HashMap<String,Object> event){
-        firebase.editEvent(this, event);
+    public void setQrCode(QRCode qrCode) {
+        this.qrCode = qrCode;
+        updateEvent(event());
     }
 
+
+    public Uri getEventPoster() {
+        return eventPoster;
+    }
+
+    public void setEventPoster(Uri eventPoster) {
+        this.eventPoster = eventPoster;
+        updateEvent(event());
+    }
+
+    public void updateEvent(HashMap<String,Object> event){
+        String deviceId = (String) event.get("deviceId");
+        if (deviceId == null || deviceId.isEmpty()) {
+            System.err.println("Error: Device ID is null or empty in updateEvent.");
+            return;
+        }
+        firebase.editEvent(this, event);
+    }
 
 }
