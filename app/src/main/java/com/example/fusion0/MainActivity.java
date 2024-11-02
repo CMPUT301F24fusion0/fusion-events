@@ -17,7 +17,6 @@ import com.google.firebase.FirebaseApp;
  * The MainActivity serves as the main entry point for the app. It manages the login state
  * and directs users to the Profile page, initializing Firebase and LoginManagement to handle user sessions.
  */
-
 public class MainActivity extends AppCompatActivity {
 
     private TextView textField;
@@ -25,10 +24,6 @@ public class MainActivity extends AppCompatActivity {
     private Boolean loginState;
     private ImageButton profileButton;
     private ImageButton addButton;
-    private ImageButton scannerButton;
-    private ImageButton favouriteButton;
-
-
 
     /**
      * Initializes the MainActivity and manages user session and state.
@@ -46,34 +41,21 @@ public class MainActivity extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
 
         // Instantiate login manager and retrieve login state
-        loginManagement = new LoginManagement(this);
-        loginManagement.isUserLoggedIn(isLoggedIn -> {
-            if (isLoggedIn) {
-                // Do this
-            } else {
-                // Do that
-            }
-        });
+        loginManagement = new LoginManagement();
+        loginState = loginManagement.loggedIn();
 
-        favouriteButton = findViewById(R.id.toolbar_favourite);
-        favouriteButton.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, FavouriteActivity.class);
-            startActivity(intent);
-        });
-
-        scannerButton = findViewById(R.id.toolbar_qrscanner);
-        scannerButton.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, QRActivity.class);
-            startActivity(intent);
-        });
-
+        // Managing user login state
+        if (loginState) {
+            // Manage UI for logged-in state (e.g., greyed-out icons, restricted features)
+        } else {
+            // Manage UI for logged-out state (e.g., enable icons, grant access to other views)
+        }
         addButton = findViewById(R.id.toolbar_add);
 
         addButton.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, EventActivity.class);
             startActivity(intent);
         });
-
         // Initialize profile button to navigate to ProfileActivity
         profileButton = findViewById(R.id.toolbar_person);
 
@@ -81,6 +63,5 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
             startActivity(intent);
         });
-
     }
 }
