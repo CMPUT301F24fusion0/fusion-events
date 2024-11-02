@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private LoginManagement loginManagement;
     private Boolean loginState;
     private ImageButton profileButton;
+    private ImageButton addButton;
 
     /**
      * Initializes the MainActivity and manages user session and state.
@@ -49,9 +50,14 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // Manage UI for logged-out state (e.g., enable icons, grant access to other views)
         }
+        addButton = findViewById(R.id.toolbar_add);
 
+        addButton.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, EventActivity.class);
+            startActivity(intent);
+        });
         // Initialize profile button to navigate to ProfileActivity
-        profileButton = findViewById(R.id.profile_button);
+        profileButton = findViewById(R.id.toolbar_person);
 
         profileButton.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);

@@ -16,9 +16,16 @@
         android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@+id/toolbar"
         tools:ignore="MissingConstraints">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:scrollbars="vertical"
+            android:text="@string/paragraph"
+            android:textSize="20sp">
+        </TextView>
 
     </ScrollView>
-
 
     <LinearLayout
         android:id="@+id/toolbar"
