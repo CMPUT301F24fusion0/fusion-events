@@ -13,16 +13,9 @@ import java.util.HashMap;
 
 public class EventFirebase {
 
-
     private final CollectionReference organizersRef;
     private final CollectionReference facilitiesRef;
     private final CollectionReference eventsRef;
-
-
-
-
-
-
 
 
     public EventFirebase() {
@@ -31,9 +24,6 @@ public class EventFirebase {
         facilitiesRef = db.collection("facilities");
         eventsRef = db.collection("facilities");
     }
-
-
-
 
     public void addOrganizer(OrganizerInfo organizerInfo){
         HashMap<String, Object> organizer = organizerInfo.organizer();
@@ -45,10 +35,7 @@ public class EventFirebase {
                 .addOnFailureListener(error -> {
                     System.out.println("Failure" + error.getMessage());
                 });
-
-
     }
-
 
     public void editOrganizer(OrganizerInfo organizerInfo, HashMap<String, Object> updatedData) {
         String deviceId = organizerInfo.getDeviceId();
@@ -61,7 +48,6 @@ public class EventFirebase {
                 });
     }
 
-
     public void deleteOrganizer(String deviceId){
         organizersRef.document(deviceId).delete().addOnSuccessListener(documentReference -> {
             System.out.println("Success");
@@ -69,7 +55,6 @@ public class EventFirebase {
             System.err.println("Failure " + error.getMessage());
         });
     }
-
 
     public void addFacility(FacilitiesInfo facilitiesInfo){
         HashMap<String, Object> facility = facilitiesInfo.facility();
@@ -83,7 +68,6 @@ public class EventFirebase {
                 });
     }
 
-
     public void editFacility(FacilitiesInfo facilitiesInfo, HashMap<String, Object> updatedData){
         String facilityID = facilitiesInfo.getFacilityID();
         facilitiesRef.document(facilityID).set(updatedData, SetOptions.merge())
@@ -95,7 +79,6 @@ public class EventFirebase {
                 });
     }
 
-
     public void deleteFacility(String facilityID){
         facilitiesRef.document(facilityID).delete().addOnSuccessListener(documentReference -> {
             System.out.println("Success");
@@ -106,9 +89,6 @@ public class EventFirebase {
 
     }
 
-
-
-
     public void addEvent(EventInfo eventInfo){
         HashMap<String, Object> event = eventInfo.event();
         String eventID = eventInfo.getEventID();
@@ -118,9 +98,6 @@ public class EventFirebase {
             System.err.println("Failure " + error.getMessage());
         });
     }
-
-
-
 
     public void editEvent(EventInfo eventInfo,HashMap<String, Object> updatedData){
         String eventID = eventInfo.getEventID();
@@ -133,7 +110,6 @@ public class EventFirebase {
                 });
     }
 
-
     public void deleteEvent(String eventID){
         eventsRef.document(eventID).delete().addOnSuccessListener(documentReference -> {
             System.out.println("Success");
@@ -141,6 +117,4 @@ public class EventFirebase {
             System.err.println("Failure " + error.getMessage());
         });
     }
-
-
 }
