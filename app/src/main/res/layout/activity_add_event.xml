@@ -124,6 +124,7 @@
                 android:textSize="20sp"
                 android:layout_marginBottom="2dp"
                 android:visibility="gone">
+
             </TextView>
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/autocomplete_fragment"
