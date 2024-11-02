@@ -230,6 +230,7 @@ public class EventInfo {
     }
 
     public void updateEvent(HashMap<String,Object> event){
+
         firebase.editEvent(this, event);
     }
 
