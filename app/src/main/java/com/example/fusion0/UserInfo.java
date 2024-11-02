@@ -197,7 +197,6 @@ public class UserInfo {
      */
     @Override
     public int hashCode() {
-        // Eventually changed to deviceID
         return Objects.hash(this.getDeviceID());
     }
 
