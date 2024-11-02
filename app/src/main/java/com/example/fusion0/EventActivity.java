@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -30,9 +31,13 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.libraries.places.api.Places;
+import com.google.zxing.WriterException;
 
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 
@@ -56,9 +61,15 @@ public class EventActivity extends AppCompatActivity {
     private Spinner spinnerFacilities;
     private OrganizerInfo organizer;
     private FacilitiesInfo facility;
+
     private String deviceID;
-
-
+    private String address;
+    private String facilityName;
+    private Date startDate;
+    private Date endDate;
+    private String startTime;
+    private String endTime;
+    private Uri eventPoster;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,7 +91,7 @@ public class EventActivity extends AppCompatActivity {
         addButton = findViewById(R.id.add_button);
         exitButton = findViewById(R.id.exit_button);
 
-        deviceID =  Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         validateOrganizer();
         uploadPoster();
@@ -121,6 +132,7 @@ public class EventActivity extends AppCompatActivity {
                         Uri imageUri = result.getData().getData();
                         uploadedImageView.setVisibility(View.VISIBLE);
                         uploadedImageView.setImageURI(imageUri);
+                        eventPoster = imageUri;
                     }
                 }
         );
@@ -150,6 +162,8 @@ public class EventActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(FacilitiesInfo existingFacility) {
                             facility = existingFacility;
+                            address = facility.getAddress();
+                            facilityName = facility.getFacilityName();
                         }
                         @Override
                         public void onFailure(String error) {
@@ -180,14 +194,14 @@ public class EventActivity extends AppCompatActivity {
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         // Specify the types of place data to return.
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.FORMATTED_ADDRESS));
 
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
-                FacilitiesInfo newFacility = new FacilitiesInfo(place.getFormattedAddress(), place.getDisplayName(), organizer.getDeviceId());
-                EventFirebase.addFacility(newFacility);
+                address = place.getFormattedAddress();
+                facilityName = place.getDisplayName();
             }
 
             @Override
@@ -224,6 +238,10 @@ public class EventActivity extends AppCompatActivity {
                             startDateTextView.setText(selectedDate);
                             startDateTextView.setVisibility(View.VISIBLE);
                             dateRequirementsTextView.setVisibility(View.GONE);
+
+                            startDate = startDateCalendar.getTime();
+
+
                             int hour = calendar.get(Calendar.HOUR_OF_DAY);
                             int minute = calendar.get(Calendar.MINUTE);
                             TimePickerDialog timePickerDialog = new TimePickerDialog(com.example.fusion0.EventActivity.this, new TimePickerDialog.OnTimeSetListener() {
@@ -231,7 +249,7 @@ public class EventActivity extends AppCompatActivity {
                                 public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
                                     startDateCalendar.set(Calendar.HOUR_OF_DAY, selectedHour);
                                     startDateCalendar.set(Calendar.MINUTE, selectedMinute);
-                                    // Check if start time is before current time
+
                                     Calendar currentTime = Calendar.getInstance();
                                     if (startDateCalendar.before(currentTime)) {
                                         dateRequirementsTextView.setText("Start Time Must Be Now or Later.");
@@ -300,6 +318,9 @@ public class EventActivity extends AppCompatActivity {
                             endDateTextView.setText(selectedDate);
                             endDateTextView.setVisibility(View.VISIBLE);
                             dateRequirementsTextView.setVisibility(View.GONE);
+
+                            endDate = endDateCalendar.getTime();
+
                             int hour = calendar.get(Calendar.HOUR_OF_DAY);
                             int minute = calendar.get(Calendar.MINUTE);
                             TimePickerDialog timePickerDialog = new TimePickerDialog(com.example.fusion0.EventActivity.this, new TimePickerDialog.OnTimeSetListener() {
@@ -307,7 +328,7 @@ public class EventActivity extends AppCompatActivity {
                                 public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
                                     endDateCalendar.set(Calendar.HOUR_OF_DAY, selectedHour);
                                     endDateCalendar.set(Calendar.MINUTE, selectedMinute);
-                                    // Check if end time is after or equal to start time
+
                                     if (endDateCalendar.before(startDateCalendar)) {
                                         dateRequirementsTextView.setText("End Time Must Be After Start Time.");
                                         dateRequirementsTextView.setVisibility(View.VISIBLE);
@@ -337,19 +358,39 @@ public class EventActivity extends AppCompatActivity {
             endTimeTextView.setVisibility(View.GONE);
         }
     }
+
+
     private void AddEvent(){
-        //String eventName
-        //String address
-        //String facilityName
-        //Integer capacity
-        //String description
-        //Date startDate
-        //Date endDate
-        //Time startTime
-        //Time endTime
-        //String qrCode
-        //EventInfo newEvent = new EventInfo(organizer, String eventName, String address, String facilityName, Integer capacity, String description, Date startDate, Date endDate, Time startTime, Time endTime, String qrCode);
-        //EventFirebase.addEvent(newEvent);
+            addButton.setOnClickListener(v -> {
+            EventInfo newEvent = null;
+            try {
+                newEvent = new EventInfo(
+                        deviceID,
+                        eventName.getText().toString(),
+                        address,
+                        facilityName,
+                        capacity.getText().toString(),
+                        description.getText().toString(),
+                        startDate,
+                        endDate,
+                        startTimeTextView.getText().toString(),
+                        endTimeTextView.getText().toString(),
+                        eventPoster
+                );
+            } catch (WriterException e) {
+                throw new RuntimeException(e);
+            }
+
+            EventFirebase.addEvent(newEvent);
+            ArrayList<String> eventsList = organizer.getEvents();
+            eventsList.add(newEvent.eventID);
+            organizer.setEvents(eventsList);
+
+
+            ArrayList<String> facilitiesList = organizer.getFacilities();
+            facilitiesList.add(facilityName);
+            organizer.setFacilities(facilitiesList);
+        });
     }
 
     private void ExitButtonHandling() {
