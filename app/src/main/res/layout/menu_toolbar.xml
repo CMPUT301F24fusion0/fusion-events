@@ -75,6 +75,5 @@
             android:contentDescription="person"
             android:src="@drawable/ic_grey_person" />
 
-
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

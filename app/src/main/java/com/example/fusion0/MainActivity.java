@@ -6,6 +6,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView textField;
     private LoginManagement loginManagement;
     private Boolean loginState;
-    private Button profileButton;
+    private ImageButton profileButton;
 
     /**
      * Initializes the MainActivity and manages user session and state.
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Initialize profile button to navigate to ProfileActivity
-        profileButton = findViewById(R.id.profileButton);
+        profileButton = findViewById(R.id.profile_button);
 
         profileButton.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
