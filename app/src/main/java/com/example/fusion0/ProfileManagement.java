@@ -35,15 +35,11 @@ public class ProfileManagement {
      *
      * @param callback the callback to handle the result of user data retrieval
      */
-    public void getUserData(final UserDataCallback callback) {
-        String userId = auth.getCurrentUser().getUid();
-
+    public void getUserData(final String deviceId, final UserDataCallback callback) {
         // Access Firestore and retrieve the user's document
-        db.collection("users").document(userId).get().addOnCompleteListener(task -> {
-
+        db.collection("users").document(deviceId).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
-
                 if (document.exists()) {
                     UserInfo user = document.toObject(UserInfo.class);
                     callback.onUserDataReceived(user);
