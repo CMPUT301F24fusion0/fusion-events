@@ -1,4 +1,4 @@
-package com.example.geolocation;
+package com.example.fusion0;
 
 import android.Manifest;
 import android.content.Context;
@@ -132,3 +132,4 @@ public class GeoLocation implements LocationListener {
         return userLocation.getLongitude();
     }
 }
+
