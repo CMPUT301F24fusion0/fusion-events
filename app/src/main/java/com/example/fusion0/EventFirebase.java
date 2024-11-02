@@ -13,16 +13,9 @@ import java.util.HashMap;
 
 public class EventFirebase {
 
-
     private final CollectionReference organizersRef;
     private final CollectionReference facilitiesRef;
     private final CollectionReference eventsRef;
-
-
-
-
-
-
 
 
     public EventFirebase() {
@@ -31,8 +24,6 @@ public class EventFirebase {
         facilitiesRef = db.collection("facilities");
         eventsRef = db.collection("facilities");
     }
-
-
 
 
     public void addOrganizer(OrganizerInfo organizerInfo){
@@ -46,10 +37,6 @@ public class EventFirebase {
                     System.out.println("Failure" + error.getMessage());
                 });
 
-
-    }
-
-
     public void editOrganizer(OrganizerInfo organizerInfo, HashMap<String, Object> updatedData) {
         String deviceId = organizerInfo.getDeviceId();
         organizersRef.document(deviceId).set(updatedData, SetOptions.merge())
@@ -60,7 +47,6 @@ public class EventFirebase {
                     System.err.println("Error updating organizer data: " + error.getMessage());
                 });
     }
-
 
     public void deleteOrganizer(String deviceId){
         organizersRef.document(deviceId).delete().addOnSuccessListener(documentReference -> {
@@ -106,9 +92,6 @@ public class EventFirebase {
 
     }
 
-
-
-
     public void addEvent(EventInfo eventInfo){
         HashMap<String, Object> event = eventInfo.event();
         String eventID = eventInfo.getEventID();
@@ -118,8 +101,6 @@ public class EventFirebase {
             System.err.println("Failure " + error.getMessage());
         });
     }
-
-
 
 
     public void editEvent(EventInfo eventInfo,HashMap<String, Object> updatedData){
@@ -141,6 +122,5 @@ public class EventFirebase {
             System.err.println("Failure " + error.getMessage());
         });
     }
-
 
 }

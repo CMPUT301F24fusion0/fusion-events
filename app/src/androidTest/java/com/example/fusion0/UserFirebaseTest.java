@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import java.util.Objects;
 
-public class FirebaseTest {
+public class UserFirebaseTest {
     private CollectionReference usersRef;
     private UserFirestore firebase;
 
@@ -26,7 +26,7 @@ public class FirebaseTest {
     }
 
     /**
-     * Ensure the collection is successfully completed.
+     * Ensure the collection is successfully created.
      */
     @Test
     public void collectionTest() {

@@ -12,6 +12,10 @@
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="testAddEntrantToWaitingList()">
+      <SelectionState runConfigName="QRActivity">
+      <SelectionState runConfigName="UserFirebaseTest">
+
+
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
