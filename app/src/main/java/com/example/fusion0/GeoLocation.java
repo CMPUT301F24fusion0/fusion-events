@@ -132,3 +132,4 @@ public class GeoLocation implements LocationListener {
         return userLocation.getLongitude();
     }
 }
+
