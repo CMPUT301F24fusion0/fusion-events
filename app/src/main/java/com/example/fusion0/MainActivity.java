@@ -17,6 +17,7 @@ import com.google.firebase.FirebaseApp;
  * The MainActivity serves as the main entry point for the app. It manages the login state
  * and directs users to the Profile page, initializing Firebase and LoginManagement to handle user sessions.
  */
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView textField;
@@ -41,15 +42,16 @@ public class MainActivity extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
 
         // Instantiate login manager and retrieve login state
-        loginManagement = new LoginManagement();
-        loginState = loginManagement.loggedIn();
+        loginManagement = new LoginManagement(this);
+        loginManagement.isUserLoggedIn(isLoggedIn -> {
+            if (isLoggedIn) {
+                // Do this
+            } else {
+                // Do that
+                System.out.println(loginManagement.getDeviceID());
+            }
+        });
 
-        // Managing user login state
-        if (loginState) {
-            // Manage UI for logged-in state (e.g., greyed-out icons, restricted features)
-        } else {
-            // Manage UI for logged-out state (e.g., enable icons, grant access to other views)
-        }
         addButton = findViewById(R.id.toolbar_add);
 
         addButton.setOnClickListener(view -> {
@@ -63,5 +65,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
             startActivity(intent);
         });
+
     }
 }

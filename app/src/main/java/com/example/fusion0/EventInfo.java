@@ -145,6 +145,14 @@ public class EventInfo {
         updateEvent(event());
     }
 
+    public Long getAcceptedCount() {
+        return acceptedCount;
+    }
+
+    public void setAcceptedCount(Long acceptedCount) {
+        this.acceptedCount = acceptedCount;
+    }
+
 
     public Date getStartDate() {
         return startDate;

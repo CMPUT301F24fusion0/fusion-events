@@ -84,12 +84,12 @@ public class EventActivity extends AppCompatActivity {
 
         validateOrganizer();
         uploadPoster();
-        handleFacility();
         StartDateButtonHandling();
         EndDateButtonHandling();
         AddEvent();
         ExitButtonHandling();
     }
+
 
     private void validateOrganizer() {
         EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
@@ -101,6 +101,8 @@ public class EventActivity extends AppCompatActivity {
                 } else {
                     organizer = organizerInfo;
                 }
+                handleFacility(organizer);
+
             }
             @Override
             public void onFailure(String error) {
@@ -129,7 +131,7 @@ public class EventActivity extends AppCompatActivity {
                 imagePickerLauncher.launch(intent);});
     }
 
-    private void handleFacility(){
+    private void handleFacility(OrganizerInfo organizer){
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, organizer.getFacilities());
 
