@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -78,10 +77,11 @@ public class ProfileActivity extends AppCompatActivity {
         cancelButton = findViewById(R.id.cancelButton);
 
         profileManager = new ProfileManagement();  // Manages user data retrieval
-        manageImage = new ManageImageProfile();  // Handles image upload and retrieval from Firebase
+        manageImage = new ManageImageProfile(this);  // Handles image upload and retrieval from Firebase
+        final String deviceId = android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
 
         // SECTION 2: Load User Data from Firebase
-        profileManager.getUserData(new ProfileManagement.UserDataCallback() {
+        profileManager.getUserData(deviceId, new ProfileManagement.UserDataCallback() {
             @Override
             public void onUserDataReceived(UserInfo user) {
                 String fullPersonName = user.getFirstName() + " " + user.getLastName();
@@ -155,14 +155,37 @@ public class ProfileActivity extends AppCompatActivity {
                 String newEmailAddress = editEmailAddress.getText().toString();
                 String newPhoneNumber = editPhoneNumber.getText().toString();
 
+                boolean isUpdated = false;
+                UserFirestore userFirestore = new UserFirestore();
+
+                // Assuming we have a UserInfo object to work with
+                UserInfo currentUser = new UserInfo();
+                currentUser.setDeviceID(deviceId);
+
                 if (!newFullName.trim().isEmpty()) {
-                    fullName.setText(newFullName);
+                    String[] nameParts = newFullName.split(" ", 2);
+                    if (nameParts.length == 2) {
+                        userFirestore.editUser(currentUser, "first name", nameParts[0]);
+                        userFirestore.editUser(currentUser, "last name", nameParts[1]);
+                        fullName.setText(newFullName);
+                        isUpdated = true;
+                    }
                 }
                 if (!newEmailAddress.trim().isEmpty()) {
+                    userFirestore.editUser(currentUser, "email", newEmailAddress);
                     emailAddress.setText(newEmailAddress);
+                    isUpdated = true;
                 }
                 if (!newPhoneNumber.trim().isEmpty()) {
+                    userFirestore.editUser(currentUser, "phone number", newPhoneNumber);
                     phoneNumber.setText(newPhoneNumber);
+                    isUpdated = true;
+                }
+
+                if (isUpdated) {
+                    Toast.makeText(ProfileActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(ProfileActivity.this, "No changes made to the profile", Toast.LENGTH_SHORT).show();
                 }
 
                 toggleViewMode();

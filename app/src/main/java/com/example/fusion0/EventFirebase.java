@@ -33,6 +33,7 @@ public class EventFirebase {
      * Adds an organizer to the firebase
      * @param organizerInfo a class that contains information about the organizer
      */
+
     public void addOrganizer(OrganizerInfo organizerInfo){
         HashMap<String, Object> organizer = organizerInfo.organizer();
         String deviceId = organizerInfo.getDeviceId();
@@ -43,7 +44,6 @@ public class EventFirebase {
                 .addOnFailureListener(error -> {
                     System.out.println("Failure" + error.getMessage());
                 });
-    }
 
     /**
      * Allows for the editing of the organizer through the organizerInfo class
@@ -73,6 +73,7 @@ public class EventFirebase {
         });
     }
 
+
     /**
      * Add a facility based on the FacilitiesInfo class
      * @param facilitiesInfo the class containing the facility information
@@ -90,6 +91,7 @@ public class EventFirebase {
     }
 
 
+
     /**
      * This function allows for the editing of a facility using the information and the hashmap
      * @param facilitiesInfo the class containing the information about the facility
@@ -105,6 +107,7 @@ public class EventFirebase {
                     System.err.println("Error updating facility data: " + error.getMessage());
                 });
     }
+
 
     /**
      * Deletes a facility based on the facilityID
@@ -136,6 +139,7 @@ public class EventFirebase {
     }
 
 
+
     /**
      * Edits an event using the EventInfo class and a hashmap with the edited information
      * @param eventInfo the class containing all the event information
@@ -152,6 +156,7 @@ public class EventFirebase {
                 });
     }
 
+
     /**
      * Allows for the deletion of an event using the event ID
      * @param eventID the randomly generated eventID generated in the EventInfo class
@@ -163,4 +168,5 @@ public class EventFirebase {
             System.err.println("Failure " + error.getMessage());
         });
     }
+
 }

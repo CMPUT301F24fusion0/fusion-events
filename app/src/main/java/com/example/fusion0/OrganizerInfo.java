@@ -30,6 +30,9 @@ public class OrganizerInfo {
      */
     public HashMap<String,Object> organizer() {
         HashMap<String, Object> organizer = new HashMap<>();
+        organizer().put("events", this.events);
+        organizer().put("facilities", this.facilities);
+        organizer().put("deviceId", this.deviceId);
         organizer.put("events", this.events);
         organizer.put("facilities", this.facilities);
         organizer.put("deviceId", this.deviceId);
