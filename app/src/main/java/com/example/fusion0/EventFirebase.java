@@ -50,9 +50,9 @@ public class EventFirebase {
 
     }
 
-    public void editOrganizer(OrganizerInfo organizerInfo, HashMap<String, Object> updatedData) {
-        String deviceId = organizerInfo.getDeviceId();
-        organizersRef.document(deviceId).set(updatedData, SetOptions.merge())
+    public void editOrganizer(OrganizerInfo organizer) {
+        String deviceId = organizer.getDeviceId();
+        organizersRef.document(deviceId).set(organizer, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> {
                     System.out.println("Organizer data updated successfully.");
                 })
