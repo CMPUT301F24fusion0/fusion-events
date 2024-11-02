@@ -53,7 +53,7 @@ public class EventFirebase {
 
     }
 
-    public static void editOrganizer(OrganizerInfo organizer) {
+    public void editOrganizer(OrganizerInfo organizer) {
         String deviceId = organizer.getDeviceId();
         organizersRef.document(deviceId).set(organizer, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> {
@@ -102,9 +102,9 @@ public class EventFirebase {
     }
 
 
-    public static void editFacility(FacilitiesInfo facility){
-        String facilityID = facility.getFacilityID();
-        facilitiesRef.document(facilityID).set(facility, SetOptions.merge())
+    public void editFacility(FacilitiesInfo facilitiesInfo, HashMap<String, Object> updatedData){
+        String facilityID = facilitiesInfo.getFacilityID();
+        facilitiesRef.document(facilityID).set(updatedData, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> {
                     System.out.println("Facility data updated successfully.");
                 })
@@ -176,9 +176,9 @@ public class EventFirebase {
 
 
 
-    public void editEvent(EventInfo event){
-        String eventID = event.getEventID();
-        eventsRef.document(eventID).set(event, SetOptions.merge())
+    public void editEvent(EventInfo eventInfo,HashMap<String, Object> updatedData){
+        String eventID = eventInfo.getEventID();
+        eventsRef.document(eventID).set(updatedData, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> {
                     System.out.println("Event data updated successfully.");
                 })
