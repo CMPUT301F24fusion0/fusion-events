@@ -5,8 +5,16 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="WaitlistTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testRemoveEntrantFromWaitingList()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testAddEntrantToWaitingList()">
       <SelectionState runConfigName="QRActivity">
       <SelectionState runConfigName="UserFirebaseTest">
+
 
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
