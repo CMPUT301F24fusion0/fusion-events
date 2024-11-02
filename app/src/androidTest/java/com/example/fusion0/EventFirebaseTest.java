@@ -1,6 +1,8 @@
 package com.example.fusion0;
 
+
 import static org.junit.Assert.fail;
+
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -77,6 +79,4 @@ public class EventFirebaseTest {
                         fail();
                     }
                 });
-
-    }
 }

@@ -28,6 +28,7 @@ public class EventFirebase {
         eventsRef = db.collection("facilities");
     }
 
+
     /**
      * Adds an organizer to the firebase
      * @param organizerInfo a class that contains information about the organizer
@@ -88,6 +89,7 @@ public class EventFirebase {
                 });
     }
 
+
     /**
      * This function allows for the editing of a facility using the information and the hashmap
      * @param facilitiesInfo the class containing the information about the facility
@@ -118,6 +120,7 @@ public class EventFirebase {
 
     }
 
+
     /**
      * Adds a new event to the events collection using the event ID
      * @param eventInfo a class containing the eventInfo information
@@ -131,6 +134,7 @@ public class EventFirebase {
             System.err.println("Failure " + error.getMessage());
         });
     }
+
 
     /**
      * Edits an event using the EventInfo class and a hashmap with the edited information
