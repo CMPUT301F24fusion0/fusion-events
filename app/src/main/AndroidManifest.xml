@@ -32,7 +32,10 @@
             -->
         </activity>
 
+
         <!-- ProfileActivity declaration -->
+        <activity android:name=".EventActivity" />
+
         <activity android:name=".ProfileActivity" />
 
         <!-- QRActivity set as the launcher activity -->

@@ -4,8 +4,10 @@
     <color name="white">#FFFFFFFF</color>
     <color name="appBackground">#EDF7FA</color>
     <color name="red">#D32F2F </color>
+    <color name="figmaBlue">#2D51AA</color>
 
     <!-- Colours used for the Profile page -->
     <color name="textFieldColor">#F2F8FD</color>
     <color name="textColor">#243B55</color>
+
 </resources>

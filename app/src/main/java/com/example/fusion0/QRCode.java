@@ -72,7 +72,6 @@ public class QRCode {
     }
 
 
-
     /**
      * Generates a QR code image from the QR code string.
      * This method uses ZXing to convert the hashed QR code string into a Bitmap.
@@ -126,5 +125,27 @@ public class QRCode {
     }
 }
 
+    /**
+     * Generates a QR code image from the QR code string.
+     * This method uses ZXing to convert the hashed QR code string into a Bitmap.
+     *
+     * @param width The width of the generated QR code image.
+     * @param height The height of the generated QR code image.
+     * @return A Bitmap representation of the QR code.
+     * @throws WriterException If an error occurs during QR code generation.
+     */
+    public Bitmap generateQRCodeImage(int width, int height, String qrCode) throws WriterException {
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(qrCode, BarcodeFormat.QR_CODE, width, height);
 
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                bitmap.setPixel(x, y, bitMatrix.get(x, y) ? android.graphics.Color.BLACK : android.graphics.Color.WHITE);
+            }
+        }
+        return bitmap;
+    }
+}
 

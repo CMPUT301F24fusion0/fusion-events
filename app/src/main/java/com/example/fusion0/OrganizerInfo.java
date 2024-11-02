@@ -29,6 +29,9 @@ public class OrganizerInfo {
         organizer().put("events", this.events);
         organizer().put("facilities", this.facilities);
         organizer().put("deviceId", this.deviceId);
+        organizer.put("events", this.events);
+        organizer.put("facilities", this.facilities);
+        organizer.put("deviceId", this.deviceId);
         return organizer;
     }
 
