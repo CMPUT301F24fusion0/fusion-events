@@ -30,9 +30,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class EventActivity extends AppCompatActivity {
-    private static final String TAG = "EventActivity";
-=======
 import android.widget.TextView;
 import android.widget.TimePicker;
 import androidx.annotation.Nullable;
@@ -44,6 +41,8 @@ import java.util.Date;
 import java.util.Locale;
 
 public class EventActivity extends AppCompatActivity{
+    private static final String TAG = "EventActivity";
+
     private EditText eventName;
     private EditText description;
     private Calendar startDateCalendar;

@@ -1,13 +1,14 @@
 package com.example.fusion0;
 
+import android.content.Context;
 import android.net.Uri;
+import android.provider.Settings;
 
-import com.google.android.gms.auth.api.signin.internal.Storage;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
 
 /**
  * ManageImageProfile class handles image upload, retrieval, and existence checks
@@ -16,17 +17,17 @@ import com.google.firebase.storage.StorageReference;
 
 public class ManageImageProfile {
 
-    private FirebaseAuth auth;
     private FirebaseStorage storage;
     private StorageReference storageReference;
+    private String deviceId;
 
     /**
      * Constructor initializes Firebase Authentication and Storage instances.
      */
-    public ManageImageProfile() {
-        auth = FirebaseAuth.getInstance();
+    public ManageImageProfile(Context context) {
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
+        deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
     /**
@@ -60,15 +61,11 @@ public class ManageImageProfile {
      * @param callback the callback for handling success or failure of the upload
      */
     public void uploadImage(Uri imageUri, final ImageUploadCallback callback) {
-        FirebaseUser user = auth.getCurrentUser();
-        if (user != null) {
-            String userId = user.getUid();
-            StorageReference userImageRef = storageReference.child("profile_images/" + userId + ".jpg");
+        StorageReference userImageRef = storageReference.child("profile_images/" + deviceId + ".jpg");
 
-            userImageRef.putFile(imageUri)
-                    .addOnSuccessListener(taskSnapshot -> callback.onSuccess())
-                    .addOnFailureListener(callback::onFailure);
-        }
+        userImageRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> callback.onSuccess())
+                .addOnFailureListener(callback::onFailure);
     }
 
     /**
@@ -77,15 +74,11 @@ public class ManageImageProfile {
      * @param callback the callback to handle whether the image exists or not
      */
     public void checkImageExists(final ImageCheckCallback callback) {
-        FirebaseUser user = auth.getCurrentUser();
-        if (user != null) {
-            String userId = user.getUid();
-            StorageReference userImageRef = storageReference.child("profile_images/" + userId + ".jpg");
+        StorageReference userImageRef = storageReference.child("profile_images/" + deviceId + ".jpg");
 
-            userImageRef.getDownloadUrl()
-                    .addOnSuccessListener(uri -> callback.onImageExists())
-                    .addOnFailureListener(e -> callback.onImageDoesNotExist());
-        }
+        userImageRef.getDownloadUrl()
+                .addOnSuccessListener(uri -> callback.onImageExists())
+                .addOnFailureListener(e -> callback.onImageDoesNotExist());
     }
 
     /**
@@ -94,16 +87,11 @@ public class ManageImageProfile {
      * @param callback the callback for handling image retrieval success or failure
      */
     public void getImage(final ImageRetrievedCallback callback) {
-        FirebaseUser user = auth.getCurrentUser();
-        if (user != null) {
-            String userId = user.getUid();
-            StorageReference userImageRef = storageReference.child("profile_images/" + userId + ".jpg");
+        StorageReference userImageRef = storageReference.child("profile_images/" + deviceId + ".jpg");
 
-            userImageRef.getDownloadUrl()
-                    .addOnSuccessListener(uri -> callback.onImageRetrieved(uri))
-                    .addOnFailureListener(callback::onFailure);
-
-        }
+        userImageRef.getDownloadUrl()
+                .addOnSuccessListener(uri -> callback.onImageRetrieved(uri))
+                .addOnFailureListener(callback::onFailure);
     }
 }
 
