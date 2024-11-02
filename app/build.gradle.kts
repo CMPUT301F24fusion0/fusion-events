@@ -1,10 +1,7 @@
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.0" // Use the latest version
 }
-
-val apiKey: String? = project.findProperty("API_KEY") as String?
 
 android {
     namespace = "com.example.fusion0"
@@ -16,7 +13,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-        buildConfigField("String", "API_KEY",  "\"${apiKey}\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -35,7 +32,6 @@ android {
     }
     buildFeatures {
         viewBinding = true
-        buildConfig = true
     }
 
     tasks.withType<Test> {
@@ -61,14 +57,12 @@ dependencies {
     implementation("com.google.firebase:firebase-storage")
     implementation("com.github.bumptech.glide:glide:4.14.2")
     implementation(libs.places)
-    implementation("com.google.android.libraries.places:places:4.0.0")
-
-    implementation ("com.google.android.gms:play-services-location:21.3.0")
+    implementation ("com.google.android.libraries.places:places:4.0.0")
+    implementation ("com.google.android.gms:play-services-location:19.0.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.14.2")
     testImplementation(libs.junit)
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    implementation("me.dm7.barcodescanner:zxing:1.9.8")
 }
