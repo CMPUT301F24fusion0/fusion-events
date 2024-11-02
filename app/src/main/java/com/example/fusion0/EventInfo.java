@@ -1,7 +1,7 @@
 package com.example.fusion0;
 
+import com.google.zxing.WriterException;
 
-import com.example.fusion0.EventFirebase;
 import java.util.HashMap;
 
 
@@ -31,11 +31,11 @@ public class EventInfo {
     ArrayList<String> chosenEntrants;
     ArrayList<String> cancelledEntrants;
     //private Image eventPoster;
-    private String qrCode;
+    private QRCode qrCode;
     EventFirebase firebase;
 
 
-    public EventInfo(String organizer, String eventName, String address, String facilityName, Integer capacity, String description, Date startDate, Date endDate, Time startTime, Time endTime, String qrCode) {
+    public EventInfo(String organizer, String eventName, String address, String facilityName, Integer capacity, String description, Date startDate, Date endDate, Time startTime, Time endTime, String qrCode) throws WriterException {
         this.eventID = UUID.randomUUID().toString();
         this.organizer = organizer;
         this.eventName = eventName;
@@ -47,7 +47,7 @@ public class EventInfo {
         this.endDate = endDate;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.qrCode = qrCode;
+        this.qrCode = new QRCode(eventID);
         this.entrants = new ArrayList<>();
         this.chosenEntrants = new ArrayList<>();
         this.cancelledEntrants = new ArrayList<>();
@@ -225,18 +225,9 @@ public class EventInfo {
     }
 
 
-    public String getQrCode() {
+    public QRCode getQrCode() {
         return qrCode;
     }
-
-
-    public void setQrCode() {
-        this.qrCode = qrCode;
-        updateEvent(event());
-    }
-
-
-
 
     public void updateEvent(HashMap<String,Object> event){
         firebase.editEvent(this, event);
