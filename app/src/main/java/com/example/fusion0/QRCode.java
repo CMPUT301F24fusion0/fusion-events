@@ -10,6 +10,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 import android.graphics.Bitmap;
+
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.qrcode.QRCodeWriter;
@@ -43,7 +45,7 @@ public class QRCode {
      * @param input The string to be hashed (in this case, the event ID).
      * @return A hashed string representing the QR code.
      */
-    private String generateHash(String input) {
+    public static String generateHash(String input) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));  // Convert input to bytes and hash it
@@ -92,6 +94,35 @@ public class QRCode {
             }
         }
         return bitmap;
+    }
+
+    /**
+     * Retrieves the event ID associated with a given QR code hash from Firestore.
+     *
+     * @param hash The hashed QR code to search for.
+     * @param callback Callback to handle the async Firestore response with event ID.
+     */
+    public static void getEventIdFromHash(String hash, EventIdCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("events")
+                .whereEqualTo("qrCode", hash)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            callback.onEventIdFound(document.getString("eventID"));
+                            return;
+                        }
+                    } else {
+                        callback.onEventIdNotFound();
+                    }
+                });
+    }
+
+    // Callback interface for Firestore query response
+    public interface EventIdCallback {
+        void onEventIdFound(String eventId);
+        void onEventIdNotFound();
     }
 }
 
