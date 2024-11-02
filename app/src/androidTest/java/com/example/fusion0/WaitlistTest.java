@@ -19,12 +19,16 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+
+
 @RunWith(AndroidJUnit4.class)
 public class WaitlistTest {
     private FirebaseFirestore db;
     private Waitlist waitlist;
     private String testEventId;
     private String testEntrantId;
+    private String testEventId_T ;
+    private String testEntrantId_T;
 
     @Before
     public void setUp() {
@@ -32,29 +36,40 @@ public class WaitlistTest {
         waitlist = new Waitlist();
         testEventId = "testEvent123";
         testEntrantId = "testEntrant456";
+        testEventId_T = "EVENT100";
+        testEntrantId_T = "ENTRANT JOE";
+        waitlist.addEntrantToWaitingList(testEventId_T, testEntrantId_T);
     }
 
     @After
     public void tearDown() {
-        // Optionally, delete test data created during tests
+        // Delete the test data after each test
         db.collection("events").document(testEventId).collection("waitingList").document(testEntrantId).delete();
     }
 
-    // Write test methods below
+
     @Test
     public void testAddEntrantToWaitingList() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
 
+        System.out.println("Adding entrant to waiting list...");
         waitlist.addEntrantToWaitingList(testEventId, testEntrantId);
+
+        // Adding a short delay to allow Firebase to commit the document
+        Thread.sleep(2000);
 
         db.collection("events").document(testEventId).collection("waitingList").document(testEntrantId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    assertTrue(documentSnapshot.exists());
-                    assertEquals("waiting", documentSnapshot.getString("status"));
+                    System.out.println("Document retrieved: " + documentSnapshot.getId());
+                    assertTrue("Document does not exist as expected.", documentSnapshot.exists());
+                    assertEquals("Status is not set to 'waiting' as expected.", "waiting", documentSnapshot.getString("status"));
                     latch.countDown();
                 })
-                .addOnFailureListener(e -> fail("Firebase operation failed: " + e.getMessage()));
+                .addOnFailureListener(e -> {
+                    fail("Firebase operation failed: " + e.getMessage());
+                    latch.countDown();
+                });
 
         latch.await();
     }
@@ -64,18 +79,33 @@ public class WaitlistTest {
     public void testRemoveEntrantFromWaitingList() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
 
+        System.out.println("Adding entrant to waiting list...");
         waitlist.addEntrantToWaitingList(testEventId, testEntrantId);
+
+        // Adding a small wait before removing to ensure the document exists
+        Thread.sleep(2000);
+
+        System.out.println("Removing entrant from waiting list...");
         waitlist.removeEntrantFromWaitingList(testEventId, testEntrantId);
+
+        // Adding another delay to ensure Firestore processes the delete/update request
+        Thread.sleep(2000);
 
         db.collection("events").document(testEventId).collection("waitingList").document(testEntrantId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    assertFalse(documentSnapshot.exists() || "declined".equals(documentSnapshot.getString("status")));
+                    System.out.println("Document retrieved after removal: " + documentSnapshot.getId());
+                    assertFalse("Document should not exist or should be marked as declined.",
+                            documentSnapshot.exists() || "declined".equals(documentSnapshot.getString("status")));
                     latch.countDown();
                 })
-                .addOnFailureListener(e -> fail("Firebase operation failed: " + e.getMessage()));
+                .addOnFailureListener(e -> {
+                    fail("Firebase operation failed: " + e.getMessage());
+                    latch.countDown();
+                });
 
         latch.await();
     }
 
 }
+
