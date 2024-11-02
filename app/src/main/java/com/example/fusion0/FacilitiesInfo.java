@@ -10,15 +10,15 @@ public class FacilitiesInfo {
     public String facilityID;
     public String address;
     public String facilityName;
-    public String owner; //organizer/deviceId
+    public String owner;
     ArrayList<String> events;
 
 
-    public FacilitiesInfo(String address, String facilityName, String owner, ArrayList<String> events ){
+    public FacilitiesInfo(String address, String facilityName, String owner){
         this.address = address;
         this.facilityName = facilityName;
         this.owner = owner;
-        this.events = events;
+        this.events = new ArrayList<>();
         this.facilityID = UUID.randomUUID().toString();
     }
 
@@ -76,9 +76,6 @@ public class FacilitiesInfo {
     public void setEvents(ArrayList<String> events) {
         this.events = events;
     }
-
-
-
 
 }
 
