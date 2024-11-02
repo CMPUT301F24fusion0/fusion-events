@@ -23,7 +23,6 @@ public class EventInfo {
     private String address;
     private String facilityName;
     private Integer capacity;
-    private Long acceptedCount;
     private Date startDate;
     private Date endDate;
     private Time startTime;
@@ -43,7 +42,6 @@ public class EventInfo {
         this.address = address;
         this.facilityName = facilityName;
         this.capacity = capacity;
-        this.acceptedCount = 0L;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -65,7 +63,6 @@ public class EventInfo {
         event.put("address", this.address);
         event.put("facilityName", this.facilityName);
         event.put("capacity", this.capacity);
-        event.put("acceptedCount", acceptedCount);
         event.put("startDate", this.startDate);
         event.put("endDate", this.endDate);
         event.put("startTime", this.startTime);
@@ -147,16 +144,6 @@ public class EventInfo {
         this.capacity = capacity;
         updateEvent(event());
     }
-
-    public Long getAcceptedCount() {
-        return acceptedCount;
-    }
-
-    public void setAcceptedCount(Long acceptedCount) {
-        this.acceptedCount = acceptedCount;
-    }
-
-
 
 
     public Date getStartDate() {
