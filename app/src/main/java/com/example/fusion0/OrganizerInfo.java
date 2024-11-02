@@ -12,15 +12,12 @@ public class OrganizerInfo {
     EventFirebase firebase;
 
 
-
-
-    public OrganizerInfo(ArrayList<String> events, ArrayList<String> facilities, String deviceId){
-        this.events = events;
+    public OrganizerInfo(String deviceId){
+        this.events = new ArrayList<>();
         this.deviceId = deviceId;
-        this.facilities = facilities;
+        this.facilities = new ArrayList<>();
+        facilities.add("Add Facility");
         this.firebase = new EventFirebase();
-
-
     }
 
 
@@ -52,8 +49,6 @@ public class OrganizerInfo {
     public void setFacilities(ArrayList<String> facilities) {
         this.facilities = facilities;
         updateOrganizer(organizer());
-
-
     }
 
 
@@ -66,8 +61,6 @@ public class OrganizerInfo {
         this.deviceId = deviceId;
         updateOrganizer(organizer());
     }
-
-
 
 
     public void updateOrganizer(HashMap<String,Object> organizer){
