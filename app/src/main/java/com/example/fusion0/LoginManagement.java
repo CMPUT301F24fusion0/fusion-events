@@ -50,7 +50,6 @@ public class LoginManagement {
                 });
     }
 
-
     /**
      * Retrieves the device ID.
      *

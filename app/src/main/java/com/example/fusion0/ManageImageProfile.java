@@ -3,6 +3,7 @@ package com.example.fusion0;
 import android.content.Context;
 import android.net.Uri;
 import android.provider.Settings;
+import android.util.Log;
 
 
 import com.google.firebase.auth.FirebaseUser;
@@ -35,6 +36,7 @@ public class ManageImageProfile {
      */
     public interface ImageUploadCallback {
         void onSuccess();
+
         void onFailure(Exception e);
     }
 
@@ -43,6 +45,7 @@ public class ManageImageProfile {
      */
     public interface ImageRetrievedCallback {
         void onImageRetrieved(Uri uri);
+
         void onFailure(Exception e);
     }
 
@@ -51,6 +54,7 @@ public class ManageImageProfile {
      */
     public interface ImageCheckCallback {
         void onImageExists();
+
         void onImageDoesNotExist();
     }
 
@@ -62,7 +66,7 @@ public class ManageImageProfile {
      */
     public void uploadImage(Uri imageUri, final ImageUploadCallback callback) {
         StorageReference userImageRef = storageReference.child("profile_images/" + deviceId + ".jpg");
-
+        Log.d("Firebase", "Got here! ");
         userImageRef.putFile(imageUri)
                 .addOnSuccessListener(taskSnapshot -> callback.onSuccess())
                 .addOnFailureListener(callback::onFailure);
@@ -92,6 +96,7 @@ public class ManageImageProfile {
         userImageRef.getDownloadUrl()
                 .addOnSuccessListener(uri -> callback.onImageRetrieved(uri))
                 .addOnFailureListener(callback::onFailure);
+
     }
 }
 
