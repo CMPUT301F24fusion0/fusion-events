@@ -5,11 +5,14 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+<<<<<<< HEAD
       <SelectionState runConfigName="QRActivity">
       <SelectionState runConfigName="UserFirebaseTest">
 
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+=======
+>>>>>>> 75bc0d4576687e5f3ed62422787e570124587683
     </selectionStates>
   </component>
 </project>

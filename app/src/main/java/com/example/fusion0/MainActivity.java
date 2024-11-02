@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
                 // Do this
             } else {
                 // Do that
-                System.out.println(loginManagement.getDeviceID());
             }
         });
 

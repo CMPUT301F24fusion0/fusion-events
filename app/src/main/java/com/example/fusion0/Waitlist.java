@@ -114,7 +114,6 @@ public class Waitlist {
      *
      * @param eventId      The unique identifier of the event.
      * @param numToSelect  The number of attendees to be randomly selected from the waiting list.
-     *
      *                     This method retrieves all entrants with a status of "waiting" and randomly selects
      *                     a specified number of them. The selected entrants' statuses are updated to "chosen",
      *                     and the accepted count in the event document is incremented.
