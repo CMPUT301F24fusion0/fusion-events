@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 
+
 public class EventFirebaseTest {
     private CollectionReference organizersRef, facilitiesRef, eventsRef;
     private EventFirebase firebase;
