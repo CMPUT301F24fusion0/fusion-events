@@ -70,11 +70,19 @@ public class UserInfo {
         return user;
     }
 
+    /**
+     * Gets FCM key
+     * @return FCM for the user which allows for notifications to be sent to their device
+     */
     @PropertyName("fcm")
     public String getFcm() {
         return fcm;
     }
 
+    /**
+     * Sets fcm
+     * @param fcm the user notification key for firebase
+     */
     @PropertyName("fcm")
     public void setFcm(String fcm) {
         updateUser("fcm", fcm);

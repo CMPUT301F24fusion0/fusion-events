@@ -118,7 +118,4 @@ public class UserFirestore {
                 .addOnSuccessListener(documentReference -> System.out.println("Successfully deleted"))
                 .addOnFailureListener(e -> System.out.println("Failure" + e.getMessage()));
     }
-
-
-
 }
