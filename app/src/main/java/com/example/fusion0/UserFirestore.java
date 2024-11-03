@@ -100,6 +100,9 @@ public class UserFirestore {
                         case "did":
                             user.setDeviceID(newField);
                             break;
+                        case "fcm":
+                            user.setFcm(newField);
+                            break;
                     }
 
                 })

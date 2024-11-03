@@ -9,7 +9,7 @@ import java.util.Objects;
  * This class contains the information for users.
  */
 public class UserInfo {
-    String firstName, lastName, email, phoneNumber, deviceID;
+    String firstName, lastName, email, phoneNumber, deviceID, fcm;
     UserFirestore firebase;
     Boolean edit;
 
@@ -27,7 +27,8 @@ public class UserInfo {
      * @param email email address
      * @param phoneNumber phone number
      */
-    public UserInfo(String first, String last, String email, String phoneNumber, String dID) {
+    public UserInfo(String fcm, String first, String last, String email, String phoneNumber, String dID) {
+        this.fcm = fcm;
         this.firstName = first;
         this.lastName = last;
         this.email = email;
@@ -43,7 +44,8 @@ public class UserInfo {
      * @param last last name
      * @param email email address
      */
-    public UserInfo(String first, String last, String email, String dID) {
+    public UserInfo(String fcm, String first, String last, String email, String dID) {
+        this.fcm = fcm;
         this.firstName = first;
         this.lastName = last;
         this.email = email;
@@ -58,6 +60,7 @@ public class UserInfo {
      */
     public HashMap<String,Object> user() {
         HashMap<String, Object> user = new HashMap<>();
+        user.put("fcm", this.fcm);
         user.put("dID", this.deviceID);
         user.put("email", this.email);
         user.put("first name", this.firstName);
@@ -65,6 +68,17 @@ public class UserInfo {
         user.put("phone number", this.phoneNumber);
 
         return user;
+    }
+
+    @PropertyName("fcm")
+    public String getFcm() {
+        return fcm;
+    }
+
+    @PropertyName("fcm")
+    public void setFcm(String fcm) {
+        updateUser("fcm", fcm);
+        this.fcm = fcm;
     }
 
     /**

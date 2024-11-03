@@ -11,6 +11,9 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.messaging.FirebaseMessaging;
+
 /**
  * This is the registration fragment that will be displayed when a user signs up for an waiting
  * for the first time. It will only be used once per user.
@@ -66,10 +69,33 @@ public class Registration extends Fragment {
             String phone = phoneNumber.getText().toString().trim();
 
             String dID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-            registration(dID, first, last, emails, phone);
+            getFCM(dID, first, last, emails, phone);
         });
     }
 
+    /**
+     * Gets a FCM key for notifications and adds into the Firebase
+     * @param dID device id
+     * @param first first name
+     * @param last last name
+     * @param emails email
+     * @param phone phone number
+     */
+    private void getFCM(String dID, String first, String last, String emails, String phone) {
+        FirebaseMessaging firebase = FirebaseMessaging.getInstance();
+
+        firebase.getToken()
+                .addOnSuccessListener(new OnSuccessListener<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+                        if (!s.isEmpty()) {
+                            registration(s, dID, first, last, emails, phone);
+                        } else {
+                            throw new RuntimeException("FCM is not a valid key.");
+                        }
+                    }
+                });
+    }
     /**
      * Checks if a user already exists, if they don't then a new account is created
      * @param dID device id
@@ -78,7 +104,7 @@ public class Registration extends Fragment {
      * @param emails email
      * @param phone phone number
      */
-    private void registration(String dID, String first, String last, String emails, String phone) {
+    private void registration(String s, String dID, String first, String last, String emails, String phone) {
         firebase.findUser(dID, new UserFirestore.Callback() {
             /**
              * This method checks to see if the same user already exists, if it doesn't then the new
@@ -92,9 +118,9 @@ public class Registration extends Fragment {
                     System.out.println("This user already exists.");
                 } else {
                     if (!phone.isEmpty()) {
-                        newUser = new UserInfo(first, last, emails, phone, dID);
+                        newUser = new UserInfo(s, first, last, emails, phone, dID);
                     } else {
-                        newUser = new UserInfo(first, last, emails, dID);
+                        newUser = new UserInfo(s, first, last, emails, dID);
                     }
                     firebase.addUser(newUser);
                 }
