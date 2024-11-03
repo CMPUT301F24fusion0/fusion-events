@@ -74,7 +74,7 @@ public class UserFirestore {
      */
     public void editUser(UserInfo user, String field, String newField) {
         ArrayList<String> fields = new ArrayList<>(
-                Arrays.asList("first name", "last name", "phone number", "email", "did"));
+                Arrays.asList("first name", "last name", "phone number", "email", "did", "fcm"));
 
         if (!fields.contains(field.toLowerCase())) {
             throw new IllegalArgumentException("The field you've tried to change is not valid");
