@@ -175,6 +175,7 @@ public class EventInfo {
     }
 
 
+
     public Date getStartDate() {
         return startDate;
     }
