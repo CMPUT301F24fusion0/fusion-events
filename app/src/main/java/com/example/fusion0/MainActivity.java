@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private Boolean loginState;
     private ImageButton profileButton;
     private ImageButton addButton;
+    private ImageButton cameraButton;
 
     /**
      * Initializes the MainActivity and manages user session and state.
@@ -61,6 +62,13 @@ public class MainActivity extends AppCompatActivity {
 
         profileButton.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+            startActivity(intent);
+        });
+
+        cameraButton = findViewById(R.id.toolbar_camera);
+
+        cameraButton.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, QRActivity.class);
             startActivity(intent);
         });
     }
