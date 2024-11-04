@@ -80,11 +80,15 @@ public class QRActivity extends AppCompatActivity implements ZXingScannerView.Re
         String hash = QRCode.generateHash(scannedData);
 
         // Use the QRCode class to find the associated event by hash
-        QRCode.getEventIdFromHash(hash, new QRCode.EventIdCallback() {
+        QRCode.getEventIdFromHash(scannedData, new QRCode.EventIdCallback() {
             @Override
             public void onEventIdFound(String eventId) {
                 Toast.makeText(QRActivity.this, "Event ID: " + eventId, Toast.LENGTH_LONG).show();
                 finishWithResult(eventId, hash);
+
+                Intent intent = new Intent(QRActivity.this, ViewEventActivity.class);
+                intent.putExtra("eventID", eventId);
+                startActivity(intent);
             }
 
             @Override
