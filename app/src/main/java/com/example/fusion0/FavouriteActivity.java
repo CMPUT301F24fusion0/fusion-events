@@ -48,6 +48,8 @@ public class FavouriteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_favourite);
 
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        Log.d(TAG, "Device ID: " + deviceID); // Log the device ID
+
 
         joinedEventsButton = findViewById(R.id.joined_events_view_button);
         createdEventsButton = findViewById(R.id.created_events_view_button);
@@ -127,8 +129,10 @@ public class FavouriteActivity extends AppCompatActivity {
             createdEventsList.setOnItemClickListener((parent, view1, position, id) -> {
                 EventInfo event = organizer.getEvents().get(position);
                 String eventID = event.getEventID();
+                String eventName = organizer.getEventsNames().get(position);
 
                 Intent intent = new Intent(FavouriteActivity.this, ViewEventActivity.class);
+                intent.putExtra("eventName", eventName);
                 intent.putExtra("eventID", eventID);
                 startActivity(intent);
             });
@@ -171,14 +175,6 @@ public class FavouriteActivity extends AppCompatActivity {
                 public void onFailure(String error) {
                     Log.e(TAG, "Error fetching organizer: " + error);
                 }
-            });
-            facilitiesList.setOnItemClickListener((parent, view1, position, id) -> {
-                FacilitiesInfo facility = organizer.getFacilities().get(position);
-                String facilityID = facility.getFacilityID();
-
-                Intent intent = new Intent(FavouriteActivity.this, ViewFacilityActivity.class);
-                intent.putExtra("facilityID", facilityID);
-                startActivity(intent);
             });
         });
 
