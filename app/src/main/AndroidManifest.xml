@@ -32,6 +32,8 @@
         <activity android:name=".EventActivity" />
 
         <activity android:name=".ProfileActivity" />
+
+        <activity android:name=".QRActivity" />
     </application>
 
 </manifest>
