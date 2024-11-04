@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 import android.graphics.Bitmap;
+import android.widget.Toast;
 
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.zxing.BarcodeFormat;
@@ -73,6 +74,9 @@ public class QRCode {
      */
     public String getQrCode() {
         return this.qrCode;
+    }
+    public Bitmap getQrImage() {
+        return this.qrImage;
     }
 
 
