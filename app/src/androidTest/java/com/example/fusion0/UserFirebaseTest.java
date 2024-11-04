@@ -8,6 +8,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
 
 public class UserFirebaseTest {
@@ -22,7 +25,7 @@ public class UserFirebaseTest {
     }
 
     public UserInfo newUser() {
-        return new UserInfo("Mike", "Ross", "mross@psl.com", "4613217890", "1234");
+        return new UserInfo(new ArrayList<String>(Arrays.asList("title", "body")), "Mike", "Ross", "mross@psl.com", "4613217890", "1234");
     }
 
     /**
@@ -78,7 +81,7 @@ public class UserFirebaseTest {
 
     @Test
     public void editTest() {
-        firebase.editUser(newUser(), "first name", "Harvey");
+        firebase.editUser(newUser(), "first name", new ArrayList<String>(Collections.singletonList("Harvey")));
         usersRef
                 .document("1234")
                 .get()
