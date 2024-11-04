@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton cameraButton;
     private ImageButton scannerButton;
     private ImageButton favouriteButton;
+    private ImageButton homeButton;
 
     /**
      * Initializes the MainActivity and manages user session and state.
@@ -81,5 +82,13 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, QRActivity.class);
             startActivity(intent);
         });
+        // Home button in the toolbar
+        homeButton = findViewById(R.id.toolbar_home);
+        homeButton.setOnClickListener(view -> {
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+        });
+
     }
+
 }
