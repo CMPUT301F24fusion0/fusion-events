@@ -20,13 +20,7 @@
             android:fillViewport="true"
             android:scrollbars="vertical">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#FFFFFF"
-                android:scrollbars="vertical"
-                android:text="@string/paragraph"
-                android:textSize="20sp" />
+
         </ScrollView>
 
         <LinearLayout
