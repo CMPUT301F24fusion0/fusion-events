@@ -98,6 +98,7 @@ public class ManageImageProfile {
                 .addOnFailureListener(e -> callback.onImageDoesNotExist());
     }
 
+
     /**
      * Deletes an image from firebase.
      *
