@@ -3,26 +3,37 @@ package com.example.fusion0;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class OrganizerInfo {
-    ArrayList<String> events;
-    ArrayList<String>  facilities;
+    ArrayList<EventInfo> events;
+    ArrayList<FacilitiesInfo>  facilities;
     public String deviceId;
     EventFirebase firebase;
+    private ArrayList<String> eventsNames;
+    private ArrayList<String> facilitiesNames;
+
+
+    public OrganizerInfo(){
+        this.events = new ArrayList<>();
+        this.deviceId = "deviceID";
+        this.facilities = new ArrayList<>();
+        this.firebase = new EventFirebase();
+    }
 
     /**
      * Default constructor for the OrganizerInfo class
-     * @param events an array containing all of the events
-     * @param facilities an array of strings containing the facilities associated with the Organizer
      * @param deviceId the device ID of the organizer
      */
-    public OrganizerInfo(ArrayList<String> events, ArrayList<String> facilities, String deviceId){
-        this.events = events;
+    public OrganizerInfo(String deviceId){
+        this.events = new ArrayList<>();
         this.deviceId = deviceId;
-        this.facilities = facilities;
+        this.facilities = new ArrayList<>();
         this.firebase = new EventFirebase();
     }
+
+
 
     /**
      * Creates a hashmap of the information needed for Firebase for the organizer
@@ -30,12 +41,9 @@ public class OrganizerInfo {
      */
     public HashMap<String,Object> organizer() {
         HashMap<String, Object> organizer = new HashMap<>();
-        organizer().put("events", this.events);
-        organizer().put("facilities", this.facilities);
-        organizer().put("deviceId", this.deviceId);
+        organizer.put("deviceId", this.deviceId);
         organizer.put("events", this.events);
         organizer.put("facilities", this.facilities);
-        organizer.put("deviceId", this.deviceId);
         return organizer;
     }
 
@@ -43,7 +51,7 @@ public class OrganizerInfo {
      * Gets Events
      * @return events of the organizer
      */
-    public ArrayList<String> getEvents() {
+    public ArrayList<EventInfo> getEvents() {
         return events;
     }
 
@@ -51,23 +59,21 @@ public class OrganizerInfo {
      * Sets events
      * @param events a list of events
      */
-    public void setEvents(ArrayList<String> events) {
+    public void setEvents(ArrayList<EventInfo> events) {
         this.events = events;
-        updateOrganizer(organizer());
     }
 
     /**
      * Gets facilities
      * @return a list of strings that are facilities
      */
-    public ArrayList<String> getFacilities() {
+    public ArrayList<FacilitiesInfo> getFacilities() {
         return facilities;
     }
 
 
-    public void setFacilities(ArrayList<String> facilities) {
+    public void setFacilities(ArrayList<FacilitiesInfo> facilities) {
         this.facilities = facilities;
-        updateOrganizer(organizer());
     }
 
     /**
@@ -85,18 +91,37 @@ public class OrganizerInfo {
      */
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
-        updateOrganizer(organizer());
     }
 
-
-    /**
-     * Calls upon firebase to edit the organizer as need be
-     * @param organizer the edited hashmap
-     */
-    public void updateOrganizer(HashMap<String,Object> organizer){
-        firebase.editOrganizer(this, organizer);
+    public String getFacilityIdByName(String facilityName) {
+        for (FacilitiesInfo facility : facilities) {
+            if (facility.getFacilityName().equals(facilityName)) {
+                return facility.getFacilityID(); // Return the ID if names match
+            }
+        }
+        return null; // Return null if no match is found
     }
+
+    public ArrayList<String> getEventsNames() {
+        ArrayList<String> eventsName = new ArrayList<>();
+        if (events != null) {
+            for (EventInfo event : events) {
+                eventsName.add(event.getEventName());
+            }
+        }
+        return eventsName;
+    }
+
+    public ArrayList<String> getFacilitiesNames() {
+        ArrayList<String> facilitiesName = new ArrayList<>();
+        if (facilities != null) {
+            for (FacilitiesInfo facility : facilities) {
+                facilitiesName.add(facility.getFacilityName());
+            }
+        }
+        return facilitiesName;
+    }
+
 
 
 }
-

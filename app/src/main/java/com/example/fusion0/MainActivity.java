@@ -24,6 +24,10 @@ public class MainActivity extends AppCompatActivity {
     private Boolean loginState;
     private ImageButton profileButton;
     private ImageButton addButton;
+    private ImageButton scannerButton;
+    private ImageButton favouriteButton;
+
+
 
     /**
      * Initializes the MainActivity and manages user session and state.
@@ -37,8 +41,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        // Initialize Firebase for the app
-        FirebaseApp.initializeApp(this);
+
 
         // Initialize Notification Channels
         // new Notifications.createChannel()
@@ -53,12 +56,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        favouriteButton = findViewById(R.id.toolbar_favourite);
+        favouriteButton.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, FavouriteActivity.class);
+            startActivity(intent);
+        });
+
+        scannerButton = findViewById(R.id.toolbar_qrscanner);
+        scannerButton.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, QRActivity.class);
+            startActivity(intent);
+        });
+
         addButton = findViewById(R.id.toolbar_add);
 
         addButton.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, EventActivity.class);
             startActivity(intent);
         });
+
         // Initialize profile button to navigate to ProfileActivity
         profileButton = findViewById(R.id.toolbar_person);
 

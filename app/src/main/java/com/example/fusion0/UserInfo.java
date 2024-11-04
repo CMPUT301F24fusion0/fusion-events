@@ -2,16 +2,22 @@ package com.example.fusion0;
 
 import com.google.firebase.firestore.PropertyName;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 /**
  * This class contains the information for users.
  */
 public class UserInfo {
-    String firstName, lastName, email, phoneNumber, deviceID, fcm;
+    String firstName, lastName, email, phoneNumber, deviceID;
+    ArrayList<String> notifications;
     UserFirestore firebase;
     Boolean edit;
+
 
     /**
      * Used by firestore to create objects in findUser()
@@ -27,8 +33,8 @@ public class UserInfo {
      * @param email email address
      * @param phoneNumber phone number
      */
-    public UserInfo(String fcm, String first, String last, String email, String phoneNumber, String dID) {
-        this.fcm = fcm;
+    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String phoneNumber, String dID) {
+        this.notifications = notifications;
         this.firstName = first;
         this.lastName = last;
         this.email = email;
@@ -44,8 +50,8 @@ public class UserInfo {
      * @param last last name
      * @param email email address
      */
-    public UserInfo(String fcm, String first, String last, String email, String dID) {
-        this.fcm = fcm;
+    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String dID) {
+        this.notifications = notifications;
         this.firstName = first;
         this.lastName = last;
         this.email = email;
@@ -60,7 +66,7 @@ public class UserInfo {
      */
     public HashMap<String,Object> user() {
         HashMap<String, Object> user = new HashMap<>();
-        user.put("fcm", this.fcm);
+        user.put("notifications", this.notifications);
         user.put("dID", this.deviceID);
         user.put("email", this.email);
         user.put("first name", this.firstName);
@@ -74,19 +80,29 @@ public class UserInfo {
      * Gets FCM key
      * @return FCM for the user which allows for notifications to be sent to their device
      */
-    @PropertyName("fcm")
-    public String getFcm() {
-        return fcm;
+    @PropertyName("notifications")
+    public ArrayList<String> getNotifications() {
+        return notifications;
     }
 
     /**
      * Sets fcm
-     * @param fcm the user notification key for firebase
+     * @param notifications the user notification key for firebase (title, body)
      */
-    @PropertyName("fcm")
-    public void setFcm(String fcm) {
-        updateUser("fcm", fcm);
-        this.fcm = fcm;
+    @PropertyName("notifications")
+    public void setNotifications(ArrayList<String> notifications) {
+        updateUser("notifications", notifications);
+        this.notifications = notifications;
+    }
+
+    /**
+     * Adds notification to the ArrayList
+     * @param title title
+     * @param body body
+     */
+    public void addNotifications(String title, String body) {
+        this.notifications.add(title);
+        this.notifications.add(body);
     }
 
     /**
@@ -104,7 +120,7 @@ public class UserInfo {
      */
     @PropertyName("dID")
     public void setDeviceID(String deviceID) {
-        updateUser("DID", deviceID);
+        updateUser("DID", new ArrayList<String>(Collections.singletonList(deviceID)));
         this.deviceID = deviceID;
     }
 
@@ -123,7 +139,7 @@ public class UserInfo {
      */
     @PropertyName("first name")
     public void setFirstName(String firstName) {
-        updateUser("first name", firstName);
+        updateUser("first name", new ArrayList<String>(Collections.singletonList(firstName)));
         this.firstName = firstName;
     }
 
@@ -142,7 +158,7 @@ public class UserInfo {
      */
     @PropertyName("last name")
     public void setLastName(String lastName) {
-        updateUser("last name", lastName);
+        updateUser("last name", new ArrayList<String>(Collections.singletonList(lastName)));
         this.lastName = lastName;
     }
 
@@ -161,7 +177,7 @@ public class UserInfo {
      */
     @PropertyName("email")
     public void setEmail(String email) {
-        updateUser("email", email);
+        updateUser("email", new ArrayList<String>(Collections.singletonList(email)));
         this.email = email;
     }
 
@@ -180,7 +196,7 @@ public class UserInfo {
      */
     @PropertyName("phone number")
     public void setPhoneNumber(String phoneNumber) {
-        updateUser("phone number", phoneNumber);
+        updateUser("phone number", new ArrayList<String>(Collections.singletonList(phoneNumber)));
         this.phoneNumber = phoneNumber;
     }
 
@@ -190,7 +206,7 @@ public class UserInfo {
      * @param field attribute to change
      * @param newItem new attribute
      */
-    private void updateUser(String field, String newItem) {
+    private void updateUser(String field, ArrayList<String> newItem) {
         if (edit) firebase.editUser(this, field, newItem);
     }
 

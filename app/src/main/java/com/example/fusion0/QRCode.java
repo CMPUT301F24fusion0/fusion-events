@@ -27,6 +27,10 @@ public class QRCode {
     private String qrCode;
     private Bitmap qrImage;  // The generated QR code
 
+    public QRCode(){
+
+    }
+
     /**
      * Constructor to create a QRCode object for the event using the event ID.
      * It generates a unique hashed QR code based on the event ID and initializes the Firestore reference.
@@ -72,58 +76,6 @@ public class QRCode {
     }
 
 
-    /**
-     * Generates a QR code image from the QR code string.
-     * This method uses ZXing to convert the hashed QR code string into a Bitmap.
-     *
-     * @param width The width of the generated QR code image.
-     * @param height The height of the generated QR code image.
-     * @return A Bitmap representation of the QR code.
-     * @throws WriterException If an error occurs during QR code generation.
-     */
-    public Bitmap generateQRCodeImage(int width, int height, String qrCode) throws WriterException {
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(qrCode, BarcodeFormat.QR_CODE, width, height);
-
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                bitmap.setPixel(x, y, bitMatrix.get(x, y) ? android.graphics.Color.BLACK : android.graphics.Color.WHITE);
-            }
-        }
-        return bitmap;
-    }
-
-    /**
-     * Retrieves the event ID associated with a given QR code hash from Firestore.
-     *
-     * @param hash The hashed QR code to search for.
-     * @param callback Callback to handle the async Firestore response with event ID.
-     */
-    public static void getEventIdFromHash(String hash, EventIdCallback callback) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("events")
-                .whereEqualTo("qrCode", hash)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            callback.onEventIdFound(document.getString("eventID"));
-                            return;
-                        }
-                    } else {
-                        callback.onEventIdNotFound();
-                    }
-                });
-    }
-
-    // Callback interface for Firestore query response
-    public interface EventIdCallback {
-        void onEventIdFound(String eventId);
-        void onEventIdNotFound();
-    }
-}
 
     /**
      * Generates a QR code image from the QR code string.
@@ -177,4 +129,3 @@ public class QRCode {
         void onEventIdNotFound();
     }
 }
-

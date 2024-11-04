@@ -2,13 +2,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permissions -->
+    <!-- The following code was provided by: "https://www.youtube.com/watch?v=qY-xFxZ7HKY" - 2024-10-27 -->
+    <!-- Location based permissions needed-->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-feature
+        android:name="android.hardware.camera.any"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -19,36 +26,29 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Fusion0"
         tools:targetApi="31">
-
-        <!-- MainActivity declaration (Commented out the launcher intent-filter) -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${API_KEY}" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Fusion0">
-            <!--
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            -->
         </activity>
 
-
-        <!-- ProfileActivity declaration -->
         <activity android:name=".EventActivity" />
 
         <activity android:name=".ProfileActivity" />
 
-        <!-- QRActivity set as the launcher activity -->
-        <activity
-            android:name=".QRActivity"
-            android:exported="true"
-            android:theme="@style/Theme.Fusion0">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".QRActivity" />
+
+        <activity android:name=".FavouriteActivity"/>
+
+
     </application>
 
 </manifest>

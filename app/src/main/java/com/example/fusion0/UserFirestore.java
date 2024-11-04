@@ -70,43 +70,31 @@ public class UserFirestore {
      * Uses the primary key to find the user then allows for the editing of any field
      * @param user represents the user to be changed
      * @param field is the field that is to be changed (i.e. first name, last name, etc.)
-     * @param newField is the new attribute for the user
+     * @param newFields is a list of new attributes for the user
      */
-    public void editUser(UserInfo user, String field, String newField) {
+    public void editUser(UserInfo user, String field, ArrayList<String> newFields) {
+        String newField;
+        field = field.toLowerCase();
+
         ArrayList<String> fields = new ArrayList<>(
-                Arrays.asList("first name", "last name", "phone number", "email", "did", "fcm"));
+                Arrays.asList("first name", "last name", "phone number", "email", "did", "notifications"));
 
         if (!fields.contains(field.toLowerCase())) {
             throw new IllegalArgumentException("The field you've tried to change is not valid");
+        } else if (!(field.equalsIgnoreCase("notifications"))) {
+            newField = newFields.get(0);
+            usersRef.document(user.getDeviceID()).update(field, newField)
+                    .addOnSuccessListener(ref -> {
+                        System.out.println("Update Successful");
+                    })
+                    .addOnFailureListener(e -> System.out.println("Failure" + e.getMessage()));
+        } else {
+            usersRef.document(user.getDeviceID()).update(field, newFields)
+                    .addOnSuccessListener(ref -> {
+                        System.out.println("Notifications added successfully");
+                    })
+                    .addOnFailureListener(e -> System.out.println("Failure" + e.getMessage()));
         }
-
-        usersRef.document(user.getDeviceID()).update(field, newField)
-                .addOnSuccessListener(ref -> {
-                    System.out.println("Update Successful");
-                    user.editMode(true);
-                    switch (field.toLowerCase()) {
-                        case "first name":
-                            user.setFirstName(newField);
-                            break;
-                        case "last name":
-                            user.setLastName(newField);
-                            break;
-                        case "email":
-                            user.setEmail(newField);
-                            break;
-                        case "phone number":
-                            user.setPhoneNumber(newField);
-                            break;
-                        case "did":
-                            user.setDeviceID(newField);
-                            break;
-                        case "fcm":
-                            user.setFcm(newField);
-                            break;
-                    }
-
-                })
-                .addOnFailureListener(e -> System.out.println("Failure" + e.getMessage()));
     }
 
     /**

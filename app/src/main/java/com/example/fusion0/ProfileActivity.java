@@ -16,6 +16,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
@@ -165,19 +168,19 @@ public class ProfileActivity extends AppCompatActivity {
                 if (!newFullName.trim().isEmpty()) {
                     String[] nameParts = newFullName.split(" ", 2);
                     if (nameParts.length == 2) {
-                        userFirestore.editUser(currentUser, "first name", nameParts[0]);
-                        userFirestore.editUser(currentUser, "last name", nameParts[1]);
+                        userFirestore.editUser(currentUser, "first name", new ArrayList<String>(Collections.singletonList(nameParts[0])));
+                        userFirestore.editUser(currentUser, "last name", new ArrayList<String>(Collections.singletonList(nameParts[1])));
                         fullName.setText(newFullName);
                         isUpdated = true;
                     }
                 }
                 if (!newEmailAddress.trim().isEmpty()) {
-                    userFirestore.editUser(currentUser, "email", newEmailAddress);
+                    userFirestore.editUser(currentUser, "email", new ArrayList<String>(Collections.singletonList(newEmailAddress)));
                     emailAddress.setText(newEmailAddress);
                     isUpdated = true;
                 }
                 if (!newPhoneNumber.trim().isEmpty()) {
-                    userFirestore.editUser(currentUser, "phone number", newPhoneNumber);
+                    userFirestore.editUser(currentUser, "phone number", new ArrayList<String>(Collections.singletonList(newPhoneNumber)));
                     phoneNumber.setText(newPhoneNumber);
                     isUpdated = true;
                 }

@@ -5,13 +5,7 @@
     android:background="@android:color/black">
 
     <!-- Camera Preview for the QR Scanner -->
-<<<<<<< HEAD
-
     <me.dm7.barcodescanner.zxing.ZXingScannerView
-    <SurfaceView
-=======
-    <me.dm7.barcodescanner.zxing.ZXingScannerView
->>>>>>> 75bc0d4576687e5f3ed62422787e570124587683
         android:id="@+id/camera_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

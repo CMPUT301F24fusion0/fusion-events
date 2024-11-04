@@ -1,109 +1,135 @@
 package com.example.fusion0;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.widget.TextView;
+import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import java.util.List;
-import java.util.Locale;
+import androidx.fragment.app.FragmentActivity;
 
-
+/**
+ * GeoLocation class manages the user's geolocation, calculates distances
+ * to an event location, and determines whether the user can register based
+ * on an acceptable radius.
+ */
 public class GeoLocation implements LocationListener {
-    /**
-     * The GeoLocation class manages all geolocation functionality, including permission requests,
-     * location updates, and distance calculations for event registration.
-     *
-     * Flow:
-     * 1. Call `getLocation()` to start tracking the user's location.
-     * 2. `onLocationChanged` is automatically triggered with location updates, storing the latest
-     *    location in `userLocation`.
-     * 3. Use `getUserLocation()` to retrieve the most recent location after updates.
-     * 4. Use 'canRegister()' after using getLocation()
-     *
-     * Usage:
-     * - `requestLocationPermission()` checks and requests necessary permissions.
-     * - `getLocation()` initiates location updates.
-     * - `canRegister(Location userLocation)` checks if the user is within a specified radius of the event (5km radius constant).
-     *
-     * This class requires a Context to access system services and display notifications.
-     */
-
-
-    //Context logic was provided by chatGPT, "Orginally in my main I create geo location logic, I now need to move this to a different class besides MainActivity.java how do I alter the uses of MainActivity within the new class?" - 2024-10-27
     private final Context context;
     private LocationManager locationManager;
     private Location userLocation;
     private Location eventLocation;
     private double acceptableRadius;
 
-    //In the case you want to compare users location to the event location and provide a acceptableRadius
-    public GeoLocation(Context context, Location eventLocation, double acceptableRadius) {
+    /**
+     * Constructor for GeoLocation.
+     *
+     * @param context The context in which the location service is accessed.
+     * @param acceptableRadius The radius within which the user can register.
+     */
+    public GeoLocation(Context context, double acceptableRadius) {
         this.context = context;
-        this.eventLocation = eventLocation;
         this.acceptableRadius = acceptableRadius;
+        initializeLocationManager();
     }
 
-    //In the case you only want to get the users location not check if they're close to the event
-    public GeoLocation(Context context) {
-        this.context = context;
-    }
-
-
-    // The following code was provided by: "https://www.youtube.com/watch?v=qY-xFxZ7HKY" - 2024-10-27
-    public void requestLocationPermission() {
-        ActivityCompat.requestPermissions((AppCompatActivity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 100);
-    }
-
-    // The following code was provided by: "https://www.youtube.com/watch?v=qY-xFxZ7HKY" - 2024-10-27
-    public void getLocation() {
-        try {
-            locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, this);
+    /**
+     * Initializes the LocationManager and sets the initial user location if
+     * permissions are granted.
+     *
+     * The following code was provided by: "https://www.youtube.com/watch?v=qY-xFxZ7HKY" - 2024-10-27.
+     * The following was edited by ChatGPT to improve location retrieval speed.
+     */
+    private void initializeLocationManager() {
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Get the last known location for a quicker initial value
+            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (lastKnownLocation != null) {
+                userLocation = lastKnownLocation;
+                Log.d("GeoLocation", "Initial user location set from last known location");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
-    // The following code was provided by: "https://www.youtube.com/watch?v=qY-xFxZ7HKY" - 2024-10-27
+    /**
+     * Sets the event location based on provided latitude and longitude.
+     *
+     * @param latitude The latitude of the event location.
+     * @param longitude The longitude of the event location.
+     */
+    public void setEventLocation(double latitude, double longitude) {
+        eventLocation = new Location("eventLocation");
+        eventLocation.setLatitude(latitude);
+        eventLocation.setLongitude(longitude);
+    }
+
+    /**
+     * Requests location updates from GPS and Network providers.
+     *
+     * @return true if permissions are granted and location updates are requested, false otherwise.
+     *
+     * The following code was provided by: "https://www.youtube.com/watch?v=qY-xFxZ7HKY" - 2024-10-27.
+     * The following was edited by ChatGPT to improve location retrieval speed.
+     */
+    public boolean getLocation() {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, this);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5, this);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Callback method invoked when the user's location changes.
+     * Updates userLocation and displays a Toast message.
+     *
+     * @param location The new location of the user.
+     *
+     * The following code was provided by: "https://www.youtube.com/watch?v=qY-xFxZ7HKY" - 2024-10-27.
+     * The following was edited by ChatGPT to improve location retrieval speed.
+     */
     @Override
     public void onLocationChanged(@NonNull Location location) {
         userLocation = location;
+        Log.d("GeoLocation", "User location updated: " + location.getLatitude() + ", " + location.getLongitude());
+        Toast.makeText(context, "User Location Updated ", Toast.LENGTH_SHORT).show();
+    }
 
-        Toast.makeText(context, location.getLatitude() + "," + location.getLongitude(), Toast.LENGTH_SHORT).show();
-
-        try {
-            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-            String address = addresses.get(0).getAddressLine(0);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+    /**
+     * Determines if the user can register based on their distance from the event location.
+     *
+     * @return true if the user is within the acceptable radius from the event location; false otherwise.
+     */
+    public boolean canRegister() {
+        if (userLocation != null && eventLocation != null) {
+            double distance = userLocation.distanceTo(eventLocation);
+            return distance <= acceptableRadius;
         }
+        return false;
     }
 
-    //Checks if the user is within the event radius
-    public boolean canRegister(Location userLocation) {
-        double distance = userLocation.distanceTo(eventLocation);
-        return distance <= acceptableRadius;
+    /**
+     * Retrieves the user's current latitude.
+     *
+     * @return The latitude of the user's current location.
+     */
+    public double getUserLatitude() {
+        return userLocation.getLatitude();
     }
 
-    //Get the users location if needed
-    public Location getUserLocation() {
-        return userLocation;
+    /**
+     * Retrieves the user's current longitude.
+     *
+     * @return The longitude of the user's current location.
+     */
+    public double getUserLongitude() {
+        return userLocation.getLongitude();
     }
-
-
-
-
 }
+

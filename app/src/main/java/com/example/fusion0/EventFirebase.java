@@ -13,26 +13,30 @@ import java.util.HashMap;
 
 public class EventFirebase {
 
-    private final CollectionReference organizersRef;
-    private final CollectionReference facilitiesRef;
-    private final CollectionReference eventsRef;
 
+    private static final CollectionReference organizersRef;
+    private static final CollectionReference facilitiesRef;
+    private static final CollectionReference eventsRef;
 
-    /**
-     * Constructor for the EventFirebase class
-     */
-    public EventFirebase() {
+    static {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         organizersRef = db.collection("organizers");
         facilitiesRef = db.collection("facilities");
-        eventsRef = db.collection("facilities");
+        eventsRef = db.collection("events");
     }
 
-    /**
-     * Adds an organizer to the firebase
-     * @param organizerInfo a class that contains information about the organizer
-     */
-    public void addOrganizer(OrganizerInfo organizerInfo){
+    public interface OrganizerCallback {
+        void onSuccess(OrganizerInfo organizerInfo);
+        void onFailure(String error);
+    }
+
+    public interface FacilityCallback {
+        void onSuccess(FacilitiesInfo facilityInfo);
+        void onFailure(String error);
+    }
+
+
+    public static void addOrganizer(OrganizerInfo organizerInfo){
         HashMap<String, Object> organizer = organizerInfo.organizer();
         String deviceId = organizerInfo.getDeviceId();
         organizersRef.document(deviceId).set(organizer)
@@ -42,16 +46,13 @@ public class EventFirebase {
                 .addOnFailureListener(error -> {
                     System.out.println("Failure" + error.getMessage());
                 });
+
+
     }
 
-    /**
-     * Allows for the editing of the organizer through the organizerInfo class
-     * @param organizerInfo the class that contains the organizer information
-     * @param updatedData the hashmap that contains edited information about the organizer
-     */
-    public void editOrganizer(OrganizerInfo organizerInfo, HashMap<String, Object> updatedData) {
-        String deviceId = organizerInfo.getDeviceId();
-        organizersRef.document(deviceId).set(updatedData, SetOptions.merge())
+    public static void editOrganizer(OrganizerInfo organizer) {
+        String deviceId = organizer.getDeviceId();
+        organizersRef.document(deviceId).set(organizer, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> {
                     System.out.println("Organizer data updated successfully.");
                 })
@@ -60,10 +61,22 @@ public class EventFirebase {
                 });
     }
 
-    /**
-     * This function allows for the deletion of an organizer based on their device id
-     * @param deviceId a string containing the device id
-     */
+    public static void findOrganizer(String deviceId, OrganizerCallback callback) {
+        organizersRef.document(deviceId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        OrganizerInfo organizer = documentSnapshot.toObject(OrganizerInfo.class);
+                        callback.onSuccess(organizer);
+                    } else {
+                        callback.onSuccess(null);
+                    }
+                })
+                .addOnFailureListener(error -> {
+                    System.out.println("Failure" + error.getMessage());
+                    callback.onFailure(error.getMessage());
+                });
+    }
+
     public void deleteOrganizer(String deviceId){
         organizersRef.document(deviceId).delete().addOnSuccessListener(documentReference -> {
             System.out.println("Success");
@@ -72,11 +85,8 @@ public class EventFirebase {
         });
     }
 
-    /**
-     * Add a facility based on the FacilitiesInfo class
-     * @param facilitiesInfo the class containing the facility information
-     */
-    public void addFacility(FacilitiesInfo facilitiesInfo){
+
+    public static void addFacility(FacilitiesInfo facilitiesInfo){
         HashMap<String, Object> facility = facilitiesInfo.facility();
         String facilityID = facilitiesInfo.getFacilityID();
         facilitiesRef.document(facilityID).set(facility)
@@ -88,14 +98,10 @@ public class EventFirebase {
                 });
     }
 
-    /**
-     * This function allows for the editing of a facility using the information and the hashmap
-     * @param facilitiesInfo the class containing the information about the facility
-     * @param updatedData the hashmap with the edited information
-     */
-    public void editFacility(FacilitiesInfo facilitiesInfo, HashMap<String, Object> updatedData){
-        String facilityID = facilitiesInfo.getFacilityID();
-        facilitiesRef.document(facilityID).set(updatedData, SetOptions.merge())
+
+    public static void editFacility(FacilitiesInfo facility){
+        String facilityID = facility.getFacilityID();
+        facilitiesRef.document(facilityID).set(facility, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> {
                     System.out.println("Facility data updated successfully.");
                 })
@@ -104,10 +110,22 @@ public class EventFirebase {
                 });
     }
 
-    /**
-     * Deletes a facility based on the facilityID
-     * @param facilityID a random ID generated in the facility class
-     */
+    public static void findFacility(String facilityID, FacilityCallback callback) {
+        facilitiesRef.document(facilityID).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        FacilitiesInfo facility = documentSnapshot.toObject(FacilitiesInfo.class);
+                        callback.onSuccess(facility);
+                    } else {
+                        callback.onSuccess(null);
+                    }
+                })
+                .addOnFailureListener(error -> {
+                    System.out.println("Failure" + error.getMessage());
+                    callback.onFailure(error.getMessage());
+                });
+    }
+
     public void deleteFacility(String facilityID){
         facilitiesRef.document(facilityID).delete().addOnSuccessListener(documentReference -> {
             System.out.println("Success");
@@ -118,11 +136,8 @@ public class EventFirebase {
 
     }
 
-    /**
-     * Adds a new event to the events collection using the event ID
-     * @param eventInfo a class containing the eventInfo information
-     */
-    public void addEvent(EventInfo eventInfo){
+
+    public static void addEvent(EventInfo eventInfo){
         HashMap<String, Object> event = eventInfo.event();
         String eventID = eventInfo.getEventID();
         eventsRef.document(eventID).set(event).addOnSuccessListener(documentReference -> {
@@ -132,14 +147,12 @@ public class EventFirebase {
         });
     }
 
-    /**
-     * Edits an event using the EventInfo class and a hashmap with the edited information
-     * @param eventInfo the class containing all the event information
-     * @param updatedData the hashmap with the new edited information
-     */
-    public void editEvent(EventInfo eventInfo,HashMap<String, Object> updatedData){
-        String eventID = eventInfo.getEventID();
-        eventsRef.document(eventID).set(updatedData, SetOptions.merge())
+
+
+
+    public void editEvent(EventInfo event){
+        String eventID = event.getEventID();
+        eventsRef.document(eventID).set(event, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> {
                     System.out.println("Event data updated successfully.");
                 })
@@ -148,10 +161,7 @@ public class EventFirebase {
                 });
     }
 
-    /**
-     * Allows for the deletion of an event using the event ID
-     * @param eventID the randomly generated eventID generated in the EventInfo class
-     */
+
     public void deleteEvent(String eventID){
         eventsRef.document(eventID).delete().addOnSuccessListener(documentReference -> {
             System.out.println("Success");
@@ -159,4 +169,6 @@ public class EventFirebase {
             System.err.println("Failure " + error.getMessage());
         });
     }
+
+
 }
