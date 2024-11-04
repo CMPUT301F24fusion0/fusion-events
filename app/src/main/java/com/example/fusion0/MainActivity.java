@@ -24,10 +24,10 @@ public class MainActivity extends AppCompatActivity {
     private Boolean loginState;
     private ImageButton profileButton;
     private ImageButton addButton;
+    private ImageButton cameraButton;
     private ImageButton scannerButton;
     private ImageButton favouriteButton;
-
-
+    private ImageButton homeButton;
 
     /**
      * Initializes the MainActivity and manages user session and state.
@@ -60,11 +60,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        scannerButton = findViewById(R.id.toolbar_qrscanner);
-        scannerButton.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, QRActivity.class);
-            startActivity(intent);
-        });
 
         addButton = findViewById(R.id.toolbar_add);
 
@@ -80,5 +75,20 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
             startActivity(intent);
         });
+
+        cameraButton = findViewById(R.id.toolbar_camera);
+
+        cameraButton.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, QRActivity.class);
+            startActivity(intent);
+        });
+        // Home button in the toolbar
+        homeButton = findViewById(R.id.toolbar_home);
+        homeButton.setOnClickListener(view -> {
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+        });
+
     }
+
 }
