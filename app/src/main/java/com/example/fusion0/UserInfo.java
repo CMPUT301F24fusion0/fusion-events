@@ -77,7 +77,7 @@ public class UserInfo {
     }
 
     /**
-     * Gets FCM key
+     * Gets notifications key
      * @return FCM for the user which allows for notifications to be sent to their device
      */
     @PropertyName("notifications")
@@ -86,7 +86,7 @@ public class UserInfo {
     }
 
     /**
-     * Sets fcm
+     * Sets notifications
      * @param notifications the user notification key for firebase (title, body)
      */
     @PropertyName("notifications")
@@ -109,7 +109,7 @@ public class UserInfo {
      * Gets device id
      * @return device id
      */
-    @PropertyName("dID")
+    @PropertyName("did")
     public String getDeviceID() {
         return deviceID;
     }
@@ -118,7 +118,7 @@ public class UserInfo {
      * Sets device ID
      * @param deviceID the device ID
      */
-    @PropertyName("dID")
+    @PropertyName("did")
     public void setDeviceID(String deviceID) {
         updateUser("DID", new ArrayList<String>(Collections.singletonList(deviceID)));
         this.deviceID = deviceID;

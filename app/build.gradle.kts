@@ -1,9 +1,10 @@
-import java.util.Properties
-
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.0" // Use the latest version
 }
+
+val apiKey: String? = project.findProperty("API_KEY") as String?
 
 android {
     namespace = "com.example.fusion0"
@@ -15,9 +16,8 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
+        buildConfigField("String", "API_KEY",  "\"${apiKey}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {

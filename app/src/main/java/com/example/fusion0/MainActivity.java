@@ -1,14 +1,21 @@
 package com.example.fusion0;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.FirebaseApp;
@@ -27,8 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton scannerButton;
     private ImageButton favouriteButton;
 
-
-
     /**
      * Initializes the MainActivity and manages user session and state.
      * Sets up Firebase, handles login state, and initializes the profile button to access the ProfileActivity.
@@ -40,11 +45,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
-
-        // Initialize Notification Channels
-        // new Notifications.createChannel()
+        // Initialize Notification Channel
+        AppNotifications.createChannel(this);
 
         // Instantiate login manager and retrieve login state
         loginManagement = new LoginManagement(this);
@@ -82,5 +84,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
             startActivity(intent);
         });
+
     }
 }
