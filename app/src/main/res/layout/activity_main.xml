@@ -40,13 +40,13 @@
                 android:src="@drawable/ic_blue_home" />
 
             <ImageButton
-                android:id="@+id/toolbar_qrscanner"
+                android:id="@+id/toolbar_camera"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@android:color/white"
                 android:contentDescription="search"
-                android:src="@drawable/ic_grey_qrscanner" />
+                android:src="@drawable/ic_grey_camera" />
 
             <ImageButton
                 android:id="@+id/toolbar_add"
