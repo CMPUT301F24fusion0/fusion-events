@@ -134,6 +134,16 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, ProfileActivity.class);
             startActivity(intent);
         });
+        // Home button in the toolbar
+        homeButton = findViewById(R.id.toolbar_home);
+        homeButton.setOnClickListener(view -> {
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+        });
+
+
+
+
     }
 
 }
