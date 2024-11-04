@@ -1,11 +1,15 @@
 package com.example.fusion0;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Settings;
 
-
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -24,6 +28,7 @@ public class ManageImageProfile {
     /**
      * Constructor initializes Firebase Authentication and Storage instances.
      */
+    @SuppressLint("HardwareIds")
     public ManageImageProfile(Context context) {
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
@@ -35,6 +40,7 @@ public class ManageImageProfile {
      */
     public interface ImageUploadCallback {
         void onSuccess();
+
         void onFailure(Exception e);
     }
 
@@ -43,6 +49,7 @@ public class ManageImageProfile {
      */
     public interface ImageRetrievedCallback {
         void onImageRetrieved(Uri uri);
+
         void onFailure(Exception e);
     }
 
@@ -51,6 +58,7 @@ public class ManageImageProfile {
      */
     public interface ImageCheckCallback {
         void onImageExists();
+
         void onImageDoesNotExist();
     }
 
@@ -81,6 +89,7 @@ public class ManageImageProfile {
                 .addOnFailureListener(e -> callback.onImageDoesNotExist());
     }
 
+
     /**
      * Retrieves the image URL from Firebase Storage for the current user.
      *
@@ -93,5 +102,38 @@ public class ManageImageProfile {
                 .addOnSuccessListener(uri -> callback.onImageRetrieved(uri))
                 .addOnFailureListener(callback::onFailure);
     }
+
+    public static Drawable createTextDrawable(Context context, String letter, int backgroundColor, int textColor, int width, int height) {
+        // Create a bitmap
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        // Create a Canvas to draw on the Bitmap
+        Canvas canvas = new Canvas(bitmap);
+
+        // Set up Paint for the background
+        Paint backgroundPaint = new Paint();
+        backgroundPaint.setColor(backgroundColor);
+        backgroundPaint.setStyle(Paint.Style.FILL);
+
+        // Draw a background
+        canvas.drawRect(0, 0, width, height, backgroundPaint);
+
+        // Set up Paint for the text
+        Paint textPaint = new Paint();
+        textPaint.setColor(textColor);
+        textPaint.setTextSize(Math.min(width, height) / 2f);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setAntiAlias(true);
+
+        // Calculate the position to the center the text
+        float xPos = width / 2f;
+        float yPos = (height / 2f) - ((textPaint.descent() + textPaint.ascent()) / 2f);
+
+        // Draw the letter
+        canvas.drawText(letter, xPos, yPos, textPaint);
+
+        return new BitmapDrawable(context.getResources(), bitmap);
+    }
+
 }
 
