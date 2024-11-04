@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.0"
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.0" // Use the latest version
 }
 
 val apiKey: String? = project.findProperty("API_KEY") as String?
@@ -63,7 +63,8 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.14.2")
     implementation(libs.places)
     implementation("com.google.android.libraries.places:places:4.0.0")
-    implementation ("com.google.android.gms:play-services-location:19.0.1")
+
+    implementation ("com.google.android.gms:play-services-location:21.3.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.14.2")
     testImplementation(libs.junit)
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
