@@ -30,13 +30,33 @@ public class EventInfo {
     ArrayList<String> entrants;
     ArrayList<String> chosenEntrants;
     ArrayList<String> cancelledEntrants;
-    private Uri eventPoster;
+    private String eventPoster;
     QRCode qrCode;
     EventFirebase firebase;
     private Long acceptedCount;
 
+    public EventInfo() throws WriterException {
+        this.eventID = UUID.randomUUID().toString();
+        this.organizer = "";
+        this.eventName = "";
+        this.address = "";
+        this.facilityName = "";
+        this.capacity = "0";
+        this.description = "";
+        this.startDate = new Date();
+        this.endDate = new Date();
+        this.startTime = "00:00";
+        this.endTime = "00:00";
+        this.qrCode = new QRCode(eventID);
+        this.entrants = new ArrayList<>();
+        this.chosenEntrants = new ArrayList<>();
+        this.cancelledEntrants = new ArrayList<>();
+        this.firebase = new EventFirebase();
+        this.acceptedCount = 0L;
+        this.eventPoster = null;
+    }
 
-    public EventInfo(String organizer, String eventName, String address, String facilityName, String capacity, String description, Date startDate, Date endDate, String startTime, String endTime, Uri eventPoster) throws WriterException {
+    public EventInfo(String organizer, String eventName, String address, String facilityName, String capacity, String description, Date startDate, Date endDate, String startTime, String endTime, String eventPoster) throws WriterException {
         this.eventID = UUID.randomUUID().toString();
         this.organizer = organizer;
         this.eventName = eventName;
@@ -91,7 +111,6 @@ public class EventInfo {
 
     public void setOrganizer(String organizer) {
         this.organizer = organizer;
-        updateEvent(event());
     }
 
 
@@ -102,7 +121,6 @@ public class EventInfo {
 
     public void setEventName(String eventName) {
         this.eventName = eventName;
-        updateEvent(event());
     }
 
 
@@ -113,7 +131,6 @@ public class EventInfo {
 
     public void setAddress(String address) {
         this.address = address;
-        updateEvent(event());
     }
 
 
@@ -124,7 +141,6 @@ public class EventInfo {
 
     public void setFacilityName(String facilityName) {
         this.facilityName = facilityName;
-        updateEvent(event());
     }
 
 
@@ -135,7 +151,6 @@ public class EventInfo {
 
     public void setDescription(String description) {
         this.description = description;
-        updateEvent(event());
     }
 
 
@@ -145,7 +160,6 @@ public class EventInfo {
 
     public void setCapacity(String capacity) {
         this.capacity = capacity;
-        updateEvent(event());
     }
 
     public Long getAcceptedCount() {
@@ -165,7 +179,6 @@ public class EventInfo {
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
-        updateEvent(event());
     }
 
 
@@ -176,7 +189,6 @@ public class EventInfo {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
-        updateEvent(event());
     }
 
 
@@ -187,7 +199,6 @@ public class EventInfo {
 
     public void setStartTime(String startTime) {
         this.startTime = startTime;
-        updateEvent(event());
     }
 
 
@@ -198,7 +209,6 @@ public class EventInfo {
 
     public void setEndTime(String endTime) {
         this.endTime = endTime;
-        updateEvent(event());
     }
 
 
@@ -209,7 +219,6 @@ public class EventInfo {
 
     public void setEntrants(ArrayList<String> entrants) {
         this.entrants = entrants;
-        updateEvent(event());
     }
 
 
@@ -220,7 +229,6 @@ public class EventInfo {
 
     public void setChosenEntrants(ArrayList<String> chosenEntrants) {
         this.chosenEntrants = chosenEntrants;
-        updateEvent(event());
     }
 
 
@@ -231,7 +239,6 @@ public class EventInfo {
 
     public void setCancelledEntrants(ArrayList<String> cancelledEntrants) {
         this.cancelledEntrants = cancelledEntrants;
-        updateEvent(event());
     }
 
 
@@ -241,26 +248,20 @@ public class EventInfo {
 
     public void setQrCode(QRCode qrCode) {
         this.qrCode = qrCode;
-        updateEvent(event());
     }
 
 
-    public Uri getEventPoster() {
+    public String getEventPoster() {
         return eventPoster;
     }
 
-    public void setEventPoster(Uri eventPoster) {
+    public void setEventPoster(String eventPoster) {
         this.eventPoster = eventPoster;
-        updateEvent(event());
     }
 
-    public void updateEvent(HashMap<String,Object> event){
-        String deviceId = (String) event.get("deviceId");
-        if (deviceId == null || deviceId.isEmpty()) {
-            System.err.println("Error: Device ID is null or empty in updateEvent.");
-            return;
-        }
-        firebase.editEvent(this, event);
+    public Uri getEventPosterUri() {
+        return Uri.parse(eventPoster);
     }
+
 
 }
