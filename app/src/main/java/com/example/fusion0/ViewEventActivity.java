@@ -41,10 +41,8 @@ public class ViewEventActivity extends AppCompatActivity {
         qrImageView = findViewById(R.id.qrImage);
 
         Intent intentReceived = getIntent();
-        String eventName = intentReceived.getStringExtra("eventName");
         String eventID = intentReceived.getStringExtra("eventID");
 
-        eventNameTextView.setText(eventName);
 
         EventFirebase.findEvent(eventID, new EventFirebase.EventCallback() {
             @Override
@@ -54,6 +52,8 @@ public class ViewEventActivity extends AppCompatActivity {
                     finish(); // Close activity if no event found
                 } else {
                     event = eventInfo;
+                    eventNameTextView.setText(event.getEventName());
+
                     Uri eventPosterURI = Uri.parse(event.getEventPoster());
                     if (eventPosterURI != null) {
                         Glide.with(ViewEventActivity.this)
