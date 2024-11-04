@@ -27,9 +27,6 @@ public class QRCode {
     private String qrCode;
     private Bitmap qrImage;  // The generated QR code
 
-    public QRCode(){
-
-    }
 
     /**
      * Constructor to create a QRCode object for the event using the event UUID.

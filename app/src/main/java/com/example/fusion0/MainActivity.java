@@ -59,11 +59,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        scannerButton = findViewById(R.id.toolbar_qrscanner);
-        scannerButton.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, QRActivity.class);
-            startActivity(intent);
-        });
 
         addButton = findViewById(R.id.toolbar_add);
 
