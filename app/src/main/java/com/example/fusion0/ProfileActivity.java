@@ -1,8 +1,11 @@
 package com.example.fusion0;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -123,8 +126,13 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onImageDoesNotExist() {
-                // If no image is found, display a default image
-                profileImage.setImageResource(R.drawable.default_profile_image);
+                Log.d("Firebase", "Did not find any image in firebase!");
+                String firstLetter = fullName.getText().toString().substring(0, 1).toUpperCase();
+
+                Drawable deterministicImage = ManageImageProfile.createTextDrawable(ProfileActivity.this, firstLetter, getResources().getColor(R.color.textColor), Color.WHITE, 100, 100);
+
+                profileImage.setImageDrawable(deterministicImage);
+
             }
         });
 
