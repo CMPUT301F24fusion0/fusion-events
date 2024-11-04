@@ -50,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
         // Initialize Notification Channel
         AppNotifications.createChannel(this);
 
+        // Initialize Notification Channel
+        AppNotifications.createChannel(this);
+
         // Instantiate login manager and retrieve login state
         loginManagement = new LoginManagement(this);
         loginManagement.isUserLoggedIn(isLoggedIn -> {
