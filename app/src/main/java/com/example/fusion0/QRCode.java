@@ -92,6 +92,13 @@ public class QRCode {
     public Bitmap getQrImage() { return this.qrImage;}
 
 
+    /**
+     * Returns the generated QR code.
+     *s
+     * @return The generated QR code bitmap Image.
+     */
+    public Bitmap getQrImage() { return this.qrImage;}
+
 
     /**
      * Generates a QR code image from the given QR code string.
