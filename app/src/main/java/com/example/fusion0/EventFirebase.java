@@ -4,8 +4,7 @@ package com.example.fusion0;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
-
-
+import com.google.zxing.WriterException;
 
 
 import java.util.HashMap;
@@ -32,6 +31,10 @@ public class EventFirebase {
 
     public interface FacilityCallback {
         void onSuccess(FacilitiesInfo facilityInfo);
+        void onFailure(String error);
+    }
+    public interface EventCallback {
+        void onSuccess(EventInfo eventInfo) throws WriterException;
         void onFailure(String error);
     }
 
@@ -147,6 +150,29 @@ public class EventFirebase {
         });
     }
 
+    public static void findEvent(String eventID, EventCallback callback) {
+        eventsRef.document(eventID).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        EventInfo event = documentSnapshot.toObject(EventInfo.class);
+                        try {
+                            callback.onSuccess(event);
+                        } catch (WriterException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        try {
+                            callback.onSuccess(null);
+                        } catch (WriterException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                })
+                .addOnFailureListener(error -> {
+                    System.out.println("Failure" + error.getMessage());
+                    callback.onFailure(error.getMessage());
+                });
+    }
 
 
 
