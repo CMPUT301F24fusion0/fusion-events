@@ -76,6 +76,13 @@ public class QRCode {
         return this.qrImage;
     }
 
+    /**
+     * Returns the generated QR code.
+     *s
+     * @return The generated QR code bitmap Image.
+     */
+    public Bitmap getQrImage() { return this.qrImage;}
+
 
 
 
