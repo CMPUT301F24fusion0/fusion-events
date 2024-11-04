@@ -13,6 +13,7 @@ public class UserInfo {
     UserFirestore firebase;
     Boolean edit;
 
+
     /**
      * Used by firestore to create objects in findUser()
      */

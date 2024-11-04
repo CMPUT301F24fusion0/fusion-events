@@ -27,6 +27,10 @@ public class QRCode {
     private String qrCode;
     private Bitmap qrImage;  // The generated QR code
 
+    public QRCode(){
+
+    }
+
     /**
      * Constructor to create a QRCode object for the event using the event ID.
      * It generates a unique hashed QR code based on the event ID and initializes the Firestore reference.
@@ -125,4 +129,3 @@ public class QRCode {
         void onEventIdNotFound();
     }
 }
-
