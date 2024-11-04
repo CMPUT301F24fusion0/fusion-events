@@ -1,9 +1,13 @@
 package com.example.fusion0;
 
+import android.graphics.Bitmap;
 import android.media.Image;
 import android.net.Uri;
 
+import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -31,7 +35,7 @@ public class EventInfo {
     ArrayList<String> chosenEntrants;
     ArrayList<String> cancelledEntrants;
     private String eventPoster;
-    QRCode qrCode;
+    private String qrCode;
     EventFirebase firebase;
     private Long acceptedCount;
 
@@ -47,7 +51,7 @@ public class EventInfo {
         this.endDate = new Date();
         this.startTime = "00:00";
         this.endTime = "00:00";
-        this.qrCode = new QRCode(eventID);
+        this.qrCode = (new QRCode(eventID)).getQrCode();
         this.entrants = new ArrayList<>();
         this.chosenEntrants = new ArrayList<>();
         this.cancelledEntrants = new ArrayList<>();
@@ -68,7 +72,7 @@ public class EventInfo {
         this.endDate = endDate;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.qrCode = new QRCode(eventID);
+        this.qrCode =(new QRCode(eventID)).getQrCode();
         this.entrants = new ArrayList<>();
         this.chosenEntrants = new ArrayList<>();
         this.cancelledEntrants = new ArrayList<>();
@@ -241,11 +245,11 @@ public class EventInfo {
     }
 
 
-    public QRCode getQrCode() {
+    public String getQrCode() {
         return qrCode;
     }
 
-    public void setQrCode(QRCode qrCode) {
+    public void setQrCode(String qrCode) {
         this.qrCode = qrCode;
     }
 
@@ -260,6 +264,20 @@ public class EventInfo {
 
     public Uri getEventPosterUri() {
         return Uri.parse(eventPoster);
+    }
+
+    public Bitmap generateQRCodeImage(int width, int height, String qrCode) throws WriterException {
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(qrCode, BarcodeFormat.QR_CODE, width, height);
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                bitmap.setPixel(x, y, bitMatrix.get(x, y) ? android.graphics.Color.BLACK : android.graphics.Color.WHITE);
+            }
+        }
+        return bitmap;
     }
 
 

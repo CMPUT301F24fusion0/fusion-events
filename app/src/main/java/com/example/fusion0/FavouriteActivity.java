@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FavouriteActivity extends AppCompatActivity {
@@ -116,6 +117,7 @@ public class FavouriteActivity extends AppCompatActivity {
                             createdEventsButton.setText("Hide");
                         }
                         isCreatedEventsListVisible = !isCreatedEventsListVisible;
+
                     }
                 }
 
@@ -123,6 +125,16 @@ public class FavouriteActivity extends AppCompatActivity {
                 public void onFailure(String error) {
                     Log.e(TAG, "Error fetching organizer: " + error);
                 }
+            });
+            createdEventsList.setOnItemClickListener((parent, view1, position, id) -> {
+                EventInfo event = organizer.getEvents().get(position);
+                String eventID = event.getEventID();
+                String eventName = organizer.getEventsNames().get(position);
+
+                Intent intent = new Intent(FavouriteActivity.this, ViewEventActivity.class);
+                intent.putExtra("eventName", eventName);
+                intent.putExtra("eventID", eventID);
+                startActivity(intent);
             });
         });
 
