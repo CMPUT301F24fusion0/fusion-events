@@ -196,7 +196,6 @@ public class FavouriteActivity extends AppCompatActivity {
                 String eventID = event.getEventID();
 
                 Intent intent = new Intent(FavouriteActivity.this, ViewEventActivity.class);
-                intent.putExtra("eventName", eventName);
                 intent.putExtra("eventID", eventID);
                 startActivity(intent);
             });
