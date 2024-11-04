@@ -40,8 +40,10 @@ android {
 }
 
 dependencies {
+    testImplementation ("androidx.test:core:1.4.0")
     implementation("de.hdodenhof:circleimageview:3.1.0")
-
+    androidTestImplementation("org.mockito:mockito-core:5.3.1")
+    androidTestImplementation("org.mockito:mockito-android:5.3.1") // For Android-specific mocking
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
