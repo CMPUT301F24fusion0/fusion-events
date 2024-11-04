@@ -6,15 +6,18 @@ import static org.junit.Assert.fail;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.zxing.WriterException;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
-/*
+import java.util.UUID;
+
 public class EventFirebaseTest {
     private CollectionReference organizersRef, facilitiesRef, eventsRef;
     private EventFirebase firebase;
@@ -29,14 +32,14 @@ public class EventFirebaseTest {
     }
 
     public OrganizerInfo newOrganizer() {
-        ArrayList<String> events = new ArrayList<>(Arrays.asList("Event 1", "Event 2"));
-        ArrayList<String> facilities = new ArrayList<>(Arrays.asList("Facility 1", "Facility 2"));
+        ArrayList<EventInfo> events = new ArrayList<>();
+        ArrayList<FacilitiesInfo> facilities = new ArrayList<>();
         return new OrganizerInfo("1234");
     }
 
     @Test
     public void addOrganizerTest() {
-        firebase.addOrganizer(newOrganizer());
+        EventFirebase.addOrganizer(newOrganizer());
         organizersRef
                 .document("1234")
                 .get()
@@ -48,22 +51,32 @@ public class EventFirebaseTest {
     }
 
     @Test
-    public void editTest() {
-        HashMap<String, Object> organizer = new HashMap<>();
-        organizer.put("events", "Event 3");
-        organizer.put("facilities", Arrays.asList("Facility 1", "Facility 2"));
-        organizer.put("deviceId", "1234");
-        firebase.editOrganizer(this);
+    public void editTest() throws WriterException {
+        OrganizerInfo organizer = new OrganizerInfo("1234");
+
+        Date startDate = new Date();
+        Date endDate = new Date();
+        EventInfo event = new EventInfo("1234", "Event1", "address", "facility1", "100", "description", startDate, endDate, "12", "2", "eventposter");
+        ArrayList<EventInfo> newEventList = organizer.getEvents();
+        newEventList.add(event);
+        organizer.setEvents(newEventList);
+
+        FacilitiesInfo facility = new FacilitiesInfo("address", "facility1", "1234");
+        ArrayList<FacilitiesInfo> newFacilitiesList = organizer.getFacilities();
+        newFacilitiesList.add(facility);
+        organizer.setFacilities(newFacilitiesList);
+
+        EventFirebase.editOrganizer(organizer);
         organizersRef
                 .document("1234")
                 .get()
                 .addOnSuccessListener(task -> {
                     if (task.exists()) {
-                        if (!(Objects.equals(task.getString("events"), "Event 3"))) {
-                            fail();
+                        if (!(Objects.equals(task.getString("events"), "Event 1"))) { // Check the correct event name
+                            fail("Expected event name not found");
                         }
                     } else {
-                        fail();
+                        fail("Organizer document does not exist");
                     }
                 });
     }
@@ -79,6 +92,4 @@ public class EventFirebaseTest {
                         fail();
                     }
                 });
-}
-
- */
+    }

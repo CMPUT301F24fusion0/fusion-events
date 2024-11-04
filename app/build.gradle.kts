@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.0" // Use the latest version
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.0"
 }
 
 val apiKey: String? = project.findProperty("API_KEY") as String?
