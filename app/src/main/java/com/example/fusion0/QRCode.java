@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 import android.graphics.Bitmap;
+import android.widget.Toast;
 
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.zxing.BarcodeFormat;
@@ -27,12 +28,9 @@ public class QRCode {
     private String qrCode;
     private Bitmap qrImage;  // The generated QR code
 
-    public QRCode(){
-
-    }
 
     /**
-     * Constructor to create a QRCode object for the event using the event ID.
+     * Constructor to create a QRCode object for the event using the event UUID.
      * It generates a unique hashed QR code based on the event ID and initializes the Firestore reference.
      *
      * @param eventId The ID of the event for which the QR code is generated.
@@ -74,6 +72,16 @@ public class QRCode {
     public String getQrCode() {
         return this.qrCode;
     }
+    public Bitmap getQrImage() {
+        return this.qrImage;
+    }
+
+    /**
+     * Returns the generated QR code.
+     *s
+     * @return The generated QR code bitmap Image.
+     */
+    public Bitmap getQrImage() { return this.qrImage;}
 
 
 

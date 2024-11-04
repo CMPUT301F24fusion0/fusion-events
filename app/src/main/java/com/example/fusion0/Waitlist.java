@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-
 /**
  * The {@code Waitlist} class provides methods to manage and interact with the
  * waiting list for events. It allows adding and removing entrants to the waiting list,

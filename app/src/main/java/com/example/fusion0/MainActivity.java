@@ -1,21 +1,14 @@
 package com.example.fusion0;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.FirebaseApp;
@@ -31,8 +24,10 @@ public class MainActivity extends AppCompatActivity {
     private Boolean loginState;
     private ImageButton profileButton;
     private ImageButton addButton;
+    private ImageButton cameraButton;
     private ImageButton scannerButton;
     private ImageButton favouriteButton;
+    private ImageButton homeButton;
 
     /**
      * Initializes the MainActivity and manages user session and state.
@@ -44,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        // Initialize Firebase for the app
+        FirebaseApp.initializeApp(this);
 
         // Initialize Notification Channel
         AppNotifications.createChannel(this);
@@ -64,11 +63,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        scannerButton = findViewById(R.id.toolbar_qrscanner);
-        scannerButton.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, QRActivity.class);
-            startActivity(intent);
-        });
 
         addButton = findViewById(R.id.toolbar_add);
 
@@ -85,5 +79,19 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        cameraButton = findViewById(R.id.toolbar_camera);
+
+        cameraButton.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, QRActivity.class);
+            startActivity(intent);
+        });
+        // Home button in the toolbar
+        homeButton = findViewById(R.id.toolbar_home);
+        homeButton.setOnClickListener(view -> {
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+        });
+
     }
+
 }
