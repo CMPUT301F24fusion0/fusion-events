@@ -1,10 +1,7 @@
 package com.example.fusion0;
 
-import static android.content.ContentValues.TAG;
-
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +10,6 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
-import com.google.android.gms.tasks.OnSuccessListener;
 
 /**
  * This is the registration fragment that will be displayed when a user signs up for an waiting
