@@ -3,6 +3,7 @@ package com.example.fusion0;
 //Javadocs provided by chatGPT
 
 import android.graphics.Bitmap;
+import android.widget.Toast;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -71,6 +72,10 @@ public class QRCode {
     public String getQrCode() {
         return this.qrCode;
     }
+    public Bitmap getQrImage() {
+        return this.qrImage;
+    }
+
 
     /**
      * Returns the generated QR code.
