@@ -6,13 +6,12 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.util.Log;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
-
-//Javadocs provided by chatGPT
 
 /**
  * GeoLocation class manages the user's geolocation, calculates distances
@@ -20,12 +19,14 @@ import androidx.fragment.app.FragmentActivity;
  * on an acceptable radius.
  */
 public class GeoLocation implements LocationListener {
+
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
     private final Context context;
+    private final FragmentActivity fragmentActivity;
     private LocationManager locationManager;
     private Location userLocation;
     private Location eventLocation;
-    private float acceptableRadius;
-    private final FragmentActivity fragmentActivity;
+    private double acceptableRadius;
 
     /**
      * Constructor for GeoLocation that sets an event location and acceptable radius.
@@ -36,7 +37,7 @@ public class GeoLocation implements LocationListener {
      * @param eventLongitude The longitude of the event location.
      * @param acceptableRadius The radius within which the user can register.
      */
-    public GeoLocation(FragmentActivity fragmentActivity, Context context, double eventLatitude, double eventLongitude, float acceptableRadius) {
+    public GeoLocation(FragmentActivity fragmentActivity, Context context, double eventLatitude, double eventLongitude, double acceptableRadius) {
         this.fragmentActivity = fragmentActivity;
         this.context = context;
         this.acceptableRadius = acceptableRadius;
@@ -59,26 +60,27 @@ public class GeoLocation implements LocationListener {
     }
 
 
-
-
-
-
-
-
-    //The follow 3 functions were implemented with the help of "https://www.youtube.com/watch?v=qY-xFxZ7HKY" - 2024-10-27
-    //ChatGPT made changes to help improve the speed at which location was retrieved, "(Provided 3 functions original version) How can I make it so location is retrieved quicker to avoid issue?" - 2024-10-27
+    //The follow 4 functions were implemented with the help of "https://www.youtube.com/watch?v=qY-xFxZ7HKY" - 2024-10-27
+    //ChatGPT made changes to help improve the speed at which location was retrieved, "(Provided code in video in function form)  How can I make it so location is retrieved quicker to avoid issues?" - 2024-10-27
 
     /**
      * Initializes the LocationManager and sets the initial user location if permissions are granted.
      */
     private void initializeLocationManager() {
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        if (isLocationPermissionGranted()) {
+            setLastKnownLocation();
+        }
+    }
+
+    /**
+     * Sets the last known location for a quicker initial value.
+     */
+    private void setLastKnownLocation() {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // Get the last known location for a quicker initial value
             Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if (lastKnownLocation != null) {
                 userLocation = lastKnownLocation;
-                Log.d("GeoLocation", "Initial user location set from last known location");
             }
         }
     }
@@ -91,17 +93,36 @@ public class GeoLocation implements LocationListener {
     @Override
     public void onLocationChanged(@NonNull Location location) {
         userLocation = location;
-        Log.d("GeoLocation", "User location updated: " + location.getLatitude() + ", " + location.getLongitude());
-        //Toast.makeText(context, "User Location Updated ", Toast.LENGTH_SHORT).show();
     }
 
     /**
-     * Requests location updates from GPS and Network providers.
+     * Checks if location permissions are granted.
+     * Requests permissions if not already granted and returns false immediately.
+     * The actual result (granted or denied) should be handled in onRequestPermissionsResult.
+     *
+     * @return true if location permission is already granted; false if permission is requested.
+     */
+    public boolean isLocationPermissionGranted() {
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /**
+     * Requests location permission from the user if it isn’t already granted.
+     */
+    public void requestLocationPermission() {
+        if (!isLocationPermissionGranted()) {
+            ActivityCompat.requestPermissions(fragmentActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    /**
+     * Requests location updates from GPS and Network providers if permissions are granted.
+     * Returns false if permissions are not granted or the user has denied the request.
      *
      * @return true if permissions are granted and location updates are requested, false otherwise.
      */
     public boolean getLocation() {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (isLocationPermissionGranted()) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, this);
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5, this);
             return true;
@@ -110,21 +131,6 @@ public class GeoLocation implements LocationListener {
             return false;
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -171,7 +177,7 @@ public class GeoLocation implements LocationListener {
      * @return The latitude of the user's current location.
      */
     public double getUserLatitude() {
-        return userLocation.getLatitude();
+        return userLocation != null ? userLocation.getLatitude() : 0.0;
     }
 
     /**
@@ -180,7 +186,7 @@ public class GeoLocation implements LocationListener {
      * @return The longitude of the user's current location.
      */
     public double getUserLongitude() {
-        return userLocation.getLongitude();
+        return userLocation != null ? userLocation.getLongitude() : 0.0;
     }
 
     /**
@@ -189,7 +195,7 @@ public class GeoLocation implements LocationListener {
      * @return The latitude of the event location.
      */
     public double getEventLatitude() {
-        return eventLocation.getLatitude();
+        return eventLocation != null ? eventLocation.getLatitude() : 0.0;
     }
 
     /**
@@ -198,8 +204,18 @@ public class GeoLocation implements LocationListener {
      * @return The longitude of the event location.
      */
     public double getEventLongitude() {
-        return eventLocation.getLongitude();
+        return eventLocation != null ? eventLocation.getLongitude() : 0.0;
     }
+
+    /**
+     * Sets the event acceptable radius.
+     *
+     * @param radius The acceptable radius of the event.
+     */
+    public void setEventRadius(int radius){
+        acceptableRadius = radius;
+    }
+
 
     /**
      * Displays a map dialog showing user and event locations with an indicator of the acceptable radius.
