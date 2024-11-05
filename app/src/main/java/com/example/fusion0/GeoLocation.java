@@ -116,20 +116,36 @@ public class GeoLocation implements LocationListener {
     }
 
     /**
-     * Requests location updates from GPS and Network providers if permissions are granted.
-     * Returns false if permissions are not granted or the user has denied the request.
+     * Attempts to retrieve the user's current location.
      *
-     * @return true if permissions are granted and location updates are requested, false otherwise.
+     * If location permissions are granted, it first tries to retrieve the last known location
+     * from the GPS provider. If a last known location is available, it is returned immediately.
+     *
+     * If no last known location is available, it requests location updates from both the GPS
+     * and Network providers to obtain the user's location. Location updates will trigger the
+     * `onLocationChanged` method when a new location is available.
+     *
+     * If permissions are not granted or the user has denied the request, it will not attempt
+     * to retrieve the location and returns null.
+     *
+     * @return the user's last known location if available, or null if no immediate location
+     *         is available or permissions are not granted.
      */
-    public boolean getLocation() {
+    public Location getLocation() {
         if (isLocationPermissionGranted()) {
+            // First, try to get the last known location
+            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (lastKnownLocation != null) {
+                userLocation = lastKnownLocation;
+                return userLocation;
+            }
+
+            // If not available, request location updates
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, this);
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5, this);
-            return true;
         }
-        else {
-            return false;
-        }
+        // Return null if no location is available right away
+        return null;
     }
 
 
