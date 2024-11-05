@@ -1,97 +1,302 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white">
 
-    <RelativeLayout
+
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/arrow_back"
+        android:contentDescription="Back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:background="?attr/selectableItemBackgroundBorderless" />
+
+    <!-- ScrollView to hold all form elements -->
+    <ScrollView
+        android:id="@+id/scroll_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:background="#FFFFFF"
+        android:fillViewport="true"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/toolbar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-        <ScrollView
-            android:id="@+id/scroll_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@id/toolbar"
-            android:fillViewport="true"
-            android:scrollbars="vertical">
-
+        <!-- LinearLayout containing form elements -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/eventName">
-                </TextView>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/eventPosterImage">
-                </ImageView>
-            <ImageView
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <!-- Event Name Section -->
+            <TextView
+                android:id="@+id/EventName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/qrImage">
-            </ImageView>
+                android:text="Event Name"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp" />
 
+            <EditText
+                android:id="@+id/editEventName"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginBottom="8dp"
+                android:hint="Enter Event Name"
+                android:inputType="text"
+                android:background="@drawable/custom_input"
+                android:drawablePadding="12dp"
+                android:padding="12dp" />
+
+            <!-- Event Description Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Description"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/Description"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="8dp"
+                android:hint="Enter Event Description"
+                android:inputType="textMultiLine"
+                android:maxLines="5"
+                android:background="@drawable/custom_input"
+                android:drawablePadding="12dp"
+                android:padding="12dp"
+                android:gravity="top|start" />
+
+            <!-- Facility Selection Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Facility"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp" />
+
+            <Spinner
+                android:id="@+id/spinner_facilities"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Upload Poster Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Upload Poster"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/uploaded_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone"
+                android:scaleType="centerCrop"
+                android:contentDescription="Uploaded Event Poster" />
+
+            <Button
+                android:id="@+id/upload_image_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Choose Image"
+                android:backgroundTint="@color/figmaBlue"
+                app:cornerRadius="5dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Date"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="start"
+                android:layout_marginBottom="16dp">
+
+                <!-- Start Date Selection -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="16dp">
+
+                    <TextView
+                        android:id="@+id/start_date_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Start Date"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/figmaBlue"
+                        android:textFontWeight="600"
+                        android:textSize="15sp" />
+
+                    <Button
+                        android:id="@+id/start_date_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Select Start Date"
+                        android:backgroundTint="@color/figmaBlue"
+                        app:cornerRadius="5dp" />
+                </LinearLayout>
+
+                <!-- End Date Selection -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/end_date_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="End Date"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/figmaBlue"
+                        android:textFontWeight="600"
+                        android:textSize="15sp" />
+
+                    <Button
+                        android:id="@+id/end_date_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Select End Date"
+                        android:backgroundTint="@color/figmaBlue"
+                        app:cornerRadius="5dp" />
+                </LinearLayout>
             </LinearLayout>
 
+            <!-- Event Capacity Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Capacity"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp" />
 
-        </ScrollView>
+            <EditText
+                android:id="@+id/Capacity"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Enter Event Capacity"
+                android:inputType="number"
+                android:background="@drawable/custom_input"
+                android:padding="12dp" />
 
-        <LinearLayout
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_alignParentBottom="true"
-            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/qrImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="QR Code" />
 
-            <ImageButton
-                android:id="@+id/toolbar_home"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@android:color/white"
-                android:contentDescription="home"
-                android:src="@drawable/ic_blue_home" />
+            <TextView
+                android:id="@+id/entrantsHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Entrants"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:paddingTop="16dp" />
 
-            <ImageButton
-                android:id="@+id/toolbar_qrscanner"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@android:color/white"
-                android:contentDescription="search"
-                android:src="@drawable/ic_grey_qrscanner" />
+            <ListView
+                android:id="@+id/entrantsListView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@android:color/darker_gray"
+                android:dividerHeight="0.5dp" />
 
-            <ImageButton
-                android:id="@+id/toolbar_add"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@android:color/white"
-                android:contentDescription="add"
-                android:src="@drawable/ic_grey_add" />
+            <TextView
+                android:id="@+id/chosenEntrantsHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chosen Entrants"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:paddingTop="16dp" />
 
-            <ImageButton
-                android:id="@+id/toolbar_favourite"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@android:color/white"
-                android:contentDescription="favourite"
-                android:src="@drawable/ic_grey_favourite" />
+            <ListView
+                android:id="@+id/chosenEntrantsListView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@android:color/darker_gray"
+                android:dividerHeight="0.5dp" />
 
-            <ImageButton
-                android:id="@+id/toolbar_person"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@android:color/white"
-                android:contentDescription="person"
-                android:src="@drawable/ic_grey_person" />
+            <TextView
+                android:id="@+id/cancelledEntrantsHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancelled Entrants"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:paddingTop="16dp" />
+
+            <ListView
+                android:id="@+id/cancelledEntrantsListView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@android:color/darker_gray"
+                android:dividerHeight="0.5dp" />
         </LinearLayout>
-    </RelativeLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/edit_button"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:text="Edit"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/figmaBlue"
+            app:cornerRadius="5dp"/>
+
+        <Button
+            android:id="@+id/delete_button"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:text="Delete"
+            android:textColor="@color/figmaBlue"
+            android:backgroundTint="@android:color/white"
+            app:cornerRadius="5dp"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
