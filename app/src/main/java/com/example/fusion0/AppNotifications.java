@@ -18,11 +18,20 @@ import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
 
+/**
+ * This class provides the methods needed to send/receive notifications
+ * Sources:
+ *      <a href="https://stackoverflow.com/questions/44305206/ask-permission-for-push-notification">...</a>
+ *      <a href="https://learn.microsoft.com/en-gb/answers/questions/1181354/how-can-i-request-permission-for-push-notification">...</a>
+ */
 public class AppNotifications {
-    // https://stackoverflow.com/questions/44305206/ask-permission-for-push-notification
-    // https://learn.microsoft.com/en-gb/answers/questions/1181354/how-can-i-request-permission-for-push-notification
     private final static int REQUEST_CODE = 100;
 
+    /**
+     * Creates the notification channels required to send the notification but this is only needed for
+     * android versions above 13
+     * @param context app's context
+     */
     public static void createChannel(Context context) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel lottery = new NotificationChannel("lottery", "lotteryAccept", NotificationManager.IMPORTANCE_HIGH);
@@ -31,6 +40,11 @@ public class AppNotifications {
         }
     }
 
+    /**
+     * Ask for permission to send notifications for Android versions 13
+     * @param activity the activity to ask for permission in
+     * @param dID device ID
+     */
     public static void permission(Activity activity, String dID) {
         // if higher than android 13
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -70,6 +84,13 @@ public class AppNotifications {
         });
     }
 
+    /**
+     * The user has logged in so they are ready to receive the notifications. This is the method
+     * that actually sends out the notifications
+     * @param dID device ID
+     * @param context context for the notifications to be sent to
+     * @param notifications an array of notifications
+     */
     private static void sendAllNotifications(String dID, Context context, ArrayList<String> notifications) {
         // Here we'd call upon firebase to give us back the array of notifications and then send them to the user
         // get notification then delete them from Firebase
@@ -94,7 +115,7 @@ public class AppNotifications {
     }
 
     /**
-     * Used during logging and the user can view their notifications
+     * Used during logging in. Send all notifications if the user exists.
      * @param dID device ID
      * @param context context of activity or fragment
      */
