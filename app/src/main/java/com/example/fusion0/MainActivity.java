@@ -2,8 +2,9 @@ package com.example.fusion0;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,14 +16,18 @@ import com.google.firebase.FirebaseApp;
  */
 public class MainActivity extends AppCompatActivity {
 
-    private TextView textField;
     private LoginManagement loginManagement;
     private Boolean loginState;
+
     private ImageButton profileButton;
     private ImageButton addButton;
     private ImageButton cameraButton;
     private ImageButton favouriteButton;
     private ImageButton homeButton;
+
+    private Button browseEventsButton;
+    private Button scanQRButton;
+
 
     /**
      * Initializes the MainActivity and manages user session and state.
@@ -35,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final String deviceId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
 
         // Initialize Firebase for the app
         FirebaseApp.initializeApp(this);
@@ -46,47 +52,54 @@ public class MainActivity extends AppCompatActivity {
         loginManagement = new LoginManagement(this);
         loginManagement.isUserLoggedIn(isLoggedIn -> {
             if (isLoggedIn) {
-                // Do this
+                AppNotifications.getNotification(deviceId, this);
             } else {
                 // Do that
             }
         });
 
-        favouriteButton = findViewById(R.id.toolbar_favourite);
-        favouriteButton.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, FavouriteActivity.class);
+        initializeToolbarButtons();
+
+        browseEventsButton = findViewById(R.id.browse_events_button);
+        browseEventsButton.setOnClickListener(view -> {
+            Intent intent = new Intent(this, EventActivity.class);
             startActivity(intent);
         });
 
+        scanQRButton = findViewById(R.id.scan_qr_button);
+        scanQRButton.setOnClickListener(view -> {
+            Intent intent = new Intent(this, QRActivity.class);
+            startActivity(intent);
+        });
 
+    }
+
+    private void initializeToolbarButtons() {
+        homeButton = findViewById(R.id.toolbar_home);
+        cameraButton = findViewById(R.id.toolbar_camera);
         addButton = findViewById(R.id.toolbar_add);
-
-        addButton.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, EventActivity.class);
-            startActivity(intent);
-        });
-
-        // Initialize profile button to navigate to ProfileActivity
+        favouriteButton = findViewById(R.id.toolbar_favourite);
         profileButton = findViewById(R.id.toolbar_person);
 
-        profileButton.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-            startActivity(intent);
-        });
-
-        cameraButton = findViewById(R.id.toolbar_camera);
-
         cameraButton.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, QRActivity.class);
-            startActivity(intent);
-        });
-        // Home button in the toolbar
-        homeButton = findViewById(R.id.toolbar_home);
-        homeButton.setOnClickListener(view -> {
-            Intent intent = new Intent(this, HomeActivity.class);
+            Intent intent = new Intent(this, QRActivity.class);
             startActivity(intent);
         });
 
+        addButton.setOnClickListener(view -> {
+            Intent intent = new Intent(this, EventActivity.class);
+            startActivity(intent);
+        });
+
+        favouriteButton.setOnClickListener(view -> {
+            Intent intent = new Intent(this, FavouriteActivity.class);
+            startActivity(intent);
+        });
+
+        profileButton.setOnClickListener(view -> {
+            Intent intent = new Intent(this, ProfileActivity.class);
+            startActivity(intent);
+        });
     }
 
 }

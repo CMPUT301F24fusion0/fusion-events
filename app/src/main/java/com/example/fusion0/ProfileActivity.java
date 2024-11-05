@@ -101,6 +101,8 @@ public class ProfileActivity extends AppCompatActivity {
         manageImage = new ManageImageProfile(this);  // Handles image upload and retrieval from Firebase
         final String deviceId = android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
 
+        System.out.println(deviceId);
+
         // SECTION 2: Load User Data from Firebase
         profileManager.getUserData(deviceId, new ProfileManagement.UserDataCallback() {
             @Override
@@ -251,7 +253,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         homeButton.setOnClickListener(view -> {
-            Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
+            Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
             startActivity(intent);
         });
 
