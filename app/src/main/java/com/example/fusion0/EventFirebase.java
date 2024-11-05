@@ -129,7 +129,7 @@ public class EventFirebase {
                 });
     }
 
-    public void deleteFacility(String facilityID){
+    public static void deleteFacility(String facilityID){
         facilitiesRef.document(facilityID).delete().addOnSuccessListener(documentReference -> {
             System.out.println("Success");
         }).addOnFailureListener(error -> {
