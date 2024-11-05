@@ -31,7 +31,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|top"
             android:layout_marginTop="32dp"
-            android:text="Align the QR code within the frame to scan"
+            android:fontFamily="@font/raleway_medium"
+            android:text="Align The QR Code Within The Frame To Scan"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -45,8 +46,8 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="32dp"
-        android:background="@android:color/white"
+        android:background="@drawable/qr_cancel_button"
         android:text="Cancel"
-        android:textColor="@android:color/black" />
+        android:textColor="@color/white" />
 
 </RelativeLayout>

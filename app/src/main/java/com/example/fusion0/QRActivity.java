@@ -58,7 +58,7 @@ public class QRActivity extends AppCompatActivity implements ZXingScannerView.Re
 
         // Set cancel button action
         cancelButton.setOnClickListener(view -> {
-            Intent intent = new Intent(QRActivity.this, HomeActivity.class);
+            Intent intent = new Intent(QRActivity.this, MainActivity.class);
             startActivity(intent);
         });
     }
