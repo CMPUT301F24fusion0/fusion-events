@@ -31,7 +31,7 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         // Set up the "Scan QR Code OR ANYTHING ELSE" button
-        Button scanQRButton = findViewById(R.id.scan_qr_button);
+        ImageButton scanQRButton = findViewById(R.id.toolbar_camera);
         scanQRButton.setOnClickListener(view -> {
             Intent intent = new Intent(HomeActivity.this, QRActivity.class);
             startActivity(intent);
@@ -50,7 +50,7 @@ public class HomeActivity extends AppCompatActivity {
         homeButton = findViewById(R.id.toolbar_home);
         profileButton = findViewById(R.id.toolbar_person);
         addButton = findViewById(R.id.toolbar_add);
-        scannerButton = findViewById(R.id.toolbar_qrscanner);
+        scannerButton = findViewById(R.id.toolbar_camera);
         favouriteButton = findViewById(R.id.toolbar_favourite);
 
         homeButton.setOnClickListener(view -> {
