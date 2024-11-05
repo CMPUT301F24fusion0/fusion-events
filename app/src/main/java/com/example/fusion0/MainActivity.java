@@ -79,6 +79,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Decides whether the permission is granted and then sends them the notification
+     * @param requestCode The request code passed in
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions
+     *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
+     *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     *
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -95,6 +104,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Initializes the toolbar and sends them to the correct page if the button is clicked.
+     */
     private void initializeToolbarButtons() {
         homeButton = findViewById(R.id.toolbar_home);
         cameraButton = findViewById(R.id.toolbar_camera);
