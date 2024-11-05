@@ -50,7 +50,7 @@ public class HomeActivity extends AppCompatActivity {
         homeButton = findViewById(R.id.toolbar_home);
         profileButton = findViewById(R.id.toolbar_person);
         addButton = findViewById(R.id.toolbar_add);
-        scannerButton = findViewById(R.id.toolbar_qrscanner);
+        scannerButton = findViewById(R.id.toolbar_camera);
         favouriteButton = findViewById(R.id.toolbar_favourite);
 
         homeButton.setOnClickListener(view -> {
