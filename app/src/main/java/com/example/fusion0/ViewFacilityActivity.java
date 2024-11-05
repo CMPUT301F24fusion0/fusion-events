@@ -18,10 +18,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-/**
- * @author Simon Haile
- * This activity allows organizers to view their respective facilities and  edit the facility information
- */
+
 public class ViewFacilityActivity extends AppCompatActivity {
 
     private String deviceID;
@@ -33,16 +30,6 @@ public class ViewFacilityActivity extends AppCompatActivity {
     private ImageButton backButton;
     private Button editButton, saveButton, deleteButton, cancelButton;
 
-
-    /**
-     * Called when the activity is first created. This method sets up the user interface
-     * and handles the logic for displaying, editing, and deleting facility details.
-     * It initializes UI components, retrieves facility data from Firebase, and manages
-     * user interaction for viewing and modifying the facility information.
-     *
-     * @param savedInstanceState This Bundle contains the data it most recently supplied in
-     * onSaveInstanceState(Bundle), otherwise null.
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,8 +137,13 @@ public class ViewFacilityActivity extends AppCompatActivity {
                 new AlertDialog.Builder(ViewFacilityActivity.this)
                         .setTitle("Delete entry")
                         .setMessage("Are you sure you want to delete this entry?")
-                        .setPositiveButton(android.R.string.yes, (dialog, which) -> EventFirebase.deleteFacility(facility.getFacilityID()))
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                EventFirebase.deleteFacility(facility.getFacilityID());
+                            }
+                        })
                         .setNegativeButton(android.R.string.no, null)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
             }
         });
