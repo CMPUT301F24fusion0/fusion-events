@@ -33,7 +33,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${API_KEY}" />
         <activity
-            android:name=".HomeActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/Theme.Fusion0">
@@ -43,15 +43,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
         <activity android:name=".EventActivity" />
-
         <activity android:name=".ProfileActivity" />
-
         <activity android:name=".QRActivity" />
-
         <activity android:name=".FavouriteActivity"/>
-
         <activity android:name=".ViewEventActivity"/>
 
     </application>
