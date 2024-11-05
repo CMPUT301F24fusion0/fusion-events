@@ -47,6 +47,7 @@
         <activity android:name=".QRActivity" />
         <activity android:name=".FavouriteActivity"/>
         <activity android:name=".ViewEventActivity"/>
+        <activity android:name=".ViewFacilityActivity"/>
 
     </application>
 
