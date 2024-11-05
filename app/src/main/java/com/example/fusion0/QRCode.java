@@ -1,19 +1,22 @@
 package com.example.fusion0;
 
 // Code and Javadocs provided by chatGPT
-
-import android.graphics.Bitmap;
-
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+
+import android.graphics.Bitmap;
+import android.widget.Toast;
+
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.common.BitMatrix;
 
 
 /**
@@ -69,13 +72,10 @@ public class QRCode {
     public String getQrCode() {
         return this.qrCode;
     }
+    public Bitmap getQrImage() {
+        return this.qrImage;
+    }
 
-    /**
-     * Returns the generated QR code.
-     *s
-     * @return The generated QR code bitmap Image.
-     */
-    public Bitmap getQrImage() { return this.qrImage;}
 
 
 
