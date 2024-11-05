@@ -14,6 +14,8 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+
 /**
  * This is the registration fragment that will be displayed when a user signs up for an waiting
  * for the first time. It will only be used once per user.
@@ -95,9 +97,9 @@ public class Registration extends Fragment {
                     System.out.println("This user already exists.");
                 } else {
                     if (!phone.isEmpty()) {
-                        newUser = new UserInfo(first, last, emails, phone, dID);
+                        newUser = new UserInfo(null, first, last, emails, phone, dID);
                     } else {
-                        newUser = new UserInfo(first, last, emails, dID);
+                        newUser = new UserInfo(null, first, last, emails, dID);
                     }
                     firebase.addUser(newUser);
                 }

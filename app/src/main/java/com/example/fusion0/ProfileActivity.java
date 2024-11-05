@@ -1,20 +1,28 @@
 package com.example.fusion0;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -40,7 +48,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     // Image related fields
     private CircleImageView profileImage;
-    private ImageButton backButton;
+    private ImageView editImage;
     private FloatingActionButton editButton;
     private Button saveButton;
     private Button cancelButton;
@@ -49,6 +57,13 @@ public class ProfileActivity extends AppCompatActivity {
     private ProfileManagement profileManager;
     private ManageImageProfile manageImage;
     private Uri imageUri;
+
+    // Toolbar buttons
+    private ImageButton homeButton;
+    private ImageButton cameraButton;
+    private ImageButton addButton;
+    private ImageButton favouriteButton;
+    private ImageButton profileButton;
 
     /**
      * Initializes the ProfileActivity, setting up view components, loading user data,
@@ -71,10 +86,16 @@ public class ProfileActivity extends AppCompatActivity {
         editPhoneNumber = findViewById(R.id.editPhoneNumber);
       
         profileImage = findViewById(R.id.profileImage);
-        backButton = findViewById(R.id.backButton);
+        editImage = findViewById(R.id.editImage);
         editButton = findViewById(R.id.editButton);
         saveButton = findViewById(R.id.saveButton);
         cancelButton = findViewById(R.id.cancelButton);
+
+        homeButton = findViewById(R.id.toolbar_home);
+        cameraButton = findViewById(R.id.toolbar_camera);
+        addButton = findViewById(R.id.toolbar_add);
+        favouriteButton = findViewById(R.id.toolbar_favourite);
+        profileButton = findViewById(R.id.toolbar_person);
 
         profileManager = new ProfileManagement();  // Manages user data retrieval
         manageImage = new ManageImageProfile(this);  // Handles image upload and retrieval from Firebase
@@ -87,7 +108,12 @@ public class ProfileActivity extends AppCompatActivity {
                 String fullPersonName = user.getFirstName() + " " + user.getLastName();
                 fullName.setText(fullPersonName);
                 emailAddress.setText(user.getEmail());
-                phoneNumber.setText(user.getPhoneNumber());
+
+                if (user.getPhoneNumber() == null) {
+                    phoneNumber.setText("No phone number");
+                } else {
+                    phoneNumber.setText(user.getPhoneNumber());
+                }
             }
 
             @Override
@@ -123,18 +149,47 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onImageDoesNotExist() {
-                // If no image is found, display a default image
-                profileImage.setImageResource(R.drawable.default_profile_image);
+                String firstLetter = fullName.getText().toString().substring(0, 1).toUpperCase();
+
+                Drawable deterministicImage = ManageImageProfile.createTextDrawable(ProfileActivity.this, firstLetter, getResources().getColor(R.color.textColor), Color.WHITE, 100, 100);
+
+                profileImage.setImageDrawable(deterministicImage);
+
             }
         });
 
-        // SECTION 4: Set Back Button Click Behavior
-        backButton.setOnClickListener(view -> finish());
+        // SECTION 4: Set Profile Image Click Behavior for Uploading New Image
 
-        // SECTION 5: Set Profile Image Click Behavior for Uploading New Image
-        profileImage.setOnClickListener(view -> selectImage());
+        editImage.setOnClickListener(view -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Profile Image Options");
 
-        // SECTION 6: Turn Profile Page to Edit Mode
+            String[] options = {"Change Image", "Delete Image"};
+            builder.setItems(options, (dialog, which) -> {
+                if (which == 0){
+                    selectImage();
+                } else if (which == 1) {
+                    manageImage.deleteImage(new ManageImageProfile.ImageDeleteCallback() {
+                        @Override
+                        public void onSuccess() {
+                            String firstLetter = fullName.getText().toString().substring(0, 1).toUpperCase();
+                            Drawable deterministicImage = ManageImageProfile.createTextDrawable(ProfileActivity.this, firstLetter, getResources().getColor(R.color.textColor), Color.WHITE, 100, 100);
+
+                            profileImage.setImageDrawable(deterministicImage);
+                            Toast.makeText(ProfileActivity.this, "Image deleted successfully", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.d("FirebaseStorage", e.toString());
+                            Toast.makeText(ProfileActivity.this, "Error deleting image", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            });
+        });
+
+        // SECTION 5: Turn Profile Page to Edit Mode
         editButton.setOnClickListener(view -> {
             // Hide TextViews, show EditTexts for editing, and enable save/cancel buttons
             fullName.setVisibility(View.GONE);
@@ -165,19 +220,19 @@ public class ProfileActivity extends AppCompatActivity {
                 if (!newFullName.trim().isEmpty()) {
                     String[] nameParts = newFullName.split(" ", 2);
                     if (nameParts.length == 2) {
-                        userFirestore.editUser(currentUser, "first name", nameParts[0]);
-                        userFirestore.editUser(currentUser, "last name", nameParts[1]);
+                        userFirestore.editUser(currentUser, "first name", new ArrayList<String>(Collections.singletonList(nameParts[0])));
+                        userFirestore.editUser(currentUser, "last name", new ArrayList<String>(Collections.singletonList(nameParts[1])));
                         fullName.setText(newFullName);
                         isUpdated = true;
                     }
                 }
                 if (!newEmailAddress.trim().isEmpty()) {
-                    userFirestore.editUser(currentUser, "email", newEmailAddress);
+                    userFirestore.editUser(currentUser, "email", new ArrayList<String>(Collections.singletonList(newEmailAddress)));
                     emailAddress.setText(newEmailAddress);
                     isUpdated = true;
                 }
                 if (!newPhoneNumber.trim().isEmpty()) {
-                    userFirestore.editUser(currentUser, "phone number", newPhoneNumber);
+                    userFirestore.editUser(currentUser, "phone number", new ArrayList<String>(Collections.singletonList(newPhoneNumber)));
                     phoneNumber.setText(newPhoneNumber);
                     isUpdated = true;
                 }
@@ -194,6 +249,27 @@ public class ProfileActivity extends AppCompatActivity {
             // Set cancel button click behavior to revert to view mode without saving
             cancelButton.setOnClickListener(cancelView -> toggleViewMode());
         });
+
+        homeButton.setOnClickListener(view -> {
+            Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
+            startActivity(intent);
+        });
+
+        cameraButton.setOnClickListener(view -> {
+            Intent intent = new Intent(ProfileActivity.this, QRActivity.class);
+            startActivity(intent);
+        });
+
+        addButton.setOnClickListener(view -> {
+            Intent intent = new Intent(ProfileActivity.this, EventActivity.class);
+            startActivity(intent);
+        });
+
+        favouriteButton.setOnClickListener(view -> {
+            Intent intent = new Intent(ProfileActivity.this, FavouriteActivity.class);
+            startActivity(intent);
+        });
+
     }
 
     /**
