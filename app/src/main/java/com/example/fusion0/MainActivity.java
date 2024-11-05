@@ -1,11 +1,14 @@
 package com.example.fusion0;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.FirebaseApp;
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private Button browseEventsButton;
     private Button scanQRButton;
 
+    private final int REQUEST_CODE = 100;
 
     /**
      * Initializes the MainActivity and manages user session and state.
@@ -40,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final String deviceId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+        // Get Device ID
+        final String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         // Initialize Firebase for the app
         FirebaseApp.initializeApp(this);
@@ -52,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
         loginManagement = new LoginManagement(this);
         loginManagement.isUserLoggedIn(isLoggedIn -> {
             if (isLoggedIn) {
-                AppNotifications.getNotification(deviceId, this);
+                // they are logged in
+                AppNotifications.permission(this, deviceId);
             } else {
                 // Do that
             }
@@ -71,7 +77,22 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, QRActivity.class);
             startActivity(intent);
         });
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        final String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                AppNotifications.getNotification(deviceId, this);
+            } else {
+                // go to phone settings
+                Log.d("Notification", "Notification not granted");
+            }
+        }
     }
 
     private void initializeToolbarButtons() {
