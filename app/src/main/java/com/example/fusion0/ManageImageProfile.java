@@ -63,6 +63,15 @@ public class ManageImageProfile {
     }
 
     /**
+     * Callback interface for checking if an image was successfully deleted
+     */
+    public interface ImageDeleteCallback {
+        void onSuccess();
+
+        void onFailure(Exception e);
+    }
+
+    /**
      * Uploads an image to Firebase Storage for the current user.
      *
      * @param imageUri the URI of the image to be uploaded
@@ -87,6 +96,19 @@ public class ManageImageProfile {
         userImageRef.getDownloadUrl()
                 .addOnSuccessListener(uri -> callback.onImageExists())
                 .addOnFailureListener(e -> callback.onImageDoesNotExist());
+    }
+
+    /**
+     * Deletes an image from firebase.
+     *
+     * @param callback the callback for checking if the image was successfully deleted.
+     */
+    public void deleteImage(final ImageDeleteCallback callback) {
+        StorageReference userImageRef = storageReference.child("profile_images/" + deviceId + ".jpg");
+
+        userImageRef.delete()
+                .addOnSuccessListener(unused -> callback.onSuccess())
+                .addOnFailureListener(callback::onFailure);
     }
 
 
