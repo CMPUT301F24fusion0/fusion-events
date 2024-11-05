@@ -52,7 +52,7 @@
             android:layout_weight="1"
             android:background="@android:color/white"
             android:contentDescription="search"
-            android:src="@drawable/ic_grey_camera" />
+            android:src="@drawable/ic_grey_qrscanner" />
 
 
         <ImageButton
