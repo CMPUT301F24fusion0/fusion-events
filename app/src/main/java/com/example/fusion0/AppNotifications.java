@@ -34,7 +34,7 @@ public class AppNotifications {
         }
     }
 
-    public static void permission(Activity activity) {
+    public static void permission(Activity activity, String dID) {
         // if higher than android 13
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             // no permission
@@ -42,10 +42,10 @@ public class AppNotifications {
                 ActivityCompat.requestPermissions(activity,
                         new String[]{Manifest.permission.POST_NOTIFICATIONS}, requestCode);
             } else {
-                Log.e("Error", "No permission granted");
+                getNotification(dID, activity);
             }
         } else {
-            Log.d("Default", "Permission granted");
+            getNotification(dID, activity);
         }
     }
 
