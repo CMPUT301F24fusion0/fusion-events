@@ -1,11 +1,17 @@
 package com.example.fusion0;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.FirebaseApp;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -19,6 +25,12 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home); // Use your home layout file
+
+        // Initialize Firebase for the app
+        FirebaseApp.initializeApp(this);
+
+        // Initialize Notification Channel
+        AppNotifications.createChannel(this);
 
         // Initialize toolbar buttons
         initializeToolbarButtons();
