@@ -1,11 +1,7 @@
 package com.example.fusion0;
 
 import android.content.Intent;
-
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -25,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton profileButton;
     private ImageButton addButton;
     private ImageButton cameraButton;
-    private ImageButton scannerButton;
     private ImageButton favouriteButton;
     private ImageButton homeButton;
 
