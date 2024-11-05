@@ -1,6 +1,6 @@
 package com.example.fusion0;
 
-// Code and Javadocs provided by chatGPT
+//Javadocs provided by chatGPT
 
 import android.graphics.Bitmap;
 
@@ -14,6 +14,8 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+
 
 
 /**
@@ -79,6 +81,7 @@ public class QRCode {
 
 
 
+
     /**
      * Generates a QR code image from the QR code string.
      * This method uses ZXing to convert the hashed QR code string into a Bitmap.
@@ -104,7 +107,7 @@ public class QRCode {
 
     /**
      * Retrieves the event ID associated with a given QR code hash from Firestore.
-     *
+     * Unit test is associated with Event testing
      * @param hash The hashed QR code to search for.
      * @param callback Callback to handle the async Firestore response with event ID.
      */
@@ -125,7 +128,9 @@ public class QRCode {
                 });
     }
 
-    // Callback interface for Firestore query response
+    /**
+     * Callback interface for handling the async Firestore response with event ID.
+     */
     public interface EventIdCallback {
         void onEventIdFound(String eventId);
         void onEventIdNotFound();

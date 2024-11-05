@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:background="@android:color/black"
+    tools:ignore="ExtraText">
 
     <!-- Camera Preview for the QR Scanner -->
     <me.dm7.barcodescanner.zxing.ZXingScannerView
@@ -31,22 +34,24 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|top"
             android:layout_marginTop="32dp"
-            android:text="Align the QR code within the frame to scan"
+            android:fontFamily="@font/raleway_medium"
+            android:text="Align The QR Code Within The Frame To Scan"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:textStyle="bold" />
     </FrameLayout>
 
     <!-- Button to handle cancel action if needed -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/cancel_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="32dp"
-        android:background="@android:color/white"
         android:text="Cancel"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/white"
+        app:backgroundTint="@color/figmaBlue"
+        app:cornerRadius="16dp" />
 
 </RelativeLayout>
