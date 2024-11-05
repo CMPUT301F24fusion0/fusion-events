@@ -14,6 +14,8 @@ import android.util.Log;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
+import com.google.firebase.firestore.auth.User;
+
 import java.util.ArrayList;
 
 public class AppNotifications {
@@ -80,7 +82,7 @@ public class AppNotifications {
             Intent intent = new Intent(context, MainActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, i, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             builder.setContentTitle(notifications.get(i))
-                    .setSmallIcon(R.drawable.ic_grey_home)
+                    .setSmallIcon(R.drawable.ic_blue_home)
                     .setContentText(notifications.get(i+1))
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setContentIntent(pendingIntent)
@@ -97,11 +99,14 @@ public class AppNotifications {
      * @param context context of activity or fragment
      */
     public static void getNotification(String dID, Context context) {
-        new UserFirestore().findUser(dID, new UserFirestore.Callback() {
+        UserFirestore userFirestore = new UserFirestore();
+        userFirestore.findUser(dID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
                 sendAllNotifications(dID, context, user.getNotifications());
-                user.setNotifications(new ArrayList<String>()); // reset
+                user.editMode(true);
+                user.setNotifications(new ArrayList<String>());
+                user.editMode(false);
             }
 
             @Override
