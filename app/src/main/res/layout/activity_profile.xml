@@ -290,6 +290,7 @@
             android:contentDescription="search"
             android:src="@drawable/ic_grey_qrscanner" />
 
+
         <ImageButton
             android:id="@+id/toolbar_add"
             android:layout_width="0dp"

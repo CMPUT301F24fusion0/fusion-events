@@ -139,4 +139,3 @@ public class ViewEventActivity extends AppCompatActivity {
         });
     }
 }
-

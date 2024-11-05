@@ -39,6 +39,7 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp">
 
+
             <!-- Event Name Section -->
             <TextView
                 android:id="@+id/EventName"
