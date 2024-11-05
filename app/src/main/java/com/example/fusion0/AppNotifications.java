@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class AppNotifications {
     // https://stackoverflow.com/questions/44305206/ask-permission-for-push-notification
     // https://learn.microsoft.com/en-gb/answers/questions/1181354/how-can-i-request-permission-for-push-notification
-    final static int requestCode = 100;
+    private final static int REQUEST_CODE = 100;
 
     public static void createChannel(Context context) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -35,7 +35,7 @@ public class AppNotifications {
             // no permission
             if ((ActivityCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)) {
                 ActivityCompat.requestPermissions(activity,
-                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, requestCode);
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_CODE);
             } else {
                 getNotification(dID, activity);
             }
@@ -110,19 +110,4 @@ public class AppNotifications {
             }
         });
     }
-
-    /*
-    Use Case:
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getNotifications(String dID, Context context)
-            } else {
-                throw error or tell them to try again
-            }
-        }
-     */
 }
