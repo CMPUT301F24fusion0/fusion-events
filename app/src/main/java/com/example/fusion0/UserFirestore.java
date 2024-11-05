@@ -83,6 +83,7 @@ public class UserFirestore {
             throw new IllegalArgumentException("The field you've tried to change is not valid");
         } else if (!(field.equalsIgnoreCase("notifications"))) {
             newField = newFields.get(0);
+
             usersRef.document(user.getDeviceID()).update(field, newField)
                     .addOnSuccessListener(ref -> {
                         System.out.println("Update Successful");
