@@ -84,6 +84,7 @@ public class Registration extends Fragment {
     private void registration(String dID, String first, String last, String emails, String phone) {
         firebase.findUser(dID, new UserFirestore.Callback() {
             /**
+             * @author Sehej Brar
              * This method checks to see if the same user already exists, if it doesn't then the new
              * user is able to create their account
              * @param user is the user we get back after we look to see if the same user is in the database
@@ -104,6 +105,7 @@ public class Registration extends Fragment {
             }
 
             /**
+             * @author Sehej Brar
              * This method controls the error received
              * @param error the error message received
              */

@@ -43,8 +43,8 @@ public class UserFirestore {
         usersRef.document(dID).set(user)
                 .addOnSuccessListener(documentReference -> System.out.println("Success"))
                 .addOnFailureListener(error -> {
-                    System.out.println("Fail" + error.getMessage());
-                }
+                            System.out.println("Fail" + error.getMessage());
+                        }
                 );
     }
 

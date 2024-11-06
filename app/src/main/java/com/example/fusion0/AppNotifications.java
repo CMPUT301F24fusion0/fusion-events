@@ -26,6 +26,7 @@ import java.util.Arrays;
  *      <a href="https://learn.microsoft.com/en-gb/answers/questions/1181354/how-can-i-request-permission-for-push-notification">...</a>
  */
 public class AppNotifications {
+
     private final static int REQUEST_CODE = 100;
 
     /**
@@ -119,7 +120,7 @@ public class AppNotifications {
     }
 
     /**
-     * @Author: Sehej Brar
+     * @author Sehej Brar
      * Used during logging in. Send all notifications if the user exists.
      * @param dID device ID
      * @param context context of activity or fragment
