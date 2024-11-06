@@ -56,7 +56,6 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation ("com.google.zxing:core:3.4.1")
-
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
