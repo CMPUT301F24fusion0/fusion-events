@@ -26,6 +26,7 @@ import java.util.Arrays;
  *      <a href="https://learn.microsoft.com/en-gb/answers/questions/1181354/how-can-i-request-permission-for-push-notification">...</a>
  */
 public class AppNotifications {
+
     private final static int REQUEST_CODE = 100;
 
     /**
