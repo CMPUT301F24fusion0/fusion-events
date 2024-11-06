@@ -49,6 +49,7 @@
         <activity android:name=".ViewEventActivity"/>
         <activity android:name=".ViewFacilityActivity"/>
 
+
     </application>
 
 </manifest>

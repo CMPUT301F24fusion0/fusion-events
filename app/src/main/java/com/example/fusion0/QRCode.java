@@ -70,9 +70,6 @@ public class QRCode {
     public String getQrCode() {
         return this.qrCode;
     }
-    public Bitmap getQrImage() {
-        return this.qrImage;
-    }
 
 
     /**
