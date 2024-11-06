@@ -113,7 +113,7 @@ public class ViewEventActivity extends AppCompatActivity {
                         if (deviceID.equals(event.getOrganizer())) {
                             isOwner = true;
                         }else{
-                            joinButton.setVisibility(View.GONE);
+                            joinButton.setVisibility(View.VISIBLE);
                             editButton.setVisibility(View.GONE);
                             deleteButton.setVisibility(View.GONE);
                             cancelButton.setVisibility(View.GONE);
