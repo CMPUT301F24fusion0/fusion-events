@@ -31,6 +31,8 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.libraries.places.api.Places;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.zxing.WriterException;
 
 import java.net.URI;
@@ -39,9 +41,13 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
 
 public class EventActivity extends AppCompatActivity {
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+
     private static final String TAG = "EventActivity";
     private EditText eventName;
     private TextView addFacilityText;
@@ -76,6 +82,9 @@ public class EventActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_event);
+
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
 
         eventName = findViewById(R.id.EventName);
         uploadedImageView = findViewById(R.id.uploaded_image_view);
@@ -136,15 +145,29 @@ public class EventActivity extends AppCompatActivity {
                         Uri imageUri = result.getData().getData();
                         uploadedImageView.setVisibility(View.VISIBLE);
                         uploadedImageView.setImageURI(imageUri);
-                        eventPoster = imageUri.toString();
+
+                        StorageReference imageRef = storageRef.child("event_posters/" + UUID.randomUUID().toString() + ".jpg");
+
+                        imageRef.putFile(imageUri)
+                                .addOnSuccessListener(taskSnapshot -> {
+                                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                        eventPoster = uri.toString();
+                                    }).addOnFailureListener(e -> {
+                                        Log.e(TAG, "Error getting download URL", e);
+                                    });
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e(TAG, "Upload failed", e);
+                                });
                     }
                 }
         );
 
         uploadImageButton.setOnClickListener(v ->{
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                imagePickerLauncher.launch(intent);});
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setType("image/*");
+            imagePickerLauncher.launch(intent);
+        });
     }
 
     private void handleFacility(OrganizerInfo organizer){
