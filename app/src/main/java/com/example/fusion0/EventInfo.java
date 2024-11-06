@@ -263,9 +263,6 @@ public class EventInfo {
         this.eventPoster = eventPoster;
     }
 
-    public Uri getEventPosterUri() {
-        return Uri.parse(eventPoster);
-    }
 
     public Bitmap generateQRCodeImage(int width, int height, String qrCode) throws WriterException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
