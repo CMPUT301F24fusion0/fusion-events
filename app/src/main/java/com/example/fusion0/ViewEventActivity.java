@@ -145,6 +145,8 @@ public class ViewEventActivity extends AppCompatActivity {
             currentEntrants.add(deviceID);
             event.setEntrants(currentEntrants);
             EventFirebase.editEvent(event);
+            Toast.makeText(ViewEventActivity.this, "Joined Successfully.", Toast.LENGTH_SHORT).show();
+
         });
     }
 }
