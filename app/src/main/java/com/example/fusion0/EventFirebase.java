@@ -176,7 +176,7 @@ public class EventFirebase {
 
 
 
-    public void editEvent(EventInfo event){
+    public static void editEvent(EventInfo event){
         String eventID = event.getEventID();
         eventsRef.document(eventID).set(event, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> {
