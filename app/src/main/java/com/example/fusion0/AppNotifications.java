@@ -120,7 +120,7 @@ public class AppNotifications {
     }
 
     /**
-     * @Author: Sehej Brar
+     * @author Sehej Brar
      * Used during logging in. Send all notifications if the user exists.
      * @param dID device ID
      * @param context context of activity or fragment
