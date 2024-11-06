@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * @author Sehej Brar
      * Decides whether the permission is granted and then sends them the notification
      * @param requestCode The request code passed in
      * @param permissions The requested permissions. Never null.
@@ -99,8 +100,9 @@ public class MainActivity extends AppCompatActivity {
                 AppNotifications.getNotification(deviceId, this);
             } else {
                 // go to phone settings
-                Log.d("Notification", "Notification not granted");
             }
+        } else {
+            Log.d("Wrong", "Code");
         }
     }
 

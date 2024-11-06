@@ -12,6 +12,7 @@ import java.util.HashMap;
  */
 public class UserFirestore {
     /**
+     * @author Sehej Brar
      * This interface is needed due to the asynchronous nature of Firestore.
      *      Adapted from <a href="https://stackoverflow.com/questions/48499310/how-to-return-a-documentsnapshot-as-a-result-of-a-method">...</a>
      */
@@ -23,6 +24,7 @@ public class UserFirestore {
     private final CollectionReference usersRef;
 
     /**
+     * @author Sehej Brar
      * Initializes the database as well as the users collection.
      */
     public UserFirestore() {
@@ -31,6 +33,7 @@ public class UserFirestore {
     }
 
     /**
+     * @author Sehej Brar
      * This method takes in a UserInfo object and adds it to the database.
      * @param userInfo contains the UserInfo object that is to be added to the database
      */
@@ -46,6 +49,7 @@ public class UserFirestore {
     }
 
     /**
+     * @author Sehej Brar
      * This method finds the user and will return the UserInfo object through the callback
      * @param dID is the primary key for each user and each user has a unique device ID
      * @param callback is the interface needed due to the asynchronous nature of Firebase
@@ -67,6 +71,8 @@ public class UserFirestore {
     }
 
     /**
+     * @author Sehej Brar
+     * @throws IllegalArgumentException
      * Uses the primary key to find the user then allows for the editing of any field
      * @param user represents the user to be changed
      * @param field is the field that is to be changed (i.e. first name, last name, etc.)
@@ -99,6 +105,7 @@ public class UserFirestore {
     }
 
     /**
+     * @author Sehej Brar
      * Finds the user and then deletes them.
      * @param dID is the primary key used to find the user
      */

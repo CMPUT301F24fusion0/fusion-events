@@ -17,6 +17,7 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * This class provides the methods needed to send/receive notifications
@@ -28,6 +29,7 @@ public class AppNotifications {
     private final static int REQUEST_CODE = 100;
 
     /**
+     * @author Sehej Brar
      * Creates the notification channels required to send the notification but this is only needed for
      * android versions above 13
      * @param context app's context
@@ -41,6 +43,7 @@ public class AppNotifications {
     }
 
     /**
+     * @author Sehej Brar
      * Ask for permission to send notifications for Android versions 13
      * @param activity the activity to ask for permission in
      * @param dID device ID
@@ -48,7 +51,7 @@ public class AppNotifications {
     public static void permission(Activity activity, String dID) {
         // if higher than android 13
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // no permission
+            // no permission then ask
             if ((ActivityCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)) {
                 ActivityCompat.requestPermissions(activity,
                         new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_CODE);
@@ -61,7 +64,8 @@ public class AppNotifications {
     }
 
     /**
-     * To send a notification to a certain user
+     * @author Sehej Brar
+     * Adds the notification to that user to be sent out in sendAllNotifications.
      * @param dID device id
      * @param title title of notification
      * @param body body of notification
@@ -74,6 +78,7 @@ public class AppNotifications {
                 if (user != null) {
                     user.editMode(true);
                     user.addNotifications(title, body);
+                    user.editMode(false);
                 }
             }
 
@@ -85,6 +90,7 @@ public class AppNotifications {
     }
 
     /**
+     * @author Sehej Brar
      * The user has logged in so they are ready to receive the notifications. This is the method
      * that actually sends out the notifications
      * @param dID device ID
@@ -97,9 +103,7 @@ public class AppNotifications {
         createChannel(context);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "lottery");
-
         for (int i = 0; i < notifications.size(); i += 2) {
-            System.out.println(notifications.get(i));
             Intent intent = new Intent(context, MainActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, i, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             builder.setContentTitle(notifications.get(i))
@@ -115,6 +119,7 @@ public class AppNotifications {
     }
 
     /**
+     * @Author: Sehej Brar
      * Used during logging in. Send all notifications if the user exists.
      * @param dID device ID
      * @param context context of activity or fragment
@@ -127,6 +132,7 @@ public class AppNotifications {
                 sendAllNotifications(dID, context, user.getNotifications());
                 user.editMode(true);
                 user.setNotifications(new ArrayList<String>());
+                System.out.println("Notifications removed successfully");
                 user.editMode(false);
             }
 

@@ -21,7 +21,6 @@ import static org.junit.Assert.*;
 
 
 
-@RunWith(AndroidJUnit4.class)
 public class WaitlistTest {
     private FirebaseFirestore db;
     private Waitlist waitlist;
