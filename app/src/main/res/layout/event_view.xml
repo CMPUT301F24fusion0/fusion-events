@@ -19,7 +19,6 @@
         android:layout_marginStart="10dp"
         android:background="?attr/selectableItemBackgroundBorderless" />
 
-    <!-- ScrollView to hold all form elements -->
     <ScrollView
         android:id="@+id/scroll_container"
         android:layout_width="match_parent"
@@ -28,10 +27,9 @@
         android:fillViewport="true"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@+id/toolbar"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/backButton"
         app:layout_constraintStart_toStartOf="parent">
 
-        <!-- LinearLayout containing form elements -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -61,7 +59,6 @@
                 android:drawablePadding="12dp"
                 android:padding="12dp" />
 
-            <!-- Event Description Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -100,7 +97,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp" />
 
-            <!-- Upload Poster Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -273,12 +269,25 @@
 
     <LinearLayout
         android:id="@+id/toolbar"
+        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:gravity="center"
         android:orientation="horizontal"
         android:background="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/join_button"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:text="Join"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/figmaBlue"
+            app:cornerRadius="5dp"
+            android:visibility="gone">
+        </Button>
 
         <Button
             android:id="@+id/edit_button"
@@ -287,6 +296,15 @@
             android:text="Edit"
             android:textColor="@color/white"
             android:backgroundTint="@color/figmaBlue"
+            app:cornerRadius="5dp">
+        </Button>
+        <Button
+            android:id="@+id/save_button"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:text="Save"
+            android:backgroundTint="@color/figmaBlue"
+            android:visibility="gone"
             app:cornerRadius="5dp"/>
 
         <Button
@@ -295,8 +313,20 @@
             android:layout_height="50dp"
             android:text="Delete"
             android:textColor="@color/figmaBlue"
-            android:backgroundTint="@android:color/white"
-            app:cornerRadius="5dp"/>
+            android:backgroundTint="@color/white"
+            app:cornerRadius="5dp">
+        </Button>
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:text="Cancel"
+            android:textColor="@color/figmaBlue"
+            android:backgroundTint="@color/white"
+            app:cornerRadius="5dp"
+            android:visibility="gone">
+        </Button>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
