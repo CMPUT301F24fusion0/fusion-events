@@ -1,5 +1,6 @@
 package com.example.fusion0;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -8,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.Manifest;
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
@@ -17,15 +17,21 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
+/**
+ * This class provides the methods needed to send/receive notifications
+ * Sources:
+ *      <a href="https://stackoverflow.com/questions/44305206/ask-permission-for-push-notification">...</a>
+ *      <a href="https://learn.microsoft.com/en-gb/answers/questions/1181354/how-can-i-request-permission-for-push-notification">...</a>
+ */
 public class AppNotifications {
-    // https://stackoverflow.com/questions/44305206/ask-permission-for-push-notification
-    // https://learn.microsoft.com/en-gb/answers/questions/1181354/how-can-i-request-permission-for-push-notification
-    final static int requestCode = 100;
+    private final static int REQUEST_CODE = 100;
 
+    /**
+     * Creates the notification channels required to send the notification but this is only needed for
+     * android versions above 13
+     * @param context app's context
+     */
     public static void createChannel(Context context) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel lottery = new NotificationChannel("lottery", "lotteryAccept", NotificationManager.IMPORTANCE_HIGH);
@@ -34,18 +40,23 @@ public class AppNotifications {
         }
     }
 
-    public static void permission(Activity activity) {
+    /**
+     * Ask for permission to send notifications for Android versions 13
+     * @param activity the activity to ask for permission in
+     * @param dID device ID
+     */
+    public static void permission(Activity activity, String dID) {
         // if higher than android 13
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             // no permission
             if ((ActivityCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)) {
                 ActivityCompat.requestPermissions(activity,
-                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, requestCode);
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_CODE);
             } else {
-                Log.e("Error", "No permission granted");
+                getNotification(dID, activity);
             }
         } else {
-            Log.d("Default", "Permission granted");
+            getNotification(dID, activity);
         }
     }
 
@@ -73,6 +84,13 @@ public class AppNotifications {
         });
     }
 
+    /**
+     * The user has logged in so they are ready to receive the notifications. This is the method
+     * that actually sends out the notifications
+     * @param dID device ID
+     * @param context context for the notifications to be sent to
+     * @param notifications an array of notifications
+     */
     private static void sendAllNotifications(String dID, Context context, ArrayList<String> notifications) {
         // Here we'd call upon firebase to give us back the array of notifications and then send them to the user
         // get notification then delete them from Firebase
@@ -85,7 +103,7 @@ public class AppNotifications {
             Intent intent = new Intent(context, MainActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, i, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             builder.setContentTitle(notifications.get(i))
-                    .setSmallIcon(R.drawable.ic_grey_home)
+                    .setSmallIcon(R.drawable.ic_blue_home)
                     .setContentText(notifications.get(i+1))
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setContentIntent(pendingIntent)
@@ -97,16 +115,19 @@ public class AppNotifications {
     }
 
     /**
-     * Used during logging and the user can view their notifications
+     * Used during logging in. Send all notifications if the user exists.
      * @param dID device ID
      * @param context context of activity or fragment
      */
     public static void getNotification(String dID, Context context) {
-        new UserFirestore().findUser(dID, new UserFirestore.Callback() {
+        UserFirestore userFirestore = new UserFirestore();
+        userFirestore.findUser(dID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
                 sendAllNotifications(dID, context, user.getNotifications());
-                user.setNotifications(new ArrayList<String>()); // reset
+                user.editMode(true);
+                user.setNotifications(new ArrayList<String>());
+                user.editMode(false);
             }
 
             @Override
@@ -115,19 +136,4 @@ public class AppNotifications {
             }
         });
     }
-
-    /*
-    Use Case:
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getNotifications(String dID, Context context)
-            } else {
-                throw error or tell them to try again
-            }
-        }
-     */
 }
