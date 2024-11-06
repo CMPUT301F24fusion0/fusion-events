@@ -47,7 +47,7 @@ dependencies {
     testImplementation ("androidx.test:core:1.4.0")
     implementation("de.hdodenhof:circleimageview:3.1.0")
     androidTestImplementation("org.mockito:mockito-core:5.3.1")
-    androidTestImplementation("org.mockito:mockito-android:5.3.1") // For Android-specific mocking
+    androidTestImplementation("org.mockito:mockito-android:5.3.1")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
@@ -56,11 +56,11 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation("me.dm7.barcodescanner:zxing:1.9.8")
     implementation ("com.google.zxing:core:3.4.1")
-
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
-    implementation("com.github.bumptech.glide:glide:4.14.2")
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
     implementation(libs.places)
     implementation("com.google.android.libraries.places:places:4.0.0")
 
