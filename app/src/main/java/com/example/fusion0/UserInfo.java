@@ -23,6 +23,7 @@ public class UserInfo {
      * Used by firestore to create objects in findUser()
      */
     public UserInfo() {
+        this.firebase = new UserFirestore();
         this.edit = false;
     }
 
