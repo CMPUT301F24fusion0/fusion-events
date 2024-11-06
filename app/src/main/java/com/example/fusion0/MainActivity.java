@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize Firebase for the app
         FirebaseApp.initializeApp(this);
+        System.out.println(deviceId);
 
         // Initialize Notification Channel
         AppNotifications.createChannel(this);
