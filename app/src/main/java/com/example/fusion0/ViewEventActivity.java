@@ -2,13 +2,16 @@ package com.example.fusion0;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -19,35 +22,30 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.google.zxing.WriterException;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class ViewEventActivity extends AppCompatActivity {
-    private TextView eventNameTextView;
-    private TextView eventDescriptionTextView;
+    private String deviceID;
+    private Boolean isOwner = false;
     private Spinner eventFacility;
-    private TextView eventStartDateTextView;
-    private TextView eventEndDateTextView;
-    private TextView eventCapacityTextView;
-    private EditText eventNameEditText;
-    private EditText eventDescriptionEditText;
-    private EditText eventCapacityEditText;
-    private Spinner eventFacilitySpinner;
-    private ImageView eventPosterImageView;
-    private ImageView qrImageView;
-    private ListView entrantsListView;
-    private ListView chosenEntrantsListView;
-    private ListView cancelledEntrantsListView;
-    private Button startDateButton;
-    private Button endDateButton;
-    private Button editButton;
-    private Button deleteButton;
+    private TextView eventNameTextView, eventDescriptionTextView, eventStartDateTextView, eventEndDateTextView, eventCapacityTextView;
+    private EditText eventNameEditText, eventDescriptionEditText, eventCapacityEditText;
+    private ImageView eventPosterImageView, qrImageView;
+    private ListView entrantsListView, chosenEntrantsListView, cancelledEntrantsListView;
+    private Button startDateButton, endDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton;
     private ImageButton backButton;
     private EventInfo event;
+    private LinearLayout toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event_view);
+
+        deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
 
         backButton = findViewById(R.id.backButton);
         eventNameTextView = findViewById(R.id.EventName);
@@ -58,7 +56,6 @@ public class ViewEventActivity extends AppCompatActivity {
         eventCapacityTextView = findViewById(R.id.Capacity);
         eventNameEditText = findViewById(R.id.editEventName);
         eventDescriptionEditText = findViewById(R.id.Description);
-        eventFacilitySpinner = findViewById(R.id.spinner_facilities);
         eventPosterImageView = findViewById(R.id.uploaded_image_view);
         qrImageView = findViewById(R.id.qrImage);
         entrantsListView = findViewById(R.id.entrantsListView);
@@ -68,6 +65,11 @@ public class ViewEventActivity extends AppCompatActivity {
         endDateButton = findViewById(R.id.end_date_button);
         editButton = findViewById(R.id.edit_button);
         deleteButton = findViewById(R.id.delete_button);
+        joinButton = findViewById(R.id.join_button);
+        cancelButton = findViewById(R.id.cancel_button);
+        saveButton = findViewById(R.id.save_button);
+
+        toolbar = findViewById(R.id.toolbar);
 
         backButton.setOnClickListener(view -> {
             Intent intent = new Intent(ViewEventActivity.this, FavouriteActivity.class);
@@ -91,33 +93,33 @@ public class ViewEventActivity extends AppCompatActivity {
                         eventDescriptionTextView.setText(event.getDescription());
                         eventCapacityTextView.setText(String.valueOf(event.getCapacity()));
 
-                        // Load event poster image
-                        String eventPosterUrl = event.getEventPoster();
-                        if (eventPosterUrl != null && !eventPosterUrl.isEmpty()) {
-                            Uri eventPosterURI = Uri.parse(eventPosterUrl);
+                        String eventPoster = event.getEventPoster();
+                        if (eventPoster != null && !eventPoster.isEmpty()) {
                             Glide.with(ViewEventActivity.this)
-                                    .load(eventPosterURI)
+                                    .load(eventPoster)
                                     .into(eventPosterImageView);
+                            eventPosterImageView.setVisibility(View.VISIBLE);
                         }
 
-                        // Generate and set QR code
                         String qrcode = event.getQrCode();
                         if (qrcode != null && !qrcode.isEmpty()) {
                             Bitmap qrBitmap = event.generateQRCodeImage(500, 500, qrcode);
                             qrImageView.setImageBitmap(qrBitmap);
                         }
 
-                        eventNameEditText.setText(event.getEventName());
-                        eventDescriptionEditText.setText(event.getDescription());
 
-                        String facilityName = event.getFacilityName();
-                        //ArrayList<String> facilityNames = owner.getFacilityNames();
-                       // int facilityIndex = facilityNames.indexOf(facilityName);
-                        //if (facilityIndex != -1) {
-                        //    eventFacilitySpinner.setSelection(facilityIndex);
-                        //}
-                       // startDateButton.setText(event.getStartDate());
-                       // endDateButton.setText(event.getEndDate());
+                        toolbar.setVisibility(View.VISIBLE);
+
+                        if (deviceID.equals(event.getOrganizer())) {
+                            isOwner = true;
+                        }else{
+                            joinButton.setVisibility(View.GONE);
+                            editButton.setVisibility(View.GONE);
+                            deleteButton.setVisibility(View.GONE);
+                            cancelButton.setVisibility(View.GONE);
+                            saveButton.setVisibility(View.GONE);
+
+                        }
                     }
                 }
 
@@ -136,6 +138,13 @@ public class ViewEventActivity extends AppCompatActivity {
         });
 
         deleteButton.setOnClickListener(v -> {
+        });
+
+        joinButton.setOnClickListener(view ->{
+            ArrayList<String> currentEntrants = event.getEntrants();
+            currentEntrants.add(deviceID);
+            event.setEntrants(currentEntrants);
+            EventFirebase.editEvent(event);
         });
     }
 }
