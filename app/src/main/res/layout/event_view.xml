@@ -215,7 +215,7 @@
 
                 <Button
                     android:id="@+id/upload_image_button"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Choose Image"
                     android:backgroundTint="@color/textColor"
@@ -311,144 +311,185 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/textColor"
-                        android:layout_marginBottom="16dp"/>
+            </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="16dp">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Capacity:"
-                            android:textColor="@color/textColor"
-                            android:textSize="17sp"
-                            android:fontFamily="@font/raleway_semibold"
-                            android:gravity="center_vertical"/>
-                        <Space
-                            android:layout_width="8dp"
-                            android:layout_height="0dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
 
-                        <TextView
-                            android:id="@+id/capacity"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:text="95"
-                            android:textColor="@color/textColor"
-                            android:textSize="17sp"
-                            android:fontFamily="@font/raleway_semibold"
-                            android:gravity="center_vertical"
-                            android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Capacity:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"/>
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
 
-
-                        <EditText
-                            android:id="@+id/editCapacity"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:hint="Enter Capacity"
-                            android:textColor="@color/textColor"
-                            android:textSize="17sp"
-                            android:fontFamily="@font/raleway_semibold"
-                            android:visibility="gone"
-                            android:layout_weight="1"
-                            android:layout_marginStart="8dp"/>
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/textColor"
-                        android:layout_marginBottom="16dp"/>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="QR Code:"
-                            android:textColor="@color/textColor"
-                            android:textSize="17sp"
-                            android:fontFamily="@font/raleway_semibold"
-                            android:gravity="center_vertical"/>
-
-                        <ImageView
-                            android:id="@+id/qrImage"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:contentDescription="QR Code"
-                            android:layout_marginBottom="16dp"/>
-                    </LinearLayout>
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/capacity"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="95"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:layout_weight="1"/>
 
 
-                    <!-- Entrants Section -->
-                    <TextView
-                        android:id="@+id/entrantsHeader"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Entrants"
-                        android:textSize="16sp"
-                        android:textColor="@android:color/black"
-                        android:paddingTop="16dp"
-                        android:layout_marginBottom="8dp"/>
+                <EditText
+                    android:id="@+id/editCapacity"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:autofillHints=""
+                    android:hint="Enter Capacity"
+                    android:inputType="number"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:visibility="gone"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"/>
+            </LinearLayout>
 
-                    <ListView
-                        android:id="@+id/entrantsListView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:divider="@android:color/darker_gray"
-                        android:dividerHeight="0.5dp"
-                        android:layout_marginBottom="16dp"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
 
-                    <!-- Chosen Entrants Section -->
-                    <TextView
-                        android:id="@+id/chosenEntrantsHeader"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Chosen Entrants"
-                        android:textSize="16sp"
-                        android:textColor="@android:color/black"
-                        android:paddingTop="16dp"
-                        android:layout_marginBottom="8dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
 
-                    <ListView
-                        android:id="@+id/chosenEntrantsListView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:divider="@android:color/darker_gray"
-                        android:dividerHeight="0.5dp"
-                        android:layout_marginBottom="16dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="QR Code:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"/>
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
 
-                    <!-- Cancelled Entrants Section -->
-                    <TextView
-                        android:id="@+id/cancelledEntrantsHeader"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Cancelled Entrants"
-                        android:textSize="16sp"
-                        android:textColor="@android:color/black"
-                        android:paddingTop="16dp"
-                        android:layout_marginBottom="8dp"/>
+                <ImageView
+                    android:id="@+id/qrImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="QR Code"
+                    android:layout_marginBottom="16dp"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
 
-                    <ListView
-                        android:id="@+id/cancelledEntrantsListView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:divider="@android:color/darker_gray"
-                        android:dividerHeight="0.5dp"
-                        android:layout_marginBottom="16dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
 
-                </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Waitinglist:"
+                android:textColor="@color/textColor"
+                android:textSize="17sp"
+                android:fontFamily="@font/raleway_semibold"
+                android:gravity="center_vertical"/>
+
+                <ListView
+                    android:id="@+id/waitinglistListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@android:color/darker_gray"
+                    android:dividerHeight="0.5dp"
+                    android:layout_marginBottom="16dp"/>
+
+
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Chosen Entrants:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"/>
+
+                <ListView
+                    android:id="@+id/chosenEntrantsListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@android:color/darker_gray"
+                    android:dividerHeight="0.5dp"
+                    android:layout_marginBottom="16dp"/>
+
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cancelled Entrants:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"/>
+
+                <ListView
+                    android:id="@+id/cancelledEntrantsListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@android:color/darker_gray"
+                    android:dividerHeight="0.5dp"
+                    android:layout_marginBottom="16dp"/>
+            </LinearLayout>
+        </LinearLayout>
     </ScrollView>
 
     <LinearLayout
