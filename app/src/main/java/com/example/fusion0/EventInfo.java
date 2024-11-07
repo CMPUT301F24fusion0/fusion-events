@@ -1,20 +1,16 @@
 package com.example.fusion0;
 
 import android.graphics.Bitmap;
-import android.media.Image;
-import android.net.Uri;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
-import java.net.URI;
 import java.util.HashMap;
 
 
 import java.util.Date;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -31,13 +27,17 @@ public class EventInfo {
     private Date endDate;
     private String startTime;
     private String endTime;
-    ArrayList<String> entrants;
+    ArrayList<String> waitinglist;
     ArrayList<String> chosenEntrants;
     ArrayList<String> cancelledEntrants;
     private String eventPoster;
     private String qrCode;
     EventFirebase firebase;
     private Long acceptedCount;
+    private Boolean geolocation;
+    private Double latitude;
+    private Double longitude;
+
 
     public EventInfo() throws WriterException {
         this.eventID = UUID.randomUUID().toString();
@@ -52,15 +52,18 @@ public class EventInfo {
         this.startTime = "00:00";
         this.endTime = "00:00";
         this.qrCode = (new QRCode(eventID)).getQrCode();
-        this.entrants = new ArrayList<>();
+        this.waitinglist = new ArrayList<>();
         this.chosenEntrants = new ArrayList<>();
         this.cancelledEntrants = new ArrayList<>();
         this.firebase = new EventFirebase();
         this.acceptedCount = 0L;
         this.eventPoster = null;
+        this.geolocation = false;
+        this.latitude = 0.0;
+        this.longitude = 0.0;
     }
 
-    public EventInfo(String organizer, String eventName, String address, String facilityName, String capacity, String description, Date startDate, Date endDate, String startTime, String endTime, String eventPoster) throws WriterException {
+    public EventInfo(String organizer, String eventName, String address, String facilityName, String capacity, String description, Date startDate, Date endDate, String startTime, String endTime, String eventPoster, Boolean geolocation, Double longitude, Double latitude) throws WriterException {
         this.eventID = UUID.randomUUID().toString();
         this.organizer = organizer;
         this.eventName = eventName;
@@ -73,12 +76,15 @@ public class EventInfo {
         this.startTime = startTime;
         this.endTime = endTime;
         this.qrCode =(new QRCode(eventID)).getQrCode();
-        this.entrants = new ArrayList<>();
+        this.waitinglist = new ArrayList<>();
         this.chosenEntrants = new ArrayList<>();
         this.cancelledEntrants = new ArrayList<>();
         this.firebase = new EventFirebase();
         this.acceptedCount = 0L;
         this.eventPoster = eventPoster;
+        this.geolocation = geolocation;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
 
@@ -94,12 +100,15 @@ public class EventInfo {
         event.put("endDate", this.endDate);
         event.put("startTime", this.startTime);
         event.put("endTime", this.endTime);
-        event.put("entrants", this.entrants);
+        event.put("waitinglist", this.waitinglist);
         event.put("chosenEntrants", this.chosenEntrants);
         event.put("cancelledEntrants", this.cancelledEntrants);
         event.put("qrCode",this.qrCode);
         event.put("description", this.description);
         event.put("eventPoster", this.eventPoster);
+        event.put("geolocation", this.geolocation);
+        event.put("latitude", this.latitude);
+        event.put("longitude", this.longitude);
         return event;
     }
 
@@ -216,13 +225,13 @@ public class EventInfo {
     }
 
 
-    public ArrayList<String> getEntrants() {
-        return entrants;
+    public ArrayList<String> getWaitinglist() {
+        return waitinglist;
     }
 
 
-    public void setEntrants(ArrayList<String> entrants) {
-        this.entrants = entrants;
+    public void setWaitinglist(ArrayList<String> waitinglist) {
+        this.waitinglist = waitinglist;
     }
 
 
@@ -262,6 +271,31 @@ public class EventInfo {
     public void setEventPoster(String eventPoster) {
         this.eventPoster = eventPoster;
     }
+
+    public Boolean getGeolocation() {
+        return geolocation;
+    }
+
+    public void setGeolocation(Boolean geolocation) {
+        this.geolocation = geolocation;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
 
 
     public Bitmap generateQRCodeImage(int width, int height, String qrCode) throws WriterException {
