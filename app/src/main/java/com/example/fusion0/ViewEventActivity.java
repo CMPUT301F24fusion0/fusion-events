@@ -68,7 +68,7 @@ public class ViewEventActivity extends AppCompatActivity {
         eventDescriptionEditText = findViewById(R.id.Description);
         eventPosterImageView = findViewById(R.id.uploaded_image_view);
         qrImageView = findViewById(R.id.qrImage);
-        entrantsListView = findViewById(R.id.entrantsListView);
+        entrantsListView = findViewById(R.id.waitinglistListView);
         chosenEntrantsListView = findViewById(R.id.chosenEntrantsListView);
         cancelledEntrantsListView = findViewById(R.id.cancelledEntrantsListView);
         startDateButton = findViewById(R.id.start_date_button);
