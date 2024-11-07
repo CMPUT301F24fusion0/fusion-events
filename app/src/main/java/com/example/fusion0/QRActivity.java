@@ -39,7 +39,7 @@ public class QRActivity extends AppCompatActivity implements ZXingScannerView.Re
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_qr_scanner); // Make sure this matches your actual layout file name
+        setContentView(R.layout.activity_qr_scanner);
 
         // Initialize views
         scannerView = findViewById(R.id.camera_preview);
@@ -80,14 +80,13 @@ public class QRActivity extends AppCompatActivity implements ZXingScannerView.Re
     @Override
     public void handleResult(Result rawResult) {
         String scannedData = rawResult.getText();
-        String hash = QRCode.generateHash(scannedData);
 
         // Use the QRCode class to find the associated event by hash
         QRCode.getEventIdFromHash(scannedData, new QRCode.EventIdCallback() {
             @Override
             public void onEventIdFound(String eventId) {
                 Toast.makeText(QRActivity.this, "Event ID: " + eventId, Toast.LENGTH_LONG).show();
-                finishWithResult(eventId, hash);
+                finishWithResult(eventId, scannedData);
 
                 Intent intent = new Intent(QRActivity.this, ViewEventActivity.class);
                 intent.putExtra("eventID", eventId);
@@ -150,7 +149,7 @@ public class QRActivity extends AppCompatActivity implements ZXingScannerView.Re
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults); // Ensure super is called
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startScanner();
@@ -160,4 +159,7 @@ public class QRActivity extends AppCompatActivity implements ZXingScannerView.Re
             }
         }
     }
+
+
+
 }
