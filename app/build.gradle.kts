@@ -1,7 +1,8 @@
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.0" // Use the latest version
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.0"
+
 }
 
 val apiKey: String? = project.findProperty("API_KEY") as String?
@@ -47,7 +48,7 @@ dependencies {
     testImplementation ("androidx.test:core:1.4.0")
     implementation("de.hdodenhof:circleimageview:3.1.0")
     androidTestImplementation("org.mockito:mockito-core:5.3.1")
-    androidTestImplementation("org.mockito:mockito-android:5.3.1") // For Android-specific mocking
+    androidTestImplementation("org.mockito:mockito-android:5.3.1")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
@@ -60,7 +61,8 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
-    implementation("com.github.bumptech.glide:glide:4.14.2")
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
     implementation(libs.places)
 
     //Google maps, location and places libraries
