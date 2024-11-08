@@ -62,6 +62,7 @@ public class ViewEventActivity extends AppCompatActivity {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         backButton = findViewById(R.id.backButton);
+        lotteryButton = findViewById(R.id.lottery_button);
         eventNameTextView = findViewById(R.id.EventName);
         eventDescriptionTextView = findViewById(R.id.Description);
         eventFacility= findViewById(R.id.spinner_facilities);
