@@ -94,7 +94,19 @@ public class ViewEventActivity extends AppCompatActivity {
 
         Intent intentReceived = getIntent();
         String eventID = intentReceived.getStringExtra("eventID");
+/*
+        UserFirestore.findUser(deviceID,new UserFirestore.Callback(){
+            @Override
+            public void onSuccess(UserInfo userInfo) {
+                user = userInfo;
+            }
 
+            @Override
+            public void onFailure(String error) {
+                Log.e("ViewEventActivity", "Error fetching user: " + error);
+            }
+        });
+*/
         if (eventID != null) {
             EventFirebase.findEvent(eventID, new EventFirebase.EventCallback() {
                 @Override
@@ -103,18 +115,6 @@ public class ViewEventActivity extends AppCompatActivity {
                         Toast.makeText(ViewEventActivity.this, "Event Unavailable.", Toast.LENGTH_SHORT).show();
                         finish();
                     } else {
-                        UserFirestore.findUser(deviceID,new UserFirestore.Callback(){
-
-                                    @Override
-                                    public void onSuccess(UserInfo userInfo) {
-                                        user = userInfo;
-                                    }
-
-                                    @Override
-                                    public void onFailure(String error) {
-                                        Log.e("ViewEventActivity", "Error fetching user: " + error);
-                                    }
-                        });
 
                         event = eventInfo;
 
@@ -179,6 +179,8 @@ public class ViewEventActivity extends AppCompatActivity {
         deleteButton.setOnClickListener(v -> {
         });
 
+
+
         joinButton.setOnClickListener(view -> {
             GeoLocation geoLocation = new GeoLocation(this, this, event.getLatitude(), event.getLongitude(), event.getRadius());
             Log.e("ViewEventActivity", "Radius: " + event.getRadius());
@@ -219,10 +221,10 @@ public class ViewEventActivity extends AppCompatActivity {
     }
 
     private void addUserToWaitingList(Location userLocation) {
-        ArrayList<EventInfo> eventsList = user.getEvents();
+        /*ArrayList<EventInfo> eventsList = user.getEvents();
         eventsList.add(event);
         user.setEvents(eventsList);
-        UserFirestore.editUserEvents(user);
+        UserFirestore.editUserEvents(user);*/
 
         ArrayList<String> currentEntrants = event.getWaitinglist();
         String newEntrant = "[" + deviceID + ", " + userLocation.getLatitude() + ", " + userLocation.getLongitude() + "]";
