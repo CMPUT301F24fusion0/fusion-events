@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize Firebase for the app
         FirebaseApp.initializeApp(this);
-        System.out.println(deviceId);
 
 
         // Initialize Notification Channel
@@ -57,10 +56,10 @@ public class MainActivity extends AppCompatActivity {
         loginManagement = new LoginManagement(this);
         loginManagement.isUserLoggedIn(isLoggedIn -> {
             if (isLoggedIn) {
-                AppNotifications.getNotification(deviceId, this);
+                AppNotifications.permission(this, deviceId);
             } else {
-                // Do that
-            }
+                // something
+            };
         });
 
         initializeToolbarButtons();
@@ -96,12 +95,11 @@ public class MainActivity extends AppCompatActivity {
 
         final String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
+        final int REQUEST_CODE = 100;
 
-        if (requestCode == 100) {
+        if (requestCode == REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 AppNotifications.getNotification(deviceId, this);
-            } else {
-                // go to phone settings
             }
         } else {
             Log.d("Wrong", "Code");

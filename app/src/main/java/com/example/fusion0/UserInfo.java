@@ -117,7 +117,7 @@ public class UserInfo {
      * Gets device id
      * @return device id
      */
-    @PropertyName("did")
+    @PropertyName("dID")
     public String getDeviceID() {
         return deviceID;
     }
@@ -127,7 +127,7 @@ public class UserInfo {
      * Sets device ID
      * @param deviceID the device ID
      */
-    @PropertyName("did")
+    @PropertyName("dID")
     public void setDeviceID(String deviceID) {
         updateUser("DID", new ArrayList<String>(Collections.singletonList(deviceID)));
         this.deviceID = deviceID;
