@@ -5,13 +5,10 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -160,24 +157,12 @@ public class MainActivity extends AppCompatActivity {
                 itemTouchHelper.attachToRecyclerView(notificationsListView);
 
             } else {
-                // Get all fields
-                welcomeMessage = findViewById(R.id.welcomeMessage);
-                userName = findViewById(R.id.userName);
-                emptyUserName = findViewById(R.id.emptyUserName);
-                emptyWelcomeMessage = findViewById(R.id.emptyWelcomeMessage);
-
-                // Change visibilities
-                welcomeMessage.setVisibility(View.GONE);
-                userName.setVisibility(View.GONE);
-                emptyWelcomeMessage.setVisibility(View.VISIBLE);
-                emptyUserName.setVisibility(View.VISIBLE);
-
-                emptyWelcomeMessage.setText("Welcome");
-                emptyUserName.setText("New User");
+                // Do that
             }
         });
 
         initializeToolbarButtons();
+
     }
 
     /**
