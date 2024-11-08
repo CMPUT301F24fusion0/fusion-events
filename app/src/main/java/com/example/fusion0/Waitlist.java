@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -33,11 +34,14 @@ import java.util.List;
 public class Waitlist {
     private final FirebaseFirestore db;
     CollectionReference eventsRef;
+    UserFirestore userFirestore;
 
 
     public Waitlist() {
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
+
+        userFirestore = new UserFirestore();
     }
 
     /**
@@ -64,7 +68,10 @@ public class Waitlist {
         getAll(eventId, all -> {
             if (!all.contains(entrantId)) {
                 waitingListRef.document(entrantId).set(entrantData)
-                        .addOnSuccessListener(aVoid -> System.out.println("Entrant added to waiting list"))
+                        .addOnSuccessListener(aVoid -> {
+                            System.out.println("Entrant added to waiting list");
+                            addToUserWL(entrantId, eventId);
+                        })
                         .addOnFailureListener(e -> System.out.println("Error adding entrant: " + e));
             } else {
                 System.out.println("Entrant already exists in the waiting list");
@@ -95,6 +102,8 @@ public class Waitlist {
                 if ("chosen".equals(status)) {
                     // Mark entrant as declined
                     document.getReference().update("status", "declined");
+                    removeFromUserWL(entrantId, eventId);
+
 
                     // Decrement acceptedCount in the event document
                     eventsRef.document(eventId).get().addOnSuccessListener(eventDoc -> {
@@ -106,7 +115,10 @@ public class Waitlist {
                 } else {
                     // Remove the entrant if they're still on the waiting list
                     waitingListRef.document(entrantId).delete()
-                            .addOnSuccessListener(aVoid -> System.out.println("Entrant removed from waiting list"))
+                            .addOnSuccessListener(aVoid -> {
+                                System.out.println("Entrant removed from waiting list");
+                                removeFromUserWL(entrantId, eventId);
+                            })
                             .addOnFailureListener(e -> System.out.println("Error removing entrant: " + e));
                 }
             } else {
@@ -401,6 +413,41 @@ public class Waitlist {
                 AppNotifications.sendNotification(dID, title, message);
             }
         });
+    }
+
+    /**
+     * Remove event from user's waitlist
+     * @param entrantId entrant id
+     * @param eventId event id
+     */
+    private void removeFromUserWL(String entrantId, String eventId) {
+        db.collection("users").document(entrantId)
+                .update("events", FieldValue.arrayRemove(eventId))
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("Good", "Task");
+                    } else {
+                        Log.e("Fail", "Fail to update");
+                    }
+                });
+    }
+
+    /**
+     * @author Sehej Brar
+     * Add user to their waitlist
+     * @param entrantId entrant id
+     * @param eventId event id
+     */
+    private void addToUserWL(String entrantId, String eventId) {
+        db.collection("users").document(entrantId)
+                .update("events", FieldValue.arrayUnion(eventId))
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("Good", "Task");
+                    } else {
+                        Log.e("Fail", "Fail to update");
+                    }
+                });
     }
 
 }

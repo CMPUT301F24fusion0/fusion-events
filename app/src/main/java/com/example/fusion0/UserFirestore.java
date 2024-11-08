@@ -83,7 +83,7 @@ public class UserFirestore {
         field = field.toLowerCase();
 
         ArrayList<String> fields = new ArrayList<>(
-                Arrays.asList("first name", "last name", "phone number", "email", "did", "notifications"));
+                Arrays.asList("first name", "last name", "phone number", "email", "did", "notifications", "events"));
 
         if (!fields.contains(field.toLowerCase())) {
             throw new IllegalArgumentException("The field you've tried to change is not valid");
@@ -98,7 +98,7 @@ public class UserFirestore {
             System.out.println(user.getDeviceID());
             usersRef.document(user.getDeviceID()).update(field, newFields)
                     .addOnSuccessListener(ref -> {
-                        System.out.println("Notifications added successfully");
+                        System.out.println("Array value added successfully");
                     })
                     .addOnFailureListener(e -> System.out.println("Failure" + e.getMessage()));
         }

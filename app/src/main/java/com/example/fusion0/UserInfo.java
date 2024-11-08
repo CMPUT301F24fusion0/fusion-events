@@ -84,18 +84,20 @@ public class UserInfo {
 
     /**
      * @author Sehej Brar
-     * Gets the events for a user
+     * Gets the events for a user (on waitlist)
      * @return an arraylist of events
      */
+    @PropertyName("events")
     public ArrayList<String> getEvents() {
         return events;
     }
 
     /**
      * @author Sehej Brar
-     * Sets the events for a user
+     * Sets the events for a user (on waitlist)
      * @param events list of events
      */
+    @PropertyName("events")
     public void setEvents(ArrayList<String> events) {
         this.events = events;
     }
