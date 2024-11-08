@@ -54,8 +54,7 @@
 
         <activity android:name=".ViewEventActivity"/>
         <activity android:name=".ViewFacilityActivity"/>
-
-
+        <activity android:name=".JoinedEventActivity"/>
     </application>
 
 </manifest>
