@@ -106,9 +106,9 @@ public class Registration extends Fragment {
                     System.out.println("This user already exists.");
                 } else {
                     if (!phone.isEmpty()) {
-                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, phone, dID);
+                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, phone, dID, new ArrayList<String>());
                     } else {
-                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, dID);
+                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, dID, new ArrayList<String>());
                     }
                     firebase.addUser(newUser);
                 }
