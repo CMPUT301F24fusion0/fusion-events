@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
                                     notificationList.add(position, removedItem);
                                     notificationAdapter.notifyItemInserted(position);
 
-                                    AppNotifications.sendNotification(deviceId, removedItem.getTitle(), removedItem.getBody());
+                                    AppNotifications.sendNotification(deviceId, removedItem.getTitle(), removedItem.getBody(), removedItem.getFlag());
                                 }).show();
                     }
                 });

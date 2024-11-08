@@ -82,16 +82,10 @@ public class Settings extends Fragment {
      * @param isEnabled Whether notifications are enabled or disabled.
      */
     private void updateNotificationSettings(boolean isEnabled) {
-        // Here you can implement additional logic, such as updating the server.
-        // For example:
-        // UserFirestore userFirestore = new UserFirestore();
-        // userFirestore.updateNotificationPreference(isEnabled);
-
-        // Example logic for enabling or disabling notifications:
-        // if (isEnabled) {
-        //     AppNotifications.setPermission(context, true);
-        // } else {
-        //     AppNotifications.setPermission(context, false);
-        // }
+         if (isEnabled) {
+             AppNotifications.setNotificationPermission(requireContext(), true);
+         } else {
+             AppNotifications.setNotificationPermission(requireContext(), false);
+         }
     }
 }
