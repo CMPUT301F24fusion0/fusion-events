@@ -5,7 +5,7 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="GeoLocationTest (1)">
+      <SelectionState runConfigName="WaitlistTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="GeoLocationTest">
@@ -22,10 +22,10 @@
       <SelectionState runConfigName="UserFirebaseTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="WaitlistTest">
+      <SelectionState runConfigName="ManageImageProfileTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="QRTest">
+      <SelectionState runConfigName="ProfileManagementTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

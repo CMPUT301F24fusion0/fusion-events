@@ -14,10 +14,7 @@ import android.util.Log;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
-import com.google.firebase.firestore.auth.User;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * This class provides the methods needed to send/receive notifications
@@ -108,7 +105,7 @@ public class AppNotifications {
             Intent intent = new Intent(context, MainActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, i, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             builder.setContentTitle(notifications.get(i))
-                    .setSmallIcon(R.drawable.ic_blue_home)
+                    .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentText(notifications.get(i+1))
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setContentIntent(pendingIntent)
