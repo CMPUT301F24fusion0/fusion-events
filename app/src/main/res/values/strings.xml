@@ -6,7 +6,7 @@
 
     <!-- Strings used for the Profile page -->
     <string name="personalInfo">Personal Info</string>
-
+  
     <!-- Strings used for the Registration page -->
     <string name="phone">Phone</string>
     <string name="submit">Submit</string>
@@ -22,5 +22,6 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="notification_settings">Notification Settings</string>
+    <string name="unjoin">Unjoin</string>
 
 </resources>

@@ -51,12 +51,20 @@ public class ViewEventActivity extends AppCompatActivity {
     private Double longitude = null;
     private Double latitude = null;
 
+    private Waitlist waitlist;
 
+
+    /**
+     * @author Simon Haile
+     * Creates the activity for viewing one event
+     * @param savedInstanceState saved from last instance
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event_view);
 
+        waitlist = new Waitlist();
 
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -126,13 +134,11 @@ public class ViewEventActivity extends AppCompatActivity {
                             qrImageView.setImageBitmap(qrBitmap);
                         }
 
-
-
                         toolbar.setVisibility(View.VISIBLE);
 
                         if (deviceID.equals(event.getOrganizer())) {
                             isOwner = true;
-                        }else{
+                        } else {
                             editButton.setVisibility(View.GONE);
                             deleteButton.setVisibility(View.GONE);
                             cancelButton.setVisibility(View.GONE);
@@ -140,9 +146,10 @@ public class ViewEventActivity extends AppCompatActivity {
 
                             ArrayList<String> currentEntrants = event.getWaitinglist();
                             int capacity = Integer.parseInt(event.getCapacity());
+
                             if (currentEntrants.size() < capacity) {
                                 joinButton.setVisibility(View.VISIBLE);
-                            }else{
+                            } else {
                                 waitinglistFullTextView.setVisibility(View.VISIBLE);
                             }
                         }
@@ -166,36 +173,53 @@ public class ViewEventActivity extends AppCompatActivity {
         deleteButton.setOnClickListener(v -> {
         });
 
-        joinButton.setOnClickListener(view ->{
-            if (event.getGeolocation()){
-                getCurrentLocation();
-            }
-            LoginManagement login = new LoginManagement(this);
-            login.isUserLoggedIn(isLoggedIn -> {
-                if (isLoggedIn) {
-                    Toast.makeText(ViewEventActivity.this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
-                    ArrayList<String> currentEntrants = event.getWaitinglist();
-                    String newEntrant = "[" + deviceID + ", " + latitude + ", " + longitude + "]";
-                    currentEntrants.add(newEntrant);
-                    event.setWaitinglist(currentEntrants);
-                    EventFirebase.editEvent(event);
+        waitlist.getAll(eventID, all -> {
+            if (!all.contains(deviceID)) {
+                joinButton.setOnClickListener(view -> {
+                    if (event.getGeolocation()) {
+                        getCurrentLocation();
+                    }
+                    LoginManagement login = new LoginManagement(this);
+                    login.isUserLoggedIn(isLoggedIn -> {
+                        if (isLoggedIn) {
+                            Toast.makeText(ViewEventActivity.this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
+                            ArrayList<String> currentEntrants = event.getWaitinglist();
+                            String newEntrant = "[" + deviceID + ", " + latitude + ", " + longitude + "]";
+                            currentEntrants.add(newEntrant);
+                            event.setWaitinglist(currentEntrants);
+                            waitlist.addEntrantToWaitingList(eventID, deviceID);
+                            EventFirebase.editEvent(event);
+                            Intent intent = new Intent(ViewEventActivity.this, MainActivity.class);
+                            startActivity(intent);
+
+                        } else {
+                            Registration registration = new Registration();
+                            Bundle bundle = new Bundle();
+                            bundle.putString("eventID", eventID);
+                            registration.setArguments(bundle);
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.event_view, registration)
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
+                    });
+                });
+
+            } else {
+                joinButton.setText(R.string.unjoin);
+                joinButton.setOnClickListener(view -> {
+                    waitlist.removeEntrantFromWaitingList(eventID, deviceID);
+                    Toast.makeText(ViewEventActivity.this, "You have left the waiting list", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(ViewEventActivity.this, MainActivity.class);
                     startActivity(intent);
-
-                } else {
-                    Registration registration = new Registration();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("eventID", eventID);
-                    registration.setArguments(bundle);
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.event_view, registration)
-                            .addToBackStack(null)
-                            .commit();
-                }
-            });
+                });
+            }
         });
     }
 
+    /**
+     * Gets location of user trying to sign up for event
+     */
     private void getCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             resultLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION);
@@ -210,6 +234,9 @@ public class ViewEventActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Asks for permission for location from the user
+     */
     private final ActivityResultLauncher<String> resultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
             getCurrentLocation();
