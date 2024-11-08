@@ -1,8 +1,8 @@
 package com.example.fusion0;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -19,10 +19,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
 
 import com.bumptech.glide.Glide;
@@ -41,24 +38,19 @@ public class ViewEventActivity extends AppCompatActivity {
     private EditText eventNameEditText, eventDescriptionEditText, eventCapacityEditText;
     private ImageView eventPosterImageView, qrImageView;
     private ListView entrantsListView, chosenEntrantsListView, cancelledEntrantsListView;
-    private Button startDateButton, endDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton;
+    private Button startDateButton, endDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton, lotteryButton;
     private ImageButton backButton;
     private EventInfo event;
+    private UserInfo user;
     private LinearLayout toolbar;
 
+    Waitlist waitlist;
 
     private FusedLocationProviderClient fusedLocationClient;
     private Double longitude = null;
     private Double latitude = null;
 
-    private Waitlist waitlist;
 
-
-    /**
-     * @author Simon Haile
-     * Creates the activity for viewing one event
-     * @param savedInstanceState saved from last instance
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,7 +96,19 @@ public class ViewEventActivity extends AppCompatActivity {
 
         Intent intentReceived = getIntent();
         String eventID = intentReceived.getStringExtra("eventID");
+/*
+        UserFirestore.findUser(deviceID,new UserFirestore.Callback(){
+            @Override
+            public void onSuccess(UserInfo userInfo) {
+                user = userInfo;
+            }
 
+            @Override
+            public void onFailure(String error) {
+                Log.e("ViewEventActivity", "Error fetching user: " + error);
+            }
+        });
+*/
         if (eventID != null) {
             EventFirebase.findEvent(eventID, new EventFirebase.EventCallback() {
                 @Override
@@ -113,6 +117,7 @@ public class ViewEventActivity extends AppCompatActivity {
                         Toast.makeText(ViewEventActivity.this, "Event Unavailable.", Toast.LENGTH_SHORT).show();
                         finish();
                     } else {
+
                         event = eventInfo;
 
                         eventNameTextView.setText(event.getEventName());
@@ -138,18 +143,40 @@ public class ViewEventActivity extends AppCompatActivity {
 
                         if (deviceID.equals(event.getOrganizer())) {
                             isOwner = true;
-                        } else {
+                            lotteryButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    int capacity = 1;
+
+                                    try {
+                                        capacity = Integer.parseInt(event.getCapacity());
+                                    } catch (NumberFormatException e) {
+                                        Log.e("Error", "Capacity is not an integer");
+                                    }
+                                    waitlist.sampleAttendees(eventID, capacity);
+                                    waitlist.allNotification(eventID, "Lottery",
+                                            "The lottery has started. Please be on the lookout for results.");
+
+                                    waitlist.chosenNotification(eventID, "Congratulations",
+                                            "You've won the lottery! Please login and accept the invitation");
+
+                                    waitlist.cancelNotifications(eventID, "Cancel Confirmation", "You have cancelled" +
+                                            "the invitation for the event.");
+                                }
+                            });
+                        }else{
+
                             editButton.setVisibility(View.GONE);
                             deleteButton.setVisibility(View.GONE);
                             cancelButton.setVisibility(View.GONE);
                             saveButton.setVisibility(View.GONE);
+                            lotteryButton.setVisibility(View.GONE);
 
                             ArrayList<String> currentEntrants = event.getWaitinglist();
                             int capacity = Integer.parseInt(event.getCapacity());
-
                             if (currentEntrants.size() < capacity) {
                                 joinButton.setVisibility(View.VISIBLE);
-                            } else {
+                            }else{
                                 waitinglistFullTextView.setVisibility(View.VISIBLE);
                             }
                         }
@@ -168,6 +195,7 @@ public class ViewEventActivity extends AppCompatActivity {
         }
 
         editButton.setOnClickListener(v -> {
+
         });
 
         deleteButton.setOnClickListener(v -> {
@@ -176,35 +204,15 @@ public class ViewEventActivity extends AppCompatActivity {
         waitlist.getAll(eventID, all -> {
             if (!all.contains(deviceID)) {
                 joinButton.setOnClickListener(view -> {
-                    if (event.getGeolocation()) {
-                        getCurrentLocation();
+                    GeoLocation geoLocation = new GeoLocation(this, this, event.getLatitude(), event.getLongitude(), event.getRadius());
+                    Log.e("ViewEventActivity", "Radius: " + event.getRadius());
+                    if (!geoLocation.isLocationPermissionGranted()) {
+                        geoLocation.requestLocationPermission();
                     }
-                    LoginManagement login = new LoginManagement(this);
-                    login.isUserLoggedIn(isLoggedIn -> {
-                        if (isLoggedIn) {
-                            Toast.makeText(ViewEventActivity.this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
-                            ArrayList<String> currentEntrants = event.getWaitinglist();
-                            String newEntrant = "[" + deviceID + ", " + latitude + ", " + longitude + "]";
-                            currentEntrants.add(newEntrant);
-                            event.setWaitinglist(currentEntrants);
-                            waitlist.addEntrantToWaitingList(eventID, deviceID);
-                            EventFirebase.editEvent(event);
-                            Intent intent = new Intent(ViewEventActivity.this, MainActivity.class);
-                            startActivity(intent);
-
-                        } else {
-                            Registration registration = new Registration();
-                            Bundle bundle = new Bundle();
-                            bundle.putString("eventID", eventID);
-                            registration.setArguments(bundle);
-                            getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.event_view, registration)
-                                    .addToBackStack(null)
-                                    .commit();
-                        }
-                    });
+                    else {
+                        proceedWithJoin(geoLocation, true, eventID);
+                    }
                 });
-
             } else {
                 joinButton.setText(R.string.unjoin);
                 joinButton.setOnClickListener(view -> {
@@ -215,32 +223,71 @@ public class ViewEventActivity extends AppCompatActivity {
                 });
             }
         });
+
     }
 
-    /**
-     * Gets location of user trying to sign up for event
-     */
-    private void getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            resultLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION);
-            return;
-        }
 
-        fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
-            if (location != null) {
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
+    private void proceedWithJoin(GeoLocation geoLocation, boolean geoEnabled, String eventID) {
+        if (geoEnabled) {
+            // Only retrieve location if geolocation check is enabled
+            Location userLocation = geoLocation.getLocation();
+            if (userLocation == null) {
+                Toast.makeText(this, "Retrieving your location...", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            // Once location is retrieved, validate distance to event
+            validateDistanceAndJoin(geoLocation, userLocation, eventID);
+        } else {
+            // No geolocation needed; directly add user to the waiting list
+            addUserToWaitingList(null, eventID); // Pass null for userLocation since it's not required
+        }
+    }
+
+
+    private void validateDistanceAndJoin(GeoLocation geoLocation, Location userLocation, String eventId) {
+        geoLocation.setUserLocation(userLocation.getLatitude(), userLocation.getLongitude());
+        if (geoLocation.canRegister()) {
+            addUserToWaitingList(userLocation, eventId); // Geolocation is enabled, and user is within radius
+        } else {
+            geoLocation.showMapDialog(); // Optionally show map dialog if outside acceptable radius
+            Toast.makeText(this, "You are outside the acceptable radius to join this event.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void addUserToWaitingList(Location userLocation, String eventID) {
+        /*ArrayList<EventInfo> eventsList = user.getEvents();
+        eventsList.add(event);
+        user.setEvents(eventsList);
+        UserFirestore.editUserEvents(user);*/
+        LoginManagement login = new LoginManagement(this);
+        login.isUserLoggedIn(isLoggedIn -> {
+            if (isLoggedIn) {
+                Toast.makeText(ViewEventActivity.this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
+                ArrayList<String> currentEntrants = event.getWaitinglist();
+                String newEntrant = "[" + deviceID + ", " + latitude + ", " + longitude + "]";
+                currentEntrants.add(newEntrant);
+                event.setWaitinglist(currentEntrants);
+                waitlist.addEntrantToWaitingList(eventID, deviceID);
+                EventFirebase.editEvent(event);
+                Intent intent = new Intent(ViewEventActivity.this, MainActivity.class);
+                startActivity(intent);
+
+            } else {
+                Registration registration = new Registration();
+                Bundle bundle = new Bundle();
+                bundle.putString("eventID", eventID);
+                registration.setArguments(bundle);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.event_view, registration)
+                        .addToBackStack(null)
+                        .commit();
             }
         });
+//        ArrayList<String> currentEntrants = event.getWaitinglist();
+//        String newEntrant = "[" + deviceID + ", " + userLocation.getLatitude() + ", " + userLocation.getLongitude() + "]";
+//        currentEntrants.add(newEntrant);
+//        event.setWaitinglist(currentEntrants);
+//        EventFirebase.editEvent(event); // Assuming editEvent updates the event in Firebase
+//        Toast.makeText(this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
     }
-
-    /**
-     * Asks for permission for location from the user
-     */
-    private final ActivityResultLauncher<String> resultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-        if (isGranted) {
-            getCurrentLocation();
-        }
-    });
-
 }

@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white"
-    android:id="@+id/event_view">
+    android:background="@color/white">
 
 
     <ImageButton
@@ -361,16 +360,6 @@
                     android:visibility="gone"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"/>
-
-                <Button
-                    android:id="@+id/lottery_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Start Lottery"
-                    android:textColor="@color/white"
-                    android:backgroundTint="@color/figmaBlue"
-                    app:cornerRadius="5dp">
-                </Button>
             </LinearLayout>
 
             <View
@@ -416,14 +405,14 @@
                 android:orientation="horizontal"
                 android:layout_marginBottom="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Waitinglist:"
-                android:textColor="@color/textColor"
-                android:textSize="17sp"
-                android:fontFamily="@font/raleway_semibold"
-                android:gravity="center_vertical"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Waitinglist:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"/>
 
                 <ListView
                     android:id="@+id/waitinglistListView"
@@ -537,46 +526,7 @@
             app:cornerRadius="5dp"
             android:visibility="gone">
         </Button>
-
-        <Button
-            android:id="@+id/edit_button"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:text="Edit"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/figmaBlue"
-            app:cornerRadius="5dp">
-        </Button>
-
-        <Button
-            android:id="@+id/save_button"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:text="Save"
-            android:backgroundTint="@color/figmaBlue"
-            android:visibility="gone"
-            app:cornerRadius="5dp"/>
-
-        <Button
-            android:id="@+id/delete_button"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:text="Delete"
-            android:textColor="@color/figmaBlue"
-            android:backgroundTint="@color/white"
-            app:cornerRadius="5dp">
-        </Button>
-
-        <Button
-            android:id="@+id/cancel_button"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:text="Cancel"
-            android:textColor="@color/figmaBlue"
-            android:backgroundTint="@color/white"
-            app:cornerRadius="5dp"
-            android:visibility="gone">
-        </Button>
+        
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
