@@ -26,8 +26,9 @@ public class WaitlistTest {
     private Waitlist waitlist;
     private String testEventId;
     private String testEntrantId;
-    private String testEventId_T ;
+    private String testEventId_T;
     private String testEntrantId_T;
+    private String exs_evID;
 
     @Before
     public void setUp() {
@@ -35,9 +36,16 @@ public class WaitlistTest {
         waitlist = new Waitlist();
         testEventId = "testEvent123";
         testEntrantId = "testEntrant456";
+
+
         testEventId_T = "EVENT100";
-        testEntrantId_T = "ENTRANT JOE";
-        waitlist.addEntrantToWaitingList(testEventId_T, testEntrantId_T);
+
+
+        testEntrantId_T = "ENTRANT JOE C";
+        exs_evID = "a8cb6aa0-29bd-4bdf-a2da-5d0cb5e33a5e";
+
+
+        //waitlist.addEntrantToWaitingList(exs_evID, testEntrantId_T);
     }
 
     @After
@@ -105,6 +113,4 @@ public class WaitlistTest {
 
         latch.await();
     }
-
 }
-

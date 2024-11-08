@@ -4,6 +4,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -27,16 +28,20 @@ import java.util.List;
  */
 
 public class Waitlist {
+    private FirebaseFirestore db;
 
+    public Waitlist() {
+        db = FirebaseFirestore.getInstance();
+    }
 
     /**
      * Adds an entrant to the waiting list for a specific event.
      *
      * @param eventId   The unique identifier of the event.
      * @param entrantId The unique identifier of the entrant to be added to the waiting list.
-     *
-     * This method checks if the entrant already exists in the waiting list.
-     * If not, it adds the entrant with a status of "waiting".
+     *                  <p>
+     *                  This method checks if the entrant already exists in the waiting list.
+     *                  If not, it adds the entrant with a status of "waiting".
      */
     public void addEntrantToWaitingList(String eventId, String entrantId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -67,12 +72,12 @@ public class Waitlist {
      *
      * @param eventId   The unique identifier of the event.
      * @param entrantId The unique identifier of the entrant to be removed or marked as declined.
-     *
+     *                  <p>
      *                  This method updates the entrant's status to "declined" if they were previously
      *                  chosen and decreases the accepted count in the event document if needed.
      */
     public void removeEntrantFromWaitingList(String eventId, String entrantId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
         CollectionReference eventsRef = db.collection("events");
 
         // Reference to the event's waiting list
@@ -87,6 +92,7 @@ public class Waitlist {
                 if ("chosen".equals(status)) {
                     // Mark entrant as declined
                     document.getReference().update("status", "declined");
+
 
                     // Decrement acceptedCount in the event document
                     eventsRef.document(eventId).get().addOnSuccessListener(eventDoc -> {
@@ -111,11 +117,11 @@ public class Waitlist {
     /**
      * Samples a specified number of attendees from the waiting list for a specific event.
      *
-     * @param eventId      The unique identifier of the event.
-     * @param numToSelect  The number of attendees to be randomly selected from the waiting list.
-     *                     This method retrieves all entrants with a status of "waiting" and randomly selects
-     *                     a specified number of them. The selected entrants' statuses are updated to "chosen",
-     *                     and the accepted count in the event document is incremented.
+     * @param eventId     The unique identifier of the event.
+     * @param numToSelect The number of attendees to be randomly selected from the waiting list.
+     *                    This method retrieves all entrants with a status of "waiting" and randomly selects
+     *                    a specified number of them. The selected entrants' statuses are updated to "chosen",
+     *                    and the accepted count in the event document is incremented.
      */
     public void sampleAttendees(String eventId, int numToSelect) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -124,15 +130,47 @@ public class Waitlist {
         // Fetch event details to get capacity and current acceptedCount
         eventsRef.document(eventId).get().addOnSuccessListener(eventDoc -> {
             if (eventDoc.exists()) {
-                Long capacity = eventDoc.getLong("capacity");
-                Long acceptedCount = eventDoc.getLong("acceptedCount");
+                Long capacity;
+                Long acceptedCount;
+
+                // Check if capacity is stored as a number or a string, then convert
+                Object capacityField = eventDoc.get("capacity");
+                Object acceptedCountField = eventDoc.get("acceptedCount");
+
+                // Handle capacity conversion
+                if (capacityField instanceof Number) {
+                    capacity = ((Number) capacityField).longValue();
+                } else if (capacityField instanceof String) {
+                    try {
+                        capacity = Long.parseLong((String) capacityField);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error: Capacity is not a valid number.");
+                        return;
+                    }
+                } else {
+                    System.out.println("Error: Capacity is missing or invalid.");
+                    return;
+                }
+
+                // Handle acceptedCount conversion
+                if (acceptedCountField instanceof Number) {
+                    acceptedCount = ((Number) acceptedCountField).longValue();
+                } else if (acceptedCountField instanceof String) {
+                    try {
+                        acceptedCount = Long.parseLong((String) acceptedCountField);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error: AcceptedCount is not a valid number.");
+                        return;
+                    }
+                } else {
+                    System.out.println("Error: AcceptedCount is missing or invalid.");
+                    return;
+                }
 
                 if (capacity != null && acceptedCount != null) {
                     // Calculate the number of entrants we actually need
                     int spotsRemaining = (int) (capacity - acceptedCount);
                     int finalNumToSelect = Math.min(numToSelect, spotsRemaining);
-
-
                     db.collection("events").document(eventId).collection("waitingList")
                             .whereEqualTo("status", "waiting")
                             .get()
@@ -142,8 +180,17 @@ public class Waitlist {
                                     Collections.shuffle(entrants);
 
                                     List<DocumentSnapshot> chosenEntrants = entrants.subList(0, Math.min(finalNumToSelect, entrants.size()));
+
+                                    System.out.println("Chosen entrants count: " + chosenEntrants.size());
+
+                                    if (chosenEntrants.isEmpty()) {
+                                        System.out.println("No entrants to select.");
+                                    }
+
                                     for (DocumentSnapshot entrant : chosenEntrants) {
-                                        entrant.getReference().update("status", "chosen");
+                                        entrant.getReference().update("status", "chosen")
+                                                .addOnSuccessListener(aVoid -> System.out.println("Successfully updated entrant status to 'chosen'"))
+                                                .addOnFailureListener(e -> System.out.println("Failed to update entrant status: " + e.getMessage()));
                                     }
 
                                     System.out.println(finalNumToSelect + " entrants chosen for event " + eventId);
@@ -166,12 +213,11 @@ public class Waitlist {
      * Offers another chance to an entrant if a previously chosen entrant declines and more spots are needed.
      *
      * @param eventId The unique identifier of the event.
-     *
+     *                <p>
      *                This method selects an entrant from the waiting list to replace a declined participant,
      *                only if the accepted count is still below the event's capacity.
      */
     public void offerAnotherChance(String eventId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference eventsRef = db.collection("events");
 
         eventsRef.document(eventId).get().addOnSuccessListener(eventDoc -> {
@@ -193,7 +239,6 @@ public class Waitlist {
 
                                         // Increment acceptedCount in the event document
                                         eventsRef.document(eventId).update("acceptedCount", acceptedCount + 1);
-
                                         System.out.println("Another entrant selected for event " + eventId);
                                         // ADD notification helper function or Firebase Cloud Messaging here
                                     } else {
