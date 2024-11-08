@@ -189,6 +189,8 @@ public class ProfileActivity extends AppCompatActivity {
                     });
                 }
             });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         });
 
         // SECTION 5: Turn Profile Page to Edit Mode
@@ -205,6 +207,8 @@ public class ProfileActivity extends AppCompatActivity {
             saveButton.setVisibility(View.VISIBLE);
             cancelButton.setVisibility(View.VISIBLE);
             editButton.setVisibility(View.GONE);
+
+            editImage.setVisibility(View.VISIBLE);
 
             // Set save button click behavior to update the profile
             saveButton.setOnClickListener(saveView -> {
@@ -292,6 +296,9 @@ public class ProfileActivity extends AppCompatActivity {
         saveButton.setVisibility(View.GONE);
         cancelButton.setVisibility(View.GONE);
         editButton.setVisibility(View.VISIBLE);
+
+        editImage.setVisibility(View.GONE);
+
     }
 
     /**
