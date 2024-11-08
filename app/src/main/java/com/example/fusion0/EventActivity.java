@@ -179,6 +179,7 @@ public class EventActivity extends AppCompatActivity {
             imagePickerLauncher.launch(intent);
         });
     }
+
     private void handleFacility(OrganizerInfo organizer) {
         ArrayList<String> facilityNames = new ArrayList<>();
 
@@ -495,11 +496,11 @@ public class EventActivity extends AppCompatActivity {
                 Toast.makeText(EventActivity.this, "Start or End date is missing", Toast.LENGTH_SHORT).show();
                 return;
             }
-            /*if (eventPoster == null) {
+            if (eventPoster == null) {
                 Toast.makeText(EventActivity.this, "Event poster is missing", Toast.LENGTH_SHORT).show();
                 return;
             }
-*/
+
             if (facilityName == null || facility == null) {
                 Toast.makeText(EventActivity.this, "Facility name or facility is missing", Toast.LENGTH_SHORT).show();
                 return;
