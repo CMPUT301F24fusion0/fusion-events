@@ -208,6 +208,7 @@ public class ViewEventActivity extends AppCompatActivity {
                             cancelButton.setVisibility(View.GONE);
                             saveButton.setVisibility(View.GONE);
 
+
                             ArrayList<String> currentEntrants = event.getWaitinglist();
                             int capacity = Integer.parseInt(event.getCapacity());
                             if (currentEntrants.size() < capacity) {
@@ -424,10 +425,10 @@ public class ViewEventActivity extends AppCompatActivity {
     }
 
     private void addUserToWaitingList(Location userLocation) {
-        /*ArrayList<EventInfo> eventsList = user.getEvents();
+        ArrayList<EventInfo> eventsList = user.getEvents();
         eventsList.add(event);
         user.setEvents(eventsList);
-        UserFirestore.editUserEvents(user);*/
+        UserFirestore.editUserEvents(user);
 
         ArrayList<String> currentEntrants = event.getWaitinglist();
         String newEntrant = "[" + deviceID + ", " + userLocation.getLatitude() + ", " + userLocation.getLongitude() + "]";
