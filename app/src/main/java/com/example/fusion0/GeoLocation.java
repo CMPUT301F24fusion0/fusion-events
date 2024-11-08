@@ -132,10 +132,7 @@ public class GeoLocation implements LocationListener {
      *         is available or permissions are not granted.
      */
     public Location getLocation() {
-        //If location was already set return it
-        if (userLocation != null) {
-            return userLocation;
-        }
+
         //If location was not yet set
         if (isLocationPermissionGranted()) {
 
@@ -235,8 +232,16 @@ public class GeoLocation implements LocationListener {
      * @param radius The acceptable radius of the event.
      */
     public void setEventRadius(int radius){
+
         acceptableRadius = radius;
     }
+    /**
+     * Gets the event acceptable radius.
+     */
+    public double getEventRadius() {
+        return acceptableRadius;
+    }
+
 
 
     /**
@@ -251,7 +256,8 @@ public class GeoLocation implements LocationListener {
 
             MapDialogFragment mapDialogFragment = new MapDialogFragment(eventLat, eventLng, userLat, userLng, acceptableRadius);
             mapDialogFragment.show(fragmentActivity.getSupportFragmentManager(), "mapDialog");
-        } else {
+        }
+        else {
             Toast.makeText(context, "Locations not set", Toast.LENGTH_SHORT).show();
         }
     }

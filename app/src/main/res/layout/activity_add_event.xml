@@ -152,6 +152,33 @@
                 android:checked="false" />
 
             <TextView
+                android:id="@+id/radius_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Acceptable Sign Up Radius:"
+                android:textSize="16sp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone"
+                />
+
+            <EditText
+                android:id="@+id/radius"
+                android:layout_height="60dp"
+                android:layout_width="match_parent"
+                android:layout_marginEnd="100dp"
+                android:hint="Enter Radius In Km"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/custom_input"
+                android:drawablePadding="12dp"
+                android:padding="12dp"
+                android:inputType="number"
+                android:visibility="gone">
+            </EditText>
+
+
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
