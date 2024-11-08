@@ -2,7 +2,6 @@ package com.example.fusion0;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -14,9 +13,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class FavouriteActivity extends AppCompatActivity {
     private static final String TAG = "FavouriteActivity";
@@ -56,11 +52,11 @@ public class FavouriteActivity extends AppCompatActivity {
         createdEventsList = findViewById(R.id.created_events_list);
         facilitiesList = findViewById(R.id.facilities_list);
 
-/*
+        /*
         joinedEventsButton.setOnClickListener(view -> {UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
                 @Override
                 public void onSuccess(UserInfo userInfo) {
-                    if (userInfo == null) {
+                    if (userInfo.getEvents() == null) {
                         Toast.makeText(FavouriteActivity.this, "No Joined Events Available.", Toast.LENGTH_SHORT).show();
                         joinedEventsList.setVisibility(View.GONE);
                         joinedEventsButton.setText("View");
@@ -88,6 +84,15 @@ public class FavouriteActivity extends AppCompatActivity {
                 public void onFailure(String error) {
                     Log.e(TAG, "Error fetching user: " + error);
                 }
+            });
+
+            joinedEventsList.setOnItemClickListener((parent, view1, position, id) -> {
+                EventInfo event = user.getEvents().get(position);
+                String eventID = event.getEventID();
+
+                Intent intent = new Intent(FavouriteActivity.this, JoinedEventActivity.class);
+                intent.putExtra("eventID", eventID);
+                startActivity(intent);
             });
         });
         */

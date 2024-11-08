@@ -1,26 +1,26 @@
 package com.example.fusion0;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
+
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -30,6 +30,7 @@ import com.google.zxing.WriterException;
 import java.util.ArrayList;
 
 public class ViewEventActivity extends AppCompatActivity {
+
     private String deviceID;
     private Boolean isOwner = false;
     private Spinner eventFacility;
@@ -53,9 +54,9 @@ public class ViewEventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event_view);
 
+
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
 
         backButton = findViewById(R.id.backButton);
         eventNameTextView = findViewById(R.id.EventName);
@@ -66,6 +67,7 @@ public class ViewEventActivity extends AppCompatActivity {
         eventCapacityTextView = findViewById(R.id.editCapacity);
         eventNameEditText = findViewById(R.id.editEventName);
         eventDescriptionEditText = findViewById(R.id.Description);
+
         eventPosterImageView = findViewById(R.id.uploaded_image_view);
         qrImageView = findViewById(R.id.qrImage);
         entrantsListView = findViewById(R.id.waitinglistListView);
@@ -75,12 +77,14 @@ public class ViewEventActivity extends AppCompatActivity {
         endDateButton = findViewById(R.id.end_date_button);
         editButton = findViewById(R.id.edit_button);
         deleteButton = findViewById(R.id.delete_button);
+
         joinButton = findViewById(R.id.join_button);
         cancelButton = findViewById(R.id.cancel_button);
         saveButton = findViewById(R.id.save_button);
         waitinglistFullTextView = findViewById(R.id.waitinglist_full_text_view);
 
         toolbar = findViewById(R.id.toolbar);
+
 
         backButton.setOnClickListener(view -> {
             Intent intent = new Intent(ViewEventActivity.this, FavouriteActivity.class);
@@ -104,6 +108,7 @@ public class ViewEventActivity extends AppCompatActivity {
                         eventDescriptionTextView.setText(event.getDescription());
                         eventCapacityTextView.setText(String.valueOf(event.getCapacity()));
 
+
                         String eventPoster = event.getEventPoster();
                         if (eventPoster != null && !eventPoster.isEmpty()) {
                             Glide.with(ViewEventActivity.this)
@@ -117,6 +122,7 @@ public class ViewEventActivity extends AppCompatActivity {
                             Bitmap qrBitmap = event.generateQRCodeImage(500, 500, qrcode);
                             qrImageView.setImageBitmap(qrBitmap);
                         }
+
 
 
                         toolbar.setVisibility(View.VISIBLE);
@@ -152,41 +158,57 @@ public class ViewEventActivity extends AppCompatActivity {
         }
 
         editButton.setOnClickListener(v -> {
+
         });
 
         deleteButton.setOnClickListener(v -> {
         });
 
-        joinButton.setOnClickListener(view ->{
-            if (event.getGeolocation()){
-                getCurrentLocation();
+        joinButton.setOnClickListener(view -> {
+            GeoLocation geoLocation = new GeoLocation(this, this, event.getLatitude(), event.getLongitude(), event.getRadius());
+            Log.e("ViewEventActivity", "Radius: " + event.getRadius());
+            if (!geoLocation.isLocationPermissionGranted()) {
+                geoLocation.requestLocationPermission();
             }
-            ArrayList<String> currentEntrants = event.getWaitinglist();
-            String newEntrant = "[" + deviceID + ", " + latitude + ", " + longitude + "]";
-            currentEntrants.add(newEntrant);
-            event.setWaitinglist(currentEntrants);
-            EventFirebase.editEvent(event);
-            Toast.makeText(ViewEventActivity.this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
+            else {
+                proceedWithJoin(geoLocation);
+            }
         });
+
+
+
     }
 
-    private void getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            resultLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+    private void proceedWithJoin(GeoLocation geoLocation) {
+        Location userLocation = geoLocation.getLocation();
+        if (userLocation == null) {
+            Toast.makeText(this, "Retrieving your location...", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
-            if (location != null) {
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
-            }
-        });
+        //Once the location is retrieved, proceed with registration check
+        validateDistanceAndJoin(geoLocation, userLocation);
     }
 
-    private final ActivityResultLauncher<String> resultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-        if (isGranted) {
-            getCurrentLocation();
+
+    private void validateDistanceAndJoin(GeoLocation geoLocation, Location userLocation) {
+        //geoLocation.setUserLocation(userLocation.getLatitude(), userLocation.getLongitude());
+        if (geoLocation.canRegister()) {
+            addUserToWaitingList(userLocation);
         }
-    });
+        else {
+            geoLocation.showMapDialog(); //Optionally show the user a map with the event location and radius
+            Toast.makeText(this, "You are outside the acceptable radius to join this event.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void addUserToWaitingList(Location userLocation) {
+        ArrayList<String> currentEntrants = event.getWaitinglist();
+        String newEntrant = "[" + deviceID + ", " + userLocation.getLatitude() + ", " + userLocation.getLongitude() + "]";
+        currentEntrants.add(newEntrant);
+        event.setWaitinglist(currentEntrants);
+        EventFirebase.editEvent(event); // Assuming editEvent updates the event in Firebase
+        Toast.makeText(this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
+    }
 }
