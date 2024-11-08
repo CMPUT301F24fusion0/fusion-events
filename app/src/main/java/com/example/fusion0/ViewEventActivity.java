@@ -54,6 +54,10 @@ public class ViewEventActivity extends AppCompatActivity {
     private Waitlist waitlist;
 
 
+    /**
+     * Creates the activity for viewing one event
+     * @param savedInstanceState saved from last instance
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -212,6 +216,9 @@ public class ViewEventActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Gets location of user trying to sign up for event
+     */
     private void getCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             resultLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION);
@@ -226,6 +233,9 @@ public class ViewEventActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Asks for permission for location from the user
+     */
     private final ActivityResultLauncher<String> resultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
             getCurrentLocation();
