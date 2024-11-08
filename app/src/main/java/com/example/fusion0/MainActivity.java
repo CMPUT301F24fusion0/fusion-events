@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
         // Get Device ID
         final String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
+        Log.d("DeviceID", "Device ID: " + deviceId);
+
         // Initialize Firebase for the app
         FirebaseApp.initializeApp(this);
 
@@ -75,9 +77,7 @@ public class MainActivity extends AppCompatActivity {
         notificationsListView.setLayoutManager(new LinearLayoutManager(this));
 
         notificationList = new ArrayList<>();
-        notificationList.add(new NotificationItem("Welcome", "Thank you for joining Fusion Events!"));
-        notificationList.add(new NotificationItem("Event Reminder", "Don’t forget your event at 3 PM today."));
-        notificationList.add(new NotificationItem("Update", "New features have been added to the app."));
+
 
         // Instantiate login manager and retrieve login state
         loginManagement = new LoginManagement(this);
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
             if (isLoggedIn) {
                 // they are logged in
                 AppNotifications.permission(this, deviceId);
-                userFirestore = new UserFirestore();
+                UserFirestore userFirestore = new UserFirestore();
 
                 userFirestore.findUser(deviceId, new UserFirestore.Callback() {
                     @Override
@@ -123,6 +123,8 @@ public class MainActivity extends AppCompatActivity {
                 notificationAdapter = new NotificationAdapter(this, notificationList);
                 notificationsListView.setAdapter(notificationAdapter);
 
+                updateNotification(deviceId, notificationList, notificationAdapter);
+
                 ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
                     @Override
                     public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
@@ -145,6 +147,9 @@ public class MainActivity extends AppCompatActivity {
                         NotificationItem removedItem = notificationList.get(position);
                         notificationList.remove(position);
                         notificationAdapter.notifyItemRemoved(position);
+                        updateNotificationView();
+
+                        deleteNotification(removedItem);
 
                         // Optionally, you can show a Snackbar to undo the delete action
                         Snackbar.make(notificationsListView, "Notification deleted", Snackbar.LENGTH_LONG)
@@ -152,6 +157,8 @@ public class MainActivity extends AppCompatActivity {
                                     // Add the item back to the list
                                     notificationList.add(position, removedItem);
                                     notificationAdapter.notifyItemInserted(position);
+
+                                    AppNotifications.sendNotification(deviceId, removedItem.getTitle(), removedItem.getBody());
                                 }).show();
                     }
                 });
@@ -243,6 +250,95 @@ public class MainActivity extends AppCompatActivity {
         buttonClose.setOnClickListener(view -> dialog.dismiss());
 
         dialog.show();
+    }
+
+    private void updateNotification(String deviceId, List<NotificationItem> notificationList, NotificationAdapter notificationAdapter) {
+        UserFirestore userFirestore = new UserFirestore();
+        userFirestore.findUser(deviceId, new UserFirestore.Callback() {
+            @Override
+            public void onSuccess(UserInfo user) {
+                ArrayList<String> notifications = user.getNotifications();
+
+                if (notifications != null && notifications.size() % 2 == 0) {
+                    notificationList.clear();
+
+                    for (int i = 0; i < notifications.size(); i += 2) {
+                        String title = notifications.get(i);
+                        String body = notifications.get(i + 1);
+                        NotificationItem notificationItem = new NotificationItem(title, body);
+                        notificationList.add(notificationItem);
+                    }
+
+                    notificationAdapter.notifyDataSetChanged();
+                    updateNotificationView();
+                    Log.d("Firebase", "Notifications fetched successfully from Firebase.");
+                } else {
+                    Log.d("Firebase", "No notifications found.");
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e("Firebase", "Failed to fetch notifications: " + error);
+            }
+        });
+    }
+
+    private void deleteNotification(NotificationItem notificationItem) {
+        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        UserFirestore userFirestore = new UserFirestore();
+
+        userFirestore.findUser(deviceId, new UserFirestore.Callback() {
+
+            @Override
+            public void onSuccess(UserInfo user) {
+                user.editMode(true);
+
+                ArrayList<String> notifications = user.getNotifications();
+                int indexToRemove = -1;
+
+                for (int i = 0; i < notifications.size(); i += 2) {
+                    String title = notifications.get(i);
+                    String body = notifications.get(i + 1);
+                    if (title.equals(notificationItem.getTitle()) && body.equals(notificationItem.getBody())) {
+                        indexToRemove = i;
+                        break;
+                    }
+                }
+
+                if (indexToRemove != -1) {
+                    notifications.remove(indexToRemove);
+                    notifications.remove(indexToRemove);
+                    System.out.println(notifications);
+                    user.setNotifications(notifications);
+                    updateNotificationView();
+                    Log.d("Firebase", "Notification removed successfully from Firebase.");
+                } else {
+                    Log.d("Firebase", "Notification not found in user's list.");
+                }
+
+
+                user.editMode(false);
+
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e("Firebase", "Failed to delete notification: " + error);
+            }
+        });
+    }
+
+    private void updateNotificationView() {
+        TextView noNotifications = findViewById(R.id.noNotifications);
+
+        if (notificationList.isEmpty()) {
+            noNotifications.setVisibility(View.VISIBLE);
+            notificationsListView.setVisibility(View.GONE);
+        } else {
+            noNotifications.setVisibility(View.GONE);
+            notificationsListView.setVisibility(View.VISIBLE);
+        }
     }
 
 }

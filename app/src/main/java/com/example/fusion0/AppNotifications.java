@@ -129,10 +129,6 @@ public class AppNotifications {
             @Override
             public void onSuccess(UserInfo user) {
                 sendAllNotifications(context, user.getNotifications());
-                user.editMode(true);
-                user.setNotifications(new ArrayList<String>());
-                System.out.println("Notifications removed successfully");
-                user.editMode(false);
             }
 
             @Override
