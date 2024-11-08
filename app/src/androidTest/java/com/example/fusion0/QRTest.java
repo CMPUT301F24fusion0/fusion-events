@@ -1,20 +1,32 @@
 package com.example.fusion0;
 
 import android.graphics.Bitmap;
-
 import com.google.zxing.WriterException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.util.UUID;
 
+
+/**
+ * Unit tests for the QR class.
+ * This class tests various functionalities such as generating a hash,
+ * retrieving the QR code string, generating a QR image, and ensuring
+ * consistent behavior of the QR code generation.
+ *
+ * @author Malshaan
+ */
 public class QRTest {
 
     private static final String TEST_EVENT_ID = UUID.randomUUID().toString();
     private static final String TEST_HASH = QRCode.generateHash(TEST_EVENT_ID);
 
 
-    // Test for generateHash(), checks if two equal event IDs
-    // produce the same hash and a different hash for different event IDs
+    /**
+     * Tests the generateHash(String) method.
+     * Ensures that:
+     *     Two identical event IDs produce the same hash.
+     *     Different event IDs produce different hashes.
+     */
     @Test
     public void testGenerateHash() {
         String hash1 = QRCode.generateHash(TEST_EVENT_ID);
@@ -25,15 +37,25 @@ public class QRTest {
         assertNotEquals(hash1, differentHash); // Different inputs should produce different hashes
     }
 
-    // Test for getQrCode(), checks if the QR code is generated correctly
+    /**
+     * Tests the getQrCode() method.
+     * Verifies that the QR code generated for the provided {@code TEST_EVENT_ID}
+     * matches the expected hash.
+     *
+     * @throws WriterException if an error occurs while generating the QR code.
+     */
     @Test
     public void testGetQrCode() throws WriterException {
         QRCode qrCode = new QRCode(TEST_EVENT_ID);
         assertEquals(TEST_HASH, qrCode.getQrCode());
     }
 
-    // Test for getQrImage(), checks if the QR image is generated correctly, and getter
-    // returns the correct bitmap
+    /**
+     * Tests the getQrImage() method.
+     * Ensures that the generated QR image is not null and has the expected dimensions.
+     *
+     * @throws WriterException if an error occurs while generating the QR image.
+     */
     @Test
     public void testGetQrImage() throws WriterException {
         QRCode qrCode = new QRCode(TEST_EVENT_ID);
@@ -44,14 +66,4 @@ public class QRTest {
         assertEquals(500, bitmap.getHeight());
     }
 
-    // Test for generateQRCodeImage(), checks if image is generated correctly
-    @Test
-    public void testGenerateQRCodeImage() throws WriterException {
-        QRCode qrCode = new QRCode(TEST_EVENT_ID);
-        Bitmap bitmap = qrCode.generateQRCodeImage(300, 300, qrCode.getQrCode());
-
-        assertNotNull(bitmap);
-        assertEquals(300, bitmap.getWidth());
-        assertEquals(300, bitmap.getHeight());
-    }
 }

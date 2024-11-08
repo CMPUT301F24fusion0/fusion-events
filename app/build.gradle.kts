@@ -57,7 +57,6 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation("me.dm7.barcodescanner:zxing:1.9.8")
     implementation ("com.google.zxing:core:3.4.1")
-    implementation("com.google.android.material:material:1.4.0")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
@@ -79,6 +78,8 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("me.dm7.barcodescanner:zxing:1.9.8")
 
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation ("androidx.test.espresso:espresso-intents:3.5.1")
 
 
 }
