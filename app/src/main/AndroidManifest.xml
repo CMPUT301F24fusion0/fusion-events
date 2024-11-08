@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- The following code was provided by: "https://www.youtube.com/watch?v=qY-xFxZ7HKY" - 2024-10-27 -->
     <!-- Location based permissions needed-->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -48,6 +47,8 @@
         <activity android:name=".FavouriteActivity"/>
         <activity android:name=".ViewEventActivity"/>
         <activity android:name=".ViewFacilityActivity"/>
+        <activity android:name="com.example.fusion0.TestFragmentActivity" />
+
 
 
     </application>

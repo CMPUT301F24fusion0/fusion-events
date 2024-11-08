@@ -1,10 +1,7 @@
 package com.example.fusion0;
 
-import static android.content.ContentValues.TAG;
-
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +10,6 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
-import com.google.android.gms.tasks.OnSuccessListener;
 
 /**
  * This is the registration fragment that will be displayed when a user signs up for an waiting
@@ -26,6 +21,7 @@ public class Registration extends Fragment {
     Button register;
 
     /**
+     * @author Sehej Brar
      * This method initializes the input fields and an instance of the Firebase class.
      * @param inflater The LayoutInflater object that can be used to inflate
      * any views in the fragment,
@@ -54,6 +50,7 @@ public class Registration extends Fragment {
     }
 
     /**
+     * @author Sehej Brar
      * If the user is already in the database (i.e. their account exists) then they are not allowed
      * to sign up again.
      * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
@@ -76,6 +73,7 @@ public class Registration extends Fragment {
     }
 
     /**
+     * @author Sehej Brar
      * Checks if a user already exists, if they don't then a new account is created
      * @param dID device id
      * @param first first name
@@ -86,6 +84,7 @@ public class Registration extends Fragment {
     private void registration(String dID, String first, String last, String emails, String phone) {
         firebase.findUser(dID, new UserFirestore.Callback() {
             /**
+             * @author Sehej Brar
              * This method checks to see if the same user already exists, if it doesn't then the new
              * user is able to create their account
              * @param user is the user we get back after we look to see if the same user is in the database
@@ -106,6 +105,7 @@ public class Registration extends Fragment {
             }
 
             /**
+             * @author Sehej Brar
              * This method controls the error received
              * @param error the error message received
              */

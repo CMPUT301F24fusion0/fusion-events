@@ -3,10 +3,8 @@ package com.example.fusion0;
 import com.google.firebase.firestore.PropertyName;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -20,6 +18,7 @@ public class UserInfo {
 
 
     /**
+     * @author Sehej Brar
      * Used by firestore to create objects in findUser()
      */
     public UserInfo() {
@@ -28,6 +27,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * Default constructor if phone number is provided
      * @param first first name
      * @param last last name
@@ -46,6 +46,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * Constructor if phone number isn't provided
      * @param first first name
      * @param last last name
@@ -62,6 +63,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * For efficient additions into Firestore, hashmaps are used
      * @return user stores all information regarding the user in a hashmap
      */
@@ -78,6 +80,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * Gets notifications key
      * @return FCM for the user which allows for notifications to be sent to their device
      */
@@ -87,6 +90,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * Sets notifications
      * @param notifications the user notification key for firebase (title, body)
      */
@@ -97,6 +101,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * Adds notification to the ArrayList
      * @param title title
      * @param body body
@@ -104,9 +109,11 @@ public class UserInfo {
     public void addNotifications(String title, String body) {
         this.notifications.add(title);
         this.notifications.add(body);
+        updateUser("notifications", this.notifications);
     }
 
     /**
+     * @author Sehej Brar
      * Gets device id
      * @return device id
      */
@@ -116,6 +123,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * Sets device ID
      * @param deviceID the device ID
      */
@@ -126,6 +134,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * Gets first name
      * @return first name
      */
@@ -135,6 +144,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * Sets first name
      * @param firstName first name
      */
@@ -145,6 +155,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * Gets last name
      * @return last name
      */
@@ -154,6 +165,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * Sets last name
      * @param lastName last name
      */
@@ -164,6 +176,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * Gets email
      * @return email
      */
@@ -173,6 +186,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * Sets email
      * @param email email address
      */
@@ -183,6 +197,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * Gets phone number
      * @return phone number (may be null)
      */
@@ -192,6 +207,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * Sets phone number
      * @param phoneNumber phone number
      */
@@ -202,6 +218,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * If edit mode is on then the user can be updated, this prevents findUser() from attempting to update
      * the database while constructing the found user.
      * @param field attribute to change
@@ -212,6 +229,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * Compares the User and Obj by seeing if their equal, of the same instance, or have the same email
      * @param obj object to compare to
      * @return true if object is same, false otherwise
@@ -231,6 +249,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * Redo the hash for the attribute we compared above
      * @return hash for the email
      */
@@ -240,6 +259,7 @@ public class UserInfo {
     }
 
     /**
+     * @author Sehej Brar
      * Edits can only be made when the edit mode is on, it is false by default
      * @param changeEdit a boolean used to denote whether edit is on or off
      */
