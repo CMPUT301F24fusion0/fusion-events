@@ -55,6 +55,7 @@ public class ViewEventActivity extends AppCompatActivity {
 
 
     /**
+     * @author Simon Haile
      * Creates the activity for viewing one event
      * @param savedInstanceState saved from last instance
      */

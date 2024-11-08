@@ -417,6 +417,7 @@ public class Waitlist {
 
     /**
      * Remove event from user's waitlist
+     * @author Sehej Brar
      * @param entrantId entrant id
      * @param eventId event id
      */
