@@ -19,6 +19,8 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 
 /**
+ * @author Nimi Akinroye
+ *
  * Instrumented test class for the ProfileManagement class.
  * This class tests user data retrieval from Firebase Firestore.
  */
