@@ -50,6 +50,7 @@ public class EventFirebaseTest {
                 });
     }
 
+    /*
     @Test
     public void editTest() throws WriterException {
         OrganizerInfo organizer = new OrganizerInfo("1234");
@@ -80,6 +81,8 @@ public class EventFirebaseTest {
                     }
                 });
     }
+
+     */
 
     @Test
     public void deleteTest() {

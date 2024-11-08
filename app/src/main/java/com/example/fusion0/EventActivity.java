@@ -514,9 +514,6 @@ public class EventActivity extends AppCompatActivity {
             facilityEventsList.add(newEvent.eventID);
             facility.setEvents(facilityEventsList);
             EventFirebase.editFacility(facility);
-
-            Intent intent = new Intent(EventActivity.this, MainActivity.class);
-            startActivity(intent);
         });
     }
 

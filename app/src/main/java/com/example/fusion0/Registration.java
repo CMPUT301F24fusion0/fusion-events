@@ -1,5 +1,6 @@
 package com.example.fusion0;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
@@ -10,6 +11,8 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
+import java.util.ArrayList;
 
 /**
  * This is the registration fragment that will be displayed when a user signs up for an waiting
@@ -69,6 +72,13 @@ public class Registration extends Fragment {
 
             String dID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
             registration(dID, first, last, emails, phone);
+            Bundle bundle = getArguments();
+            if (bundle != null) {
+                String eventId = bundle.getString("eventID");
+                Intent intent = new Intent(getActivity(), ViewEventActivity.class);
+                intent.putExtra("eventID", eventId);
+                startActivity(intent);
+            }
         });
     }
 
@@ -96,9 +106,9 @@ public class Registration extends Fragment {
                     System.out.println("This user already exists.");
                 } else {
                     if (!phone.isEmpty()) {
-                        newUser = new UserInfo(null, first, last, emails, phone, dID);
+                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, phone, dID);
                     } else {
-                        newUser = new UserInfo(null, first, last, emails, dID);
+                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, dID);
                     }
                     firebase.addUser(newUser);
                 }

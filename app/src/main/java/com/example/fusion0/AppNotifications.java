@@ -91,28 +91,29 @@ public class AppNotifications {
      * @author Sehej Brar
      * The user has logged in so they are ready to receive the notifications. This is the method
      * that actually sends out the notifications
-     * @param dID device ID
      * @param context context for the notifications to be sent to
      * @param notifications an array of notifications
      */
-    private static void sendAllNotifications(String dID, Context context, ArrayList<String> notifications) {
+    private static void sendAllNotifications(Context context, ArrayList<String> notifications) {
         // Here we'd call upon firebase to give us back the array of notifications and then send them to the user
         // get notification then delete them from Firebase
         createChannel(context);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "lottery");
-        for (int i = 0; i < notifications.size(); i += 2) {
-            Intent intent = new Intent(context, MainActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, i, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            builder.setContentTitle(notifications.get(i))
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentText(notifications.get(i+1))
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    .setContentIntent(pendingIntent)
-                    .setAutoCancel(true);
+        if (notifications != null) {
+            for (int i = 0; i < notifications.size(); i += 2) {
+                Intent intent = new Intent(context, MainActivity.class);
+                PendingIntent pendingIntent = PendingIntent.getActivity(context, i, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                builder.setContentTitle(notifications.get(i))
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentText(notifications.get(i + 1))
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .setContentIntent(pendingIntent)
+                        .setAutoCancel(true);
 
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(i, builder.build());
+                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.notify(i, builder.build());
+            }
         }
     }
 
@@ -127,7 +128,7 @@ public class AppNotifications {
         userFirestore.findUser(dID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
-                sendAllNotifications(dID, context, user.getNotifications());
+                sendAllNotifications(context, user.getNotifications());
                 user.editMode(true);
                 user.setNotifications(new ArrayList<String>());
                 System.out.println("Notifications removed successfully");

@@ -170,13 +170,29 @@ public class ViewEventActivity extends AppCompatActivity {
             if (event.getGeolocation()){
                 getCurrentLocation();
             }
-            ArrayList<String> currentEntrants = event.getWaitinglist();
-            String newEntrant = "[" + deviceID + ", " + latitude + ", " + longitude + "]";
-            currentEntrants.add(newEntrant);
-            event.setWaitinglist(currentEntrants);
-            EventFirebase.editEvent(event);
-            Toast.makeText(ViewEventActivity.this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
+            LoginManagement login = new LoginManagement(this);
+            login.isUserLoggedIn(isLoggedIn -> {
+                if (isLoggedIn) {
+                    Toast.makeText(ViewEventActivity.this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
+                    ArrayList<String> currentEntrants = event.getWaitinglist();
+                    String newEntrant = "[" + deviceID + ", " + latitude + ", " + longitude + "]";
+                    currentEntrants.add(newEntrant);
+                    event.setWaitinglist(currentEntrants);
+                    EventFirebase.editEvent(event);
+                    Intent intent = new Intent(ViewEventActivity.this, MainActivity.class);
+                    startActivity(intent);
 
+                } else {
+                    Registration registration = new Registration();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("eventID", eventID);
+                    registration.setArguments(bundle);
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.event_view, registration)
+                            .addToBackStack(null)
+                            .commit();
+                }
+            });
         });
     }
 
