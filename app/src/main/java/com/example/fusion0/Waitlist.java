@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
+ * Author : Ali Abouei
  * The {@code Waitlist} class provides methods to manage and interact with the
  * waiting list for events. It allows adding and removing entrants to the waiting list,
  * selecting a specified number of attendees from the waiting list, and offering
