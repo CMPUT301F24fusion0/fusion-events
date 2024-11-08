@@ -1,5 +1,7 @@
 package com.example.fusion0;
 
+import android.util.Log;
+
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -29,16 +31,17 @@ import java.util.List;
  */
 
 public class Waitlist {
-    private FirebaseFirestore db;
-    String title = "Congratulations!";
-    String body = "You've been selected for your signed-up event. Login now to accept this invitation.";
-    ArrayList<String> chosen = new ArrayList<String>();
-    ArrayList<String> all = new ArrayList<String>();
-    ArrayList<String> cancel = new ArrayList<String>();
+    private final FirebaseFirestore db;
+    static ArrayList<String> chosen;
+    static ArrayList<String> cancel;
+    CollectionReference eventsRef;
 
 
     public Waitlist() {
         db = FirebaseFirestore.getInstance();
+        eventsRef = db.collection("events");
+        chosen = new ArrayList<String>();
+        cancel = new ArrayList<String>();
     }
 
     /**
@@ -51,8 +54,6 @@ public class Waitlist {
      *                  If not, it adds the entrant with a status of "waiting".
      */
     public void addEntrantToWaitingList(String eventId, String entrantId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
         // Reference to the event's waiting list
         CollectionReference waitingListRef = db.collection("events")
                 .document(eventId)
@@ -63,12 +64,11 @@ public class Waitlist {
         entrantData.put("status", "waiting");
 
         // Add entrant to the waiting list only if they are not already present
-        waitingListRef.document(entrantId).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && !task.getResult().exists()) {
+        getAll(eventId, all -> {
+            if (!all.contains(entrantId)) {
                 waitingListRef.document(entrantId).set(entrantData)
                         .addOnSuccessListener(aVoid -> {
                             System.out.println("Entrant added to waiting list");
-                            all.add(entrantId);
                         })
                         .addOnFailureListener(e -> System.out.println("Error adding entrant: " + e));
             } else {
@@ -87,9 +87,6 @@ public class Waitlist {
      *                  chosen and decreases the accepted count in the event document if needed.
      */
     public void removeEntrantFromWaitingList(String eventId, String entrantId) {
-
-        CollectionReference eventsRef = db.collection("events");
-
         // Reference to the event's waiting list
         CollectionReference waitingListRef = db.collection("events")
                 .document(eventId)
@@ -102,8 +99,6 @@ public class Waitlist {
                 if ("chosen".equals(status)) {
                     // Mark entrant as declined
                     document.getReference().update("status", "declined");
-                    all.remove(entrantId);
-                    cancel.add(entrantId);
 
                     // Decrement acceptedCount in the event document
                     eventsRef.document(eventId).get().addOnSuccessListener(eventDoc -> {
@@ -117,7 +112,6 @@ public class Waitlist {
                     waitingListRef.document(entrantId).delete()
                             .addOnSuccessListener(aVoid -> {
                                 System.out.println("Entrant removed from waiting list");
-                                all.remove(entrantId);
                             })
                             .addOnFailureListener(e -> System.out.println("Error removing entrant: " + e));
                 }
@@ -138,9 +132,6 @@ public class Waitlist {
      *                    and the accepted count in the event document is incremented.
      */
     public void sampleAttendees(String eventId, int numToSelect) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference eventsRef = db.collection("events");
-
         // Fetch event details to get capacity and current acceptedCount
         eventsRef.document(eventId).get().addOnSuccessListener(eventDoc -> {
             if (eventDoc.exists()) {
@@ -234,8 +225,6 @@ public class Waitlist {
      *                only if the accepted count is still below the event's capacity.
      */
     public void offerAnotherChance(String eventId) {
-        CollectionReference eventsRef = db.collection("events");
-
         eventsRef.document(eventId).get().addOnSuccessListener(eventDoc -> {
             if (eventDoc.exists()) {
                 Long capacity = eventDoc.getLong("capacity");
@@ -273,11 +262,73 @@ public class Waitlist {
         }).addOnFailureListener(e -> System.out.println("Error fetching event details: " + e.getMessage()));
     }
 
-    public void allNotification() {
-        for (String dID: all) {
-            AppNotifications.sendNotification(dID, "Welcome", "Welcome to the waiting list, the lottery" +
-                    "will occur soon! Stay tuned for more information.");
-        }
+    public void getAll(String eventId, AllCB allCB) {
+        ArrayList<String> all = new ArrayList<>();
+        CollectionReference waitingListRef = db.collection("events")
+                .document(eventId)
+                .collection("waitingList");
+
+        waitingListRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<DocumentSnapshot> docs = task.getResult().getDocuments();
+                for (DocumentSnapshot doc : docs) {
+                    all.add(doc.getId());
+                }
+                allCB.allDid(all);
+            } else {
+                Log.e("Error", "Error");
+            }
+        });
+    }
+
+    public interface AllCB {
+        void allDid(ArrayList<String> all);
+    }
+
+    public void getCancel(String eventId) {
+        CollectionReference waitingListRef = db.collection("events")
+                .document(eventId)
+                .collection("waitingList");
+
+        waitingListRef.whereEqualTo("status", "declined").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<DocumentSnapshot> docs = task.getResult().getDocuments();
+                for (DocumentSnapshot doc : docs) {
+                    cancel.add(doc.getId());
+                }
+            } else {
+                Log.e("Error", "Error");
+            }
+        });
+    }
+
+    public void getChosen(String eventId) {
+        CollectionReference waitingListRef = db.collection("events")
+                .document(eventId)
+                .collection("waitingList");
+
+        waitingListRef.whereEqualTo("status", "chosen").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<DocumentSnapshot> docs = task.getResult().getDocuments();
+                for (DocumentSnapshot doc : docs) {
+                    chosen.add(doc.getId());
+                }
+            } else {
+                Log.e("Error", "Error");
+            }
+        });
+    }
+
+    public void allNotification(String eventId, String dID) {
+        getAll(eventId, new AllCB() {
+            @Override
+            public void allDid(ArrayList<String> all) {
+                for (String dID: all) {
+                    AppNotifications.sendNotification(dID, "Welcome", "Welcome to the waiting list, the lottery" +
+                            "will occur soon! Stay tuned for more information.");
+                }
+            }
+        });
     }
 
     public void chosenNotification() {
@@ -294,4 +345,5 @@ public class Waitlist {
 
         }
     }
+
 }
