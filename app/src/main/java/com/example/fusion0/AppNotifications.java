@@ -7,7 +7,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
@@ -39,27 +38,6 @@ public class AppNotifications {
             lottery.setDescription("Lottery acceptation or decline.");
             context.getSystemService(NotificationManager.class).createNotificationChannel(lottery);
         }
-    }
-
-    /**
-     * Changes permission if need be
-     * Adapted from: <a href="https://stackoverflow.com/questions/58047177/how-to-turn-off-app-notification-from-inside-the-app">...</a>
-     * @param context context
-     * @param perm true for notifications can be sent, false otherwise
-     */
-    public static void setNotificationPermission(Context context, boolean perm) {
-        SharedPreferences sp = context.getSharedPreferences("notifications", Context.MODE_PRIVATE);
-        sp.edit().putBoolean("permission", perm).apply();
-    }
-
-    /**
-     * Returns true if permission has been given or if nothing explicit has been given.
-     * @param context context
-     * @return a boolean
-     */
-    public static boolean checkNotificationPermission(Context context) {
-        SharedPreferences sp = context.getSharedPreferences("notifications", Context.MODE_PRIVATE);
-        return sp.getBoolean("permission", true);
     }
 
     /**
@@ -150,9 +128,7 @@ public class AppNotifications {
         userFirestore.findUser(dID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
-                if (AppNotifications.checkNotificationPermission(context)) {
-                    sendAllNotifications(context, user.getNotifications());
-                }
+                sendAllNotifications(context, user.getNotifications());
                 user.editMode(true);
                 user.setNotifications(new ArrayList<String>());
                 System.out.println("Notifications removed successfully");

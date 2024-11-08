@@ -2,6 +2,7 @@ package com.example.fusion0;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class contains the tools needed for the users to view their events signed up for, created, or
@@ -60,11 +62,11 @@ public class FavouriteActivity extends AppCompatActivity {
         createdEventsList = findViewById(R.id.created_events_list);
         facilitiesList = findViewById(R.id.facilities_list);
 
-
+/*
         joinedEventsButton.setOnClickListener(view -> {UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
                 @Override
                 public void onSuccess(UserInfo userInfo) {
-                    if (userInfo.getEvents() == null) {
+                    if (userInfo == null) {
                         Toast.makeText(FavouriteActivity.this, "No Joined Events Available.", Toast.LENGTH_SHORT).show();
                         joinedEventsList.setVisibility(View.GONE);
                         joinedEventsButton.setText("View");
@@ -72,18 +74,11 @@ public class FavouriteActivity extends AppCompatActivity {
                         user = userInfo;
 
                         if (joinedEventsList.getAdapter() == null) {
-                            ArrayList<EventInfo> events = user.getEvents();
-                            ArrayList<String> eventNames = new ArrayList<>();
-
-                            for (EventInfo event : events) {
-                                if (event != null && event.getEventName() != null) {
-                                    eventNames.add(event.getEventName());
-                                }
-                            }
-                            ArrayAdapter<String> facilitiesAdapter = new ArrayAdapter<>(FavouriteActivity.this, android.R.layout.simple_list_item_1, eventNames);
+                            ArrayAdapter<String> facilitiesAdapter = new ArrayAdapter<>(FavouriteActivity.this, android.R.layout.simple_list_item_1, user.getEventsNames());
                             joinedEventsList.setAdapter(facilitiesAdapter);
                         }
 
+                        // Toggle visibility and button text
                         if (isCreatedEventsListVisible) {
                             joinedEventsList.setVisibility(View.GONE);
                             joinedEventsButton.setText("View");
@@ -100,17 +95,8 @@ public class FavouriteActivity extends AppCompatActivity {
                     Log.e(TAG, "Error fetching user: " + error);
                 }
             });
-
-            joinedEventsList.setOnItemClickListener((parent, view1, position, id) -> {
-                EventInfo event = user.getEvents().get(position);
-                String eventID = event.getEventID();
-
-                Intent intent = new Intent(FavouriteActivity.this, JoinedEventActivity.class);
-                intent.putExtra("eventID", eventID);
-                startActivity(intent);
-            });
         });
-
+        */
         createdEventsButton.setOnClickListener(view -> {EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
                 @Override
                 public void onSuccess(OrganizerInfo organizerInfo) {

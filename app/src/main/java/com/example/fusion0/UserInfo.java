@@ -12,8 +12,7 @@ import java.util.Objects;
  */
 public class UserInfo {
     String firstName, lastName, email, phoneNumber, deviceID;
-    ArrayList<String> notifications;
-    ArrayList<EventInfo> events;
+    ArrayList<String> notifications, events;
     UserFirestore firebase;
     Boolean edit;
 
@@ -35,7 +34,7 @@ public class UserInfo {
      * @param email email address
      * @param phoneNumber phone number
      */
-    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String phoneNumber, String dID, ArrayList<EventInfo> events) {
+    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String phoneNumber, String dID, ArrayList<String> events) {
         this.notifications = notifications;
         this.firstName = first;
         this.lastName = last;
@@ -54,7 +53,7 @@ public class UserInfo {
      * @param last last name
      * @param email email address
      */
-    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String dID, ArrayList<EventInfo> events) {
+    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String dID, ArrayList<String> events) {
         this.notifications = notifications;
         this.firstName = first;
         this.lastName = last;
@@ -89,7 +88,7 @@ public class UserInfo {
      * @return an arraylist of events
      */
     @PropertyName("events")
-    public ArrayList<EventInfo> getEvents() {
+    public ArrayList<String> getEvents() {
         return events;
     }
 
@@ -99,7 +98,7 @@ public class UserInfo {
      * @param events list of events
      */
     @PropertyName("events")
-    public void setEvents(ArrayList<EventInfo> events) {
+    public void setEvents(ArrayList<String> events) {
         this.events = events;
     }
 
@@ -249,7 +248,7 @@ public class UserInfo {
      * @param newItem new attribute
      */
     private void updateUser(String field, ArrayList<String> newItem) {
-        if (edit) UserFirestore.editUser(this, field, newItem);
+        if (edit) firebase.editUser(this, field, newItem);
     }
 
     /**
