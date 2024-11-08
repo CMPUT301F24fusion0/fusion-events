@@ -53,10 +53,10 @@ public class EventActivity extends AppCompatActivity {
     private StorageReference storageRef;
 
     private static final String TAG = "EventActivity";
-    private EditText eventName,description, capacity;
+    private EditText eventName,description, capacity, radius;
     private androidx.fragment.app.FragmentContainerView autocompletePlaceFragment;
     private Calendar startDateCalendar;
-    private TextView addFacilityText,dateRequirementsTextView, startDateTextView, startTimeTextView, endDateTextView, endTimeTextView, geolocationTextView;
+    private TextView addFacilityText,dateRequirementsTextView, startDateTextView, startTimeTextView, endDateTextView, endTimeTextView, geolocationTextView, radiusText;
     private Button addButton, exitButton;
     private ImageView uploadedImageView;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
@@ -105,6 +105,9 @@ public class EventActivity extends AppCompatActivity {
         exitButton = findViewById(R.id.exit_button);
         geolocationTextView = findViewById(R.id.geolocation_text);
         geolocationSwitchCompact = findViewById(R.id.geolocation_switchcompat);
+        radius = findViewById(R.id.radius);
+        radiusText = findViewById(R.id.radius_text);
+
 
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
@@ -276,6 +279,8 @@ public class EventActivity extends AppCompatActivity {
     private void geolocationHandling(){
         geolocationSwitchCompact.setOnCheckedChangeListener((buttonView, isChecked) -> {
             geolocation = isChecked;
+            radiusText.setVisibility(View.VISIBLE);
+            radius.setVisibility(View.VISIBLE);
         });
     }
 
@@ -460,11 +465,11 @@ public class EventActivity extends AppCompatActivity {
                 Toast.makeText(EventActivity.this, "Start or End date is missing", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (eventPoster == null) {
+            /*if (eventPoster == null) {
                 Toast.makeText(EventActivity.this, "Event poster is missing", Toast.LENGTH_SHORT).show();
                 return;
             }
-
+*/
             if (facilityName == null || facility == null) {
                 Toast.makeText(EventActivity.this, "Facility name or facility is missing", Toast.LENGTH_SHORT).show();
                 return;
@@ -487,7 +492,8 @@ public class EventActivity extends AppCompatActivity {
                         eventPoster,
                         geolocation,
                         longitude,
-                        latitude
+                        latitude,
+                        Integer.parseInt(radius.getText().toString()) * 1000
                 );
             } catch (WriterException e) {
                 throw new RuntimeException(e);
