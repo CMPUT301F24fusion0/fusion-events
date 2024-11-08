@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Author : Ali Abouei
+ * @author : Ali Abouei, Sehej Brar
  * The {@code Waitlist} class provides methods to manage and interact with the
  * waiting list for events. It allows adding and removing entrants to the waiting list,
  * selecting a specified number of attendees from the waiting list, and offering
@@ -32,19 +32,16 @@ import java.util.List;
 
 public class Waitlist {
     private final FirebaseFirestore db;
-    static ArrayList<String> chosen;
-    static ArrayList<String> cancel;
     CollectionReference eventsRef;
 
 
     public Waitlist() {
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
-        chosen = new ArrayList<String>();
-        cancel = new ArrayList<String>();
     }
 
     /**
+     * @author : Ali Abouei
      * Adds an entrant to the waiting list for a specific event.
      *
      * @param eventId   The unique identifier of the event.
@@ -67,9 +64,7 @@ public class Waitlist {
         getAll(eventId, all -> {
             if (!all.contains(entrantId)) {
                 waitingListRef.document(entrantId).set(entrantData)
-                        .addOnSuccessListener(aVoid -> {
-                            System.out.println("Entrant added to waiting list");
-                        })
+                        .addOnSuccessListener(aVoid -> System.out.println("Entrant added to waiting list"))
                         .addOnFailureListener(e -> System.out.println("Error adding entrant: " + e));
             } else {
                 System.out.println("Entrant already exists in the waiting list");
@@ -78,6 +73,7 @@ public class Waitlist {
     }
 
     /**
+     * @author : Ali Abouei
      * Removes an entrant from the waiting list or marks them as declined if they were chosen.
      *
      * @param eventId   The unique identifier of the event.
@@ -110,9 +106,7 @@ public class Waitlist {
                 } else {
                     // Remove the entrant if they're still on the waiting list
                     waitingListRef.document(entrantId).delete()
-                            .addOnSuccessListener(aVoid -> {
-                                System.out.println("Entrant removed from waiting list");
-                            })
+                            .addOnSuccessListener(aVoid -> System.out.println("Entrant removed from waiting list"))
                             .addOnFailureListener(e -> System.out.println("Error removing entrant: " + e));
                 }
             } else {
@@ -123,6 +117,7 @@ public class Waitlist {
 
 
     /**
+     * @author : Ali Abouei
      * Samples a specified number of attendees from the waiting list for a specific event.
      *
      * @param eventId     The unique identifier of the event.
@@ -197,7 +192,6 @@ public class Waitlist {
                                                 .addOnSuccessListener(aVoid -> System.out.println("Successfully updated entrant status to 'chosen'"))
                                                 .addOnFailureListener(e -> System.out.println("Failed to update entrant status: " + e.getMessage()));
 
-                                        chosen.add(entrant.getId());
                                     }
 
                                     System.out.println(finalNumToSelect + " entrants chosen for event " + eventId);
@@ -217,6 +211,7 @@ public class Waitlist {
 
 
     /**
+     * @author : Ali Abouei
      * Offers another chance to an entrant if a previously chosen entrant declines and more spots are needed.
      *
      * @param eventId The unique identifier of the event.
@@ -245,7 +240,6 @@ public class Waitlist {
                                         // Increment acceptedCount in the event document
                                         eventsRef.document(eventId).update("acceptedCount", acceptedCount + 1);
                                         System.out.println("Another entrant selected for event " + eventId);
-                                        chosen.add(chosenEntrant.getId());
                                     } else {
                                         System.out.println("No waiting entrants left to offer another chance.");
                                     }
@@ -262,6 +256,12 @@ public class Waitlist {
         }).addOnFailureListener(e -> System.out.println("Error fetching event details: " + e.getMessage()));
     }
 
+    /**
+     * Gets all those on waitlist
+     * @author Sehej Brar
+     * @param eventId event id
+     * @param allCB a callback for all entrants on waitlist
+     */
     public void getAll(String eventId, AllCB allCB) {
         ArrayList<String> all = new ArrayList<>();
         CollectionReference waitingListRef = db.collection("events")
@@ -281,11 +281,14 @@ public class Waitlist {
         });
     }
 
-    public interface AllCB {
-        void allDid(ArrayList<String> all);
-    }
-
-    public void getCancel(String eventId) {
+    /**
+     * Gets those that cancel
+     * @author Sehej Brar
+     * @param eventId event id
+     * @param cancelCB callback for people who cancelled
+     */
+    public void getCancel(String eventId, CancelCB cancelCB) {
+        ArrayList<String> cancel = new ArrayList<>();
         CollectionReference waitingListRef = db.collection("events")
                 .document(eventId)
                 .collection("waitingList");
@@ -296,13 +299,21 @@ public class Waitlist {
                 for (DocumentSnapshot doc : docs) {
                     cancel.add(doc.getId());
                 }
+                cancelCB.cancelDid(cancel);
             } else {
                 Log.e("Error", "Error");
             }
         });
     }
 
-    public void getChosen(String eventId) {
+    /**
+     * Gets the people chosen from the lottery
+     * @author Sehej Brar
+     * @param eventId event id
+     * @param chosenCB callback to get the chosen people
+     */
+    public void getChosen(String eventId, ChosenCB chosenCB) {
+        ArrayList<String> chosen = new ArrayList<>();
         CollectionReference waitingListRef = db.collection("events")
                 .document(eventId)
                 .collection("waitingList");
@@ -313,37 +324,83 @@ public class Waitlist {
                 for (DocumentSnapshot doc : docs) {
                     chosen.add(doc.getId());
                 }
+                chosenCB.ChosenDid(chosen);
             } else {
                 Log.e("Error", "Error");
             }
         });
     }
 
-    public void allNotification(String eventId, String dID) {
+    /**
+     * Interface for all waitlist entrants
+     * @author Sehej Brar
+     */
+    public interface AllCB {
+        void allDid(ArrayList<String> all);
+    }
+
+    /**
+     * Interface for all entrants who cancelled after being chosen
+     * @author Sehej Brar
+     */
+    public interface CancelCB {
+        void cancelDid(ArrayList<String> cancel);
+    }
+
+    /**
+     * Interface for all chosen entrants
+     * @author Sehej Brar
+     */
+    public interface ChosenCB {
+        void ChosenDid(ArrayList<String> chosen);
+    }
+
+    /**
+     * Sends a notification to everyone on the waitlist
+     * @author Sehej brar
+     * @param eventId event id
+     * @param title title of notification
+     * @param message message of notification
+     */
+    public void allNotification(String eventId, String title, String message) {
         getAll(eventId, new AllCB() {
             @Override
             public void allDid(ArrayList<String> all) {
                 for (String dID: all) {
-                    AppNotifications.sendNotification(dID, "Welcome", "Welcome to the waiting list, the lottery" +
-                            "will occur soon! Stay tuned for more information.");
+                    AppNotifications.sendNotification(dID, title, message);
                 }
             }
         });
     }
 
-    public void chosenNotification() {
-        for (String dID: chosen) {
-            AppNotifications.sendNotification(dID, "Congratulations", "You've been selected." +
-                    "Please accept the in-app invite for the event to confirm your participation");
-        }
+    /**
+     * Sends notification to the ones chosen in the lottery
+     * @author Sehej Brar
+     * @param eventId event id
+     * @param title title of notification
+     * @param message message of notification
+     */
+    public void chosenNotification(String eventId, String title, String message) {
+        getChosen(eventId, chosen -> {
+            for (String dID: chosen) {
+                AppNotifications.sendNotification(dID, title, message);
+            }
+        });
     }
 
-    public void cancelNotifications() {
-        for (String dID: cancel) {
-           AppNotifications.sendNotification(dID, "Declined", "You've rejected the invite for" +
-                   "this event. You will no longer be able to join unless a spot opens up");
-
-        }
+    /**
+     * Sends notification to the ones who cancelled their invite after the lottery
+     * @author Sehej Brar
+     * @param eventId event id
+     * @param title title of notification
+     * @param message message of notification
+     */
+    public void cancelNotifications(String eventId, String title, String message) {
+        getCancel(eventId, cancel -> {
+            for (String dID: cancel) {
+                AppNotifications.sendNotification(dID, title, message);
+            }
+        });
     }
 
 }
