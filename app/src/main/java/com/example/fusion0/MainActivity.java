@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
                 notificationAdapter = new NotificationAdapter(this, notificationList);
                 notificationsListView.setAdapter(notificationAdapter);
 
-                populateTemporaryNotifications();
+                updateNotification(deviceId, notificationList, notificationAdapter);
 
                 ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
                     @Override
@@ -342,25 +342,6 @@ public class MainActivity extends AppCompatActivity {
             noNotifications.setVisibility(View.GONE);
             notificationsListView.setVisibility(View.VISIBLE);
         }
-    }
-
-    private void populateTemporaryNotifications() {
-        notificationList.clear();
-
-        // Standard Notification (Flag 0)
-        notificationList.add(new NotificationItem("Task Reminder", "Your task is due tomorrow.", "0"));
-        notificationList.add(new NotificationItem("System Update", "A new update is available.", "0"));
-
-        // Accept/Decline Notification (Flag 1)
-        notificationList.add(new NotificationItem("Meeting Request", "Please respond to the event invitation.", "1"));
-        notificationList.add(new NotificationItem("Event Invitation", "You have been invited to a birthday party.", "1"));
-
-        // Another Standard Notification (Flag 0)
-        notificationList.add(new NotificationItem("Promotion", "You have a new offer waiting.", "0"));
-
-        // Notify the adapter of data changes
-        notificationAdapter.notifyDataSetChanged();
-        updateNotificationView();
     }
 
 }
