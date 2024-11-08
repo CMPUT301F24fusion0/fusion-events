@@ -13,46 +13,60 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 
-
+/**
+ * The Settings fragment allows users to manage their notification preferences
+ * and navigate back to the ProfileActivity.
+ *
+ * @author Nimi Akinroye
+ */
 public class Settings extends Fragment {
 
-    private SwitchCompat switchNotfications;
+    private SwitchCompat switchNotifications;
     private SharedPreferences sharedPreferences;
     private ImageButton backButton;
 
-
+    /**
+     * Inflates the layout for the Settings fragment and initializes components.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container          The parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The root View of the fragment's layout.
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
         // Initialize the switch and SharedPreferences
-        switchNotfications = view.findViewById(R.id.switchNotifications);
+        switchNotifications = view.findViewById(R.id.switchNotifications);
         sharedPreferences = requireContext().getSharedPreferences("App Settings", 0);
 
         // Load the saved switch state
         boolean isNotificationsEnabled = sharedPreferences.getBoolean("notifications_enabled", true);
-        switchNotfications.setChecked(isNotificationsEnabled);
+        switchNotifications.setChecked(isNotificationsEnabled);
 
         // Set up the listener for the switch toggle
-        switchNotfications.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        switchNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
             // Save the new state to SharedPreferences
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("notifications_enabled", isChecked);
             editor.apply();
 
-            // Display a toast message
+            // Display a toast message based on the switch state
             if (isChecked) {
                 Toast.makeText(getContext(), "Notifications Enabled", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getContext(), "Notifications Disabled", Toast.LENGTH_SHORT).show();
             }
 
+            // Update notification settings in the backend
             updateNotificationSettings(isChecked);
         });
 
+        // Initialize the back button and set its click listener
         backButton = view.findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> {
-            // Start the ProfileActivity
+            // Navigate back to the ProfileActivity
             Intent intent = new Intent(requireContext(), ProfileActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
@@ -63,7 +77,7 @@ public class Settings extends Fragment {
     }
 
     /**
-     * Method to handle backend changes for notification settings.
+     * Updates the notification settings in the backend or server.
      *
      * @param isEnabled Whether notifications are enabled or disabled.
      */
@@ -72,12 +86,12 @@ public class Settings extends Fragment {
         // For example:
         // UserFirestore userFirestore = new UserFirestore();
         // userFirestore.updateNotificationPreference(isEnabled);
-//
-//        if (isEnabled) {
-//            AppNotifications.setPermission(context, true);
-//        } else {
-//            AppNotifications.setPermission(context, false);
-//        }
-    }
 
+        // Example logic for enabling or disabling notifications:
+        // if (isEnabled) {
+        //     AppNotifications.setPermission(context, true);
+        // } else {
+        //     AppNotifications.setPermission(context, false);
+        // }
+    }
 }

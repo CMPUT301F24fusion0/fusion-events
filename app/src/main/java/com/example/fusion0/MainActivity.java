@@ -129,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
 
                 updateNotification(deviceId, notificationList, notificationAdapter);
 
+                // Set up swipe-to-delete functionality
                 ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
                     @Override
                     public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
@@ -237,6 +238,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * @author Nimi Akinroye
+     * Displays a dialog with notification details.
+     *
+     * @param notificationItem The notification item to display in the dialog.
+     */
     public void showNotificationDialog(NotificationItem notificationItem) {
         View dialogView = getLayoutInflater().inflate(R.layout.notifications_dialog, null);
 
@@ -256,6 +263,11 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    /**
+     * @author Nimi Akinroye
+     * Updates the notifications by fetching from Firestore and updating the RecyclerView.
+     * @param deviceId, notificationList, notificationAdapter
+     */
     private void updateNotification(String deviceId, List<NotificationItem> notificationList, NotificationAdapter notificationAdapter) {
         UserFirestore userFirestore = new UserFirestore();
         userFirestore.findUser(deviceId, new UserFirestore.Callback() {
@@ -290,6 +302,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * @author Nimi Akinroye
+     * Deletes a notification from Firestore.
+     * @param notificationItem
+     */
     private void deleteNotification(NotificationItem notificationItem) {
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         UserFirestore userFirestore = new UserFirestore();
@@ -331,6 +348,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * @author Nimi Akinroye
+     * Handles the notifications ListView lifecycle
+     */
 
     private void updateNotificationView() {
         TextView noNotifications = findViewById(R.id.noNotifications);
