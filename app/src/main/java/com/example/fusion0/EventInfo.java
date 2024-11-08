@@ -37,6 +37,7 @@ public class EventInfo {
     private Boolean geolocation;
     private Double latitude;
     private Double longitude;
+    private Integer radius;
 
 
     public EventInfo() throws WriterException {
@@ -61,9 +62,10 @@ public class EventInfo {
         this.geolocation = false;
         this.latitude = 0.0;
         this.longitude = 0.0;
+        this.radius = 0;
     }
 
-    public EventInfo(String organizer, String eventName, String address, String facilityName, String capacity, String description, Date startDate, Date endDate, String startTime, String endTime, String eventPoster, Boolean geolocation, Double longitude, Double latitude) throws WriterException {
+    public EventInfo(String organizer, String eventName, String address, String facilityName, String capacity, String description, Date startDate, Date endDate, String startTime, String endTime, String eventPoster, Boolean geolocation, Double longitude, Double latitude, Integer radius) throws WriterException {
         this.eventID = UUID.randomUUID().toString();
         this.organizer = organizer;
         this.eventName = eventName;
@@ -85,6 +87,7 @@ public class EventInfo {
         this.geolocation = geolocation;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.radius = radius;
     }
 
 
@@ -109,6 +112,7 @@ public class EventInfo {
         event.put("geolocation", this.geolocation);
         event.put("latitude", this.latitude);
         event.put("longitude", this.longitude);
+        event.put("radius", this.radius);
         return event;
     }
 
@@ -295,6 +299,15 @@ public class EventInfo {
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
+
+    public Integer getRadius() {
+        return radius;
+    }
+
+    public void setRadius(Integer radius) {
+        this.radius = radius;
+    }
+
 
 
 
