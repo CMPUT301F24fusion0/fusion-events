@@ -13,6 +13,7 @@ import java.util.Objects;
 public class UserInfo {
     String firstName, lastName, email, phoneNumber, deviceID;
     ArrayList<String> notifications;
+    ArrayList<EventInfo> events;
     UserFirestore firebase;
     Boolean edit;
 
@@ -34,7 +35,7 @@ public class UserInfo {
      * @param email email address
      * @param phoneNumber phone number
      */
-    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String phoneNumber, String dID) {
+    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String phoneNumber, String dID, ArrayList<EventInfo> events) {
         this.notifications = notifications;
         this.firstName = first;
         this.lastName = last;
@@ -43,6 +44,7 @@ public class UserInfo {
         this.firebase = new UserFirestore();
         this.edit = false;
         this.deviceID = dID;
+        this.events = events;
     }
 
     /**
@@ -52,7 +54,7 @@ public class UserInfo {
      * @param last last name
      * @param email email address
      */
-    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String dID) {
+    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String dID, ArrayList<EventInfo> events) {
         this.notifications = notifications;
         this.firstName = first;
         this.lastName = last;
@@ -60,6 +62,7 @@ public class UserInfo {
         this.firebase = new UserFirestore();
         this.edit = false;
         this.deviceID = dID;
+        this.events = events;
     }
 
     /**
@@ -75,8 +78,29 @@ public class UserInfo {
         user.put("first name", this.firstName);
         user.put("last name", this.lastName);
         user.put("phone number", this.phoneNumber);
+        user.put("events", this.events);
 
         return user;
+    }
+
+    /**
+     * @author Sehej Brar
+     * Gets the events for a user (on waitlist)
+     * @return an arraylist of events
+     */
+    @PropertyName("events")
+    public ArrayList<EventInfo> getEvents() {
+        return events;
+    }
+
+    /**
+     * @author Sehej Brar
+     * Sets the events for a user (on waitlist)
+     * @param events list of events
+     */
+    @PropertyName("events")
+    public void setEvents(ArrayList<EventInfo> events) {
+        this.events = events;
     }
 
     /**
@@ -117,7 +141,7 @@ public class UserInfo {
      * Gets device id
      * @return device id
      */
-    @PropertyName("did")
+    @PropertyName("dID")
     public String getDeviceID() {
         return deviceID;
     }
@@ -127,7 +151,7 @@ public class UserInfo {
      * Sets device ID
      * @param deviceID the device ID
      */
-    @PropertyName("did")
+    @PropertyName("dID")
     public void setDeviceID(String deviceID) {
         updateUser("DID", new ArrayList<String>(Collections.singletonList(deviceID)));
         this.deviceID = deviceID;
@@ -225,7 +249,7 @@ public class UserInfo {
      * @param newItem new attribute
      */
     private void updateUser(String field, ArrayList<String> newItem) {
-        if (edit) firebase.editUser(this, field, newItem);
+        if (edit) UserFirestore.editUser(this, field, newItem);
     }
 
     /**
