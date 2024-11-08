@@ -17,7 +17,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -39,7 +38,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.zxing.WriterException;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -514,6 +512,10 @@ public class EventActivity extends AppCompatActivity {
             facilityEventsList.add(newEvent.eventID);
             facility.setEvents(facilityEventsList);
             EventFirebase.editFacility(facility);
+
+            Toast.makeText(EventActivity.this, "Successfully created!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(EventActivity.this, MainActivity.class);
+            startActivity(intent);
         });
     }
 
