@@ -14,6 +14,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
+
 public class FavouriteActivity extends AppCompatActivity {
     private static final String TAG = "FavouriteActivity";
     private Button joinedEventsButton;
@@ -52,7 +54,7 @@ public class FavouriteActivity extends AppCompatActivity {
         createdEventsList = findViewById(R.id.created_events_list);
         facilitiesList = findViewById(R.id.facilities_list);
 
-        /*
+
         joinedEventsButton.setOnClickListener(view -> {UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
                 @Override
                 public void onSuccess(UserInfo userInfo) {
@@ -64,11 +66,18 @@ public class FavouriteActivity extends AppCompatActivity {
                         user = userInfo;
 
                         if (joinedEventsList.getAdapter() == null) {
-                            ArrayAdapter<String> facilitiesAdapter = new ArrayAdapter<>(FavouriteActivity.this, android.R.layout.simple_list_item_1, user.getEventsNames());
+                            ArrayList<EventInfo> events = user.getEvents();
+                            ArrayList<String> eventNames = new ArrayList<>();
+
+                            for (EventInfo event : events) {
+                                if (event != null && event.getEventName() != null) {
+                                    eventNames.add(event.getEventName());
+                                }
+                            }
+                            ArrayAdapter<String> facilitiesAdapter = new ArrayAdapter<>(FavouriteActivity.this, android.R.layout.simple_list_item_1, eventNames);
                             joinedEventsList.setAdapter(facilitiesAdapter);
                         }
 
-                        // Toggle visibility and button text
                         if (isCreatedEventsListVisible) {
                             joinedEventsList.setVisibility(View.GONE);
                             joinedEventsButton.setText("View");
@@ -95,7 +104,7 @@ public class FavouriteActivity extends AppCompatActivity {
                 startActivity(intent);
             });
         });
-        */
+
         createdEventsButton.setOnClickListener(view -> {EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
                 @Override
                 public void onSuccess(OrganizerInfo organizerInfo) {
