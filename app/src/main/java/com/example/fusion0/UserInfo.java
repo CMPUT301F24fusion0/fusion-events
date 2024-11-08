@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 public class UserInfo {
     String firstName, lastName, email, phoneNumber, deviceID;
-    ArrayList<String> notifications;
+    ArrayList<String> notifications, events;
     UserFirestore firebase;
     Boolean edit;
 
@@ -34,7 +34,7 @@ public class UserInfo {
      * @param email email address
      * @param phoneNumber phone number
      */
-    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String phoneNumber, String dID) {
+    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String phoneNumber, String dID, ArrayList<String> events) {
         this.notifications = notifications;
         this.firstName = first;
         this.lastName = last;
@@ -43,6 +43,7 @@ public class UserInfo {
         this.firebase = new UserFirestore();
         this.edit = false;
         this.deviceID = dID;
+        this.events = events;
     }
 
     /**
@@ -52,7 +53,7 @@ public class UserInfo {
      * @param last last name
      * @param email email address
      */
-    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String dID) {
+    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String dID, ArrayList<String> events) {
         this.notifications = notifications;
         this.firstName = first;
         this.lastName = last;
@@ -60,6 +61,7 @@ public class UserInfo {
         this.firebase = new UserFirestore();
         this.edit = false;
         this.deviceID = dID;
+        this.events = events;
     }
 
     /**
@@ -75,8 +77,27 @@ public class UserInfo {
         user.put("first name", this.firstName);
         user.put("last name", this.lastName);
         user.put("phone number", this.phoneNumber);
+        user.put("events", this.events);
 
         return user;
+    }
+
+    /**
+     * @author Sehej Brar
+     * Gets the events for a user
+     * @return an arraylist of events
+     */
+    public ArrayList<String> getEvents() {
+        return events;
+    }
+
+    /**
+     * @author Sehej Brar
+     * Sets the events for a user
+     * @param events list of events
+     */
+    public void setEvents(ArrayList<String> events) {
+        this.events = events;
     }
 
     /**
