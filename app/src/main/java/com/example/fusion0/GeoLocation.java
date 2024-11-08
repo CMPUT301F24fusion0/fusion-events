@@ -132,21 +132,27 @@ public class GeoLocation implements LocationListener {
      *         is available or permissions are not granted.
      */
     public Location getLocation() {
+        //If location was already set return it
+        if (userLocation != null) {
+            return userLocation;
+        }
+        //If location was not yet set
         if (isLocationPermissionGranted()) {
-            // First, try to get the last known location
+
+            // Try to get the last known location
             Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if (lastKnownLocation != null) {
                 userLocation = lastKnownLocation;
                 return userLocation;
             }
 
-            // If not available, request location updates
+            // Request location updates if no immediate location is available
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, this);
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5, this);
         }
-        // Return null if no location is available right away
         return null;
     }
+
 
 
 

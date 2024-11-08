@@ -514,21 +514,6 @@ public class EventActivity extends AppCompatActivity {
             facilityEventsList.add(newEvent.eventID);
             facility.setEvents(facilityEventsList);
             EventFirebase.editFacility(facility);
-
-            LoginManagement login = new LoginManagement(this);
-
-            login.isUserLoggedIn(isLoggedIn -> {
-                if (isLoggedIn) {
-                    Intent intent = new Intent(EventActivity.this, ViewEventActivity.class);
-                    startActivity(intent);
-                } else {
-                    Registration registration = new Registration();
-                    getSupportFragmentManager().beginTransaction().
-                            replace(R.id.activity_add_event, registration)
-                            .addToBackStack(null)
-                            .commit();
-                }
-            });
         });
     }
 
