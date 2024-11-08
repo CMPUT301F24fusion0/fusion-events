@@ -50,9 +50,6 @@ public class MainActivity extends AppCompatActivity {
         System.out.println(deviceId);
 
 
-        // Initialize Notification Channel
-        //AppNotifications.createChannel(this);
-
 
         // Initialize Notification Channel
         AppNotifications.createChannel(this);
@@ -144,15 +141,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, ProfileActivity.class);
             startActivity(intent);
         });
-        // Home button in the toolbar
-        homeButton = findViewById(R.id.toolbar_home);
-        homeButton.setOnClickListener(view -> {
-            Intent intent = new Intent(this, HomeActivity.class);
-            startActivity(intent);
-        });
-
-
-
 
     }
 

@@ -2,6 +2,7 @@ package com.example.fusion0;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,13 +22,9 @@ public class UserFirestore {
         void onFailure(String error);
     }
 
-    private final CollectionReference usersRef;
+    private static final CollectionReference usersRef;
 
-    /**
-     * @author Sehej Brar
-     * Initializes the database as well as the users collection.
-     */
-    public UserFirestore() {
+    static {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
     }
@@ -54,7 +51,7 @@ public class UserFirestore {
      * @param dID is the primary key for each user and each user has a unique device ID
      * @param callback is the interface needed due to the asynchronous nature of Firebase
      */
-    public void findUser(String dID, Callback callback) {
+    public static void findUser(String dID, Callback callback) {
         usersRef.document(dID).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -78,7 +75,7 @@ public class UserFirestore {
      * @param field is the field that is to be changed (i.e. first name, last name, etc.)
      * @param newFields is a list of new attributes for the user
      */
-    public void editUser(UserInfo user, String field, ArrayList<String> newFields) {
+    public static void editUser(UserInfo user, String field, ArrayList<String> newFields) {
         String newField;
         field = field.toLowerCase();
 
@@ -113,5 +110,21 @@ public class UserFirestore {
         usersRef.document(dID).delete()
                 .addOnSuccessListener(documentReference -> System.out.println("Successfully deleted"))
                 .addOnFailureListener(e -> System.out.println("Failure" + e.getMessage()));
+    }
+
+    /**
+     * @author Simon Haile
+     * Finds the user and then edit the events list.
+     * @param user is the user instance
+     */
+    public static void editUserEvents(UserInfo user) {
+        String userID = user.getDeviceID();
+        usersRef.document(userID).set(user, SetOptions.merge())
+                .addOnSuccessListener(documentReference -> {
+                    System.out.println("User data updated successfully.");
+                })
+                .addOnFailureListener(error -> {
+                    System.err.println("Error updating user data: " + error.getMessage());
+                });
     }
 }

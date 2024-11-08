@@ -15,6 +15,8 @@ public class UserInfo {
     ArrayList<String> notifications;
     UserFirestore firebase;
     Boolean edit;
+    ArrayList<EventInfo> events;
+
 
 
     /**
@@ -43,6 +45,7 @@ public class UserInfo {
         this.firebase = new UserFirestore();
         this.edit = false;
         this.deviceID = dID;
+        this.events = new ArrayList<>();
     }
 
     /**
@@ -215,6 +218,23 @@ public class UserInfo {
     public void setPhoneNumber(String phoneNumber) {
         updateUser("phone number", new ArrayList<String>(Collections.singletonList(phoneNumber)));
         this.phoneNumber = phoneNumber;
+    }
+
+    /**
+     * @author Simon Haile
+     * Gets event list
+     */
+    public ArrayList<EventInfo> getEvents() {
+        return events;
+    }
+
+    /**
+     * @author Simon Haile
+     * Sets event list
+     * @param events event list
+     */
+    public void setEvents(ArrayList<EventInfo> events) {
+        this.events = events;
     }
 
     /**

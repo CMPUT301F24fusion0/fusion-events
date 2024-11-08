@@ -138,9 +138,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Enable Geolocation"
-                android:textSize="16sp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="8dp"/>
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp"
+                android:layout_marginBottom="2dp"/>
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/geolocation_switchcompat"
@@ -154,10 +156,12 @@
                 android:id="@+id/radius_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Acceptable Sign Up Radius:"
-                android:textSize="16sp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="8dp"
+                android:text="Acceptable Sign Up Radius (Km):"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="sans-serif"
                 android:visibility="gone"
                 />
 
@@ -167,7 +171,11 @@
                 android:layout_width="match_parent"
                 android:layout_marginEnd="100dp"
                 android:hint="Enter Radius In Km"
-                android:layout_marginBottom="4dp"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp"
+                android:layout_marginBottom="2dp"
                 android:background="@drawable/custom_input"
                 android:drawablePadding="12dp"
                 android:padding="12dp"
