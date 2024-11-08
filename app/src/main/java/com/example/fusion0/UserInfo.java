@@ -12,7 +12,8 @@ import java.util.Objects;
  */
 public class UserInfo {
     String firstName, lastName, email, phoneNumber, deviceID;
-    ArrayList<String> notifications, events;
+    ArrayList<String> notifications;
+    ArrayList<EventInfo> events;
     UserFirestore firebase;
     Boolean edit;
 
@@ -34,7 +35,7 @@ public class UserInfo {
      * @param email email address
      * @param phoneNumber phone number
      */
-    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String phoneNumber, String dID, ArrayList<String> events) {
+    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String phoneNumber, String dID, ArrayList<EventInfo> events) {
         this.notifications = notifications;
         this.firstName = first;
         this.lastName = last;
@@ -53,7 +54,7 @@ public class UserInfo {
      * @param last last name
      * @param email email address
      */
-    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String dID, ArrayList<String> events) {
+    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String dID, ArrayList<EventInfo> events) {
         this.notifications = notifications;
         this.firstName = first;
         this.lastName = last;
@@ -88,7 +89,7 @@ public class UserInfo {
      * @return an arraylist of events
      */
     @PropertyName("events")
-    public ArrayList<String> getEvents() {
+    public ArrayList<EventInfo> getEvents() {
         return events;
     }
 
@@ -98,7 +99,7 @@ public class UserInfo {
      * @param events list of events
      */
     @PropertyName("events")
-    public void setEvents(ArrayList<String> events) {
+    public void setEvents(ArrayList<EventInfo> events) {
         this.events = events;
     }
 
@@ -129,9 +130,10 @@ public class UserInfo {
      * @param title title
      * @param body body
      */
-    public void addNotifications(String title, String body) {
+    public void addNotifications(String title, String body, String flag) {
         this.notifications.add(title);
         this.notifications.add(body);
+        this.notifications.add(flag);
         updateUser("notifications", this.notifications);
     }
 
@@ -248,7 +250,7 @@ public class UserInfo {
      * @param newItem new attribute
      */
     private void updateUser(String field, ArrayList<String> newItem) {
-        if (edit) firebase.editUser(this, field, newItem);
+        if (edit) UserFirestore.editUser(this, field, newItem);
     }
 
     /**
