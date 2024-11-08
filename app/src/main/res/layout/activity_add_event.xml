@@ -125,6 +125,7 @@
                 android:textSize="20sp"
                 android:layout_marginBottom="2dp"
                 android:visibility="gone">
+
             </TextView>
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/autocomplete_fragment"
@@ -139,11 +140,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Enable Geolocation"
-                android:fontFamily="sans-serif"
-                android:textColor="@color/figmaBlue"
-                android:textFontWeight="600"
-                android:textSize="20sp"
-                android:layout_marginBottom="2dp"/>
+                android:textSize="16sp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="8dp"/>
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/geolocation_switchcompat"
@@ -152,39 +151,6 @@
                 android:textOn="Geolocation Enabled"
                 android:textOff="Geolocation Disabled"
                 android:checked="false" />
-
-            <TextView
-                android:id="@+id/radius_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Acceptable Sign Up Radius (Km):"
-                android:textColor="@color/figmaBlue"
-                android:textFontWeight="600"
-                android:textSize="20sp"
-                android:layout_marginBottom="2dp"
-                android:fontFamily="sans-serif"
-                android:visibility="gone"
-                />
-
-            <EditText
-                android:id="@+id/radius"
-                android:layout_height="60dp"
-                android:layout_width="match_parent"
-                android:layout_marginEnd="100dp"
-                android:hint="Enter Radius In Km"
-                android:fontFamily="sans-serif"
-                android:textColor="@color/figmaBlue"
-                android:textFontWeight="600"
-                android:textSize="20sp"
-                android:layout_marginBottom="2dp"
-                android:background="@drawable/custom_input"
-                android:drawablePadding="12dp"
-                android:padding="12dp"
-                android:inputType="number"
-                android:visibility="gone">
-            </EditText>
-
-
 
             <TextView
                 android:layout_width="wrap_content"
