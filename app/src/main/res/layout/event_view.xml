@@ -134,7 +134,7 @@
                     android:layout_weight="1"/>
 
                 <EditText
-                    android:id="@+id/Description"
+                    android:id="@+id/description_edit"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textColor="@color/textColor"
@@ -180,11 +180,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"/>
             </LinearLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/textColor"
                 android:layout_marginBottom="16dp"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -204,24 +206,25 @@
                     android:layout_width="8dp"
                     android:layout_height="0dp"/>
 
-                <ImageView
-                    android:id="@+id/uploaded_image_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:scaleType="centerCrop"
-                    android:contentDescription="Uploaded Event Poster"
-                    android:layout_marginBottom="16dp"/>
-
                 <Button
                     android:id="@+id/upload_image_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Choose Image"
                     android:backgroundTint="@color/textColor"
-                    android:layout_marginBottom="16dp"/>
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"/>
 
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/uploaded_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:scaleType="centerCrop"
+                android:contentDescription="Uploaded Event Poster"
+                android:layout_marginBottom="16dp"/>
 
             <View
                 android:layout_width="match_parent"
@@ -271,6 +274,18 @@
                             android:textColor="@color/textColor"
                             android:textSize="15sp" />
 
+                        <TextView
+                            android:id="@+id/start_time_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Start Time"
+                            android:fontFamily="sans-serif"
+                            android:textColor="@color/figmaBlue"
+                            android:textFontWeight="600"
+                            android:textSize="15sp"
+                            android:layout_marginTop="8dp"
+                            android:visibility="gone" />
+
                         <Button
                             android:id="@+id/start_date_button"
                             android:layout_width="wrap_content"
@@ -297,6 +312,18 @@
                             android:textSize="15sp"
                             android:fontFamily="@font/raleway_semibold"
                             android:gravity="center_vertical"/>
+
+                        <TextView
+                            android:id="@+id/end_time_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="End Time"
+                            android:fontFamily="sans-serif"
+                            android:textColor="@color/figmaBlue"
+                            android:textFontWeight="600"
+                            android:textSize="15sp"
+                            android:layout_marginTop="8dp"
+                            android:visibility="gone" />
 
                         <Button
                             android:id="@+id/end_date_button"
@@ -335,17 +362,16 @@
                 <Space
                     android:layout_width="8dp"
                     android:layout_height="0dp"/>
-
                 <TextView
-                    android:id="@+id/capacity"
+                    android:id="@+id/capacityTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="95"
+                    android:text="Description xyz"
                     android:textColor="@color/textColor"
                     android:textSize="17sp"
                     android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"
                     android:layout_weight="1"/>
-
 
                 <EditText
                     android:id="@+id/editCapacity"
@@ -405,14 +431,28 @@
                 android:orientation="horizontal"
                 android:layout_marginBottom="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Waitinglist:"
-                android:textColor="@color/textColor"
-                android:textSize="17sp"
-                android:fontFamily="@font/raleway_semibold"
-                android:gravity="center_vertical"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Waitinglist:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical" />
+
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
+
+                <Button
+                    android:id="@+id/waitinglistButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Show Waitinglist"
+                    android:backgroundTint="@color/textColor"
+                    app:cornerRadius="5dp"
+                    android:textSize="10sp"
+                    android:layout_gravity="center"/>
 
                 <ListView
                     android:id="@+id/waitinglistListView"
@@ -420,9 +460,8 @@
                     android:layout_height="wrap_content"
                     android:divider="@android:color/darker_gray"
                     android:dividerHeight="0.5dp"
-                    android:layout_marginBottom="16dp"/>
-
-
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"/>
 
 
             </LinearLayout>
@@ -447,6 +486,9 @@
                     android:textSize="17sp"
                     android:fontFamily="@font/raleway_semibold"
                     android:gravity="center_vertical"/>
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
 
                 <ListView
                     android:id="@+id/chosenEntrantsListView"
@@ -454,7 +496,18 @@
                     android:layout_height="wrap_content"
                     android:divider="@android:color/darker_gray"
                     android:dividerHeight="0.5dp"
-                    android:layout_marginBottom="16dp"/>
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"/>
+
+                <Button
+                    android:id="@+id/chosenEntrantsButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Show Chosen Entrants List"
+                    android:backgroundTint="@color/textColor"
+                    android:layout_marginTop="8dp"
+                    app:cornerRadius="5dp"
+                    android:textSize="10sp" />
 
 
 
@@ -480,6 +533,9 @@
                     android:textSize="17sp"
                     android:fontFamily="@font/raleway_semibold"
                     android:gravity="center_vertical"/>
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
 
                 <ListView
                     android:id="@+id/cancelledEntrantsListView"
@@ -487,7 +543,17 @@
                     android:layout_height="wrap_content"
                     android:divider="@android:color/darker_gray"
                     android:dividerHeight="0.5dp"
-                    android:layout_marginBottom="16dp"/>
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"/>
+                <Button
+                    android:id="@+id/cancelledEntrantsButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Show Cancelled Entrants List"
+                    android:backgroundTint="@color/textColor"
+                    android:layout_marginTop="8dp"
+                    app:cornerRadius="5dp"
+                    android:textSize="10sp" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
