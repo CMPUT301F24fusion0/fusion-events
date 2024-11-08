@@ -4,6 +4,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +28,10 @@ import java.util.List;
  */
 
 public class Waitlist {
-
+    private FirebaseFirestore db;
+    public Waitlist() {
+        db = FirebaseFirestore.getInstance();
+    }
 
     /**
      * Adds an entrant to the waiting list for a specific event.
@@ -72,7 +76,7 @@ public class Waitlist {
      *                  chosen and decreases the accepted count in the event document if needed.
      */
     public void removeEntrantFromWaitingList(String eventId, String entrantId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
         CollectionReference eventsRef = db.collection("events");
 
         // Reference to the event's waiting list
@@ -124,8 +128,24 @@ public class Waitlist {
         // Fetch event details to get capacity and current acceptedCount
         eventsRef.document(eventId).get().addOnSuccessListener(eventDoc -> {
             if (eventDoc.exists()) {
-                Long capacity = eventDoc.getLong("capacity");
+                Long capacity;
                 Long acceptedCount = eventDoc.getLong("acceptedCount");
+
+                // Check if capacity is already stored as a number; if not, convert it
+                Object capacityField = eventDoc.get("capacity");
+                if (capacityField instanceof Number) {
+                    capacity = ((Number) capacityField).longValue();
+                } else if (capacityField instanceof String) {
+                    try {
+                        capacity = Long.parseLong((String) capacityField);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error: Capacity is not a valid number.");
+                        return;
+                    }
+                } else {
+                    System.out.println("Error: Capacity is missing or invalid.");
+                    return;
+                }
 
                 if (capacity != null && acceptedCount != null) {
                     // Calculate the number of entrants we actually need
@@ -142,9 +162,19 @@ public class Waitlist {
                                     Collections.shuffle(entrants);
 
                                     List<DocumentSnapshot> chosenEntrants = entrants.subList(0, Math.min(finalNumToSelect, entrants.size()));
-                                    for (DocumentSnapshot entrant : chosenEntrants) {
-                                        entrant.getReference().update("status", "chosen");
+
+                                    System.out.println("Chosen entrants count: " + chosenEntrants.size());
+
+                                    if (chosenEntrants.isEmpty()) {
+                                        System.out.println("No entrants to select.");
                                     }
+
+                                    for (DocumentSnapshot entrant : chosenEntrants) {
+                                        entrant.getReference().update("status", "chosen")
+                                                .addOnSuccessListener(aVoid -> System.out.println("Successfully updated entrant status to 'chosen'"))
+                                                .addOnFailureListener(e -> System.out.println("Failed to update entrant status: " + e.getMessage()));
+                                    }
+
 
                                     System.out.println(finalNumToSelect + " entrants chosen for event " + eventId);
                                 } else {
@@ -171,7 +201,6 @@ public class Waitlist {
      *                only if the accepted count is still below the event's capacity.
      */
     public void offerAnotherChance(String eventId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference eventsRef = db.collection("events");
 
         eventsRef.document(eventId).get().addOnSuccessListener(eventDoc -> {
@@ -211,4 +240,9 @@ public class Waitlist {
             }
         }).addOnFailureListener(e -> System.out.println("Error fetching event details: " + e.getMessage()));
     }
+
+
+
+
+
 }
