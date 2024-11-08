@@ -18,6 +18,7 @@ import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class provides the methods needed to send/receive notifications
@@ -88,6 +89,11 @@ public class AppNotifications {
                 Log.e("Error", error);
             }
         });
+    }
+
+
+    public void waitingNotification(List<String> deviceIDs) {
+
     }
 
     /**
