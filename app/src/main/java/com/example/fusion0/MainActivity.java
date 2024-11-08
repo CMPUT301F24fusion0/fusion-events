@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -76,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
         notificationsListView = findViewById(R.id.notificationsList);
         notificationsListView.setLayoutManager(new LinearLayoutManager(this));
 
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
+        notificationsListView.addItemDecoration(dividerItemDecoration);
+
         notificationList = new ArrayList<>();
 
 
@@ -123,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
                 notificationAdapter = new NotificationAdapter(this, notificationList);
                 notificationsListView.setAdapter(notificationAdapter);
 
-                updateNotification(deviceId, notificationList, notificationAdapter);
+                populateTemporaryNotifications();
 
                 ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
                     @Override
@@ -259,13 +263,15 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(UserInfo user) {
                 ArrayList<String> notifications = user.getNotifications();
 
-                if (notifications != null && notifications.size() % 2 == 0) {
+                if (notifications != null && notifications.size() % 3 == 0) {
                     notificationList.clear();
 
-                    for (int i = 0; i < notifications.size(); i += 2) {
+                    for (int i = 0; i < notifications.size(); i += 3) {
                         String title = notifications.get(i);
                         String body = notifications.get(i + 1);
-                        NotificationItem notificationItem = new NotificationItem(title, body);
+                        String flag = notifications.get(i + 2); // Assuming flag is stored as a string in Firebase
+
+                        NotificationItem notificationItem = new NotificationItem(title, body, flag);
                         notificationList.add(notificationItem);
                     }
 
@@ -289,7 +295,6 @@ public class MainActivity extends AppCompatActivity {
         UserFirestore userFirestore = new UserFirestore();
 
         userFirestore.findUser(deviceId, new UserFirestore.Callback() {
-
             @Override
             public void onSuccess(UserInfo user) {
                 user.editMode(true);
@@ -297,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<String> notifications = user.getNotifications();
                 int indexToRemove = -1;
 
-                for (int i = 0; i < notifications.size(); i += 2) {
+                for (int i = 0; i < notifications.size(); i += 3) {
                     String title = notifications.get(i);
                     String body = notifications.get(i + 1);
                     if (title.equals(notificationItem.getTitle()) && body.equals(notificationItem.getBody())) {
@@ -307,9 +312,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (indexToRemove != -1) {
-                    notifications.remove(indexToRemove);
-                    notifications.remove(indexToRemove);
-                    System.out.println(notifications);
+                    notifications.remove(indexToRemove); // Remove title
+                    notifications.remove(indexToRemove); // Remove body
+                    notifications.remove(indexToRemove); // Remove flag
                     user.setNotifications(notifications);
                     updateNotificationView();
                     Log.d("Firebase", "Notification removed successfully from Firebase.");
@@ -317,9 +322,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("Firebase", "Notification not found in user's list.");
                 }
 
-
                 user.editMode(false);
-
             }
 
             @Override
@@ -339,6 +342,25 @@ public class MainActivity extends AppCompatActivity {
             noNotifications.setVisibility(View.GONE);
             notificationsListView.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void populateTemporaryNotifications() {
+        notificationList.clear();
+
+        // Standard Notification (Flag 0)
+        notificationList.add(new NotificationItem("Task Reminder", "Your task is due tomorrow.", "0"));
+        notificationList.add(new NotificationItem("System Update", "A new update is available.", "0"));
+
+        // Accept/Decline Notification (Flag 1)
+        notificationList.add(new NotificationItem("Meeting Request", "Please respond to the event invitation.", "1"));
+        notificationList.add(new NotificationItem("Event Invitation", "You have been invited to a birthday party.", "1"));
+
+        // Another Standard Notification (Flag 0)
+        notificationList.add(new NotificationItem("Promotion", "You have a new offer waiting.", "0"));
+
+        // Notify the adapter of data changes
+        notificationAdapter.notifyDataSetChanged();
+        updateNotificationView();
     }
 
 }

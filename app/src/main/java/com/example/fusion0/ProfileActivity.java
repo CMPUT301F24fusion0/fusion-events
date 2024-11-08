@@ -57,13 +57,13 @@ public class ProfileActivity extends AppCompatActivity {
     private ProfileManagement profileManager;
     private ManageImageProfile manageImage;
     private Uri imageUri;
+    private ImageButton settingsButton;
 
     // Toolbar buttons
     private ImageButton homeButton;
     private ImageButton cameraButton;
     private ImageButton addButton;
     private ImageButton favouriteButton;
-    private ImageButton profileButton;
 
     /**
      * Initializes the ProfileActivity, setting up view components, loading user data,
@@ -95,7 +95,8 @@ public class ProfileActivity extends AppCompatActivity {
         cameraButton = findViewById(R.id.toolbar_camera);
         addButton = findViewById(R.id.toolbar_add);
         favouriteButton = findViewById(R.id.toolbar_favourite);
-        profileButton = findViewById(R.id.toolbar_person);
+        settingsButton = findViewById(R.id.settingsButton);
+
 
         profileManager = new ProfileManagement();  // Manages user data retrieval
         manageImage = new ManageImageProfile(this);  // Handles image upload and retrieval from Firebase
@@ -274,6 +275,15 @@ public class ProfileActivity extends AppCompatActivity {
         favouriteButton.setOnClickListener(view -> {
             Intent intent = new Intent(ProfileActivity.this, FavouriteActivity.class);
             startActivity(intent);
+        });
+
+        settingsButton.setOnClickListener(view -> {
+            Settings settings = new Settings();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.profileLayout, settings)
+                    .addToBackStack(null)
+                    .commit();
         });
 
     }

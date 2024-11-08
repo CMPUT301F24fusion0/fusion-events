@@ -8,7 +8,9 @@
         android:layout_width="match_parent"
         android:layout_height="90dp"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/senderImage"
@@ -30,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:text="Title"
                 android:fontFamily="@font/raleway_bold"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/notificationBody"
