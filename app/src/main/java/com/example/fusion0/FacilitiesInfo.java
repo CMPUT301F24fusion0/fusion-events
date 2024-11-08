@@ -11,18 +11,22 @@ public class FacilitiesInfo {
     public String owner;
     ArrayList<String> events;
     EventFirebase firebase;
+    private Double latitude;
+    private Double longitude;
 
     public FacilitiesInfo() {
         this.firebase = new EventFirebase();
     }
 
-    public FacilitiesInfo(String address, String facilityName, String owner) {
+    public FacilitiesInfo(String address, String facilityName, String owner, Double longitude, Double latitude) {
         this.address = address;
         this.facilityName = facilityName;
         this.owner = owner;
         this.events = new ArrayList<>();
         this.facilityID = UUID.randomUUID().toString();
         this.firebase = new EventFirebase();
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public HashMap<String, Object> facility() {
@@ -70,6 +74,22 @@ public class FacilitiesInfo {
 
     public void setEvents(ArrayList<String> events) {
         this.events = events;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
     }
 
 }

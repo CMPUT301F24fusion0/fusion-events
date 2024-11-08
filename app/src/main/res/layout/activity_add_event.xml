@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/activity_add_event"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
@@ -133,6 +134,23 @@
                 android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
                 android:visibility="gone"
                 />
+
+            <TextView
+                android:id="@+id/geolocation_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enable Geolocation"
+                android:textSize="16sp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="8dp"/>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/geolocation_switchcompat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textOn="Geolocation Enabled"
+                android:textOff="Geolocation Disabled"
+                android:checked="false" />
 
             <TextView
                 android:layout_width="wrap_content"

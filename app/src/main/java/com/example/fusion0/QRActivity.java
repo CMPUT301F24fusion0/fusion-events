@@ -20,6 +20,7 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
  * QRActivity is an activity that uses the device's camera to scan QR codes.
  * It utilizes the ZXing library for scanning and processing QR codes, returning
  * the hashed QR code string and the associated event ID if found in Firestore.
+ * @author Malshaan
  */
 public class QRActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler {
 
