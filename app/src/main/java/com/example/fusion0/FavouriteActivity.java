@@ -18,6 +18,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class contains the tools needed for the users to view their events signed up for, created, or
+ * facilities they set up.
+ */
 public class FavouriteActivity extends AppCompatActivity {
     private static final String TAG = "FavouriteActivity";
     private Button joinedEventsButton;
@@ -39,9 +43,11 @@ public class FavouriteActivity extends AppCompatActivity {
     private ImageButton homeButton;
 
 
-
-
-
+    /**
+     * Creates the activities that the user is in, created, or facilities they may have
+     * @author Simon Haile
+     * @param savedInstanceState things saved from last instance
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

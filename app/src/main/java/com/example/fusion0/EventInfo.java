@@ -14,7 +14,11 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.UUID;
 
-
+/**
+ * This class stores the information regarding the Event. For clarity and brevity, Javadocs for the
+ * getters and setters is not provided. It is only provided for the first few getters and setters to
+ * establish a general framework for the other getters and setters.
+ */
 public class EventInfo {
     public String eventID;
     private String organizer;
@@ -39,6 +43,11 @@ public class EventInfo {
     private Double longitude;
 
 
+    /**
+     * Default constructor for the EventInfo class. Initializes all fields with default values.
+     * @throws WriterException if there is an error in generating the QR code
+     * @author Simon Haile
+     */
     public EventInfo() throws WriterException {
         this.eventID = UUID.randomUUID().toString();
         this.organizer = "";
@@ -63,6 +72,25 @@ public class EventInfo {
         this.longitude = 0.0;
     }
 
+    /**
+     * Constructor for the EventInfo class with parameters. Initializes all fields with the provided values.
+     * @param organizer The organizer of the event
+     * @param eventName The name of the event
+     * @param address The address of the event
+     * @param facilityName The name of the facility hosting the event
+     * @param capacity The capacity of the event
+     * @param description A description of the event
+     * @param startDate The start date of the event
+     * @param endDate The end date of the event
+     * @param startTime The start time of the event
+     * @param endTime The end time of the event
+     * @param eventPoster The event poster image URL
+     * @param geolocation Whether geolocation tracking is enabled for the event
+     * @param longitude The longitude of the event location
+     * @param latitude The latitude of the event location
+     * @throws WriterException if there is an error in generating the QR code
+     * @author Simon Haile
+     */
     public EventInfo(String organizer, String eventName, String address, String facilityName, String capacity, String description, Date startDate, Date endDate, String startTime, String endTime, String eventPoster, Boolean geolocation, Double longitude, Double latitude) throws WriterException {
         this.eventID = UUID.randomUUID().toString();
         this.organizer = organizer;
@@ -87,7 +115,11 @@ public class EventInfo {
         this.longitude = longitude;
     }
 
-
+    /**
+     * Converts the event information to a HashMap which can be used to store it in a database.
+     * @return A HashMap containing the event details
+     * @author Simon Haile
+     */
     public HashMap<String,Object> event() {
         HashMap<String, Object> event = new HashMap<>();
         event.put("eventID", this.eventID);
@@ -112,16 +144,52 @@ public class EventInfo {
         return event;
     }
 
+    /**
+     * Generates a QR code image for the event using the event's ID.
+     * @param width The width of the generated QR code image
+     * @param height The height of the generated QR code image
+     * @param qrCode The string to encode in the QR code
+     * @return A Bitmap object representing the generated QR code
+     * @throws WriterException if an error occurs while generating the QR code
+     * @author Simon Haile
+     */
+    public Bitmap generateQRCodeImage(int width, int height, String qrCode) throws WriterException {
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(qrCode, BarcodeFormat.QR_CODE, width, height);
 
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                bitmap.setPixel(x, y, bitMatrix.get(x, y) ? android.graphics.Color.BLACK : android.graphics.Color.WHITE);
+            }
+        }
+        return bitmap;
+    }
+
+    /**
+     * Gets the event ID.
+     * @return The event ID
+     * @author Simon Haile
+     */
     public String getEventID(){
         return eventID;
     }
 
+    /**
+     * Gets the event organizer.
+     * @return The event organizer
+     * @author Simon Haile
+     */
     public String getOrganizer(){
         return organizer;
     }
 
-
+    /**
+     * Sets the event organizer.
+     * @param organizer The organizer to set
+     * @author Simon Haile
+     */
     public void setOrganizer(String organizer) {
         this.organizer = organizer;
     }
@@ -294,22 +362,6 @@ public class EventInfo {
 
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
-    }
-
-
-
-    public Bitmap generateQRCodeImage(int width, int height, String qrCode) throws WriterException {
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(qrCode, BarcodeFormat.QR_CODE, width, height);
-
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                bitmap.setPixel(x, y, bitMatrix.get(x, y) ? android.graphics.Color.BLACK : android.graphics.Color.WHITE);
-            }
-        }
-        return bitmap;
     }
 
 

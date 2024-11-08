@@ -30,6 +30,10 @@ public class ViewFacilityActivity extends AppCompatActivity {
     private ImageButton backButton;
     private Button editButton, saveButton, deleteButton, cancelButton;
 
+    /**
+     * Creates the activity for viewing only a single facility
+     * @param savedInstanceState saved instance state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
