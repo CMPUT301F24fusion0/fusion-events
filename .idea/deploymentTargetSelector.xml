@@ -14,6 +14,9 @@
       <SelectionState runConfigName="ProfileInstrumentalTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="FavouriteInstrumentalTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>
