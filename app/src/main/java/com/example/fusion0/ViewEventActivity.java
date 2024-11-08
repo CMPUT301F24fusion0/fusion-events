@@ -199,6 +199,7 @@ public class ViewEventActivity extends AppCompatActivity {
                         }
                     });
                 });
+
             } else {
                 joinButton.setText(R.string.unjoin);
                 joinButton.setOnClickListener(view -> {
