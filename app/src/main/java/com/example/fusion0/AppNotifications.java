@@ -147,7 +147,7 @@ public class AppNotifications {
      */
     public static void getNotification(String dID, Context context) {
         UserFirestore userFirestore = new UserFirestore();
-        UserFirestore.findUser(dID, new UserFirestore.Callback() {
+        userFirestore.findUser(dID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
                 if (AppNotifications.checkNotificationPermission(context)) {

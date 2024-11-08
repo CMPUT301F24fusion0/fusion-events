@@ -1,41 +1,58 @@
 package com.example.fusion0;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.espresso.intent.Intents;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import androidx.test.espresso.intent.Intents;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+/**
+ * Instrumented tests for the ProfileActivity.
+ * These tests verify the functionality and UI behavior of the Profile screen using Espresso.
+ *
+ * @author Malshaan Kodithuwakku
+ */
 @RunWith(AndroidJUnit4.class)
 public class ProfileInstrumentalTest {
 
+    /**
+     * Launches the ProfileActivity for each test scenario.
+     */
     @Rule
     public ActivityScenarioRule<ProfileActivity> activityRule = new ActivityScenarioRule<>(ProfileActivity.class);
 
+    /**
+     * Sets up the test environment before each test case is executed.
+     * Initializes Intents for validating intents during the test.
+     */
     @Before
     public void setUp() {
-        // Initialize Intents for intent validation.
         Intents.init();
     }
 
+    /**
+     * Cleans up the test environment after each test case is executed.
+     * Releases Intents to prevent memory leaks.
+     */
     @After
     public void tearDown() {
-        // Release Intents after each test to clean up.
         Intents.release();
     }
 
     /**
-     * Test to verify that when the edit button is clicked,
-     * the save button is displayed, indicating the profile is in edit mode.
+     * Test case to verify the functionality of the edit button in ProfileActivity.
+     * When the edit button is clicked, the save button should be displayed,
+     * indicating that the profile has entered edit mode.
      */
     @Test
     public void testEditProfile() {

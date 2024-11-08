@@ -5,6 +5,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
+ * @author Nimi Akinroye
  * ProfileManagement class manages user profile data retrieval from Firestore.
  */
 public class ProfileManagement {

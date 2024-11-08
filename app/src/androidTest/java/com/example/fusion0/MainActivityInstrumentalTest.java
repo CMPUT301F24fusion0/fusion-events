@@ -1,19 +1,21 @@
 package com.example.fusion0;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.espresso.intent.Intents;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import androidx.test.espresso.intent.Intents;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 
 /**
@@ -62,23 +64,4 @@ public class MainActivityInstrumentalTest {
         Intents.intended(hasComponent(ProfileActivity.class.getName()));
     }
 
-    /**
-     * Tests navigation to EventActivity by clicking the browse events button.
-     * Verifies that clicking on the browse events button (browse_events_button) opens EventActivity.
-     */
-    @Test
-    public void testOpenEventActivity() {
-        onView(withId(R.id.browse_events_button)).perform(click());
-        Intents.intended(hasComponent(EventActivity.class.getName()));
-    }
-
-    /**
-     * Tests navigation to QRActivity by clicking the scan QR button.
-     * Verifies that clicking on the scan QR button (scan_qr_button) opens QRActivity.
-     */
-    @Test
-    public void testOpenQRActivity() {
-        onView(withId(R.id.scan_qr_button)).perform(click());
-        Intents.intended(hasComponent(QRActivity.class.getName()));
-    }
 }

@@ -15,6 +15,7 @@ import com.google.firebase.storage.StorageReference;
 
 
 /**
+ * @author Nimi Akinroye
  * ManageImageProfile class handles image upload, retrieval, and existence checks
  * in Firebase Storage for user profile images.
  */
@@ -126,6 +127,18 @@ public class ManageImageProfile {
                 .addOnFailureListener(callback::onFailure);
     }
 
+
+    /**
+     * Creates a text drawable that can be used to deterministically generate a users profile picture
+     *
+     * @param context
+     * @param letter
+     * @param backgroundColor
+     * @param textColor
+     * @param width
+     * @param height
+     * @return
+     */
     public static Drawable createTextDrawable(Context context, String letter, int backgroundColor, int textColor, int width, int height) {
         // Create a bitmap
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
