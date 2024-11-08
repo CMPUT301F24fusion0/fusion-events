@@ -401,6 +401,24 @@ public class Waitlist {
     }
 
     /**
+     * Sends notification to the ones not chosen in the lottery
+     * @author Sehej Brar
+     * @param eventId event id
+     * @param title title of notification
+     * @param message message of notification
+     */
+    public void loseNotification(String eventId, String title, String message, String flag) {
+        getAll(eventId, all -> {
+            getChosen(eventId, chosen -> {
+                all.removeAll(chosen);
+                for (String dID: all) {
+                    AppNotifications.sendNotification(dID, title, message, flag);
+                }
+            });
+        });
+    }
+
+    /**
      * Sends notification to the ones who cancelled their invite after the lottery
      * @author Sehej Brar
      * @param eventId event id

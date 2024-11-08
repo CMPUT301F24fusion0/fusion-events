@@ -29,6 +29,10 @@ import com.google.zxing.WriterException;
 
 import java.util.ArrayList;
 
+/**
+ * @author Sehej Brar, Simon Haile, and Malshaan K.
+ * View the individual event.
+ */
 public class ViewEventActivity extends AppCompatActivity {
 
     private String deviceID;
@@ -62,6 +66,7 @@ public class ViewEventActivity extends AppCompatActivity {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         backButton = findViewById(R.id.backButton);
+        lotteryButton = findViewById(R.id.lottery_button);
         eventNameTextView = findViewById(R.id.EventName);
         eventDescriptionTextView = findViewById(R.id.Description);
         eventFacility= findViewById(R.id.spinner_facilities);
@@ -154,6 +159,7 @@ public class ViewEventActivity extends AppCompatActivity {
                                         Log.e("Error", "Capacity is not an integer");
                                     }
                                     waitlist.sampleAttendees(eventID, capacity);
+
                                     waitlist.allNotification(eventID, "Lottery",
                                             "The lottery has started. Please be on the lookout for results.", "0");
 
@@ -162,9 +168,12 @@ public class ViewEventActivity extends AppCompatActivity {
 
                                     waitlist.cancelNotifications(eventID, "Cancel Confirmation", "You have cancelled" +
                                             "the invitation for the event.", "0");
+
+                                    waitlist.loseNotification(eventID, "Lottery Lose", "Unfortunately, you've lost the lottery." +
+                                            "Better luck next time!", "0");
                                 }
                             });
-                        }else{
+                        } else {
 
                             editButton.setVisibility(View.GONE);
                             deleteButton.setVisibility(View.GONE);
