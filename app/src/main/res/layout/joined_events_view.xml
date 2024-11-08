@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white"
-    android:id="@+id/event_view">
-
+    xmlns:tools="http://schemas.android.com/tools">
 
     <ImageButton
         android:id="@+id/backButton"
@@ -84,18 +81,6 @@
                     android:fontFamily="@font/raleway_semibold"
                     android:gravity="center_vertical"
                     android:layout_weight="1"/>
-
-                <EditText
-                    android:id="@+id/editEventName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:hint="Enter Event Name"
-                    android:textColor="@color/textColor"
-                    android:textSize="17sp"
-                    android:fontFamily="@font/raleway_semibold"
-                    android:visibility="gone"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"/>
             </LinearLayout>
 
             <View
@@ -133,20 +118,6 @@
                     android:fontFamily="@font/raleway_semibold"
                     android:gravity="center_vertical"
                     android:layout_weight="1"/>
-
-                <EditText
-                    android:id="@+id/Description"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textColor"
-                    android:textSize="17sp"
-                    android:fontFamily="@font/raleway_semibold"
-                    android:visibility="gone"
-                    android:layout_weight="1"
-                    android:hint="Enter Event Description"
-                    android:inputType="textMultiLine"
-                    android:maxLines="5"
-                    android:gravity="top|start" />
             </LinearLayout>
 
             <View
@@ -213,15 +184,6 @@
                     android:scaleType="centerCrop"
                     android:contentDescription="Uploaded Event Poster"
                     android:layout_marginBottom="16dp"/>
-
-                <Button
-                    android:id="@+id/upload_image_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Choose Image"
-                    android:backgroundTint="@color/textColor"
-                    android:layout_marginBottom="16dp"/>
-
             </LinearLayout>
 
             <View
@@ -272,15 +234,6 @@
                             android:textColor="@color/textColor"
                             android:textSize="15sp" />
 
-                        <Button
-                            android:id="@+id/start_date_button"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Select Start Date"
-                            android:backgroundTint="@color/textColor"
-                            android:layout_marginTop="8dp"
-                            app:cornerRadius="5dp"
-                            android:textSize="10sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -299,16 +252,6 @@
                             android:fontFamily="@font/raleway_semibold"
                             android:gravity="center_vertical"/>
 
-                        <Button
-                            android:id="@+id/end_date_button"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Select End Date"
-                            android:backgroundTint="@color/textColor"
-                            android:layout_marginTop="8dp"
-                            app:cornerRadius="5dp"
-                            android:textSize="10sp"
-                            />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -346,31 +289,6 @@
                     android:textSize="17sp"
                     android:fontFamily="@font/raleway_semibold"
                     android:layout_weight="1"/>
-
-
-                <EditText
-                    android:id="@+id/editCapacity"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:autofillHints=""
-                    android:hint="Enter Capacity"
-                    android:inputType="number"
-                    android:textColor="@color/textColor"
-                    android:textSize="17sp"
-                    android:fontFamily="@font/raleway_semibold"
-                    android:visibility="gone"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"/>
-
-                <Button
-                    android:id="@+id/lottery_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Start Lottery"
-                    android:textColor="@color/white"
-                    android:backgroundTint="@color/figmaBlue"
-                    app:cornerRadius="5dp">
-                </Button>
             </LinearLayout>
 
             <View
@@ -404,104 +322,9 @@
                     android:contentDescription="QR Code"
                     android:layout_marginBottom="16dp"/>
             </LinearLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/textColor"
-                android:layout_marginBottom="16dp"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Waitinglist:"
-                android:textColor="@color/textColor"
-                android:textSize="17sp"
-                android:fontFamily="@font/raleway_semibold"
-                android:gravity="center_vertical"/>
-
-                <ListView
-                    android:id="@+id/waitinglistListView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:divider="@android:color/darker_gray"
-                    android:dividerHeight="0.5dp"
-                    android:layout_marginBottom="16dp"/>
-
-
-
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/textColor"
-                android:layout_marginBottom="16dp"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Chosen Entrants:"
-                    android:textColor="@color/textColor"
-                    android:textSize="17sp"
-                    android:fontFamily="@font/raleway_semibold"
-                    android:gravity="center_vertical"/>
-
-                <ListView
-                    android:id="@+id/chosenEntrantsListView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:divider="@android:color/darker_gray"
-                    android:dividerHeight="0.5dp"
-                    android:layout_marginBottom="16dp"/>
-
-
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/textColor"
-                android:layout_marginBottom="16dp"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Cancelled Entrants:"
-                    android:textColor="@color/textColor"
-                    android:textSize="17sp"
-                    android:fontFamily="@font/raleway_semibold"
-                    android:gravity="center_vertical"/>
-
-                <ListView
-                    android:id="@+id/cancelledEntrantsListView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:divider="@android:color/darker_gray"
-                    android:dividerHeight="0.5dp"
-                    android:layout_marginBottom="16dp"/>
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
+
 
     <LinearLayout
         android:id="@+id/toolbar"
@@ -514,69 +337,17 @@
         android:background="@color/white"
         android:visibility="gone">
 
-        <TextView
-            android:id="@+id/waitinglist_full_text_view"
+        <Button
+            android:id="@+id/unjoin_button"
             android:layout_width="300dp"
             android:layout_height="50dp"
-            android:text="Waiting List Is Full At The Moment"
-            android:background="@android:color/white"
-            android:backgroundTint="@color/figmaBlue"
-            android:textColor="@color/white"
-            android:gravity="center"
-            android:textSize="16sp"
-            android:padding="10dp"
-            android:visibility="gone"/>
-
-        <Button
-            android:id="@+id/join_button"
-            android:layout_width="300dp"
-            android:layout_height="50dp"
-            android:text="Join Waiting List"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/figmaBlue"
-            app:cornerRadius="5dp"
-            android:visibility="gone">
-        </Button>
-
-        <Button
-            android:id="@+id/edit_button"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:text="Edit"
+            android:text="Unjoin Waiting List"
             android:textColor="@color/white"
             android:backgroundTint="@color/figmaBlue"
             app:cornerRadius="5dp">
         </Button>
 
-        <Button
-            android:id="@+id/save_button"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:text="Save"
-            android:backgroundTint="@color/figmaBlue"
-            android:visibility="gone"
-            app:cornerRadius="5dp"/>
-
-        <Button
-            android:id="@+id/delete_button"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:text="Delete"
-            android:textColor="@color/figmaBlue"
-            android:backgroundTint="@color/white"
-            app:cornerRadius="5dp">
-        </Button>
-
-        <Button
-            android:id="@+id/cancel_button"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:text="Cancel"
-            android:textColor="@color/figmaBlue"
-            android:backgroundTint="@color/white"
-            app:cornerRadius="5dp"
-            android:visibility="gone">
-        </Button>
     </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

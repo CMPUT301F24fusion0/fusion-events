@@ -82,13 +82,14 @@ public class QRCode {
     }
 
 
+
+
     /**
      * Returns the generated QR code image as a  Bitmap.
      *
      * @return The QR code image as a Bitmap.
      */
     public Bitmap getQrImage() { return this.qrImage;}
-
 
 
 
