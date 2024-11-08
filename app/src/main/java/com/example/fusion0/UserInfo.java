@@ -130,9 +130,10 @@ public class UserInfo {
      * @param title title
      * @param body body
      */
-    public void addNotifications(String title, String body) {
+    public void addNotifications(String title, String body, String flag) {
         this.notifications.add(title);
         this.notifications.add(body);
+        this.notifications.add(flag);
         updateUser("notifications", this.notifications);
     }
 

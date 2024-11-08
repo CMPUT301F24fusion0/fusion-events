@@ -90,14 +90,14 @@ public class AppNotifications {
      * @param title title of notification
      * @param body body of notification
      */
-    public static void sendNotification(String dID, String title, String body) {
+    public static void sendNotification(String dID, String title, String body, String flag) {
         UserFirestore firebase = new UserFirestore();
-        firebase.findUser(dID, new UserFirestore.Callback() {
+        UserFirestore.findUser(dID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
                 if (user != null) {
                     user.editMode(true);
-                    user.addNotifications(title, body);
+                    user.addNotifications(title, body, flag);
                     user.editMode(false);
                 }
             }
@@ -123,7 +123,7 @@ public class AppNotifications {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "lottery");
         if (notifications != null) {
-            for (int i = 0; i < notifications.size(); i += 2) {
+            for (int i = 0; i < notifications.size(); i += 3) {
                 Intent intent = new Intent(context, MainActivity.class);
                 PendingIntent pendingIntent = PendingIntent.getActivity(context, i, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
                 builder.setContentTitle(notifications.get(i))
@@ -147,7 +147,7 @@ public class AppNotifications {
      */
     public static void getNotification(String dID, Context context) {
         UserFirestore userFirestore = new UserFirestore();
-        userFirestore.findUser(dID, new UserFirestore.Callback() {
+        UserFirestore.findUser(dID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
                 if (AppNotifications.checkNotificationPermission(context)) {

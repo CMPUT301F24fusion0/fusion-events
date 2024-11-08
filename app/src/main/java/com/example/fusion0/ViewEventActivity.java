@@ -155,13 +155,13 @@ public class ViewEventActivity extends AppCompatActivity {
                                     }
                                     waitlist.sampleAttendees(eventID, capacity);
                                     waitlist.allNotification(eventID, "Lottery",
-                                            "The lottery has started. Please be on the lookout for results.");
+                                            "The lottery has started. Please be on the lookout for results.", "0");
 
                                     waitlist.chosenNotification(eventID, "Congratulations",
-                                            "You've won the lottery! Please login and accept the invitation");
+                                            "You've won the lottery! Please login and accept the invitation", "1");
 
                                     waitlist.cancelNotifications(eventID, "Cancel Confirmation", "You have cancelled" +
-                                            "the invitation for the event.");
+                                            "the invitation for the event.", "0");
                                 }
                             });
                         }else{
