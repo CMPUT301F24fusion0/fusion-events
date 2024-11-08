@@ -47,7 +47,10 @@
         <activity android:name=".FavouriteActivity"/>
         <activity android:name=".ViewEventActivity"/>
         <activity android:name=".ViewFacilityActivity"/>
-        <activity android:name=".JoinedEventActivity"/>
+        <activity android:name="com.example.fusion0.TestFragmentActivity" />
+
+
+
     </application>
 
 </manifest>

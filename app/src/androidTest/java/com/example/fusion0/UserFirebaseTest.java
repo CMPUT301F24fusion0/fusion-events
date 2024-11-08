@@ -25,7 +25,7 @@ public class UserFirebaseTest {
     }
 
     public UserInfo newUser() {
-        return new UserInfo(new ArrayList<String>(Arrays.asList("title", "body")), "Mike", "Ross", "mross@psl.com", "4613217890", "1234", new ArrayList<EventInfo>());
+        return new UserInfo(new ArrayList<String>(Arrays.asList("title", "body")), "Mike", "Ross", "mross@psl.com", "4613217890", "1234", new ArrayList<String>());
     }
 
     /**

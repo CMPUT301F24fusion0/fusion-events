@@ -207,6 +207,7 @@
         android:background="@color/white">
         android:visibility="gone">
 
+
             <Button
                 android:id="@+id/edit_button"
                 android:layout_width="150dp"

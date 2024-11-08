@@ -92,7 +92,7 @@ public class Registration extends Fragment {
      * @param phone phone number
      */
     private void registration(String dID, String first, String last, String emails, String phone) {
-        UserFirestore.findUser(dID, new UserFirestore.Callback() {
+        firebase.findUser(dID, new UserFirestore.Callback() {
             /**
              * @author Sehej Brar
              * This method checks to see if the same user already exists, if it doesn't then the new
@@ -106,9 +106,9 @@ public class Registration extends Fragment {
                     System.out.println("This user already exists.");
                 } else {
                     if (!phone.isEmpty()) {
-                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, phone, dID, new ArrayList<EventInfo>());
+                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, phone, dID, new ArrayList<String>());
                     } else {
-                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, dID, new ArrayList<EventInfo>());
+                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, dID, new ArrayList<String>());
                     }
                     firebase.addUser(newUser);
                 }
