@@ -95,7 +95,8 @@ public class MainActivity extends AppCompatActivity {
 
         final String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        if (requestCode == 100) {
+        final int REQUEST_CODE = 100;
+        if (requestCode == REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 AppNotifications.getNotification(deviceId, this);
             }
