@@ -23,6 +23,7 @@ import static org.junit.Assert.*;
  * Tests add and remove from waiting list, lottery , and next steps are to test offer another chance
  */
 
+@RunWith(AndroidJUnit4.class)
 public class WaitlistTest {
     private FirebaseFirestore db;
     private Waitlist waitlist;
