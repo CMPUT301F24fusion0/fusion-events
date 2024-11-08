@@ -179,11 +179,11 @@ public class EventActivity extends AppCompatActivity {
             imagePickerLauncher.launch(intent);
         });
     }
-
-    private void handleFacility(OrganizerInfo organizer){
+    private void handleFacility(OrganizerInfo organizer) {
         ArrayList<String> facilityNames = new ArrayList<>();
 
-        if (organizer.getFacilities() != null){
+        // Add existing facilities to the facilityNames list
+        if (organizer.getFacilities() != null) {
             ArrayList<FacilitiesInfo> facilities = organizer.getFacilities();
             for (FacilitiesInfo facility : facilities) {
                 if (facility != null) {
@@ -194,22 +194,30 @@ public class EventActivity extends AppCompatActivity {
             }
         }
 
+        // Add the "Add Facility" option at the end
         facilityNames.add("Add Facility");
 
+        // Create the ArrayAdapter for the spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, facilityNames);
 
+        // Set drop-down view resource
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+        // Set the adapter to the spinner
         spinnerFacilities.setAdapter(adapter);
 
+        // Set the item selection listener for the spinner
         spinnerFacilities.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedFacility = parent.getItemAtPosition(position).toString();
-                if (selectedFacility.equals("Add Facility")){
-                    addFacility();
-                }else{
+
+                // Check if "Add Facility" is selected
+                if (selectedFacility.equals("Add Facility")) {
+                    addFacility(facilityNames, adapter); // Pass the adapter so we can update it
+                } else {
+                    // If the selected facility exists, proceed with fetching it
                     String facilityID = organizer.getFacilityIdByName(selectedFacility);
                     EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
                         @Override
@@ -220,6 +228,7 @@ public class EventActivity extends AppCompatActivity {
                             longitude = facility.getLongitude();
                             latitude = facility.getLatitude();
                         }
+
                         @Override
                         public void onFailure(String error) {
                             Log.e(TAG, "Error fetching facility: " + error);
@@ -230,13 +239,12 @@ public class EventActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                // Handle nothing selected case if necessary
             }
         });
-
     }
 
-    private void addFacility(){
+    private void addFacility(ArrayList<String> facilityNames, ArrayAdapter<String> adapter) {
         autocompletePlaceFragment.setVisibility(View.VISIBLE);
         addFacilityText.setVisibility(View.VISIBLE);
 
@@ -244,14 +252,14 @@ public class EventActivity extends AppCompatActivity {
             Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
         }
 
-        // Initialize the AutocompleteSupportFragment.
+        // Initialize the AutocompleteSupportFragment
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
-        // Specify the types of place data to return.
+        // Specify the types of place data to return
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.FORMATTED_ADDRESS, Place.Field.LAT_LNG));
 
-        // Set up a PlaceSelectionListener to handle the response.
+        // Set up the PlaceSelectionListener
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
@@ -259,14 +267,30 @@ public class EventActivity extends AppCompatActivity {
                 facilityName = place.getDisplayName();
 
                 LatLng latLng = place.getLatLng();
-
                 if (latLng != null) {
                     latitude = latLng.latitude;
                     longitude = latLng.longitude;
                 }
 
-                newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude);
-                facility = newFacility;
+                // Check if the facility name already exists in the list of facility names
+                if (facilityNames.contains(facilityName)) {
+                    Log.i(TAG, "Facility already exists: " + facilityName);
+                    // Optionally show a message to the user
+                    Toast.makeText(getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Create new facility and proceed
+                    newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude);
+                    facility = newFacility;
+
+                    // Add the new facility name to the facilityNames list
+                    facilityNames.add(facilityName);
+
+                    // Notify the adapter that the data has changed
+                    adapter.notifyDataSetChanged();
+
+                    // Optionally, show a toast indicating the facility was added
+                    Toast.makeText(getApplicationContext(), "New facility added: " + facilityName, Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -276,11 +300,17 @@ public class EventActivity extends AppCompatActivity {
         });
     }
 
+
     private void geolocationHandling(){
         geolocationSwitchCompact.setOnCheckedChangeListener((buttonView, isChecked) -> {
             geolocation = isChecked;
-            radiusText.setVisibility(View.VISIBLE);
-            radius.setVisibility(View.VISIBLE);
+            if (isChecked) {
+                radiusText.setVisibility(View.VISIBLE);
+                radius.setVisibility(View.VISIBLE);
+            } else {
+                radiusText.setVisibility(View.GONE);
+                radius.setVisibility(View.GONE);
+            }
         });
     }
 
@@ -501,6 +531,10 @@ public class EventActivity extends AppCompatActivity {
 
             if (newFacility != null){
                 EventFirebase.addFacility(newFacility);
+                ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
+                facilitiesList.add(facility);
+                organizer.setFacilities(facilitiesList);
+                EventFirebase.editOrganizer(organizer);
             }
 
             EventFirebase.addEvent(newEvent);
@@ -511,10 +545,6 @@ public class EventActivity extends AppCompatActivity {
             EventFirebase.editOrganizer(organizer);
 
 
-            ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
-            facilitiesList.add(facility);
-            organizer.setFacilities(facilitiesList);
-            EventFirebase.editOrganizer(organizer);
 
             ArrayList<String> facilityEventsList = facility.getEvents();
             facilityEventsList.add(newEvent.eventID);

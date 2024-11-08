@@ -41,6 +41,7 @@ public class ViewEventActivity extends AppCompatActivity {
     private Button startDateButton, endDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton;
     private ImageButton backButton;
     private EventInfo event;
+    private UserInfo user;
     private LinearLayout toolbar;
 
 
@@ -102,6 +103,19 @@ public class ViewEventActivity extends AppCompatActivity {
                         Toast.makeText(ViewEventActivity.this, "Event Unavailable.", Toast.LENGTH_SHORT).show();
                         finish();
                     } else {
+                        UserFirestore.findUser(deviceID,new UserFirestore.Callback(){
+
+                                    @Override
+                                    public void onSuccess(UserInfo userInfo) {
+                                        user = userInfo;
+                                    }
+
+                                    @Override
+                                    public void onFailure(String error) {
+                                        Log.e("ViewEventActivity", "Error fetching user: " + error);
+                                    }
+                        });
+
                         event = eventInfo;
 
                         eventNameTextView.setText(event.getEventName());
@@ -130,6 +144,7 @@ public class ViewEventActivity extends AppCompatActivity {
                         if (deviceID.equals(event.getOrganizer())) {
                             isOwner = true;
                         }else{
+
                             editButton.setVisibility(View.GONE);
                             deleteButton.setVisibility(View.GONE);
                             cancelButton.setVisibility(View.GONE);
@@ -204,6 +219,11 @@ public class ViewEventActivity extends AppCompatActivity {
     }
 
     private void addUserToWaitingList(Location userLocation) {
+        ArrayList<EventInfo> eventsList = user.getEvents();
+        eventsList.add(event);
+        user.setEvents(eventsList);
+        UserFirestore.editUserEvents(user);
+
         ArrayList<String> currentEntrants = event.getWaitinglist();
         String newEntrant = "[" + deviceID + ", " + userLocation.getLatitude() + ", " + userLocation.getLongitude() + "]";
         currentEntrants.add(newEntrant);
