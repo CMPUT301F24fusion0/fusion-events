@@ -146,11 +146,16 @@
                     android:layout_width="8dp"
                     android:layout_height="0dp"/>
 
-                <Spinner
-                    android:id="@+id/spinner_facilities"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/facilityName"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"/>
+                    android:text="Facility 1"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"
+                    android:layout_weight="1"/>
             </LinearLayout>
             <View
                 android:layout_width="match_parent"
@@ -166,7 +171,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Upload New Poster:"
+                    android:text="Event Poster:"
                     android:textColor="@color/textColor"
                     android:textSize="17sp"
                     android:fontFamily="@font/raleway_semibold"
@@ -201,7 +206,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Select Date:"
+                    android:text="Event Date:"
                     android:textColor="@color/textColor"
                     android:textSize="17sp"
                     android:fontFamily="@font/raleway_semibold"
@@ -233,14 +238,6 @@
                             android:text="Start Date"
                             android:textColor="@color/textColor"
                             android:textSize="15sp" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_gravity="center_vertical">
 
                         <TextView
                             android:id="@+id/end_date_text"

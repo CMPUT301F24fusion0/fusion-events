@@ -308,9 +308,6 @@ public class EventInfo {
         this.radius = radius;
     }
 
-
-
-
     public Bitmap generateQRCodeImage(int width, int height, String qrCode) throws WriterException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(qrCode, BarcodeFormat.QR_CODE, width, height);

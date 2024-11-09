@@ -56,40 +56,45 @@ public class FavouriteActivity extends AppCompatActivity {
 
 
         joinedEventsButton.setOnClickListener(view -> {UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
-                @Override
-                public void onSuccess(UserInfo userInfo) {
-                    if (userInfo.getEvents() == null) {
-                        Toast.makeText(FavouriteActivity.this, "No Joined Events Available.", Toast.LENGTH_SHORT).show();
+            @Override
+            public void onSuccess(UserInfo userInfo) {
+                if (userInfo == null) {
+                    Toast.makeText(FavouriteActivity.this, "User data is not available.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (userInfo.getEvents() == null) {
+                    Toast.makeText(FavouriteActivity.this, "No Joined Events Available.", Toast.LENGTH_SHORT).show();
+                    joinedEventsList.setVisibility(View.GONE);
+                    joinedEventsButton.setText("View");
+                } else {
+                    user = userInfo;
+                    ArrayList<EventInfo> events = user.getEvents();
+
+                    if (joinedEventsList.getAdapter() == null) {
+                        ArrayList<String> eventNames = new ArrayList<>();
+                        for (EventInfo event : events) {
+                            if (event != null && event.getEventName() != null) {
+                                eventNames.add(event.getEventName());
+                            }
+                        }
+                        ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(FavouriteActivity.this, android.R.layout.simple_list_item_1, eventNames);
+                        joinedEventsList.setAdapter(eventsAdapter);
+                    }
+
+                    if (isJoinedEventsListVisible) {
                         joinedEventsList.setVisibility(View.GONE);
                         joinedEventsButton.setText("View");
                     } else {
-                        user = userInfo;
-
-                        if (joinedEventsList.getAdapter() == null) {
-                            ArrayList<EventInfo> events = user.getEvents();
-                            ArrayList<String> eventNames = new ArrayList<>();
-
-                            for (EventInfo event : events) {
-                                if (event != null && event.getEventName() != null) {
-                                    eventNames.add(event.getEventName());
-                                }
-                            }
-                            ArrayAdapter<String> facilitiesAdapter = new ArrayAdapter<>(FavouriteActivity.this, android.R.layout.simple_list_item_1, eventNames);
-                            joinedEventsList.setAdapter(facilitiesAdapter);
-                        }
-
-                        if (isCreatedEventsListVisible) {
-                            joinedEventsList.setVisibility(View.GONE);
-                            joinedEventsButton.setText("View");
-                        } else {
-                            joinedEventsList.setVisibility(View.VISIBLE);
-                            joinedEventsButton.setText("Hide");
-                        }
-                        isCreatedEventsListVisible = !isCreatedEventsListVisible;
+                        joinedEventsList.setVisibility(View.VISIBLE);
+                        joinedEventsButton.setText("Hide");
                     }
+                    isJoinedEventsListVisible = !isJoinedEventsListVisible;
                 }
+            }
 
-                @Override
+
+            @Override
                 public void onFailure(String error) {
                     Log.e(TAG, "Error fetching user: " + error);
                 }
@@ -120,7 +125,6 @@ public class FavouriteActivity extends AppCompatActivity {
                             createdEventsList.setAdapter(facilitiesAdapter);
                         }
 
-                        // Toggle visibility and button text
                         if (isCreatedEventsListVisible) {
                             createdEventsList.setVisibility(View.GONE);
                             createdEventsButton.setText("View");

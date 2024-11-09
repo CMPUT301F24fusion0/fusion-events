@@ -46,8 +46,8 @@ public class ViewEventActivity extends AppCompatActivity {
 
     private String deviceID;
     private Boolean isOwner = false;
-    private Spinner eventFacility;
-    private TextView eventNameTextView, eventDescriptionTextView, eventStartDateTextView, eventEndDateTextView,eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, waitinglistFullTextView;
+    private Spinner eventFacilitySpinner;
+    private TextView eventNameTextView, eventDescriptionTextView,eventFacilityTextView, eventStartDateTextView, eventEndDateTextView,eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, waitinglistFullTextView;
     private EditText eventNameEditText, eventDescriptionEditText, eventCapacityEditText;
     private ImageView eventPosterImageView, qrImageView;
     private ListView waitinglistListView, chosenEntrantsListView, cancelledEntrantsListView;
@@ -108,7 +108,8 @@ public class ViewEventActivity extends AppCompatActivity {
         backButton = findViewById(R.id.backButton);
         eventNameTextView = findViewById(R.id.EventName);
         eventDescriptionTextView = findViewById(R.id.description);
-        eventFacility= findViewById(R.id.spinner_facilities);
+        eventFacilityTextView = findViewById(R.id.facilityName);
+        eventFacilitySpinner= findViewById(R.id.spinner_facilities);
         eventStartDateTextView = findViewById(R.id.start_date_text);
         eventEndDateTextView = findViewById(R.id.end_date_text);
         eventEndTimeTextView = findViewById(R.id.end_time_text);
@@ -153,17 +154,6 @@ public class ViewEventActivity extends AppCompatActivity {
         Intent intentReceived = getIntent();
         String eventID = intentReceived.getStringExtra("eventID");
 
-        UserFirestore.findUser(deviceID,new UserFirestore.Callback(){
-            @Override
-            public void onSuccess(UserInfo userInfo) {
-                user = userInfo;
-            }
-
-            @Override
-            public void onFailure(String error) {
-                Log.e("ViewEventActivity", "Error fetching user: " + error);
-            }
-        });
 
         if (eventID != null) {
             EventFirebase.findEvent(eventID, new EventFirebase.EventCallback() {
@@ -179,6 +169,7 @@ public class ViewEventActivity extends AppCompatActivity {
                         eventNameTextView.setText(event.getEventName());
                         eventDescriptionTextView.setText(event.getDescription());
                         eventCapacityTextView.setText(event.getCapacity());
+                        //eventFacilityTextView.setText(event.getFacilityName());
 
                         String eventPoster = event.getEventPoster();
                         if (eventPoster != null && !eventPoster.isEmpty()) {
@@ -331,7 +322,7 @@ public class ViewEventActivity extends AppCompatActivity {
             String newDescription = eventDescriptionEditText.getText().toString();
             String newEventCapacity = eventCapacityEditText.getText().toString();
 
-            String selectedFacility = eventFacility.getSelectedItem().toString();
+            String selectedFacility = eventFacilitySpinner.getSelectedItem().toString();
 
             String newStartTime = eventStartTimeTextView.getText().toString();
             String newEndTime = eventEndTimeTextView.getText().toString();
@@ -425,17 +416,44 @@ public class ViewEventActivity extends AppCompatActivity {
     }
 
     private void addUserToWaitingList(Location userLocation) {
-        ArrayList<EventInfo> eventsList = user.getEvents();
-        eventsList.add(event);
-        user.setEvents(eventsList);
-        UserFirestore.editUserEvents(user);
+        LoginManagement login = new LoginManagement(this);
+        login.isUserLoggedIn(isLoggedIn -> {
+            if (isLoggedIn) {
+                UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+                    @Override
+                    public void onSuccess(UserInfo userInfo) {
+                        user = userInfo;
 
-        ArrayList<String> currentEntrants = event.getWaitinglist();
-        String newEntrant = "[" + deviceID + ", " + userLocation.getLatitude() + ", " + userLocation.getLongitude() + "]";
-        currentEntrants.add(newEntrant);
-        event.setWaitinglist(currentEntrants);
-        EventFirebase.editEvent(event); // Assuming editEvent updates the event in Firebase
-        Toast.makeText(this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
+                        ArrayList<EventInfo> eventsList = user.getEvents();
+                        eventsList.add(event);
+                        user.setEvents(eventsList);
+                        UserFirestore.editUserEvents(user);
+
+                        ArrayList<String> currentEntrants = event.getWaitinglist();
+                        String newEntrant = "[" + deviceID + ", " + userLocation.getLatitude() + ", " + userLocation.getLongitude() + "]";
+                        currentEntrants.add(newEntrant);
+                        event.setWaitinglist(currentEntrants);
+                        EventFirebase.editEvent(event);
+                        Toast.makeText(ViewEventActivity.this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        Log.e("ViewEventActivity", "Error fetching user: " + error);
+                    }
+                });
+
+            } else {
+                Registration registration = new Registration();
+                Bundle bundle = new Bundle();
+                bundle.putString("eventID", event.getEventID());
+                registration.setArguments(bundle);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.event_view, registration)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
     }
 
 

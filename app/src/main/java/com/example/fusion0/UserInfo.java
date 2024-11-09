@@ -44,7 +44,7 @@ public class UserInfo {
         this.firebase = new UserFirestore();
         this.edit = false;
         this.deviceID = dID;
-        this.events = events;
+        this.events = new ArrayList<>();
     }
 
     /**
@@ -62,7 +62,7 @@ public class UserInfo {
         this.firebase = new UserFirestore();
         this.edit = false;
         this.deviceID = dID;
-        this.events = events;
+        this.events = new ArrayList<>();
     }
 
     /**
