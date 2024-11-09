@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:id="@+id/event_view">
 
 
     <ImageButton
@@ -174,11 +175,23 @@
                     android:layout_width="8dp"
                     android:layout_height="0dp"/>
 
+                <TextView
+                    android:id="@+id/facilityName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Facility 1"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"
+                    android:layout_weight="1"/>
+
                 <Spinner
                     android:id="@+id/spinner_facilities"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"/>
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"/>
             </LinearLayout>
 
             <View
