@@ -46,8 +46,8 @@ public class ViewEventActivity extends AppCompatActivity {
 
     private String deviceID;
     private Boolean isOwner = false;
-    private Spinner eventFacilitySpinner;
-    private TextView eventNameTextView, eventDescriptionTextView,eventFacilityTextView, eventStartDateTextView, eventEndDateTextView,eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, waitinglistFullTextView;
+    private Spinner eventFacility;
+    private TextView eventNameTextView, eventDescriptionTextView, eventStartDateTextView, eventEndDateTextView,eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, waitinglistFullTextView;
     private EditText eventNameEditText, eventDescriptionEditText, eventCapacityEditText;
     private ImageView eventPosterImageView, qrImageView;
     private ListView waitinglistListView, chosenEntrantsListView, cancelledEntrantsListView;
@@ -66,6 +66,8 @@ public class ViewEventActivity extends AppCompatActivity {
     private String newEventPoster;
     private Date newStartDate;
     private Date newEndDate;
+
+    Waitlist waitlist;
 
     private StorageReference storageRef;
 
@@ -102,14 +104,15 @@ public class ViewEventActivity extends AppCompatActivity {
                 }
         );
 
+        waitlist = new Waitlist();
+
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         backButton = findViewById(R.id.backButton);
         eventNameTextView = findViewById(R.id.EventName);
         eventDescriptionTextView = findViewById(R.id.description);
-        eventFacilityTextView = findViewById(R.id.facilityName);
-        eventFacilitySpinner= findViewById(R.id.spinner_facilities);
+        eventFacility= findViewById(R.id.spinner_facilities);
         eventStartDateTextView = findViewById(R.id.start_date_text);
         eventEndDateTextView = findViewById(R.id.end_date_text);
         eventEndTimeTextView = findViewById(R.id.end_time_text);
@@ -154,6 +157,17 @@ public class ViewEventActivity extends AppCompatActivity {
         Intent intentReceived = getIntent();
         String eventID = intentReceived.getStringExtra("eventID");
 
+        UserFirestore.findUser(deviceID,new UserFirestore.Callback(){
+            @Override
+            public void onSuccess(UserInfo userInfo) {
+                user = userInfo;
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e("ViewEventActivity", "Error fetching user: " + error);
+            }
+        });
 
         if (eventID != null) {
             EventFirebase.findEvent(eventID, new EventFirebase.EventCallback() {
@@ -169,7 +183,6 @@ public class ViewEventActivity extends AppCompatActivity {
                         eventNameTextView.setText(event.getEventName());
                         eventDescriptionTextView.setText(event.getDescription());
                         eventCapacityTextView.setText(event.getCapacity());
-                        //eventFacilityTextView.setText(event.getFacilityName());
 
                         String eventPoster = event.getEventPoster();
                         if (eventPoster != null && !eventPoster.isEmpty()) {
@@ -191,6 +204,31 @@ public class ViewEventActivity extends AppCompatActivity {
 
                         if (deviceID.equals(event.getOrganizer())) {
                             isOwner = true;
+                            lotteryButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    int capacity = 1;
+
+                                    try {
+                                        capacity = Integer.parseInt(event.getCapacity());
+                                    } catch (NumberFormatException e) {
+                                        Log.e("Error", "Capacity is not an integer");
+                                    }
+                                    waitlist.sampleAttendees(eventID, capacity);
+
+                                    waitlist.allNotification(eventID, "Lottery",
+                                            "The lottery has started. Please be on the lookout for results.", "0");
+
+                                    waitlist.chosenNotification(eventID, "Congratulations",
+                                            "You've won the lottery! Please login and accept the invitation", "1");
+
+                                    waitlist.cancelNotifications(eventID, "Cancel Confirmation", "You have cancelled" +
+                                            "the invitation for the event.", "0");
+
+                                    waitlist.loseNotification(eventID, "Lottery Lose", "Unfortunately, you've lost the lottery." +
+                                            "Better luck next time!", "0");
+                                }
+                            });
 
 
                         }else{
@@ -322,7 +360,7 @@ public class ViewEventActivity extends AppCompatActivity {
             String newDescription = eventDescriptionEditText.getText().toString();
             String newEventCapacity = eventCapacityEditText.getText().toString();
 
-            String selectedFacility = eventFacilitySpinner.getSelectedItem().toString();
+            String selectedFacility = eventFacility.getSelectedItem().toString();
 
             String newStartTime = eventStartTimeTextView.getText().toString();
             String newEndTime = eventEndTimeTextView.getText().toString();
@@ -387,7 +425,28 @@ public class ViewEventActivity extends AppCompatActivity {
             }
         });
 
-
+        waitlist.getAll(eventID, all -> {
+            if (!all.contains(deviceID)) {
+                joinButton.setOnClickListener(view -> {
+                    GeoLocation geoLocation = new GeoLocation(this, this, event.getLatitude(), event.getLongitude(), event.getRadius());
+                    Log.e("ViewEventActivity", "Radius: " + event.getRadius());
+                    if (!geoLocation.isLocationPermissionGranted()) {
+                        geoLocation.requestLocationPermission();
+                    }
+                    else {
+                        proceedWithJoin(geoLocation);
+                    }
+                });
+            } else {
+                joinButton.setText(R.string.unjoin);
+                joinButton.setOnClickListener(view -> {
+                    waitlist.removeEntrantFromWaitingList(eventID, deviceID);
+                    Toast.makeText(ViewEventActivity.this, "You have left the waiting list", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(ViewEventActivity.this, MainActivity.class);
+                    startActivity(intent);
+                });
+            }
+        });
 
     }
 
@@ -416,44 +475,17 @@ public class ViewEventActivity extends AppCompatActivity {
     }
 
     private void addUserToWaitingList(Location userLocation) {
-        LoginManagement login = new LoginManagement(this);
-        login.isUserLoggedIn(isLoggedIn -> {
-            if (isLoggedIn) {
-                UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
-                    @Override
-                    public void onSuccess(UserInfo userInfo) {
-                        user = userInfo;
+        ArrayList<EventInfo> eventsList = user.getEvents();
+        eventsList.add(event);
+        user.setEvents(eventsList);
+        UserFirestore.editUserEvents(user);
 
-                        ArrayList<EventInfo> eventsList = user.getEvents();
-                        eventsList.add(event);
-                        user.setEvents(eventsList);
-                        UserFirestore.editUserEvents(user);
-
-                        ArrayList<String> currentEntrants = event.getWaitinglist();
-                        String newEntrant = "[" + deviceID + ", " + userLocation.getLatitude() + ", " + userLocation.getLongitude() + "]";
-                        currentEntrants.add(newEntrant);
-                        event.setWaitinglist(currentEntrants);
-                        EventFirebase.editEvent(event);
-                        Toast.makeText(ViewEventActivity.this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFailure(String error) {
-                        Log.e("ViewEventActivity", "Error fetching user: " + error);
-                    }
-                });
-
-            } else {
-                Registration registration = new Registration();
-                Bundle bundle = new Bundle();
-                bundle.putString("eventID", event.getEventID());
-                registration.setArguments(bundle);
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.event_view, registration)
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
+        ArrayList<String> currentEntrants = event.getWaitinglist();
+        String newEntrant = "[" + deviceID + ", " + userLocation.getLatitude() + ", " + userLocation.getLongitude() + "]";
+        currentEntrants.add(newEntrant);
+        event.setWaitinglist(currentEntrants);
+        EventFirebase.editEvent(event); // Assuming editEvent updates the event in Firebase
+        Toast.makeText(this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
     }
 
 
