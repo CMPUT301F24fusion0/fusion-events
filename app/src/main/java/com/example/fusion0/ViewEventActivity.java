@@ -2,6 +2,8 @@ package com.example.fusion0;
 
 import static android.content.ContentValues.TAG;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -22,22 +25,32 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.zxing.WriterException;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
@@ -47,15 +60,20 @@ public class ViewEventActivity extends AppCompatActivity {
     private String deviceID;
     private Boolean isOwner = false;
     private Spinner eventFacility;
-    private TextView eventNameTextView, eventDescriptionTextView, eventStartDateTextView, eventEndDateTextView,eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, waitinglistFullTextView;
+    private TextView eventNameTextView, eventFacilityTextView,addFacilityText, eventDescriptionTextView, dateRequirementsTextView,  eventStartDateTextView, eventEndDateTextView,eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, waitinglistFullTextView;
     private EditText eventNameEditText, eventDescriptionEditText, eventCapacityEditText;
     private ImageView eventPosterImageView, qrImageView;
     private ListView waitinglistListView, chosenEntrantsListView, cancelledEntrantsListView;
-    private Button startDateButton, endDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton, waitinglistButton, cancelledEntrantsButton, chosenEntrantsButton, uploadImageButton;
+    private Button startDateButton, endDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton, waitinglistButton, cancelledEntrantsButton, chosenEntrantsButton, uploadImageButton, lotteryButton;
     private ImageButton backButton;
     private EventInfo event;
     private UserInfo user;
+    private OrganizerInfo organizer;
     private LinearLayout toolbar;
+    private Calendar startDateCalendar;
+    private androidx.fragment.app.FragmentContainerView autocompletePlaceFragment;
+
+
 
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
@@ -63,9 +81,9 @@ public class ViewEventActivity extends AppCompatActivity {
 
     private Double newLongitude = null;
     private Double newLatitude = null;
-    private String newEventPoster;
-    private Date newStartDate;
-    private Date newEndDate;
+    private String newEventPoster, facility, address;
+    private Date endDate, startDate;
+    private FacilitiesInfo newFacility;
 
     Waitlist waitlist;
 
@@ -79,30 +97,8 @@ public class ViewEventActivity extends AppCompatActivity {
         setContentView(R.layout.event_view);
 
         storageRef = FirebaseStorage.getInstance().getReference();
+        uploadNewPoster();
 
-        imagePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                        Uri imageUri = result.getData().getData();
-                        eventPosterImageView.setImageURI(imageUri);
-
-                        StorageReference imageRef = storageRef.child("event_posters/" + UUID.randomUUID().toString() + ".jpg");
-
-                        imageRef.putFile(imageUri)
-                                .addOnSuccessListener(taskSnapshot -> {
-                                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                                        newEventPoster = uri.toString();
-                                    }).addOnFailureListener(e -> {
-                                        Log.e(TAG, "Error getting download URL", e);
-                                    });
-                                })
-                                .addOnFailureListener(e -> {
-                                    Log.e(TAG, "Upload failed", e);
-                                });
-                    }
-                }
-        );
 
         waitlist = new Waitlist();
 
@@ -110,9 +106,13 @@ public class ViewEventActivity extends AppCompatActivity {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         backButton = findViewById(R.id.backButton);
+        lotteryButton = findViewById(R.id.lottery_button);
         eventNameTextView = findViewById(R.id.EventName);
         eventDescriptionTextView = findViewById(R.id.description);
-        eventFacility= findViewById(R.id.spinner_facilities);
+        eventFacility = findViewById(R.id.spinner_facilities);
+        eventFacilityTextView = findViewById(R.id.facilityName);
+        addFacilityText = findViewById(R.id.add_facility_text);
+        autocompletePlaceFragment = findViewById(R.id.autocomplete_fragment);
         eventStartDateTextView = findViewById(R.id.start_date_text);
         eventEndDateTextView = findViewById(R.id.end_date_text);
         eventEndTimeTextView = findViewById(R.id.end_time_text);
@@ -121,12 +121,10 @@ public class ViewEventActivity extends AppCompatActivity {
         eventNameEditText = findViewById(R.id.editEventName);
         eventDescriptionEditText = findViewById(R.id.description_edit);
         eventCapacityEditText = findViewById(R.id.editCapacity);
+        dateRequirementsTextView = findViewById(R.id.date_requirements_text);
 
         eventPosterImageView = findViewById(R.id.uploaded_image_view);
         uploadImageButton = findViewById(R.id.upload_image_button);
-
-
-        eventPosterImageView = findViewById(R.id.uploaded_image_view);
 
         qrImageView = findViewById(R.id.qrImage);
         waitinglistListView = findViewById(R.id.waitinglistListView);
@@ -147,6 +145,7 @@ public class ViewEventActivity extends AppCompatActivity {
         waitinglistFullTextView = findViewById(R.id.waitinglist_full_text_view);
 
         toolbar = findViewById(R.id.toolbar);
+
 
 
         backButton.setOnClickListener(view -> {
@@ -183,11 +182,22 @@ public class ViewEventActivity extends AppCompatActivity {
                         eventNameTextView.setText(event.getEventName());
                         eventDescriptionTextView.setText(event.getDescription());
                         eventCapacityTextView.setText(event.getCapacity());
+                        eventFacilityTextView.setText(event.getFacilityName());
 
-                        String eventPoster = event.getEventPoster();
-                        if (eventPoster != null && !eventPoster.isEmpty()) {
+
+                        eventStartDateTextView.setText(event.getStartDate().toString());
+                        eventEndDateTextView.setText(event.getEndDate().toString());
+                        eventStartTimeTextView.setText(event.getStartTime());
+                        eventEndTimeTextView.setText(event.getEndTime());
+
+                        endDate = event.getEndDate();
+                        startDate =event.getStartDate();
+                        facility = event.getFacilityName();
+
+                        newEventPoster = event.getEventPoster();
+                        if (newEventPoster != null && !newEventPoster.isEmpty()) {
                             Glide.with(ViewEventActivity.this)
-                                    .load(eventPoster)
+                                    .load(newEventPoster)
                                     .into(eventPosterImageView);
                             eventPosterImageView.setVisibility(View.VISIBLE);
                         }
@@ -203,6 +213,17 @@ public class ViewEventActivity extends AppCompatActivity {
                         toolbar.setVisibility(View.VISIBLE);
 
                         if (deviceID.equals(event.getOrganizer())) {
+                            EventFirebase.findOrganizer(event.getOrganizer(), new EventFirebase.OrganizerCallback() {
+                                @Override
+                                public void onSuccess(OrganizerInfo organizerInfo) {
+                                    organizer = organizerInfo;
+                                }
+
+                                @Override
+                                public void onFailure(String error) {
+                                    Log.e(TAG, "Unable to find organizer.");
+                                }
+                            });
                             isOwner = true;
                             lotteryButton.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -323,13 +344,13 @@ public class ViewEventActivity extends AppCompatActivity {
             cancelButton.setVisibility(View.VISIBLE);
             saveButton.setVisibility(View.VISIBLE);
             uploadImageButton.setVisibility(View.VISIBLE);
+            startDateButton.setVisibility(View.VISIBLE);
+            endDateButton.setVisibility(View.VISIBLE);
+
 
             editEventName();
             editDescription();
-            //editFacility();
-            editImage();
-            //editStartDate();
-            //editEndDate();
+            editFacility(organizer);
             editCapacity();
         });
 
@@ -352,6 +373,26 @@ public class ViewEventActivity extends AppCompatActivity {
         });
 
         cancelButton.setOnClickListener(view ->{
+            editButton.setVisibility(View.VISIBLE);
+            deleteButton.setVisibility(View.VISIBLE);
+            cancelButton.setVisibility(View.GONE);
+            saveButton.setVisibility(View.GONE);
+            uploadImageButton.setVisibility(View.GONE);
+            startDateButton.setVisibility(View.GONE);
+            endDateButton.setVisibility(View.GONE);
+            addFacilityText.setVisibility(View.GONE);
+            autocompletePlaceFragment.setVisibility(View.GONE);
+            eventFacilityTextView.setVisibility(View.VISIBLE);
+            eventFacility.setVisibility(View.GONE);
+
+            eventNameTextView.setVisibility(View.VISIBLE);
+            eventNameEditText.setVisibility(View.GONE);
+
+            eventDescriptionTextView.setVisibility(View.VISIBLE);
+            eventDescriptionEditText.setVisibility(View.GONE);
+
+            eventCapacityTextView.setVisibility(View.VISIBLE);
+            eventCapacityEditText.setVisibility(View.GONE);
 
         });
 
@@ -359,9 +400,6 @@ public class ViewEventActivity extends AppCompatActivity {
             String newEventName = eventNameEditText.getText().toString();
             String newDescription = eventDescriptionEditText.getText().toString();
             String newEventCapacity = eventCapacityEditText.getText().toString();
-
-            String selectedFacility = eventFacility.getSelectedItem().toString();
-
             String newStartTime = eventStartTimeTextView.getText().toString();
             String newEndTime = eventEndTimeTextView.getText().toString();
 
@@ -370,11 +408,12 @@ public class ViewEventActivity extends AppCompatActivity {
             event.setEventName(newEventName);
             event.setDescription(newDescription);
             event.setCapacity(newEventCapacity);
-            event.setFacilityName(selectedFacility);
+            event.setFacilityName(facility);
+            event.setAddress(address);
             event.setLatitude(newLatitude);
             event.setLongitude(newLongitude);
-            event.setStartDate(newStartDate);
-            event.setEndDate(newEndDate);
+            event.setStartDate(startDate);
+            event.setEndDate(endDate);
             event.setStartTime(newStartTime);
             event.setEndTime(newEndTime);
             event.setEventPoster(newEventPoster);
@@ -382,9 +421,9 @@ public class ViewEventActivity extends AppCompatActivity {
             eventNameTextView.setText(newEventName);
             eventDescriptionTextView.setText(newDescription);
             eventCapacityTextView.setText(newEventCapacity);
-            //eventFacility.setSelection(getFacilityPosition(selectedFacility));
-            eventStartDateTextView.setText(dateFormat.format(newStartDate));
-            eventEndDateTextView.setText(dateFormat.format(newEndDate));
+            eventFacilityTextView.setText(facility);
+            eventStartDateTextView.setText(dateFormat.format(startDate));
+            eventEndDateTextView.setText(dateFormat.format(endDate));
             eventStartTimeTextView.setText(newStartTime);
             eventEndTimeTextView.setText(newEndTime);
 
@@ -397,21 +436,163 @@ public class ViewEventActivity extends AppCompatActivity {
             eventCapacityTextView.setVisibility(View.VISIBLE);
             eventCapacityEditText.setVisibility(View.GONE);
 
-            eventStartDateTextView.setVisibility(View.VISIBLE);
-            startDateButton.setVisibility(View.GONE);
+            addFacilityText.setVisibility(View.GONE);
+            autocompletePlaceFragment.setVisibility(View.GONE);
+            eventFacilityTextView.setVisibility(View.VISIBLE);
+            eventFacility.setVisibility(View.GONE);
 
-            eventEndDateTextView.setVisibility(View.VISIBLE);
-            endDateButton.setVisibility(View.GONE);
+            if (newFacility != null){
+                EventFirebase.addFacility(newFacility);
+                ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
+                facilitiesList.add(newFacility);
+                organizer.setFacilities(facilitiesList);
+                EventFirebase.editOrganizer(organizer);
+            }
 
-            eventStartTimeTextView.setVisibility(View.VISIBLE);
-
-            eventEndTimeTextView.setVisibility(View.VISIBLE);
-
+            editButton.setVisibility(View.VISIBLE);
+            deleteButton.setVisibility(View.VISIBLE);
+            cancelButton.setVisibility(View.GONE);
             saveButton.setVisibility(View.GONE);
+            uploadImageButton.setVisibility(View.GONE);
+            startDateButton.setVisibility(View.GONE);
+            endDateButton.setVisibility(View.GONE);
 
             EventFirebase.editEvent(event);
             Toast.makeText(ViewEventActivity.this, "Event updated successfully!", Toast.LENGTH_SHORT).show();
         });
+
+
+        startDateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                DatePickerDialog dialog = new DatePickerDialog(com.example.fusion0.ViewEventActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
+                        startDateCalendar = Calendar.getInstance();
+                        startDateCalendar.set(selectedYear, selectedMonth, selectedDay);
+                        Calendar currentDate = Calendar.getInstance();
+                        if (startDateCalendar.before(currentDate)) {
+                            dateRequirementsTextView.setText("Date Must Be Today or Later.");
+                            dateRequirementsTextView.setVisibility(View.VISIBLE);
+                            eventStartDateTextView.setVisibility(View.GONE);
+                            startDateCalendar = null;
+                        } else {
+                            String selectedDate = String.format(Locale.US, "%d/%d/%d", selectedMonth + 1, selectedDay, selectedYear);
+                            eventStartDateTextView.setText(selectedDate);
+                            eventStartDateTextView.setVisibility(View.VISIBLE);
+                            dateRequirementsTextView.setVisibility(View.GONE);
+
+                            Date newStartDate = startDateCalendar.getTime();
+
+
+                            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                            int minute = calendar.get(Calendar.MINUTE);
+                            TimePickerDialog timePickerDialog = new TimePickerDialog(com.example.fusion0.ViewEventActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                                @Override
+                                public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
+                                    startDateCalendar.set(Calendar.HOUR_OF_DAY, selectedHour);
+                                    startDateCalendar.set(Calendar.MINUTE, selectedMinute);
+
+                                    Calendar currentTime = Calendar.getInstance();
+                                    if (startDateCalendar.before(currentTime)) {
+                                        dateRequirementsTextView.setText("Start Time Must Be Now or Later.");
+                                        dateRequirementsTextView.setVisibility(View.VISIBLE);
+                                        eventStartTimeTextView.setVisibility(View.GONE);
+                                    } else {
+                                        String selectedTime = String.format(Locale.US, "%02d:%02d", selectedHour, selectedMinute);
+                                        eventStartTimeTextView.setText(selectedTime);
+                                        eventStartTimeTextView.setVisibility(View.VISIBLE);
+                                        dateRequirementsTextView.setVisibility(View.GONE);
+                                        startDate = newStartDate;
+                                    }
+                                }
+                            }, hour, minute, true);
+                            timePickerDialog.show();
+                        }
+                    }
+                }, year, month, day);
+                dialog.show();
+            }
+        });
+
+        endDateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                DatePickerDialog dialog = new DatePickerDialog(com.example.fusion0.ViewEventActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
+                        Calendar endDateCalendar = Calendar.getInstance();
+                        endDateCalendar.set(selectedYear, selectedMonth, selectedDay);
+                        // Copy time from startDateCalendar if the dates are the same
+                        if (startDateCalendar != null &&
+                                endDateCalendar.get(Calendar.YEAR) == startDateCalendar.get(Calendar.YEAR) &&
+                                endDateCalendar.get(Calendar.MONTH) == startDateCalendar.get(Calendar.MONTH) &&
+                                endDateCalendar.get(Calendar.DAY_OF_MONTH) == startDateCalendar.get(Calendar.DAY_OF_MONTH)) {
+                            // Set the end time to the start time
+                            endDateCalendar.set(Calendar.HOUR_OF_DAY, startDateCalendar.get(Calendar.HOUR_OF_DAY));
+                            endDateCalendar.set(Calendar.MINUTE, startDateCalendar.get(Calendar.MINUTE));
+                        }
+                        Calendar currentDate = Calendar.getInstance();
+                        if (startDateCalendar == null) {
+                            dateRequirementsTextView.setText("Please select a Start Date first.");
+                            dateRequirementsTextView.setVisibility(View.VISIBLE);
+                            eventEndDateTextView.setVisibility(View.GONE);
+                            eventEndTimeTextView.setVisibility(View.GONE);
+                        } else if (endDateCalendar.before(currentDate)) {
+                            dateRequirementsTextView.setText("End Date Must Be Today or Later.");
+                            dateRequirementsTextView.setVisibility(View.VISIBLE);
+                            eventEndDateTextView.setVisibility(View.GONE);
+                            eventEndTimeTextView.setVisibility(View.GONE);
+                        } else if (endDateCalendar.before(startDateCalendar)) {
+                            eventEndDateTextView.setVisibility(View.GONE);
+                            eventEndTimeTextView.setVisibility(View.GONE);
+                            dateRequirementsTextView.setText("End Date Must Be On or After Start Date.");
+                            dateRequirementsTextView.setVisibility(View.VISIBLE);
+                        } else {
+                            String selectedDate = String.format(Locale.US, "%d/%d/%d", selectedMonth + 1, selectedDay, selectedYear);
+                            eventEndDateTextView.setText(selectedDate);
+                            eventEndDateTextView.setVisibility(View.VISIBLE);
+                            dateRequirementsTextView.setVisibility(View.GONE);
+
+                            Date newEndDate = endDateCalendar.getTime();
+
+                            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                            int minute = calendar.get(Calendar.MINUTE);
+                            TimePickerDialog timePickerDialog = new TimePickerDialog(com.example.fusion0.ViewEventActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                                @Override
+                                public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
+                                    endDateCalendar.set(Calendar.HOUR_OF_DAY, selectedHour);
+                                    endDateCalendar.set(Calendar.MINUTE, selectedMinute);
+
+                                    if (endDateCalendar.before(startDateCalendar)) {
+                                        dateRequirementsTextView.setText("End Time Must Be After Start Time.");
+                                        dateRequirementsTextView.setVisibility(View.VISIBLE);
+                                        eventEndTimeTextView.setVisibility(View.GONE);
+                                    } else {
+                                        String selectedTime = String.format(Locale.US, "%02d:%02d", selectedHour, selectedMinute);
+                                        eventEndTimeTextView.setText(selectedTime);
+                                        eventEndTimeTextView.setVisibility(View.VISIBLE);
+                                        dateRequirementsTextView.setVisibility(View.GONE);
+                                        endDate = newEndDate;
+                                    }
+                                }
+                            }, hour, minute, true);
+                            timePickerDialog.show();
+                        }
+                    }
+                }, year, month, day);
+                dialog.show();
+            }
+        });
+
 
 
         joinButton.setOnClickListener(view -> {
@@ -506,26 +687,156 @@ public class ViewEventActivity extends AppCompatActivity {
         eventCapacityEditText.setText(event.getCapacity());
     }
 
+    private void editFacility(OrganizerInfo organizer){
+        eventFacility.setVisibility(View.VISIBLE);
+        eventFacilityTextView.setVisibility(View.GONE);
 
-    private void editImage() {
+        ArrayList<String> facilityNames = new ArrayList<>();
+
+        // Add existing facilities to the facilityNames list
+        if (organizer.getFacilities() != null) {
+            ArrayList<FacilitiesInfo> facilities = organizer.getFacilities();
+            for (FacilitiesInfo facility : facilities) {
+                if (facility != null) {
+                    facilityNames.add(facility.getFacilityName());
+                } else {
+                    Log.e(TAG, "Found a null facility in the list.");
+                }
+            }
+        }
+
+        // Add the "Add Facility" option at the end
+        facilityNames.add("Add Facility");
+
+        // Create the ArrayAdapter for the spinner
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, facilityNames);
+
+        // Set drop-down view resource
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Set the adapter to the spinner
+        eventFacility.setAdapter(adapter);
+
+        // Set the item selection listener for the spinner
+        eventFacility.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedFacility = parent.getItemAtPosition(position).toString();
+
+                // Check if "Add Facility" is selected
+                if (selectedFacility.equals("Add Facility")) {
+                    addFacility(facilityNames, adapter); // Pass the adapter so we can update it
+                } else {
+                    // If the selected facility exists, proceed with fetching it
+                    String facilityID = organizer.getFacilityIdByName(selectedFacility);
+                    EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
+                        @Override
+                        public void onSuccess(FacilitiesInfo existingFacility) {
+                            address = existingFacility.getAddress();
+                            facility = existingFacility.getFacilityName();
+                            newLongitude = existingFacility.getLongitude();
+                            newLatitude = existingFacility.getLatitude();
+                        }
+
+                        @Override
+                        public void onFailure(String error) {
+                            Log.e(TAG, "Error fetching facility: " + error);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Handle nothing selected case if necessary
+            }
+        });
+    }
+
+    private void addFacility(ArrayList<String> facilityNames, ArrayAdapter<String> adapter) {
+        autocompletePlaceFragment.setVisibility(View.VISIBLE);
+        addFacilityText.setVisibility(View.VISIBLE);
+
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
+        }
+
+        // Initialize the AutocompleteSupportFragment
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        // Specify the types of place data to return
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.FORMATTED_ADDRESS, Place.Field.LAT_LNG));
+
+        // Set up the PlaceSelectionListener
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+                address = place.getFormattedAddress();
+                facility = place.getDisplayName();
+
+                LatLng latLng = place.getLatLng();
+                if (latLng != null) {
+                    newLatitude = latLng.latitude;
+                    newLongitude = latLng.longitude;
+                }
+
+                // Check if the facility name already exists in the list of facility names
+                if (facilityNames.contains(facility)) {
+                    Log.i(TAG, "Facility already exists: " + facility);
+                    // Optionally show a message to the user
+                    Toast.makeText(getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Create new facility and proceed
+                    newFacility = new FacilitiesInfo(address, facility, deviceID, newLatitude, newLongitude);
+
+                    // Add the new facility name to the facilityNames list
+                    facilityNames.add(facility);
+
+                    // Notify the adapter that the data has changed
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onError(@NonNull Status status) {
+                Log.i(TAG, "An error occurred: " + status);
+            }
+        });
+    }
+
+    private void uploadNewPoster(){
+        Button uploadImageButton = findViewById(R.id.upload_image_button);
+        imagePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri imageUri = result.getData().getData();
+                        eventPosterImageView.setVisibility(View.VISIBLE);
+                        eventPosterImageView.setImageURI(imageUri);
+
+                        StorageReference imageRef = storageRef.child("event_posters/" + UUID.randomUUID().toString() + ".jpg");
+
+                        imageRef.putFile(imageUri)
+                                .addOnSuccessListener(taskSnapshot -> {
+                                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                        newEventPoster = uri.toString();
+                                    }).addOnFailureListener(e -> {
+                                        Log.e(TAG, "Error getting download URL", e);
+                                    });
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e(TAG, "Upload failed", e);
+                                });
+                    }
+                }
+        );
+
         uploadImageButton.setOnClickListener(v ->{
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
             imagePickerLauncher.launch(intent);
         });
-    }
-
-
-    private void editStartDate(){
-
-    }
-    private void editEndDate(){
-
-    }
-    private void editFacility(){
-
-    }
-
-
-
+    };
 }

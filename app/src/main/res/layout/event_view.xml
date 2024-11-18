@@ -192,7 +192,27 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:visibility="gone"/>
+
             </LinearLayout>
+            <TextView
+                android:id="@+id/add_facility_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Add Facility:"
+                android:textColor="@color/textColor"
+                android:textSize="17sp"
+                android:fontFamily="@font/raleway_semibold"
+                android:layout_marginBottom="2dp"
+                android:visibility="gone">
+            </TextView>
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/autocomplete_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                android:visibility="gone"
+                />
 
             <View
                 android:layout_width="match_parent"
@@ -209,7 +229,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Upload New Poster:"
+                    android:text="Poster:"
                     android:textColor="@color/textColor"
                     android:textSize="17sp"
                     android:fontFamily="@font/raleway_semibold"
@@ -254,11 +274,19 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Select Date:"
+                    android:text="Date:"
                     android:textColor="@color/textColor"
                     android:textSize="17sp"
                     android:fontFamily="@font/raleway_semibold"
                     android:gravity="center_vertical"/>
+                <TextView
+                    android:id="@+id/date_requirements_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/darker_gray"
+                    android:visibility="gone">
+                </TextView>
 
                 <Space
                     android:layout_width="8dp"
@@ -296,8 +324,7 @@
                             android:textColor="@color/figmaBlue"
                             android:textFontWeight="600"
                             android:textSize="15sp"
-                            android:layout_marginTop="8dp"
-                            android:visibility="gone" />
+                            android:layout_marginTop="8dp" />
 
                         <Button
                             android:id="@+id/start_date_button"
@@ -307,7 +334,8 @@
                             android:backgroundTint="@color/textColor"
                             android:layout_marginTop="8dp"
                             app:cornerRadius="5dp"
-                            android:textSize="10sp" />
+                            android:textSize="10sp"
+                            android:visibility="gone"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -335,8 +363,7 @@
                             android:textColor="@color/figmaBlue"
                             android:textFontWeight="600"
                             android:textSize="15sp"
-                            android:layout_marginTop="8dp"
-                            android:visibility="gone" />
+                            android:layout_marginTop="8dp" />
 
                         <Button
                             android:id="@+id/end_date_button"
@@ -347,6 +374,7 @@
                             android:layout_marginTop="8dp"
                             app:cornerRadius="5dp"
                             android:textSize="10sp"
+                            android:visibility="gone"
                             />
                     </LinearLayout>
                 </LinearLayout>
@@ -399,6 +427,15 @@
                     android:visibility="gone"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"/>
+                <Button
+                    android:id="@+id/lottery_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Start Lottery"
+                    android:textColor="@color/white"
+                    android:backgroundTint="@color/figmaBlue"
+                    app:cornerRadius="5dp">
+                </Button>
             </LinearLayout>
 
             <View

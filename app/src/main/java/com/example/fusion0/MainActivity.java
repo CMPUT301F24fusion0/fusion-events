@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageButton profileButton;
     private ImageButton addButton;
+    private ImageButton homeButton;
     private ImageButton cameraButton;
     private ImageButton favouriteButton;
 
