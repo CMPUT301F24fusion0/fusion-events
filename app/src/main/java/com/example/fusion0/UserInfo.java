@@ -44,7 +44,7 @@ public class UserInfo {
         this.firebase = new UserFirestore();
         this.edit = false;
         this.deviceID = dID;
-        this.events = events;
+        this.events = new ArrayList<>();
     }
 
     /**
@@ -62,7 +62,7 @@ public class UserInfo {
         this.firebase = new UserFirestore();
         this.edit = false;
         this.deviceID = dID;
-        this.events = events;
+        this.events = new ArrayList<>();
     }
 
     /**
@@ -290,5 +290,15 @@ public class UserInfo {
      */
     public void editMode(boolean changeEdit) {
         this.edit = changeEdit;
+    }
+
+    public ArrayList<EventInfo> removeEventFromEventList(EventInfo event, ArrayList<EventInfo> eventList){
+        ArrayList<EventInfo> newEventsList = new ArrayList<>();
+        for (EventInfo currentEvent : eventList) {
+            if (!currentEvent.equals(event)) {
+                newEventsList.add(currentEvent);
+            }
+        }
+        return newEventsList;
     }
 }

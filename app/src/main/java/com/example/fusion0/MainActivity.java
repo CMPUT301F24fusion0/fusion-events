@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageButton profileButton;
     private ImageButton addButton;
+    private ImageButton homeButton;
     private ImageButton cameraButton;
     private ImageButton favouriteButton;
 
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize Firebase for the app
         FirebaseApp.initializeApp(this);
+        System.out.println(deviceId);
 
         // Initialize Notification Channel
         AppNotifications.createChannel(this);
@@ -236,6 +238,14 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, ProfileActivity.class);
             startActivity(intent);
         });
+        // Home button in the toolbar
+        homeButton = findViewById(R.id.toolbar_home);
+        homeButton.setOnClickListener(view -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        });
+
+
     }
 
     /**
