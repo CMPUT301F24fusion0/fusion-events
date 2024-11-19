@@ -16,6 +16,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
+/**
+ * @author Simon Haile
+ * This activity allows organizers users to view and select their created events, joined events and
+ * facilities.
+ */
 public class FavouriteActivity extends AppCompatActivity {
     private static final String TAG = "FavouriteActivity";
     private Button joinedEventsButton;
@@ -39,7 +44,17 @@ public class FavouriteActivity extends AppCompatActivity {
 
 
 
-
+    /**
+     * Called when the activity is first created. This method initializes the activity's user
+     * interface elements, sets up the button click listeners, and handles the logic for
+     * displaying and interacting with different sections of the user's favourites, including
+     * joined events, created events, and facilities.
+     * The method also interacts with Firebase to retrieve the user's data, events, and facilities,
+     * and provides the user with the option to view, create, or manage events and facilities.
+     *
+     * @param savedInstanceState This Bundle contains the data it most recently supplied in
+     *      * onSaveInstanceState(Bundle), otherwise null.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,6 +121,7 @@ public class FavouriteActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(FavouriteActivity.this, JoinedEventActivity.class);
                 intent.putExtra("eventID", eventID);
+                intent.putExtra("deviceID", deviceID);
                 startActivity(intent);
             });
         });

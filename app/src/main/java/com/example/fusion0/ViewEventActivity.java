@@ -55,6 +55,12 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
+
+/**
+ * @author Simon Haile
+ * This activity allows organizers to view the selected joined event and users that have scanned
+ * a qr code to view the scanned event
+ */
 public class ViewEventActivity extends AppCompatActivity {
 
     private String deviceID;
@@ -72,6 +78,8 @@ public class ViewEventActivity extends AppCompatActivity {
     private LinearLayout toolbar;
     private Calendar startDateCalendar;
     private androidx.fragment.app.FragmentContainerView autocompletePlaceFragment;
+    private Location userLocation;
+
 
 
 
@@ -90,6 +98,15 @@ public class ViewEventActivity extends AppCompatActivity {
     private StorageReference storageRef;
 
 
+    /**
+     * @author Simon Haile
+     * Initializes the activity by setting up the user interface, loading event details,
+     * fetching user and event information, and handling user interactions. This method
+     * is called when the activity is created.
+     *
+     * @param savedInstanceState A Bundle object containing the activity's previously saved state,
+     *  or null if the activity is being created for the first time.
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -594,15 +611,17 @@ public class ViewEventActivity extends AppCompatActivity {
         });
 
 
-
         joinButton.setOnClickListener(view -> {
             GeoLocation geoLocation = new GeoLocation(this, this, event.getLatitude(), event.getLongitude(), event.getRadius());
             Log.e("ViewEventActivity", "Radius: " + event.getRadius());
-            if (!geoLocation.isLocationPermissionGranted()) {
-                geoLocation.requestLocationPermission();
-            }
-            else {
-                proceedWithJoin(geoLocation);
+            if (event.getGeolocation()) {
+                if (!geoLocation.isLocationPermissionGranted()) {
+                    geoLocation.requestLocationPermission();
+                } else {
+                    proceedWithJoin(geoLocation);
+                }
+            }else{
+                addUserToWaitingList();
             }
         });
 
@@ -631,23 +650,34 @@ public class ViewEventActivity extends AppCompatActivity {
 
     }
 
-
+    /**
+     * @author Derin Karas
+     *
+     *
+     * @param geoLocation
+     */
     private void proceedWithJoin(GeoLocation geoLocation) {
-        Location userLocation = geoLocation.getLocation();
+        userLocation = geoLocation.getLocation();
         if (userLocation == null) {
             Toast.makeText(this, "Retrieving your location...", Toast.LENGTH_SHORT).show();
             return;
         }
 
         //Once the location is retrieved, proceed with registration check
-        validateDistanceAndJoin(geoLocation, userLocation);
+        validateDistanceAndJoin(geoLocation);
     }
 
 
-    private void validateDistanceAndJoin(GeoLocation geoLocation, Location userLocation) {
+    /**
+     * @author Derin Karas
+     *
+     *
+     * @param geoLocation
+     */
+    private void validateDistanceAndJoin(GeoLocation geoLocation) {
         //geoLocation.setUserLocation(userLocation.getLatitude(), userLocation.getLongitude());
         if (geoLocation.canRegister()) {
-            addUserToWaitingList(userLocation);
+            addUserToWaitingList();
         }
         else {
             geoLocation.showMapDialog(); //Optionally show the user a map with the event location and radius
@@ -655,38 +685,80 @@ public class ViewEventActivity extends AppCompatActivity {
         }
     }
 
-    private void addUserToWaitingList(Location userLocation) {
+
+    /**
+     * @author Simon Haile, Derin Karas
+     * Adds the joined event to the user attribute 'events' and adds user to the event waitinglist
+     *
+     */
+    private void addUserToWaitingList() {
         ArrayList<EventInfo> eventsList = user.getEvents();
         eventsList.add(event);
         user.setEvents(eventsList);
         UserFirestore.editUserEvents(user);
 
-        ArrayList<String> currentEntrants = event.getWaitinglist();
-        String newEntrant = "[" + deviceID + ", " + userLocation.getLatitude() + ", " + userLocation.getLongitude() + "]";
-        currentEntrants.add(newEntrant);
-        event.setWaitinglist(currentEntrants);
-        EventFirebase.editEvent(event); // Assuming editEvent updates the event in Firebase
-        Toast.makeText(this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
+        if (event.getGeolocation()){
+            ArrayList<String> currentEntrants = event.getWaitinglist();
+            String newEntrant = "[" + deviceID + ", " + userLocation.getLatitude() + ", " + userLocation.getLongitude() + "]";
+            currentEntrants.add(newEntrant);
+            event.setWaitinglist(currentEntrants);
+            EventFirebase.editEvent(event);
+            Toast.makeText(this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
+        }else {
+            ArrayList<String> currentEntrants = event.getWaitinglist();
+            currentEntrants.add(deviceID);
+            event.setWaitinglist(currentEntrants);
+            EventFirebase.editEvent(event);
+            Toast.makeText(this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
+        }
     }
 
-
+    /**
+     * @author Simon Haile
+     * Displays an editable text field for the event name by hiding the
+     * event name text view and showing the corresponding EditText.
+     * Sets the EditText's content to the current event name.
+     */
     private void editEventName(){
         eventNameTextView.setVisibility(View.GONE);
         eventNameEditText.setVisibility(View.VISIBLE);
         eventNameEditText.setText(event.getEventName());
     }
+
+    /**
+     * @author Simon Haile
+     * Displays an editable text field for the description by hiding the
+     * description text view and showing the corresponding EditText.
+     * Sets the EditText's content to the current description.
+     */
     private void editDescription(){
         eventDescriptionTextView.setVisibility(View.GONE);
         eventDescriptionEditText.setVisibility(View.VISIBLE);
         eventDescriptionEditText.setText(event.getDescription());
 
     }
+
+    /**
+     * @author Simon Haile
+     * Displays an editable text field for the capacity by hiding the
+     * capacity text view and showing the corresponding EditText.
+     * Sets the EditText's content to the current capacity.
+     */
     private void editCapacity(){
         eventCapacityTextView.setVisibility(View.GONE);
         eventCapacityEditText.setVisibility(View.VISIBLE);
         eventCapacityEditText.setText(event.getCapacity());
     }
 
+    /**
+     * @author Simon Haile
+     * Displays a spinner to allow the event organizer to choose or add a facility for the event.
+     * The spinner is populated with existing facilities, and the "Add Facility" option is added at the end.
+     * If a facility is selected, its details are fetched from Firebase. If "Add Facility" is selected,
+     * the user can add a new facility using a place autocomplete fragment.
+     *
+     * @param organizer The organizer's information used to retrieve their facilities.
+     */
     private void editFacility(OrganizerInfo organizer){
         eventFacility.setVisibility(View.VISIBLE);
         eventFacilityTextView.setVisibility(View.GONE);
@@ -754,6 +826,17 @@ public class ViewEventActivity extends AppCompatActivity {
         });
     }
 
+
+    /**
+     * @author Simon Haile
+     * Allows the user to add a new facility to the list by using a place autocomplete fragment.
+     * The fragment allows the user to select a place, which is then added as a new facility.
+     * The facility details (address, name, and coordinates) are captured and added to the facility list.
+     * If the facility already exists in the list, a message is displayed to the user.
+     *
+     * @param facilityNames The list of existing facility names.
+     * @param adapter The adapter used for the facility spinner to update the displayed options.
+     */
     private void addFacility(ArrayList<String> facilityNames, ArrayAdapter<String> adapter) {
         autocompletePlaceFragment.setVisibility(View.VISIBLE);
         addFacilityText.setVisibility(View.VISIBLE);
@@ -806,6 +889,18 @@ public class ViewEventActivity extends AppCompatActivity {
         });
     }
 
+
+    /**
+     * @author Simon Haile
+     * Initializes the image upload process by setting up an image picker and handling the image
+     * upload to Firebase Storage.
+     * This method sets up an `ActivityResultLauncher` to handle the image selection from the device.
+     * When an image is selected, it is displayed in an `ImageView` (`eventPosterImageView`).
+     * The image is then uploaded to Firebase Storage under the "event_posters"
+     * directory, with a unique file name generated using `UUID`. Once the upload is successful,
+     * the download URL for the uploaded image
+     * is stored for later use.
+     */
     private void uploadNewPoster(){
         Button uploadImageButton = findViewById(R.id.upload_image_button);
         imagePickerLauncher = registerForActivityResult(
