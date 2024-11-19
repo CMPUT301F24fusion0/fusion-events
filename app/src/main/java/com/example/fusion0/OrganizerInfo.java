@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
+/**
+ * @author Simon Haile
+ * This class contains the information for organizers.
+ */
 public class OrganizerInfo {
     ArrayList<EventInfo> events;
     ArrayList<FacilitiesInfo>  facilities;
@@ -93,6 +96,11 @@ public class OrganizerInfo {
         this.deviceId = deviceId;
     }
 
+    /**
+     * Returns the facility id or null if facility id not found
+     * @param facilityName the facility name
+     * @return facility id if found or null if facility not found
+     */
     public String getFacilityIdByName(String facilityName) {
         for (FacilitiesInfo facility : facilities) {
             if (facility.getFacilityName().equals(facilityName)) {
@@ -102,6 +110,10 @@ public class OrganizerInfo {
         return null; // Return null if no match is found
     }
 
+    /**
+     * Returns an array of the event names
+     * @return eventsName An array of event names
+     */
     public ArrayList<String> getEventsNames() {
         ArrayList<String> eventsName = new ArrayList<>();
         if (events != null) {
@@ -112,6 +124,10 @@ public class OrganizerInfo {
         return eventsName;
     }
 
+    /**
+     * Returns an array of facilites name
+     * @return facilitesName an array of facilites name
+     */
     public ArrayList<String> getFacilitiesNames() {
         ArrayList<String> facilitiesName = new ArrayList<>();
         if (facilities != null) {

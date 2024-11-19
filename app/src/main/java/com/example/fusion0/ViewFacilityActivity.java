@@ -18,7 +18,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-
+/**
+ * @author Simon Haile
+ * This activity allows organizers to view their respective facilities and  edit the facility information
+ */
 public class ViewFacilityActivity extends AppCompatActivity {
 
     private String deviceID;
@@ -30,6 +33,15 @@ public class ViewFacilityActivity extends AppCompatActivity {
     private ImageButton backButton;
     private Button editButton, saveButton, deleteButton, cancelButton;
 
+    /**
+     * Called when the activity is first created. This method sets up the user interface
+     * and handles the logic for displaying, editing, and deleting facility details.
+     * It initializes UI components, retrieves facility data from Firebase, and manages
+     * user interaction for viewing and modifying the facility information.
+     *
+     * @param savedInstanceState This Bundle contains the data it most recently supplied in
+     * onSaveInstanceState(Bundle), otherwise null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

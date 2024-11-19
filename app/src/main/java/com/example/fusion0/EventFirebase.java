@@ -7,6 +7,7 @@ import com.google.zxing.WriterException;
 import java.util.HashMap;
 
 /**
+ * @author Simon Haile
  * This class provides methods for interacting with Firebase Firestore to manage event-related data.
  * It includes methods to add, update, delete, and retrieve data for organizers, facilities, and events.
  *
@@ -27,6 +28,7 @@ public class EventFirebase {
     }
 
     /**
+     * @author Simon Haile
      * Callback interface for handling results related to organizer data retrieval.
      */
     public interface OrganizerCallback {
@@ -35,6 +37,7 @@ public class EventFirebase {
     }
 
     /**
+     * @author Simon Haile
      * Callback interface for handling results related to facility data retrieval.
      */
     public interface FacilityCallback {
@@ -43,6 +46,7 @@ public class EventFirebase {
     }
 
     /**
+     * @author Simon Haile
      * Callback interface for handling results related to event data retrieval.
      */
     public interface EventCallback {
@@ -51,6 +55,7 @@ public class EventFirebase {
     }
 
     /**
+     * @author Simon Haile
      * Adds a new organizer to Firebase Firestore.
      *
      * @param organizerInfo The organizer's information to be added
@@ -68,6 +73,7 @@ public class EventFirebase {
     }
 
     /**
+     * @author Simon Haile
      * Edits an existing organizer's data in Firebase Firestore.
      *
      * @param organizer The organizer with updated data
@@ -84,6 +90,7 @@ public class EventFirebase {
     }
 
     /**
+     * @author Simon Haile
      * Retrieves an organizer's information based on their device ID.
      *
      * @param deviceId The device ID of the organizer to be retrieved
@@ -106,6 +113,7 @@ public class EventFirebase {
     }
 
     /**
+     * @author Simon Haile
      * Deletes an organizer from Firebase Firestore based on their device ID.
      *
      * @param deviceId The device ID of the organizer to be deleted
@@ -119,6 +127,7 @@ public class EventFirebase {
     }
 
     /**
+     * @author Simon Haile
      * Adds a new facility to Firebase Firestore.
      *
      * @param facilitiesInfo The facility's information to be added
@@ -136,6 +145,7 @@ public class EventFirebase {
     }
 
     /**
+     * @author Simon Haile
      * Edits an existing facility's data in Firebase Firestore.
      *
      * @param facility The facility with updated data
@@ -152,6 +162,7 @@ public class EventFirebase {
     }
 
     /**
+     * @author Simon Haile
      * Retrieves facility information based on its ID.
      *
      * @param facilityID The ID of the facility to be retrieved
@@ -174,6 +185,7 @@ public class EventFirebase {
     }
 
     /**
+     * @author Simon Haile
      * Deletes a facility from Firebase Firestore based on its ID.
      *
      * @param facilityID The ID of the facility to be deleted
@@ -187,6 +199,7 @@ public class EventFirebase {
     }
 
     /**
+     * @author Simon Haile
      * Adds a new event to Firebase Firestore.
      *
      * @param eventInfo The event's information to be added
@@ -202,6 +215,7 @@ public class EventFirebase {
     }
 
     /**
+     * @author Simon Haile
      * Retrieves an event's information based on its ID.
      *
      * @param eventID The ID of the event to be retrieved
@@ -232,6 +246,7 @@ public class EventFirebase {
     }
 
     /**
+     * @author Simon Haile
      * Edits an existing event's data in Firebase Firestore.
      *
      * @param event The event with updated data
@@ -248,6 +263,7 @@ public class EventFirebase {
     }
 
     /**
+     * @author Simon Haile
      * Deletes an event from Firebase Firestore based on its ID.
      *
      * @param eventID The ID of the event to be deleted
