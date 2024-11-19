@@ -208,6 +208,7 @@ public class EventActivity extends AppCompatActivity {
         });
     }
 
+
     /**
      * @author Simon Haile
      * Displays a spinner to allow the event organizer to choose or add a facility for the event.
@@ -217,6 +218,7 @@ public class EventActivity extends AppCompatActivity {
      *
      * @param organizer The organizer's information used to retrieve their facilities.
      */
+
     private void handleFacility(OrganizerInfo organizer) {
         ArrayList<String> facilityNames = new ArrayList<>();
 

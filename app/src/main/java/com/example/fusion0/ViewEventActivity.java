@@ -55,6 +55,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
+
 /**
  * @author Simon Haile
  * This activity allows organizers to view the selected joined event and users that have scanned
@@ -78,6 +79,7 @@ public class ViewEventActivity extends AppCompatActivity {
     private Calendar startDateCalendar;
     private androidx.fragment.app.FragmentContainerView autocompletePlaceFragment;
     private Location userLocation;
+
 
 
 
@@ -647,6 +649,7 @@ public class ViewEventActivity extends AppCompatActivity {
         });
 
     }
+
     /**
      * @author Derin Karas
      *
@@ -664,6 +667,7 @@ public class ViewEventActivity extends AppCompatActivity {
         validateDistanceAndJoin(geoLocation);
     }
 
+
     /**
      * @author Derin Karas
      *
@@ -680,6 +684,7 @@ public class ViewEventActivity extends AppCompatActivity {
             Toast.makeText(this, "You are outside the acceptable radius to join this event.", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     /**
      * @author Simon Haile, Derin Karas
@@ -719,6 +724,7 @@ public class ViewEventActivity extends AppCompatActivity {
         eventNameEditText.setVisibility(View.VISIBLE);
         eventNameEditText.setText(event.getEventName());
     }
+
     /**
      * @author Simon Haile
      * Displays an editable text field for the description by hiding the
@@ -731,6 +737,7 @@ public class ViewEventActivity extends AppCompatActivity {
         eventDescriptionEditText.setText(event.getDescription());
 
     }
+
     /**
      * @author Simon Haile
      * Displays an editable text field for the capacity by hiding the
@@ -742,6 +749,7 @@ public class ViewEventActivity extends AppCompatActivity {
         eventCapacityEditText.setVisibility(View.VISIBLE);
         eventCapacityEditText.setText(event.getCapacity());
     }
+
     /**
      * @author Simon Haile
      * Displays a spinner to allow the event organizer to choose or add a facility for the event.
@@ -880,6 +888,7 @@ public class ViewEventActivity extends AppCompatActivity {
             }
         });
     }
+
 
     /**
      * @author Simon Haile

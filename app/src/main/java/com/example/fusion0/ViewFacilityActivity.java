@@ -33,6 +33,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
     private ImageButton backButton;
     private Button editButton, saveButton, deleteButton, cancelButton;
 
+
     /**
      * Called when the activity is first created. This method sets up the user interface
      * and handles the logic for displaying, editing, and deleting facility details.

@@ -96,6 +96,7 @@ public class OrganizerInfo {
         this.deviceId = deviceId;
     }
 
+
     /**
      * Returns the facility id or null if facility id not found
      * @param facilityName the facility name
@@ -109,6 +110,7 @@ public class OrganizerInfo {
         }
         return null; // Return null if no match is found
     }
+
 
     /**
      * Returns an array of the event names

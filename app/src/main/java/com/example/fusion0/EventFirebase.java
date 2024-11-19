@@ -10,8 +10,6 @@ import java.util.HashMap;
  * @author Simon Haile
  * This class provides methods for interacting with Firebase Firestore to manage event-related data.
  * It includes methods to add, update, delete, and retrieve data for organizers, facilities, and events.
- *
- * Created by Simon Haile.
  */
 public class EventFirebase {
 
@@ -28,6 +26,7 @@ public class EventFirebase {
     }
 
     /**
+
      * @author Simon Haile
      * Callback interface for handling results related to organizer data retrieval.
      */

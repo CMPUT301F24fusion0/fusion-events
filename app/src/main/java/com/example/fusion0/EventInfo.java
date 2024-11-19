@@ -341,6 +341,7 @@ public class EventInfo {
         this.radius = radius;
     }
 
+
     /**
      * @author Simon Haile
      * Generates a QR code image from the given QR code string.
