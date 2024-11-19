@@ -30,10 +30,6 @@ public class ViewFacilityActivity extends AppCompatActivity {
     private ImageButton backButton;
     private Button editButton, saveButton, deleteButton, cancelButton;
 
-    /**
-     * Creates the activity for viewing only a single facility
-     * @param savedInstanceState saved instance state
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,13 +137,8 @@ public class ViewFacilityActivity extends AppCompatActivity {
                 new AlertDialog.Builder(ViewFacilityActivity.this)
                         .setTitle("Delete entry")
                         .setMessage("Are you sure you want to delete this entry?")
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                EventFirebase.deleteFacility(facility.getFacilityID());
-                            }
-                        })
+                        .setPositiveButton(android.R.string.yes, (dialog, which) -> EventFirebase.deleteFacility(facility.getFacilityID()))
                         .setNegativeButton(android.R.string.no, null)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
             }
         });

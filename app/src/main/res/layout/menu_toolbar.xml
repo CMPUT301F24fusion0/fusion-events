@@ -55,6 +55,8 @@
             android:src="@drawable/ic_grey_qrscanner" />
 
 
+
+
         <ImageButton
             android:id="@+id/toolbar_add"
             android:layout_width="wrap_content"

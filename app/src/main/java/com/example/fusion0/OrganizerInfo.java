@@ -93,11 +93,6 @@ public class OrganizerInfo {
         this.deviceId = deviceId;
     }
 
-    /**
-     * Gets facility object from its name
-     * @param facilityName facility name
-     * @return
-     */
     public String getFacilityIdByName(String facilityName) {
         for (FacilitiesInfo facility : facilities) {
             if (facility.getFacilityName().equals(facilityName)) {
@@ -107,10 +102,6 @@ public class OrganizerInfo {
         return null; // Return null if no match is found
     }
 
-    /**
-     * Gets the strings associated with the events for an organizer
-     * @return names of events
-     */
     public ArrayList<String> getEventsNames() {
         ArrayList<String> eventsName = new ArrayList<>();
         if (events != null) {
@@ -121,10 +112,6 @@ public class OrganizerInfo {
         return eventsName;
     }
 
-    /**
-     * Gets facility names for an organizer
-     * @return names of facilities for the organizer
-     */
     public ArrayList<String> getFacilitiesNames() {
         ArrayList<String> facilitiesName = new ArrayList<>();
         if (facilities != null) {
