@@ -3,6 +3,7 @@ package com.example.fusion0;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +23,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+/**
+ * @author Simon Haile
+ * This activity allows users to view the selected joined event and unjoin the event
+ */
 public class JoinedEventActivity extends AppCompatActivity {
 
     private ImageButton backButton;
@@ -34,8 +39,17 @@ public class JoinedEventActivity extends AppCompatActivity {
     private ImageView qrImage;
     private Button unjoinButton;
 
+    private UserInfo user;
     private EventInfo event;
+    private String DeviceID;
 
+    /**
+     * @author Simon Haile
+     * Called when the activity is created. This method sets up the user interface,
+     * retrieves the event ID from the intent, fetches the event details from Firestore,
+     * and binds the event data to the UI elements.
+     * @param savedInstanceState The saved instance state, or null if there is no previous state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,9 +74,17 @@ public class JoinedEventActivity extends AppCompatActivity {
 
         Intent intentReceived = getIntent();
         String eventID = intentReceived.getStringExtra("eventID");
+        String deviceID = intentReceived.getStringExtra("deviceID");
+
 
         if (eventID != null) {
             EventFirebase.findEvent(eventID, new EventFirebase.EventCallback() {
+                /**
+                 * Called when the event details are successfully retrieved from Firestore.
+                 *
+                 * @param eventInfo The object containing event details
+                 * @throws WriterException If an error occurs while generating the QR code image
+                 */
                 @Override
                 public void onSuccess(EventInfo eventInfo) throws WriterException {
                     if (eventInfo == null) {
@@ -98,7 +120,11 @@ public class JoinedEventActivity extends AppCompatActivity {
 
                     }
                 }
-
+                /**
+                 * Called when an error occurs while fetching event details.
+                 *
+                 * @param error The error message
+                 */
                 @Override
                 public void onFailure(String error) {
                     Log.e("JoinedEventActivity", "Error fetching event: " + error);
@@ -110,5 +136,33 @@ public class JoinedEventActivity extends AppCompatActivity {
             finish();
         }
 
+        unjoinButton.setOnClickListener(view ->{
+            ArrayList<String> newWaitingList = event.removeUserFromWaitingList(deviceID, event.getWaitinglist());
+            event.setWaitinglist(newWaitingList);
+
+            EventFirebase.editEvent(event);
+
+            UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+                @Override
+                public void onSuccess(UserInfo userInfo) {
+                    user = userInfo;
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    Log.e("JoinedEventActivity", "Error fetching user: " + error);
+                }
+            });
+
+            ArrayList<EventInfo> newEventsList = user.removeEventFromEventList(event, user.getEvents());
+            user.setEvents(newEventsList);
+            UserFirestore.editUserEvents(user);
+
+            EventFirebase.editEvent(event);
+            finish();
+            //remove user from event chosenlist if in, cancelled list if in
+        });
+
     }
+
 }
