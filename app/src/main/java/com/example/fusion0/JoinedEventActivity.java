@@ -18,15 +18,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.google.zxing.WriterException;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class JoinedEventActivity extends AppCompatActivity {
 
     private ImageButton backButton;
     private ScrollView scrollContainer;
-    private TextView eventName;
-    private TextView description;
-    private Spinner spinnerFacilities;
+    private TextView eventName, facility, description;
     private ImageView uploadedImageView;
     private TextView startDateText;
     private TextView endDateText;
@@ -45,7 +45,7 @@ public class JoinedEventActivity extends AppCompatActivity {
         scrollContainer = findViewById(R.id.scroll_container);
         eventName = findViewById(R.id.EventName);
         description = findViewById(R.id.description);
-        spinnerFacilities = findViewById(R.id.spinner_facilities);
+        facility = findViewById(R.id.facilityName);
         uploadedImageView = findViewById(R.id.uploaded_image_view);
         startDateText = findViewById(R.id.start_date_text);
         endDateText = findViewById(R.id.end_date_text);
@@ -73,9 +73,13 @@ public class JoinedEventActivity extends AppCompatActivity {
 
                         eventName.setText(event.getEventName());
                         description.setText(event.getDescription());
+                        facility.setText(event.getFacilityName());
                         capacity.setText(String.valueOf(event.getCapacity()));
-                        startDateText.setText(String.valueOf(event.getStartDate()));
-                        endDateText.setText(String.valueOf(event.getEndTime()));
+
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a", Locale.getDefault());
+
+                        startDateText.setText(dateFormat.format(event.getStartDate()));
+                        endDateText.setText(dateFormat.format(event.getEndDate()));
 
 
                         String eventPoster = event.getEventPoster();
