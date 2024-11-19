@@ -47,7 +47,10 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
-
+/**
+ * @author Simon Haile
+ * This activity allows users to create events
+ */
 public class EventActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private StorageReference storageRef;
@@ -81,6 +84,13 @@ public class EventActivity extends AppCompatActivity {
     private Boolean geolocation = false;
 
 
+    /**
+     * Initializes the activity when it is first created. This method sets up the user interface
+     * and prepares the necessary components for the event creation process. It handles view initialization,
+     * Firebase setup, and event handling methods for the user to create an event.
+     * @param savedInstanceState A Bundle object containing the activity's previously saved state,
+     * or null if the activity is being created for the first time.
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,6 +116,7 @@ public class EventActivity extends AppCompatActivity {
         geolocationTextView = findViewById(R.id.geolocation_text);
         geolocationSwitchCompact = findViewById(R.id.geolocation_switchcompat);
         radius = findViewById(R.id.radius);
+        radius.setText("0");
         radiusText = findViewById(R.id.radius_text);
 
 
@@ -121,11 +132,18 @@ public class EventActivity extends AppCompatActivity {
         EndDateButtonHandling();
 
         AddEvent();
-        ExitButtonHandling();
+
+        exitButton.setOnClickListener(v -> finish());
     }
 
 
-
+    /**
+     * @author Simon Haile
+     * Validates and retrieves the organizer associated with the current device ID.
+     * This method checks if an organizer already exists in the database based on the device ID.
+     * If the organizer is found, it is assigned to the `organizer` variable.
+     * If no organizer is found, a new `OrganizerInfo` object is created and added to the database.
+     */
     private void validateOrganizer() {
         EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
             @Override
@@ -145,7 +163,17 @@ public class EventActivity extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * @author Simon Haile
+     * Initializes the image upload process by setting up an image picker and handling the image
+     * upload to Firebase Storage.
+     * This method sets up an `ActivityResultLauncher` to handle the image selection from the device.
+     * When an image is selected, it is displayed in an `ImageView` (`eventPosterImageView`).
+     * The image is then uploaded to Firebase Storage under the "event_posters"
+     * directory, with a unique file name generated using `UUID`. Once the upload is successful,
+     * the download URL for the uploaded image
+     * is stored for later use.
+     */
     private void uploadPoster(){
         Button uploadImageButton = findViewById(R.id.upload_image_button);
         imagePickerLauncher = registerForActivityResult(
@@ -180,6 +208,15 @@ public class EventActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * @author Simon Haile
+     * Displays a spinner to allow the event organizer to choose or add a facility for the event.
+     * The spinner is populated with existing facilities, and the "Add Facility" option is added at the end.
+     * If a facility is selected, its details are fetched from Firebase. If "Add Facility" is selected,
+     * the user can add a new facility using a place autocomplete fragment.
+     *
+     * @param organizer The organizer's information used to retrieve their facilities.
+     */
     private void handleFacility(OrganizerInfo organizer) {
         ArrayList<String> facilityNames = new ArrayList<>();
 
@@ -245,6 +282,16 @@ public class EventActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * @author Simon Haile
+     * Allows the user to add a new facility to the list by using a place autocomplete fragment.
+     * The fragment allows the user to select a place, which is then added as a new facility.
+     * The facility details (address, name, and coordinates) are captured and added to the facility list.
+     * If the facility already exists in the list, a message is displayed to the user.
+     *
+     * @param facilityNames The list of existing facility names.
+     * @param adapter The adapter used for the facility spinner to update the displayed options.
+     */
     private void addFacility(ArrayList<String> facilityNames, ArrayAdapter<String> adapter) {
         autocompletePlaceFragment.setVisibility(View.VISIBLE);
         addFacilityText.setVisibility(View.VISIBLE);
@@ -301,7 +348,10 @@ public class EventActivity extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * @author Simon Haile
+     * Handles geolocation switch compact. Sets geolocation to true if switch compact is checked.
+     */
     private void geolocationHandling(){
         geolocationSwitchCompact.setOnCheckedChangeListener((buttonView, isChecked) -> {
             geolocation = isChecked;
@@ -311,10 +361,17 @@ public class EventActivity extends AppCompatActivity {
             } else {
                 radiusText.setVisibility(View.GONE);
                 radius.setVisibility(View.GONE);
+                radius.setText("0");
             }
         });
     }
 
+    /**
+     * @author Simon Haile
+     * Handles the user interaction with the Start Date button. This method sets up a date picker dialog for selecting
+     * the start date and time. It validates the selected date and time to ensure they are not in the past, and displays
+     * appropriate error messages when necessary.
+     */
     private void StartDateButtonHandling() {
         Button startDateButton = findViewById(R.id.start_date_button);
         TextView startDateTextView = findViewById(R.id.start_date_text);
@@ -375,6 +432,13 @@ public class EventActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * @author Simon Haile
+     * Handles the user interaction with the End Date button. This method sets up a date picker dialog for selecting
+     * the end date and time. It ensures that the end date is not earlier than the start date and that the selected
+     * end time is not before the start time.
+     */
     private void EndDateButtonHandling() {
         Button endDateButton = findViewById(R.id.end_date_button);
         TextView endDateTextView = findViewById(R.id.end_date_text);
@@ -453,17 +517,13 @@ public class EventActivity extends AppCompatActivity {
             }
         });
     }
-    private void setDateRequirements(String message, TextView textView, boolean hideOtherTextViews) {
-        dateRequirementsTextView.setText(message);
-        dateRequirementsTextView.setVisibility(View.VISIBLE);
-        textView.setVisibility(View.GONE);
-        if (hideOtherTextViews) {
-            startTimeTextView.setVisibility(View.GONE);
-            endTimeTextView.setVisibility(View.GONE);
-        }
-    }
 
-
+    /**
+     * @author Simon Haile
+     * Handles the addition of a new event. It validates the user input fields for event name, capacity, description,
+     * start time, end time, and other required fields. If all fields are valid, the event is created and added to the
+     * organizer's list of events and the facility's list of events. The event is also added to Firebase.
+     */
     private void AddEvent(){
         addButton.setOnClickListener(v -> {
             if (TextUtils.isEmpty(eventName.getText().toString())) {
@@ -552,13 +612,10 @@ public class EventActivity extends AppCompatActivity {
             facility.setEvents(facilityEventsList);
             EventFirebase.editFacility(facility);
 
+            Toast.makeText(EventActivity.this, "Event Added Successfully!", Toast.LENGTH_SHORT).show();
+
             Intent intent = new Intent(EventActivity.this, MainActivity.class);
             startActivity(intent);
         });
-    }
-
-    private void ExitButtonHandling() {
-
-        exitButton.setOnClickListener(v -> finish());
     }
 }

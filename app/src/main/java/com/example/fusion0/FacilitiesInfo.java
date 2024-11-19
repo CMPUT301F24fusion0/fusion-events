@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+/**
+ * @author Simon Haile
+ * This class contains the information for facilities.
+ */
 public class FacilitiesInfo {
     public String facilityID;
     public String address;
@@ -14,10 +18,24 @@ public class FacilitiesInfo {
     private Double latitude;
     private Double longitude;
 
+    /**
+     * Default constructor. Initializes the firebase instance and prepares
+     * an empty list of events. The facilityID is left unset.
+     */
     public FacilitiesInfo() {
         this.firebase = new EventFirebase();
     }
 
+    /**
+     * Constructs a new FacilitiesInfo object with specified address, facility name,
+     * owner, longitude, and latitude. A unique facility ID is generated automatically.
+     *
+     * @param address The address of the facility.
+     * @param facilityName The name of the facility.
+     * @param owner The owner of the facility.
+     * @param longitude The longitude coordinate of the facility's location.
+     * @param latitude The latitude coordinate of the facility's location.
+     */
     public FacilitiesInfo(String address, String facilityName, String owner, Double longitude, Double latitude) {
         this.address = address;
         this.facilityName = facilityName;
@@ -29,6 +47,12 @@ public class FacilitiesInfo {
         this.longitude = longitude;
     }
 
+    /**
+     * Returns a map representation of the facility's information. The map contains
+     * the facility's address, name, owner, and events.
+     *
+     * @return A hashmap containing the facility's data.
+     */
     public HashMap<String, Object> facility() {
         HashMap<String, Object> facility = new HashMap<>();
 
