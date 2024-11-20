@@ -13,7 +13,7 @@ import java.util.Objects;
 public class UserInfo {
     String firstName, lastName, email, phoneNumber, deviceID;
     ArrayList<String> notifications;
-    ArrayList<EventInfo> events;
+    ArrayList<String> events;
     UserFirestore firebase;
     Boolean edit;
 
@@ -35,7 +35,7 @@ public class UserInfo {
      * @param email email address
      * @param phoneNumber phone number
      */
-    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String phoneNumber, String dID, ArrayList<EventInfo> events) {
+    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String phoneNumber, String dID, ArrayList<String> events) {
         this.notifications = notifications;
         this.firstName = first;
         this.lastName = last;
@@ -54,7 +54,7 @@ public class UserInfo {
      * @param last last name
      * @param email email address
      */
-    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String dID, ArrayList<EventInfo> events) {
+    public UserInfo(ArrayList<String> notifications, String first, String last, String email, String dID, ArrayList<String> events) {
         this.notifications = notifications;
         this.firstName = first;
         this.lastName = last;
@@ -292,13 +292,8 @@ public class UserInfo {
         this.edit = changeEdit;
     }
 
-    public ArrayList<EventInfo> removeEventFromEventList(EventInfo event, ArrayList<EventInfo> eventList){
-        ArrayList<EventInfo> newEventsList = new ArrayList<>();
-        for (EventInfo currentEvent : eventList) {
-            if (!currentEvent.equals(event)) {
-                newEventsList.add(currentEvent);
-            }
-        }
-        return newEventsList;
+    public ArrayList<String> removeEventFromEventList(String eventID, ArrayList<String> eventList){
+        eventList.remove(eventID);
+        return eventList;
     }
 }

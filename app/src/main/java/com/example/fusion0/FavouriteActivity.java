@@ -116,8 +116,7 @@ public class FavouriteActivity extends AppCompatActivity {
             });
 
             joinedEventsList.setOnItemClickListener((parent, view1, position, id) -> {
-                EventInfo event = user.getEvents().get(position);
-                String eventID = event.getEventID();
+                String eventID = user.getEvents().get(position);
 
                 Intent intent = new Intent(FavouriteActivity.this, JoinedEventActivity.class);
                 intent.putExtra("eventID", eventID);

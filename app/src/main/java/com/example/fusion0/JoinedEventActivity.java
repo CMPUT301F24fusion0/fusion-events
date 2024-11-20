@@ -155,8 +155,8 @@ public class JoinedEventActivity extends AppCompatActivity {
             EventFirebase.editEvent(event);
 
 
-            ArrayList<EventInfo> userEvents =  user.getEvents();
-            ArrayList<EventInfo> newEventsList = user.removeEventFromEventList(event, userEvents);
+            ArrayList<String> userEvents =  user.getEvents();
+            ArrayList<String> newEventsList = user.removeEventFromEventList(event.getEventID(), userEvents);
             user.setEvents(newEventsList);
             UserFirestore.editUserEvents(user);
 

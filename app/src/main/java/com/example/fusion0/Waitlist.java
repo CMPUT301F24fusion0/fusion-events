@@ -11,6 +11,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -105,13 +106,13 @@ public class Waitlist {
                                 if (task.isSuccessful()) {
                                     DocumentSnapshot doc = task.getResult();
                                     if (doc.exists()) {
-                                        ArrayList<ArrayList<String>> waitList = (ArrayList<ArrayList<String>>) doc.get("waitinglist");
+                                        ArrayList<Map<String, String>> waitList = (ArrayList<Map<String, String>>) doc.get("waitinglist");
 
                                         if (waitList != null) {
                                             // If the winners are in the waiting list then their new status is chosen
-                                            for (ArrayList<String> user : waitList) {
-                                                if (winners_set.contains(user.get(0))) {
-                                                    user.set(3, "chosen");
+                                            for (Map<String, String> user : waitList) {
+                                                if (winners_set.contains(user.get("did"))) {
+                                                    user.put("status", "chosen");
                                                 }
                                             }
                                             // Update the waiting list
@@ -139,12 +140,12 @@ public class Waitlist {
                             if (task.isSuccessful()) {
                                 DocumentSnapshot doc = task.getResult();
                                 if (doc.exists()) {
-                                    ArrayList<ArrayList<String>> waitList = (ArrayList<ArrayList<String>>) doc.get("waitinglist");
+                                    ArrayList<Map<String, String>> waitList = (ArrayList<Map<String, String>>) doc.get("waitinglist");
 
                                     if (waitList != null) {
-                                        for (ArrayList<String> user : waitList) {
-                                            if (Objects.equals(user.get(0), userID)) {
-                                                user.set(3, "cancel");
+                                        for (Map<String, String> user : waitList) {
+                                            if (Objects.equals(user.get("did"), userID)) {
+                                                user.put("status", "cancel");
                                             }
                                         }
 
@@ -164,11 +165,14 @@ public class Waitlist {
      * @param entrantId entrant id
      * @param eventId event id
      */
-    public void addToUserWL(String entrantId, String eventId) {
+    public void addToUserWL(String entrantId, String eventId, UserInfo user) {
         db.collection("users").document(entrantId)
                 .update("events", FieldValue.arrayUnion(eventId))
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        ArrayList<String> userEvents = user.getEvents();
+                        userEvents.add(eventId);
+                        user.setEvents(userEvents);
                         Log.d("Good", "Task");
                     } else {
                         Log.e("Fail", "Fail to update");
@@ -182,11 +186,14 @@ public class Waitlist {
      * @param entrantId entrant id
      * @param eventId event id
      */
-    public void removeFromUserWL(String entrantId, String eventId) {
+    public void removeFromUserWL(String entrantId, String eventId, UserInfo user) {
         db.collection("users").document(entrantId)
                 .update("events", FieldValue.arrayRemove(eventId))
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        ArrayList<String> userEvents = user.getEvents();
+                        userEvents.remove(eventId);
+                        user.setEvents(userEvents);
                         Log.d("Good", "Task");
                     } else {
                         Log.e("Fail", "Fail to update");
@@ -217,11 +224,11 @@ public class Waitlist {
             if (task.isSuccessful()) {
                 DocumentSnapshot doc = task.getResult();
                 if (doc.exists()) {
-                    ArrayList<ArrayList<String>> all_waitingList = (ArrayList<ArrayList<String>>) doc.get("waitinglist");
+                    ArrayList<Map<String, String>> all_waitingList = (ArrayList<Map<String, String>>) doc.get("waitinglist");
 
                     if (all_waitingList != null) {
-                        for (ArrayList<String> user: all_waitingList) {
-                            all.add(user.get(0));
+                        for (Map<String, String> user: all_waitingList) {
+                            all.add(user.get("did"));
                         }
                     }
                 }
@@ -255,12 +262,12 @@ public class Waitlist {
             if (task.isSuccessful()) {
                 DocumentSnapshot doc = task.getResult();
                 if (doc.exists()) {
-                    ArrayList<ArrayList<String>> all_waitingList = (ArrayList<ArrayList<String>>) doc.get("waitinglist");
+                    ArrayList<Map<String, String>> all_waitingList = (ArrayList<Map<String, String>>) doc.get("waitinglist");
 
                     if (all_waitingList != null) {
-                        for (ArrayList<String> user: all_waitingList) {
-                            if (Objects.equals(user.get(3), "waiting")) {
-                                wait.add(user.get(0));
+                        for (Map<String, String> user: all_waitingList) {
+                            if (Objects.equals(user.get("status"), "waiting")) {
+                                wait.add(user.get("status"));
                             }
                         }
                     }
@@ -295,12 +302,12 @@ public class Waitlist {
             if (task.isSuccessful()) {
                 DocumentSnapshot doc = task.getResult();
                 if (doc.exists()) {
-                    ArrayList<ArrayList<String>> all_waitingList = (ArrayList<ArrayList<String>>) doc.get("waitinglist");
+                    ArrayList<Map<String, String>> all_waitingList = (ArrayList<Map<String, String>>) doc.get("waitinglist");
 
                     if (all_waitingList != null) {
-                        for (ArrayList<String> user: all_waitingList) {
-                            if (Objects.equals(user.get(3), "cancel")) {
-                                cancel.add(user.get(0));
+                        for (Map<String, String> user: all_waitingList) {
+                            if (Objects.equals(user.get("status"), "cancel")) {
+                                cancel.add(user.get("status"));
                             }
                         }
                     }
@@ -335,12 +342,12 @@ public class Waitlist {
             if (task.isSuccessful()) {
                 DocumentSnapshot doc = task.getResult();
                 if (doc.exists()) {
-                    ArrayList<ArrayList<String>> all_waitingList = (ArrayList<ArrayList<String>>) doc.get("waitinglist");
+                    ArrayList<Map<String, String>> all_waitingList = (ArrayList<Map<String, String>>) doc.get("waitinglist");
 
                     if (all_waitingList != null) {
-                        for (ArrayList<String> user: all_waitingList) {
-                            if (Objects.equals(user.get(3), "chosen")) {
-                                chosen.add(user.get(0));
+                        for (Map<String, String> user: all_waitingList) {
+                            if (Objects.equals(user.get("status"), "chosen")) {
+                                chosen.add(user.get("status"));
                             }
                         }
                     }

@@ -313,7 +313,7 @@ public class ViewEventActivity extends AppCompatActivity {
                                             event.setWaitinglist(newWaitingList);
 
                                             // Remove it on the user's collection
-                                            waitlist.removeFromUserWL(deviceID, eventID);
+                                            waitlist.removeFromUserWL(deviceID, eventID, user);
 
                                             EventFirebase.editEvent(event);
 
@@ -329,7 +329,7 @@ public class ViewEventActivity extends AppCompatActivity {
                                                 }
                                             });
 
-                                            ArrayList<EventInfo> newEventsList = user.removeEventFromEventList(event, user.getEvents());
+                                            ArrayList<String> newEventsList = user.removeEventFromEventList(event.getEventID(), user.getEvents());
                                             user.setEvents(newEventsList);
                                             UserFirestore.editUserEvents(user);
 
@@ -716,34 +716,30 @@ public class ViewEventActivity extends AppCompatActivity {
      *
      */
     private void addUserToWaitingList() {
-        ArrayList<EventInfo> eventsList = user.getEvents();
-        eventsList.add(event);
-//        user.setEvents(eventsList);
-//        UserFirestore.editUserEvents(user);
-        waitlist.addToUserWL(deviceID, event.getEventID());
+        ArrayList<String> eventsList = user.getEvents();
+        eventsList.add(event.getEventID());
+        waitlist.addToUserWL(deviceID, event.getEventID(), user);
 
         ArrayList<Map<String, String>> currentEntrants = event.getWaitinglist();
 
         if (event.getGeolocation()){
             Map<String, String> newEntrant = new HashMap<>();
-            newEntrant.put("did", deviceID);
+            newEntrant.put("Did", deviceID);
             newEntrant.put("Latitude", String.valueOf(userLocation.getLatitude()));
             newEntrant.put("Longitude", String.valueOf(userLocation.getLongitude()));
+            newEntrant.put("Status", "waiting");
             currentEntrants.add(newEntrant);
         } else {
             Map<String, String> newEntrant = new HashMap<>();
-            newEntrant.put("did", deviceID);
+            newEntrant.put("Did", deviceID);
             newEntrant.put("Latitude", null);
             newEntrant.put("Longitude", null);
+            newEntrant.put("Status", "waiting");
             currentEntrants.add(newEntrant);
             Log.d("Checkpoint", "Current Entrants: " + currentEntrants);
         }
 
         event.setWaitinglist(currentEntrants);
-
-        FirebaseFirestore.getInstance().collection("events")
-                .document("186fff16-8e6e-4c1c-af3f-9fbe2b750138")
-                        .update("waitlist", currentEntrants);
 
 
         EventFirebase.editEvent(event);
