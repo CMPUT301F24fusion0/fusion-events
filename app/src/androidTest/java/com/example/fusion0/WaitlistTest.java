@@ -1,12 +1,9 @@
 package com.example.fusion0;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.core.app.ApplicationProvider;
 
-import com.google.firebase.firestore.CollectionReference;
+import com.example.fusion0.helpers.Waitlist;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 import org.junit.After;
 import org.junit.Before;
@@ -14,8 +11,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.HashMap;
-import java.util.List;
 
 import static org.junit.Assert.*;
 

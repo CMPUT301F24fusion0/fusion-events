@@ -1,6 +1,8 @@
 package com.example.fusion0;
 
 import android.graphics.Bitmap;
+
+import com.example.fusion0.helpers.QRCode;
 import com.google.zxing.WriterException;
 import org.junit.Test;
 import static org.junit.Assert.*;

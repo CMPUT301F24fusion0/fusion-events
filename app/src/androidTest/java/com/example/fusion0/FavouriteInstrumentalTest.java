@@ -13,6 +13,8 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 
+import com.example.fusion0.activities.FavouriteActivity;
+
 /**
  * Instrumented test class for the FavouriteActivity.
  * This test class includes setup and teardown methods, and a test to verify the display
