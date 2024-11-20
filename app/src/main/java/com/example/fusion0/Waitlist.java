@@ -10,12 +10,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
 
 /**
- * @author : Ali Abouei, Sehej Brar
+ * @author Sehej Brar
  * The {@code Waitlist} class provides methods to manage and interact with the
  * waiting list for events. It allows adding and removing entrants to the waiting list,
  * selecting a specified number of attendees from the waiting list, and offering
@@ -47,32 +46,27 @@ public class Waitlist {
 
 
     /**
-     * @author : Ali Abouei
+     * @author Sehej Brar
      * Samples a specified number of attendees from the waiting list for a specific event.
      *
      * @param eventId     The unique identifier of the event.
      * @param numToSelect The number of attendees to be randomly selected from the waiting list.
-     *                    This method retrieves all entrants with a status of "waiting" and randomly selects
-     *                    a specified number of them. The selected entrants' statuses are updated to "chosen",
-     *                    and the accepted count in the event document is incremented.
      */
-    public void sampleAttendees(String eventId, int numToSelect) {
+    public void conductLottery(String eventId, int numToSelect) {
         // Fetch event details to get capacity and current acceptedCount
         eventsRef.document(eventId).get().addOnSuccessListener(eventDoc -> {
             if (eventDoc.exists()) {
-                long capacity;
-                long acceptedCount;
+                int capacity;
+                int acceptedCount;
 
                 // Check if capacity is stored as a number or a string, then convert
                 Object capacityField = eventDoc.get("capacity");
                 Object acceptedCountField = eventDoc.get("acceptedCount");
 
                 // Handle capacity conversion
-                if (capacityField instanceof Number) {
-                    capacity = ((Number) capacityField).longValue();
-                } else if (capacityField instanceof String) {
+                if (capacityField instanceof String) {
                     try {
-                        capacity = Long.parseLong((String) capacityField);
+                        capacity = Integer.parseInt((String) capacityField);
                     } catch (NumberFormatException e) {
                         System.out.println("Error: Capacity is not a valid number.");
                         return;
@@ -82,12 +76,9 @@ public class Waitlist {
                     return;
                 }
 
-                // Handle acceptedCount conversion
-                if (acceptedCountField instanceof Number) {
-                    acceptedCount = ((Number) acceptedCountField).longValue();
-                } else if (acceptedCountField instanceof String) {
+                if (acceptedCountField instanceof String) {
                     try {
-                        acceptedCount = Long.parseLong((String) acceptedCountField);
+                        acceptedCount = Integer.parseInt((String) acceptedCountField);
                     } catch (NumberFormatException e) {
                         System.out.println("Error: AcceptedCount is not a valid number.");
                         return;
@@ -98,88 +89,73 @@ public class Waitlist {
                 }
 
                 // Calculate the number of entrants we actually need
-                int spotsRemaining = (int) (capacity - acceptedCount);
+                int spotsRemaining = capacity - acceptedCount;
                 int finalNumToSelect = Math.min(numToSelect, spotsRemaining);
-                db.collection("events").document(eventId).collection("waitingList")
-                        .whereEqualTo("status", "waiting")
-                        .get()
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                List<DocumentSnapshot> entrants = task.getResult().getDocuments();
-                                Collections.shuffle(entrants);
 
-                                List<DocumentSnapshot> chosenEntrants = entrants.subList(0, Math.min(finalNumToSelect, entrants.size()));
+                getWait(eventId, wait -> {
+                    Collections.shuffle(wait);
 
-                                System.out.println("Chosen entrants count: " + chosenEntrants.size());
+                    // Hashset allows for faster lookup
+                    HashSet<String> winners_set = new HashSet<>(new ArrayList<>(wait.subList(0, finalNumToSelect)));
 
-                                if (chosenEntrants.isEmpty()) {
-                                    System.out.println("No entrants to select.");
-                                }
+                    DocumentReference documentReference = eventsRef.document(eventId);
 
-                                for (DocumentSnapshot entrant : chosenEntrants) {
-                                    entrant.getReference().update("status", "chosen")
-                                            .addOnSuccessListener(aVoid -> System.out.println("Successfully updated entrant status to 'chosen'"))
-                                            .addOnFailureListener(e -> System.out.println("Failed to update entrant status: " + e.getMessage()));
-
-                                }
-
-                                System.out.println(finalNumToSelect + " entrants chosen for event " + eventId);
-                            } else {
-                                System.out.println("Error sampling attendees: " + task.getException());
-                            }
-                        });
-
-            } else {
-                System.out.println("Event not found for event ID: " + eventId);
-            }
-        }).addOnFailureListener(e -> System.out.println("Error fetching event details: " + e.getMessage()));
-    }
-
-
-    /**
-     * @author : Ali Abouei
-     * Offers another chance to an entrant if a previously chosen entrant declines and more spots are needed.
-     *
-     * @param eventId The unique identifier of the event.
-     *                <p>
-     *                This method selects an entrant from the waiting list to replace a declined participant,
-     *                only if the accepted count is still below the event's capacity.
-     */
-    public void offerAnotherChance(String eventId) {
-        eventsRef.document(eventId).get().addOnSuccessListener(eventDoc -> {
-            if (eventDoc.exists()) {
-                Long capacity = eventDoc.getLong("capacity");
-                Long acceptedCount = eventDoc.getLong("acceptedCount");
-
-                if (capacity != null && acceptedCount != null && acceptedCount < capacity) {
-                    db.collection("events").document(eventId).collection("waitingList")
-                            .whereEqualTo("status", "waiting")
-                            .get()
+                    documentReference.get()
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
-                                    List<DocumentSnapshot> waitingEntrants = task.getResult().getDocuments();
+                                    DocumentSnapshot doc = task.getResult();
+                                    if (doc.exists()) {
+                                        ArrayList<ArrayList<String>> waitList = (ArrayList<ArrayList<String>>) doc.get("waitinglist");
 
-                                    if (!waitingEntrants.isEmpty()) {
-                                        DocumentSnapshot chosenEntrant = waitingEntrants.get(0);
-                                        chosenEntrant.getReference().update("status", "chosen");
-
-                                        // Increment acceptedCount in the event document
-                                        eventsRef.document(eventId).update("acceptedCount", acceptedCount + 1);
-                                        System.out.println("Another entrant selected for event " + eventId);
-                                    } else {
-                                        System.out.println("No waiting entrants left to offer another chance.");
+                                        if (waitList != null) {
+                                            // If the winners are in the waiting list then their new status is chosen
+                                            for (ArrayList<String> user : waitList) {
+                                                if (winners_set.contains(user.get(0))) {
+                                                    user.set(3, "chosen");
+                                                }
+                                            }
+                                            // Update the waiting list
+                                            documentReference.update("waitinglist", waitList);
+                                        }
                                     }
-                                } else {
-                                    System.out.println("Error querying waiting entrants: " + task.getException());
                                 }
                             });
-                } else {
-                    System.out.println("Event is already at capacity or does not require more participants.");
-                }
-            } else {
-                System.out.println("Event document not found for event ID: " + eventId);
+                });
             }
-        }).addOnFailureListener(e -> System.out.println("Error fetching event details: " + e.getMessage()));
+        });
+    }
+
+    /**
+     * Allows the organizer to cancel a user's invitation after the lottery has been conducted.
+     * @param eventID event's unique id
+     * @param userID user's unique id
+     */
+    public void organizerCancel(String eventID, String userID) {
+        getChosen(eventID, chosen -> {
+            DocumentReference documentReference = eventsRef.document(eventID);
+            if (!chosen.isEmpty()) {
+                documentReference.get()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot doc = task.getResult();
+                                if (doc.exists()) {
+                                    ArrayList<ArrayList<String>> waitList = (ArrayList<ArrayList<String>>) doc.get("waitinglist");
+
+                                    if (waitList != null) {
+                                        for (ArrayList<String> user : waitList) {
+                                            if (Objects.equals(user.get(0), userID)) {
+                                                user.set(3, "cancel");
+                                            }
+                                        }
+
+                                        documentReference.update("waitinglist", waitList);
+
+                                    }
+                                }
+                            }
+                        });
+            }
+        });
     }
 
     /**
@@ -250,6 +226,46 @@ public class Waitlist {
                     }
                 }
                 allCB.allDid(all);
+            } else {
+                Log.e("Error", "Error");
+            }
+        });
+    }
+
+    /**
+     * Interface for all waitlist entrants
+     * @author Sehej Brar
+     */
+    public interface WaitingCB {
+        void waitDid(ArrayList<String> wait);
+    }
+
+    /**
+     * Gets all those on waitlist
+     * @author Sehej Brar
+     * @param eventId event id
+     * @param waitingCB a callback for entrants on waitlist that are waiting
+     */
+    public void getWait(String eventId, WaitingCB waitingCB) {
+        ArrayList<String> wait = new ArrayList<>();
+        DocumentReference waitingListDoc = db.collection("events")
+                .document(eventId);
+
+        waitingListDoc.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot doc = task.getResult();
+                if (doc.exists()) {
+                    ArrayList<ArrayList<String>> all_waitingList = (ArrayList<ArrayList<String>>) doc.get("waitinglist");
+
+                    if (all_waitingList != null) {
+                        for (ArrayList<String> user: all_waitingList) {
+                            if (Objects.equals(user.get(3), "waiting")) {
+                                wait.add(user.get(0));
+                            }
+                        }
+                    }
+                }
+                waitingCB.waitDid(wait);
             } else {
                 Log.e("Error", "Error");
             }

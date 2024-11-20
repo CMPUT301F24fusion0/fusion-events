@@ -207,6 +207,7 @@ public class ViewEventActivity extends AppCompatActivity {
                         facility = event.getFacilityName();
 
                         newEventPoster = event.getEventPoster();
+
                         if (newEventPoster != null && !newEventPoster.isEmpty()) {
                             Glide.with(ViewEventActivity.this)
                                     .load(newEventPoster)
@@ -215,6 +216,7 @@ public class ViewEventActivity extends AppCompatActivity {
                         }
 
                         String qrcode = event.getQrCode();
+
                         if (qrcode != null && !qrcode.isEmpty()) {
                             Bitmap qrBitmap = event.generateQRCodeImage(500, 500, qrcode);
                             qrImageView.setImageBitmap(qrBitmap);
@@ -237,13 +239,14 @@ public class ViewEventActivity extends AppCompatActivity {
 
                             isOwner = true;
 
+                            int lotteryCapacity = 10;
+
                            lotteryButton.setOnClickListener(new View.OnClickListener() {
                                @Override
                                public void onClick(View view) {
-
+                                   waitlist.conductLottery(eventID, lotteryCapacity);
                                }
                            });
-
 
                         } else {
                             editButton.setVisibility(View.GONE);
@@ -256,6 +259,29 @@ public class ViewEventActivity extends AppCompatActivity {
 
                             if (currentEntrants.size() < capacity) {
                                 joinButton.setVisibility(View.VISIBLE);
+                                waitinglistButton.setOnClickListener(view -> {
+                                    if (event.getWaitinglist().isEmpty()) {
+                                        Toast.makeText(ViewEventActivity.this, "Waiting list is empty.", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        if (waitinglistListView.getVisibility() == View.GONE) {
+                                            waitinglistListView.setVisibility(View.VISIBLE);
+                                            ArrayList<String> flatList = new ArrayList<String>();
+
+                                            for (ArrayList<String> user: event.getWaitinglist()) {
+                                                flatList.add("[" +  user.get(0) + ", " + user.get(1) + ", " + user.get(2));
+                                            }
+
+                                            ArrayAdapter<String> adapter = new ArrayAdapter<>(ViewEventActivity.this,
+                                                    android.R.layout.simple_list_item_1, flatList);
+                                            waitinglistListView.setAdapter(adapter);
+
+                                            waitinglistButton.setText("Hide Waitinglist");
+                                        } else {
+                                            waitinglistListView.setVisibility(View.GONE);
+                                            waitinglistButton.setText("Show Waitinglist");
+                                        }
+                                    }
+                                });
                             } else {
                                 waitinglistFullTextView.setVisibility(View.VISIBLE);
                             }
@@ -273,31 +299,6 @@ public class ViewEventActivity extends AppCompatActivity {
             Toast.makeText(ViewEventActivity.this, "Invalid Event ID.", Toast.LENGTH_SHORT).show();
             finish();
         }
-
-
-        waitinglistButton.setOnClickListener(view -> {
-            if (event.getWaitinglist().isEmpty()) {
-                Toast.makeText(ViewEventActivity.this, "Waiting list is empty.", Toast.LENGTH_SHORT).show();
-            } else {
-                if (waitinglistListView.getVisibility() == View.GONE) {
-                    waitinglistListView.setVisibility(View.VISIBLE);
-                    ArrayList<String> flatList = new ArrayList<String>();
-
-                    for (ArrayList<String> user: event.getWaitinglist()) {
-                        flatList.add("[" +  user.get(0) + ", " + user.get(1) + ", " + user.get(2));
-                    }
-
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(ViewEventActivity.this,
-                            android.R.layout.simple_list_item_1, flatList);
-                    waitinglistListView.setAdapter(adapter);
-
-                    waitinglistButton.setText("Hide Waitinglist");
-                } else {
-                    waitinglistListView.setVisibility(View.GONE);
-                    waitinglistButton.setText("Show Waitinglist");
-                }
-            }
-        });
 
         chosenEntrantsButton.setOnClickListener(view -> {
             if (event.getChosenEntrants().isEmpty()) {
@@ -616,7 +617,7 @@ public class ViewEventActivity extends AppCompatActivity {
                     event.setWaitinglist(newWaitingList);
 
                     // Remove it on the user's collection
-                    new Waitlist().removeFromUserWL(deviceID, eventID);
+                    waitlist.removeFromUserWL(deviceID, eventID);
 
                     EventFirebase.editEvent(event);
 
@@ -692,7 +693,7 @@ public class ViewEventActivity extends AppCompatActivity {
         eventsList.add(event);
 //        user.setEvents(eventsList);
 //        UserFirestore.editUserEvents(user);
-        new Waitlist().addToUserWL(deviceID, event.getEventID());
+        waitlist.addToUserWL(deviceID, event.getEventID());
 
         ArrayList<ArrayList<String>> currentEntrants = event.getWaitinglist();
 
