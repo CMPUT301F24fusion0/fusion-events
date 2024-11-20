@@ -28,6 +28,9 @@
             android:id="@+id/action_profileFragment_to_mainFragment"
             app:destination="@id/mainFragment"/>
         <action
+            android:id="@+id/action_profileFragment_to_qrFragment"
+            app:destination="@id/qrFragment" />
+        <action
             android:id="@+id/action_profileFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
     </fragment>

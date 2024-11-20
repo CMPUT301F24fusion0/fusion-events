@@ -23,5 +23,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="notification_settings">Notification Settings</string>
     <string name="unjoin">Unjoin</string>
+    <string name="cancel">Cancel</string>
+    <string name="instructionText">Align The QR Code Within The Frame To Scan</string>
 
 </resources>

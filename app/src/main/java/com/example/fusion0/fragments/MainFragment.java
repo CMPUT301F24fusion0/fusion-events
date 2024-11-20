@@ -250,10 +250,16 @@ public class MainFragment extends Fragment {
      */
     private void initializeToolbarButtons(View view) {
         profileButton = view.findViewById(R.id.toolbar_person);
+        cameraButton = view.findViewById(R.id.toolbar_camera);
 
         profileButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_profileFragment);
         });
+
+        cameraButton.setOnClickListener(v -> {
+            Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_qrFragment);
+        });
+
     }
 
     public void showNotificationDialog(@NonNull NotificationItem notificationItem, Context context) {
