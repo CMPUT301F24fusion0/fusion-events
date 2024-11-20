@@ -1,6 +1,5 @@
 package com.example.fusion0;
-
-import android.app.Dialog;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,25 +19,40 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-import android.location.Location;
 
-//The following class was helped by ChatGPT, "following the code given by: "https://www.youtube.com/watch?v=JzxjNNCYt_o (I implemented and provided my code from this video) How do I make a dialog fragment which uses google maps within?"
-//ChatGPT provided me everything following "Set up the map fragment within the dialog"
+import java.util.List;
+
+//The following class was helped by ChatGPT, "following the code given by: https://www.youtube.com/watch?v=JzxjNNCYt_o
+//(I implemented and provided my code from this video). How do I make a dialog fragment which uses Google Maps within?"
+//ChatGPT provided me everything following "Set up the map fragment within the dialog".
 
 public class MapDialogFragment extends DialogFragment {
 
     private double eventLat;
     private double eventLng;
-    private double userLat;
-    private double userLng;
+    private double userLat; //Latitude for a single user
+    private double userLng; //Longitude for a single user
+    private List<double[]> userLatLngList; //List of user locations for multiple users
     private double allowedRadius;
+    private boolean isSingleUser; //Flag to indicate single or multiple user mode
 
+    //Constructor for single user
     public MapDialogFragment(double eventLat, double eventLng, double userLat, double userLng, double allowedRadius) {
         this.eventLat = eventLat;
         this.eventLng = eventLng;
         this.userLat = userLat;
         this.userLng = userLng;
         this.allowedRadius = allowedRadius;
+        this.isSingleUser = true; //Single user mode
+    }
+
+    //Constructor for multiple users
+    public MapDialogFragment(double eventLat, double eventLng, List<double[]> userLatLngList, double allowedRadius) {
+        this.eventLat = eventLat;
+        this.eventLng = eventLng;
+        this.userLatLngList = userLatLngList;
+        this.allowedRadius = allowedRadius;
+        this.isSingleUser = false; //Multiple user mode
     }
 
     @Nullable
@@ -49,24 +63,28 @@ public class MapDialogFragment extends DialogFragment {
         Button backButton = view.findViewById(R.id.backButton);
         TextView distanceText = view.findViewById(R.id.distanceText);
 
-        Location eventLocation = new Location("Event");
-        eventLocation.setLatitude(eventLat);
-        eventLocation.setLongitude(eventLng);
+        //For single user mode, calculate and display distance
+        if (isSingleUser) {
+            Location eventLocation = new Location("Event");
+            eventLocation.setLatitude(eventLat);
+            eventLocation.setLongitude(eventLng);
 
-        Location userLocation = new Location("User");
-        userLocation.setLatitude(userLat);
-        userLocation.setLongitude(userLng);
+            Location userLocation = new Location("User");
+            userLocation.setLatitude(userLat);
+            userLocation.setLongitude(userLng);
 
-        float distanceInMeters = userLocation.distanceTo(eventLocation);
+            float distanceInMeters = userLocation.distanceTo(eventLocation);
 
-        // heck if the user is within the allowed radius and update the TextView
-        if (distanceInMeters <= allowedRadius) {
-            distanceText.setText("Within the event radius.");
-        } else {
-            distanceText.setText("Outside the event radius.");
+            if (distanceInMeters <= allowedRadius) {
+                distanceText.setText("Within the event radius.");
+            } else {
+                distanceText.setText("Outside the event radius.");
+            }
+        }
+        else {
+            distanceText.setText("Displaying multiple user locations.");
         }
 
-        //Back click listener to dismiss the dialog
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,11 +103,11 @@ public class MapDialogFragment extends DialogFragment {
             @Override
             public void onMapReady(@NonNull GoogleMap googleMap) {
                 LatLng eventLocation = new LatLng(eventLat, eventLng);
-                LatLng userLocation = new LatLng(userLat, userLng);
 
+                //Add a marker for the event location
                 googleMap.addMarker(new MarkerOptions().position(eventLocation).title("Event Location"));
-                googleMap.addMarker(new MarkerOptions().position(userLocation).title("User Location"));
 
+                //Add a circle for the allowed radius
                 googleMap.addCircle(new CircleOptions()
                         .center(eventLocation)
                         .radius(allowedRadius)
@@ -99,9 +117,22 @@ public class MapDialogFragment extends DialogFragment {
 
                 LatLngBounds.Builder builder = new LatLngBounds.Builder();
                 builder.include(eventLocation);
-                builder.include(userLocation);
-                LatLngBounds bounds = builder.build();
 
+                if (isSingleUser) {
+                    LatLng userLocation = new LatLng(userLat, userLng);
+                    googleMap.addMarker(new MarkerOptions().position(userLocation).title("User Location"));
+                    builder.include(userLocation);
+                }
+                else {
+                    //Multiple users logic
+                    for (double[] latLng : userLatLngList) {
+                        LatLng userLocation = new LatLng(latLng[0], latLng[1]);
+                        googleMap.addMarker(new MarkerOptions().position(userLocation).title("User Location"));
+                        builder.include(userLocation);
+                    }
+                }
+
+                LatLngBounds bounds = builder.build();
                 int padding = 200;
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
             }
@@ -110,4 +141,3 @@ public class MapDialogFragment extends DialogFragment {
         return view;
     }
 }
-
