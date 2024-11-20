@@ -89,7 +89,7 @@ public class UserInfo {
      * @return an arraylist of events
      */
     @PropertyName("events")
-    public ArrayList<EventInfo> getEvents() {
+    public ArrayList<String> getEvents() {
         return events;
     }
 
@@ -99,7 +99,7 @@ public class UserInfo {
      * @param events list of events
      */
     @PropertyName("events")
-    public void setEvents(ArrayList<EventInfo> events) {
+    public void setEvents(ArrayList<String> events) {
         this.events = events;
     }
 

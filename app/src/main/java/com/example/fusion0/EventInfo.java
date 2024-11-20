@@ -12,6 +12,9 @@ import java.util.HashMap;
 
 import java.util.Date;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -30,7 +33,7 @@ public class EventInfo {
     private Date endDate;
     private String startTime;
     private String endTime;
-    ArrayList<ArrayList<String>> waitinglist;
+    ArrayList<Map<String, String>> waitinglist;
     ArrayList<String> chosenEntrants;
     ArrayList<String> cancelledEntrants;
     private String eventPoster;
@@ -61,7 +64,7 @@ public class EventInfo {
         this.startTime = "00:00";
         this.endTime = "00:00";
         this.qrCode = (new QRCode(eventID)).getQrCode();
-        this.waitinglist = new ArrayList<ArrayList<String>>();
+        this.waitinglist = new ArrayList<Map<String, String>>();
         this.chosenEntrants = new ArrayList<>();
         this.cancelledEntrants = new ArrayList<>();
         this.firebase = new EventFirebase();
@@ -262,12 +265,12 @@ public class EventInfo {
     }
 
 
-    public ArrayList<ArrayList<String>> getWaitinglist() {
+    public ArrayList<Map<String, String>> getWaitinglist() {
         return waitinglist;
     }
 
 
-    public void setWaitinglist(ArrayList<ArrayList<String>> waitinglist) {
+    public void setWaitinglist(ArrayList<Map<String, String>> waitinglist) {
         this.waitinglist = waitinglist;
     }
 
@@ -367,12 +370,13 @@ public class EventInfo {
         return bitmap;
     }
 
-    public ArrayList<ArrayList<String>> removeUserFromWaitingList(String deviceID, ArrayList<ArrayList<String>> waitingList) {
-        for (int i = 0; i < waitingList.size(); i++) {
-            ArrayList<String> user = waitingList.get(i);
-            if (user.contains(deviceID)) {
-                waitingList.remove(i);
-                break;
+    public ArrayList<Map<String, String>> removeUserFromWaitingList(String deviceID, ArrayList<Map<String, String>> waitingList) {
+        Iterator<Map<String, String>> iterator = waitingList.iterator();
+        while (iterator.hasNext()) {
+            Map<String, String> next = iterator.next();
+
+            if (next.containsKey("did") && Objects.equals(next.get("did"), deviceID)) {
+                iterator.remove();
             }
         }
         return waitingList;
