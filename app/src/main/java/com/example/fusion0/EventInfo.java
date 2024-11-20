@@ -30,7 +30,7 @@ public class EventInfo {
     private Date endDate;
     private String startTime;
     private String endTime;
-    ArrayList<String> waitinglist;
+    ArrayList<ArrayList<String>> waitinglist;
     ArrayList<String> chosenEntrants;
     ArrayList<String> cancelledEntrants;
     private String eventPoster;
@@ -61,7 +61,7 @@ public class EventInfo {
         this.startTime = "00:00";
         this.endTime = "00:00";
         this.qrCode = (new QRCode(eventID)).getQrCode();
-        this.waitinglist = new ArrayList<>();
+        this.waitinglist = new ArrayList<ArrayList<String>>();
         this.chosenEntrants = new ArrayList<>();
         this.cancelledEntrants = new ArrayList<>();
         this.firebase = new EventFirebase();
@@ -262,12 +262,12 @@ public class EventInfo {
     }
 
 
-    public ArrayList<String> getWaitinglist() {
+    public ArrayList<ArrayList<String>> getWaitinglist() {
         return waitinglist;
     }
 
 
-    public void setWaitinglist(ArrayList<String> waitinglist) {
+    public void setWaitinglist(ArrayList<ArrayList<String>> waitinglist) {
         this.waitinglist = waitinglist;
     }
 
@@ -367,9 +367,9 @@ public class EventInfo {
         return bitmap;
     }
 
-    public ArrayList<String> removeUserFromWaitingList(String deviceID,ArrayList<String> waitingList ){
+    public ArrayList<ArrayList<String>> removeUserFromWaitingList(String deviceID, ArrayList<ArrayList<String>> waitingList) {
         for (int i = 0; i < waitingList.size(); i++) {
-            String user = waitingList.get(i);
+            ArrayList<String> user = waitingList.get(i);
             if (user.contains(deviceID)) {
                 waitingList.remove(i);
                 break;

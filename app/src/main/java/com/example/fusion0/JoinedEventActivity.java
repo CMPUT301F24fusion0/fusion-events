@@ -148,7 +148,7 @@ public class JoinedEventActivity extends AppCompatActivity {
         }
 
         unjoinButton.setOnClickListener(view ->{
-            ArrayList<String> newWaitingList = event.removeUserFromWaitingList(deviceID, event.getWaitinglist());
+            ArrayList<ArrayList<String>> newWaitingList = event.removeUserFromWaitingList(deviceID, event.getWaitinglist());
             event.setWaitinglist(newWaitingList);
 
             EventFirebase.editEvent(event);
