@@ -611,37 +611,50 @@ public class ViewEventActivity extends AppCompatActivity {
         });
 
 
-        joinButton.setOnClickListener(view -> {
-            GeoLocation geoLocation = new GeoLocation(this, this, event.getLatitude(), event.getLongitude(), event.getRadius());
-            Log.e("ViewEventActivity", "Radius: " + event.getRadius());
-            if (event.getGeolocation()) {
-                if (!geoLocation.isLocationPermissionGranted()) {
-                    geoLocation.requestLocationPermission();
-                } else {
-                    proceedWithJoin(geoLocation);
-                }
-            }else{
-                addUserToWaitingList();
-            }
-        });
-
         waitlist.getAll(eventID, all -> {
             if (!all.contains(deviceID)) {
                 joinButton.setOnClickListener(view -> {
-                    GeoLocation geoLocation = new GeoLocation(this, this, event.getLatitude(), event.getLongitude(), event.getRadius());
-                    Log.e("ViewEventActivity", "Radius: " + event.getRadius());
-                    if (!geoLocation.isLocationPermissionGranted()) {
-                        geoLocation.requestLocationPermission();
-                    }
-                    else {
-                        proceedWithJoin(geoLocation);
+                    if (event.getGeolocation()) {
+                        GeoLocation geoLocation = new GeoLocation(this, this, event.getLatitude(), event.getLongitude(), event.getRadius());
+                        Log.e("ViewEventActivity", "Radius: " + event.getRadius());
+                        if (!geoLocation.isLocationPermissionGranted()) {
+                            geoLocation.requestLocationPermission();
+                        } else {
+                            proceedWithJoin(geoLocation);
+                        }
+                    }else{
+                        addUserToWaitingList();
                     }
                 });
             } else {
-                joinButton.setText(R.string.unjoin);
+                joinButton.setText("Unjoin Waiting List");
                 joinButton.setOnClickListener(view -> {
                     waitlist.removeEntrantFromWaitingList(eventID, deviceID);
                     Toast.makeText(ViewEventActivity.this, "You have left the waiting list", Toast.LENGTH_SHORT).show();
+
+                    ArrayList<String> newWaitingList = event.removeUserFromWaitingList(deviceID, event.getWaitinglist());
+                    event.setWaitinglist(newWaitingList);
+
+                    EventFirebase.editEvent(event);
+
+                    UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+                        @Override
+                        public void onSuccess(UserInfo userInfo) {
+                            user = userInfo;
+                        }
+
+                        @Override
+                        public void onFailure(String error) {
+                            Log.e("JoinedEventActivity", "Error fetching user: " + error);
+                        }
+                    });
+
+                    ArrayList<EventInfo> newEventsList = user.removeEventFromEventList(event, user.getEvents());
+                    user.setEvents(newEventsList);
+                    UserFirestore.editUserEvents(user);
+
+                    EventFirebase.editEvent(event);
+
                     Intent intent = new Intent(ViewEventActivity.this, MainActivity.class);
                     startActivity(intent);
                 });
@@ -704,12 +717,14 @@ public class ViewEventActivity extends AppCompatActivity {
             event.setWaitinglist(currentEntrants);
             EventFirebase.editEvent(event);
             Toast.makeText(this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
+            finish();
         }else {
             ArrayList<String> currentEntrants = event.getWaitinglist();
             currentEntrants.add(deviceID);
             event.setWaitinglist(currentEntrants);
             EventFirebase.editEvent(event);
             Toast.makeText(this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 
