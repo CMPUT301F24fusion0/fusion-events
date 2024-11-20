@@ -407,8 +407,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:gravity="center"
         android:orientation="horizontal"
-        android:background="@color/white"
-        android:visibility="gone">
+        android:background="@color/white">
 
         <Button
             android:id="@+id/unjoin_button"
