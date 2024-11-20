@@ -3,15 +3,13 @@ package com.example.fusion0;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,7 +39,6 @@ public class JoinedEventActivity extends AppCompatActivity {
 
     private UserInfo user;
     private EventInfo event;
-    private String DeviceID;
 
     /**
      * @author Simon Haile
@@ -75,6 +72,20 @@ public class JoinedEventActivity extends AppCompatActivity {
         Intent intentReceived = getIntent();
         String eventID = intentReceived.getStringExtra("eventID");
         String deviceID = intentReceived.getStringExtra("deviceID");
+
+        UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+            @Override
+            public void onSuccess(UserInfo userInfo) {
+                user = userInfo;
+                Log.e("JoinedEventActivity", "Error fetching user: " + user.getEvents() + user.getFirstName());
+
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e("JoinedEventActivity", "Error fetching user: " + error);
+            }
+        });
 
 
         if (eventID != null) {
@@ -142,19 +153,9 @@ public class JoinedEventActivity extends AppCompatActivity {
 
             EventFirebase.editEvent(event);
 
-            UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
-                @Override
-                public void onSuccess(UserInfo userInfo) {
-                    user = userInfo;
-                }
 
-                @Override
-                public void onFailure(String error) {
-                    Log.e("JoinedEventActivity", "Error fetching user: " + error);
-                }
-            });
-
-            ArrayList<EventInfo> newEventsList = user.removeEventFromEventList(event, user.getEvents());
+            ArrayList<EventInfo> userEvents =  user.getEvents();
+            ArrayList<EventInfo> newEventsList = user.removeEventFromEventList(event, userEvents);
             user.setEvents(newEventsList);
             UserFirestore.editUserEvents(user);
 
