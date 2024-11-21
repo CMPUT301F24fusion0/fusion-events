@@ -32,8 +32,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
-
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.common.api.Status;
@@ -44,7 +42,6 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.zxing.WriterException;
@@ -115,8 +112,8 @@ public class ViewEventActivity extends AppCompatActivity {
         setContentView(R.layout.event_view);
 
         storageRef = FirebaseStorage.getInstance().getReference();
-        uploadNewPoster();
 
+        uploadNewPoster();
 
         waitlist = new Waitlist();
 
@@ -199,7 +196,6 @@ public class ViewEventActivity extends AppCompatActivity {
                         eventDescriptionTextView.setText(event.getDescription());
                         eventCapacityTextView.setText(event.getCapacity());
                         eventFacilityTextView.setText(event.getFacilityName());
-
 
                         eventStartDateTextView.setText(event.getStartDate().toString());
                         eventEndDateTextView.setText(event.getEndDate().toString());
@@ -363,14 +359,14 @@ public class ViewEventActivity extends AppCompatActivity {
             finish();
         }
 
-
         waitinglistButton.setOnClickListener(view -> {
             if (event.getWaitinglist().isEmpty()) {
                 Toast.makeText(ViewEventActivity.this, "Waiting list is empty.", Toast.LENGTH_SHORT).show();
             } else {
                 if (waitinglistListView.getVisibility() == View.GONE) {
-                    waitinglistListView.setVisibility(View.VISIBLE);
                     ArrayList<String> flatList = new ArrayList<String>();
+
+                    waitinglistListView.setVisibility(View.VISIBLE);
 
                     for (Map<String, String> user: event.getWaitinglist()) {
                         flatList.add("[" +  user.get("did") + ", " + user.get("Longitude") + ", " + user.get("Latitude"));
@@ -378,6 +374,7 @@ public class ViewEventActivity extends AppCompatActivity {
 
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(ViewEventActivity.this,
                             android.R.layout.simple_list_item_1, flatList);
+
                     waitinglistListView.setAdapter(adapter);
 
                     waitinglistButton.setText("Hide Waitinglist");
@@ -573,6 +570,7 @@ public class ViewEventActivity extends AppCompatActivity {
 
                         int hour = calendar.get(Calendar.HOUR_OF_DAY);
                         int minute = calendar.get(Calendar.MINUTE);
+
                         TimePickerDialog timePickerDialog = new TimePickerDialog(ViewEventActivity.this, new TimePickerDialog.OnTimeSetListener() {
                             @Override
                             public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
@@ -681,9 +679,9 @@ public class ViewEventActivity extends AppCompatActivity {
 
     /**
      * @author Derin Karas
+     * Proceed with join after user's location is validated
      *
-     *
-     * @param geoLocation
+     * @param geoLocation Geolocation object of the user
      */
     private void proceedWithJoin(GeoLocation geoLocation) {
         userLocation = geoLocation.getLocation();
@@ -696,12 +694,10 @@ public class ViewEventActivity extends AppCompatActivity {
         validateDistanceAndJoin(geoLocation);
     }
 
-
     /**
      * @author Derin Karas
-     *
-     *
-     * @param geoLocation
+     * Validate the user's location
+     * @param geoLocation Geolocation object of the user
      */
     private void validateDistanceAndJoin(GeoLocation geoLocation) {
         //geoLocation.setUserLocation(userLocation.getLatitude(), userLocation.getLongitude());
@@ -714,11 +710,9 @@ public class ViewEventActivity extends AppCompatActivity {
         }
     }
 
-
     /**
      * @author Simon Haile, Derin Karas, Sehej Brar
      * Adds the joined event to the user attribute 'events' and adds user to the event waitinglist
-     *
      */
     private void addUserToWaitingList() {
         ArrayList<String> eventsList = user.getEvents();
