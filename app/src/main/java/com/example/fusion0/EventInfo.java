@@ -370,6 +370,13 @@ public class EventInfo {
         return bitmap;
     }
 
+    /**
+     * Removes a user from the waiting list
+     * @author Sehej Brar
+     * @param deviceID device id
+     * @param waitingList an arraylist of maps containing waitlist information
+     * @return an arraylist of maps containing waitlist information
+     */
     public ArrayList<Map<String, String>> removeUserFromWaitingList(String deviceID, ArrayList<Map<String, String>> waitingList) {
         Iterator<Map<String, String>> iterator = waitingList.iterator();
         while (iterator.hasNext()) {

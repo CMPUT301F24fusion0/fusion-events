@@ -17,19 +17,7 @@ import java.util.Objects;
 /**
  * @author Sehej Brar
  * The {@code Waitlist} class provides methods to manage and interact with the
- * waiting list for events. It allows adding and removing entrants to the waiting list,
- * selecting a specified number of attendees from the waiting list, and offering
- * another chance to join the event if an entrant declines.
- *
- * <p>This class is intended to handle all waiting list-related operations,
- * separate from user management and other event functionalities.</p>
- *
- * <p>Usage example:
- * <pre>
- *     Waitlist waitlist = new Waitlist();
- *     waitlist.addEntrantToWaitingList("eventId123", "entrantId456");
- *     waitlist.sampleAttendees("eventId123", 5);
- * </pre>
+ * waiting list for events. It allows CRUD operations.
  * </p>
  */
 
@@ -232,6 +220,7 @@ public class Waitlist {
                         }
                     }
                 }
+                Log.d("Checkpoint", "lah" + all);
                 allCB.allDid(all);
             } else {
                 Log.e("Error", "Error");

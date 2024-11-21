@@ -243,13 +243,18 @@ public class ViewEventActivity extends AppCompatActivity {
 
                             isOwner = true;
 
+                            // TODO: This should be based on something more concrete
                             int lotteryCapacity = 10;
 
-                           lotteryButton.setOnClickListener(new View.OnClickListener() {
-                               @Override
-                               public void onClick(View view) {
-                                   waitlist.conductLottery(eventID, lotteryCapacity);
-                               }
+                            // TODO: This should automatically happen after the deadline
+                           lotteryButton.setOnClickListener(view -> {
+                               waitlist.allNotification(eventID, "Starting Lottery",
+                                       "The lottery for an event is starting. Be on the lookout for more information.", "0");
+                               waitlist.conductLottery(eventID, lotteryCapacity);
+                               waitlist.chosenNotification(eventID, "Congratulations", "You've been chosen for an event. Please login and accept " +
+                                       "the invitation.", "1");
+                               waitlist.loseNotification(eventID, "Lottery Results", "You've not been selected for this event. Be on the lookout for another chance" +
+                                       "if any more spots open up.", "0");
                            });
 
                         } else {
@@ -724,17 +729,17 @@ public class ViewEventActivity extends AppCompatActivity {
 
         if (event.getGeolocation()){
             Map<String, String> newEntrant = new HashMap<>();
-            newEntrant.put("Did", deviceID);
-            newEntrant.put("Latitude", String.valueOf(userLocation.getLatitude()));
-            newEntrant.put("Longitude", String.valueOf(userLocation.getLongitude()));
-            newEntrant.put("Status", "waiting");
+            newEntrant.put("did", deviceID);
+            newEntrant.put("latitude", String.valueOf(userLocation.getLatitude()));
+            newEntrant.put("longitude", String.valueOf(userLocation.getLongitude()));
+            newEntrant.put("status", "waiting");
             currentEntrants.add(newEntrant);
         } else {
             Map<String, String> newEntrant = new HashMap<>();
-            newEntrant.put("Did", deviceID);
-            newEntrant.put("Latitude", null);
-            newEntrant.put("Longitude", null);
-            newEntrant.put("Status", "waiting");
+            newEntrant.put("did", deviceID);
+            newEntrant.put("latitude", null);
+            newEntrant.put("longitude", null);
+            newEntrant.put("status", "waiting");
             currentEntrants.add(newEntrant);
             Log.d("Checkpoint", "Current Entrants: " + currentEntrants);
         }
