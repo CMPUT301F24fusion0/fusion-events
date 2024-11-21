@@ -226,28 +226,28 @@ public class FavouriteActivity extends AppCompatActivity {
             });
         });
 
-
-        scannerButton = findViewById(R.id.toolbar_qrscanner);
-        scannerButton.setOnClickListener(view -> {
-            Intent intent = new Intent(FavouriteActivity.this, QRActivity.class);
-            startActivity(intent);
-        });
-
-        addButton = findViewById(R.id.toolbar_add);
-
-        addButton.setOnClickListener(view -> {
-            Intent intent = new Intent(FavouriteActivity.this, EventActivity.class);
-            startActivity(intent);
-        });
-
-        // Initialize profile button to navigate to ProfileActivity
-        profileButton = findViewById(R.id.toolbar_person);
-
-        homeButton = findViewById(R.id.toolbar_home);
-
-        homeButton.setOnClickListener(view -> {
-            Intent intent = new Intent(FavouriteActivity.this, MainActivity.class);
-            startActivity(intent);
-        });
+//
+//        scannerButton = findViewById(R.id.toolbar_qrscanner);
+//        scannerButton.setOnClickListener(view -> {
+//            Intent intent = new Intent(FavouriteActivity.this, QRActivity.class);
+//            startActivity(intent);
+//        });
+//
+//        addButton = findViewById(R.id.toolbar_add);
+//
+//        addButton.setOnClickListener(view -> {
+//            Intent intent = new Intent(FavouriteActivity.this, EventActivity.class);
+//            startActivity(intent);
+//        });
+//
+//        // Initialize profile button to navigate to ProfileActivity
+//        profileButton = findViewById(R.id.toolbar_person);
+//
+//        homeButton = findViewById(R.id.toolbar_home);
+//
+//        homeButton.setOnClickListener(view -> {
+//            Intent intent = new Intent(FavouriteActivity.this, MainActivity.class);
+//            startActivity(intent);
+//        });
     }
 }

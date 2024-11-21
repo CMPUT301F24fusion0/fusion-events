@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_mainFragment_to_qrFragment"
             app:destination="@+id/qrFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_favouriteFragment"
+            app:destination="@+id/favouriteFragment"/>
 
     </fragment>
 
@@ -31,8 +34,37 @@
             android:id="@+id/action_profileFragment_to_qrFragment"
             app:destination="@id/qrFragment" />
         <action
+            android:id="@+id/action_profileFragment_to_favouriteFragment"
+            app:destination="@id/favouriteFragment" />
+        <action
             android:id="@+id/action_profileFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/qrFragment"
+        android:name="com.example.fusion0.fragments.QRFragment"
+        android:label="QR Fragment"
+        tools:layout="@layout/fragment_q_r">
+        <action
+            android:id="@+id/action_qrFragment_to_mainFragment"
+            app:destination="@+id/mainFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/favouriteFragment"
+        android:name="com.example.fusion0.fragments.FavouriteFragment"
+        android:label="Favourite Fragment"
+        tools:layout="@layout/fragment_favourite">
+        <action
+            android:id="@+id/action_favouriteFragment_to_mainFragment"
+            app:destination="@+id/mainFragment" />
+        <action
+            android:id="@+id/action_favouriteFragment_to_qrFragment"
+            app:destination="@+id/qrFragment" />
+        <action
+            android:id="@+id/action_favouriteFragment_to_profileFragment"
+            app:destination="@+id/profileFragment"/>
     </fragment>
 
     <fragment
@@ -45,15 +77,6 @@
             app:destination="@+id/profileFragment" />
     </fragment>
 
-    <fragment
-        android:id="@+id/qrFragment"
-        android:name="com.example.fusion0.fragments.QRFragment"
-        android:label="QR Fragment"
-        tools:layout="@layout/fragment_q_r">
-        <action
-            android:id="@+id/action_qrFragment_to_mainFragment"
-            app:destination="@+id/mainFragment"/>
-    </fragment>
 
 
 </navigation>

@@ -291,7 +291,7 @@
             android:layout_weight="1"
             android:background="@android:color/white"
             android:contentDescription="home"
-            android:src="@drawable/ic_blue_home" />
+            android:src="@drawable/ic_grey_home" />
 
         <ImageButton
             android:id="@+id/toolbar_camera"
@@ -328,7 +328,7 @@
             android:layout_weight="1"
             android:background="@android:color/white"
             android:contentDescription="person"
-            android:src="@drawable/ic_grey_person" />
+            android:src="@drawable/ic_blue_person" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

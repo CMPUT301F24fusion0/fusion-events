@@ -13,8 +13,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 
-import com.example.fusion0.activities.QRActivity;
-
 
 /**
  * Instrumented test for the {@link QRActivity}, verifying that the QR code scanner UI elements

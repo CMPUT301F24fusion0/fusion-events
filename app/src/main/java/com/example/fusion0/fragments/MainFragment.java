@@ -251,6 +251,7 @@ public class MainFragment extends Fragment {
     private void initializeToolbarButtons(View view) {
         profileButton = view.findViewById(R.id.toolbar_person);
         cameraButton = view.findViewById(R.id.toolbar_camera);
+        favouriteButton = view.findViewById(R.id.toolbar_favourite);
 
         profileButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_profileFragment);
@@ -258,6 +259,10 @@ public class MainFragment extends Fragment {
 
         cameraButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_qrFragment);
+        });
+
+        favouriteButton.setOnClickListener(v -> {
+            Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_favouriteFragment);
         });
 
     }
