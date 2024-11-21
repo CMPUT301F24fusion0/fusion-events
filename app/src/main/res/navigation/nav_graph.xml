@@ -17,6 +17,9 @@
             android:id="@+id/action_mainFragment_to_qrFragment"
             app:destination="@+id/qrFragment" />
         <action
+            android:id="@+id/action_mainFragment_to_eventFragment"
+            app:destination="@+id/eventFragment"/>
+        <action
             android:id="@+id/action_mainFragment_to_favouriteFragment"
             app:destination="@+id/favouriteFragment"/>
 
@@ -33,6 +36,9 @@
         <action
             android:id="@+id/action_profileFragment_to_qrFragment"
             app:destination="@id/qrFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_eventFragment"
+            app:destination="@+id/eventFragment"/>
         <action
             android:id="@+id/action_profileFragment_to_favouriteFragment"
             app:destination="@id/favouriteFragment" />
@@ -52,6 +58,16 @@
     </fragment>
 
     <fragment
+        android:id="@+id/eventFragment"
+        android:name="com.example.fusion0.fragments.EventFragment"
+        android:label="Event Fragment"
+        tools:layout="@layout/fragment_event">
+        <action
+            android:id="@+id/action_eventFragment_to_mainFragment"
+            app:destination="@id/mainFragment"/>
+    </fragment>
+
+    <fragment
         android:id="@+id/favouriteFragment"
         android:name="com.example.fusion0.fragments.FavouriteFragment"
         android:label="Favourite Fragment"
@@ -62,6 +78,9 @@
         <action
             android:id="@+id/action_favouriteFragment_to_qrFragment"
             app:destination="@+id/qrFragment" />
+        <action
+            android:id="@+id/action_favouriteFragment_to_eventFragment"
+            app:destination="@+id/eventFragment"/>
         <action
             android:id="@+id/action_favouriteFragment_to_profileFragment"
             app:destination="@+id/profileFragment"/>

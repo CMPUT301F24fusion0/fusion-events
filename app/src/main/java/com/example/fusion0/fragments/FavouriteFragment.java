@@ -51,7 +51,7 @@ public class FavouriteFragment extends Fragment {
 
     private ImageButton profileButton;
     private ImageButton addButton;
-    private ImageButton cameraButton;
+    private ImageButton scannerButton;
     private ImageButton homeButton;
 
     public FavouriteFragment() {
@@ -235,15 +235,20 @@ public class FavouriteFragment extends Fragment {
 
     private void initializeToolbarButtons(View view) {
         homeButton = view.findViewById(R.id.toolbar_home);
-        cameraButton = view.findViewById(R.id.toolbar_qrscanner);
+        scannerButton = view.findViewById(R.id.toolbar_qrscanner);
+        addButton = view.findViewById(R.id.toolbar_add);
         profileButton = view.findViewById(R.id.toolbar_person);
 
         homeButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_mainFragment);
         });
 
-        cameraButton.setOnClickListener(v -> {
+        scannerButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_profileFragment);
+        });
+
+        addButton.setOnClickListener(v -> {
+            Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_eventFragment);
         });
 
         profileButton.setOnClickListener(v -> {

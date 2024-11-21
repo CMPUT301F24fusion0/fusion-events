@@ -111,7 +111,7 @@
             android:src="@drawable/ic_blue_home" />
 
         <ImageButton
-            android:id="@+id/toolbar_camera"
+            android:id="@+id/toolbar_qrscanner"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"

@@ -48,7 +48,7 @@ public class MainFragment extends Fragment {
     private ImageButton profileButton;
     private ImageButton addButton;
     private ImageButton homeButton;
-    private ImageButton cameraButton;
+    private ImageButton scannerButton;
     private ImageButton favouriteButton;
 
     // Message related fields
@@ -250,15 +250,20 @@ public class MainFragment extends Fragment {
      */
     private void initializeToolbarButtons(View view) {
         profileButton = view.findViewById(R.id.toolbar_person);
-        cameraButton = view.findViewById(R.id.toolbar_camera);
+        scannerButton = view.findViewById(R.id.toolbar_qrscanner);
+        addButton = view.findViewById(R.id.toolbar_add);
         favouriteButton = view.findViewById(R.id.toolbar_favourite);
 
         profileButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_profileFragment);
         });
 
-        cameraButton.setOnClickListener(v -> {
+        scannerButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_qrFragment);
+        });
+
+        addButton.setOnClickListener(v -> {
+            Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_eventFragment);
         });
 
         favouriteButton.setOnClickListener(v -> {
