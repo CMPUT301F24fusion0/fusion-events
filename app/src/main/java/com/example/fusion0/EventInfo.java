@@ -12,7 +12,6 @@ import java.util.HashMap;
 
 import java.util.Date;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -34,8 +33,6 @@ public class EventInfo {
     private String startTime;
     private String endTime;
     ArrayList<Map<String, String>> waitinglist;
-    ArrayList<String> chosenEntrants;
-    ArrayList<String> cancelledEntrants;
     private String eventPoster;
     private String qrCode;
     EventFirebase firebase;
@@ -65,8 +62,6 @@ public class EventInfo {
         this.endTime = "00:00";
         this.qrCode = (new QRCode(eventID)).getQrCode();
         this.waitinglist = new ArrayList<Map<String, String>>();
-        this.chosenEntrants = new ArrayList<>();
-        this.cancelledEntrants = new ArrayList<>();
         this.firebase = new EventFirebase();
         this.acceptedCount = 0L;
         this.eventPoster = null;
@@ -111,8 +106,6 @@ public class EventInfo {
         this.endTime = endTime;
         this.qrCode =(new QRCode(eventID)).getQrCode();
         this.waitinglist = new ArrayList<>();
-        this.chosenEntrants = new ArrayList<>();
-        this.cancelledEntrants = new ArrayList<>();
         this.firebase = new EventFirebase();
         this.acceptedCount = 0L;
         this.eventPoster = eventPoster;
@@ -140,8 +133,6 @@ public class EventInfo {
         event.put("startTime", this.startTime);
         event.put("endTime", this.endTime);
         event.put("waitinglist", this.waitinglist);
-        event.put("chosenEntrants", this.chosenEntrants);
-        event.put("cancelledEntrants", this.cancelledEntrants);
         event.put("qrCode",this.qrCode);
         event.put("description", this.description);
         event.put("eventPoster", this.eventPoster);
@@ -274,27 +265,6 @@ public class EventInfo {
         this.waitinglist = waitinglist;
     }
 
-
-    public ArrayList<String> getChosenEntrants() {
-        return chosenEntrants;
-    }
-
-
-    public void setChosenEntrants(ArrayList<String> chosenEntrants) {
-        this.chosenEntrants = chosenEntrants;
-    }
-
-
-    public ArrayList<String> getCancelledEntrants() {
-        return cancelledEntrants;
-    }
-
-
-    public void setCancelledEntrants(ArrayList<String> cancelledEntrants) {
-        this.cancelledEntrants = cancelledEntrants;
-    }
-
-
     public String getQrCode() {
         return qrCode;
     }
@@ -302,7 +272,6 @@ public class EventInfo {
     public void setQrCode(String qrCode) {
         this.qrCode = qrCode;
     }
-
 
     public String getEventPoster() {
         return eventPoster;
@@ -344,7 +313,6 @@ public class EventInfo {
         this.radius = radius;
     }
 
-
     /**
      * @author Simon Haile
      * Generates a QR code image from the given QR code string.
@@ -378,29 +346,23 @@ public class EventInfo {
      * @return an arraylist of maps containing waitlist information
      */
     public ArrayList<Map<String, String>> removeUserFromWaitingList(String deviceID, ArrayList<Map<String, String>> waitingList) {
-        Iterator<Map<String, String>> iterator = waitingList.iterator();
-        while (iterator.hasNext()) {
-            Map<String, String> next = iterator.next();
-
-            if (next.containsKey("did") && Objects.equals(next.get("did"), deviceID)) {
-                iterator.remove();
-            }
-        }
+        waitingList.removeIf(next -> next.containsKey("did") && Objects.equals(next.get("did"), deviceID));
         return waitingList;
     }
 
     /*
-    This was already made (see waitlist)
+    if this is necessary, just copy the wishlist one
     public removeUserFromCancelledEntrants(String deviceID){
 
     }
 
-    if this is necessary, just copy the wishlist one
+    This was already made (see waitlist)
     public removeUserFromChosenEntrants(String deviceID){
 
     }
 
     this was already made (see waitlist)
+    call new Waitlist().getAll()
     public ArrayList<String> getArrayOfEntrants(ArrayList<String> list){
         ArrayList<String> userNames = new ArrayList<>();
     }
