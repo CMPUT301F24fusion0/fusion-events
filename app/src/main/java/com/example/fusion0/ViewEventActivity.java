@@ -386,39 +386,43 @@ public class ViewEventActivity extends AppCompatActivity {
         });
 
         chosenEntrantsButton.setOnClickListener(view -> {
-            if (event.getChosenEntrants().isEmpty()) {
-                Toast.makeText(ViewEventActivity.this, "Chosen entrants list is empty.", Toast.LENGTH_SHORT).show();
-            } else {
-                if (chosenEntrantsListView.getVisibility() == View.GONE) {
-                    chosenEntrantsListView.setVisibility(View.VISIBLE);
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(ViewEventActivity.this,
-                            android.R.layout.simple_list_item_1, event.getChosenEntrants());
-                    chosenEntrantsListView.setAdapter(adapter);
-
-                    chosenEntrantsButton.setText("Hide Chosen Entrants");
+            waitlist.getAll(eventID, all -> {
+                if (all.isEmpty()) {
+                    Toast.makeText(ViewEventActivity.this, "Chosen entrants list is empty.", Toast.LENGTH_SHORT).show();
                 } else {
-                    chosenEntrantsListView.setVisibility(View.GONE);
-                    chosenEntrantsButton.setText("Show Chosen Entrants");
+                    if (chosenEntrantsListView.getVisibility() == View.GONE) {
+                        chosenEntrantsListView.setVisibility(View.VISIBLE);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(ViewEventActivity.this,
+                                android.R.layout.simple_list_item_1, all);
+                        chosenEntrantsListView.setAdapter(adapter);
+
+                        chosenEntrantsButton.setText("Hide Chosen Entrants");
+                    } else {
+                        chosenEntrantsListView.setVisibility(View.GONE);
+                        chosenEntrantsButton.setText("Show Chosen Entrants");
+                    }
                 }
-            }
+            });
         });
 
         cancelledEntrantsButton.setOnClickListener(view -> {
-            if (event.getCancelledEntrants().isEmpty()) {
-                Toast.makeText(ViewEventActivity.this, "Cancelled entrants list is empty.", Toast.LENGTH_SHORT).show();
-            } else {
-                if (cancelledEntrantsListView.getVisibility() == View.GONE) {
-                    cancelledEntrantsListView.setVisibility(View.VISIBLE);
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(ViewEventActivity.this,
-                            android.R.layout.simple_list_item_1, event.getCancelledEntrants());
-                    cancelledEntrantsListView.setAdapter(adapter);
-
-                    cancelledEntrantsButton.setText("Hide Cancelled Entrants");
+            waitlist.getAll(eventID, all -> {
+                if (all.isEmpty()) {
+                    Toast.makeText(ViewEventActivity.this, "Cancelled entrants list is empty.", Toast.LENGTH_SHORT).show();
                 } else {
-                    cancelledEntrantsListView.setVisibility(View.GONE);
-                    cancelledEntrantsButton.setText("Show Cancelled Entrants");
+                    if (cancelledEntrantsListView.getVisibility() == View.GONE) {
+                        cancelledEntrantsListView.setVisibility(View.VISIBLE);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(ViewEventActivity.this,
+                                android.R.layout.simple_list_item_1, all);
+                        cancelledEntrantsListView.setAdapter(adapter);
+
+                        cancelledEntrantsButton.setText("Hide Cancelled Entrants");
+                    } else {
+                        cancelledEntrantsListView.setVisibility(View.GONE);
+                        cancelledEntrantsButton.setText("Show Cancelled Entrants");
+                    }
                 }
-            }
+            });
         });
 
         editButton.setOnClickListener(v -> {
