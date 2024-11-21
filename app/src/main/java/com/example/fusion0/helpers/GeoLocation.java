@@ -16,9 +16,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.example.fusion0.fragments.MapDialogFragment;
 
-
-import com.example.fusion0.MapDialogFragment;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -260,12 +257,6 @@ public class GeoLocation implements LocationListener {
     public void setEventRadius(int radius){
 
         acceptableRadius = radius;
-    }
-    /**
-     * Gets the event acceptable radius.
-     */
-    public double getEventRadius() {
-        return acceptableRadius;
     }
 
     /**
