@@ -27,6 +27,10 @@ public class Waitlist {
     UserFirestore userFirestore;
 
 
+    /**
+     * Constructor for Waitlist
+     * @author Sehej Brar
+     */
     public Waitlist() {
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
@@ -38,7 +42,7 @@ public class Waitlist {
      * @author Sehej Brar
      * Samples a specified number of attendees from the waiting list for a specific event.
      *
-     * @param eventId     The unique identifier of the event.
+     * @param eventId The unique identifier of the event.
      * @param numToSelect The number of attendees to be randomly selected from the waiting list.
      */
     public void conductLottery(String eventId, int numToSelect) {
@@ -116,6 +120,7 @@ public class Waitlist {
 
     /**
      * Allows the organizer to cancel a user's invitation after the lottery has been conducted.
+     * @author Sehej Bra
      * @param eventID event's unique id
      * @param userID user's unique id
      */

@@ -390,14 +390,17 @@ public class EventInfo {
     }
 
     /*
+    This was already made (see waitlist)
     public removeUserFromCancelledEntrants(String deviceID){
 
     }
 
+    if this is necessary, just copy the wishlist one
     public removeUserFromChosenEntrants(String deviceID){
 
     }
 
+    this was already made (see waitlist)
     public ArrayList<String> getArrayOfEntrants(ArrayList<String> list){
         ArrayList<String> userNames = new ArrayList<>();
     }

@@ -100,7 +100,7 @@ public class ViewEventActivity extends AppCompatActivity {
 
 
     /**
-     * @author Simon Haile
+     * @author Simon Haile, Sehej Brar
      * Initializes the activity by setting up the user interface, loading event details,
      * fetching user and event information, and handling user interactions. This method
      * is called when the activity is created.

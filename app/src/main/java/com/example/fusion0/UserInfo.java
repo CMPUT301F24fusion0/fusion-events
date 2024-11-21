@@ -292,6 +292,13 @@ public class UserInfo {
         this.edit = changeEdit;
     }
 
+    /**
+     * Removes event from user's event list
+     * @author Sehej Brar
+     * @param eventID event id for event
+     * @param eventList list of events for user
+     * @return updated list of events
+     */
     public ArrayList<String> removeEventFromEventList(String eventID, ArrayList<String> eventList){
         eventList.remove(eventID);
         return eventList;
