@@ -116,8 +116,6 @@ public class ManageImageProfile {
 
 
 
-
-
     /**
      * Retrieves the image URL from Firebase Storage for the current user.
      *
@@ -176,4 +174,3 @@ public class ManageImageProfile {
     }
 
 }
-

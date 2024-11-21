@@ -11,12 +11,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.bumptech.glide.Glide;
 
 /**
  * @author Simon Haile
@@ -28,6 +31,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
     private TextView facilityNameTextView, addressTextView, ownerTextView;
     private EditText facilityNameEditText, addressEditText;
     private FacilitiesInfo facility;
+    private ImageView facilityImageView;
     private Boolean isOwner = false;
     private LinearLayout toolbar;
     private ImageButton backButton;
@@ -51,6 +55,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
 
         facilityNameTextView = findViewById(R.id.facilityName);
         addressTextView = findViewById(R.id.address);
+        facilityImageView = findViewById(R.id.facilityImage);
         ownerTextView = findViewById(R.id.owner);
         facilityNameEditText = findViewById(R.id.editFacilityName);
         addressEditText = findViewById(R.id.editAddress);
@@ -83,6 +88,13 @@ public class ViewFacilityActivity extends AppCompatActivity {
                     facilityNameTextView.setText(facility.getFacilityName());
                     addressTextView.setText(facility.getAddress());
                     ownerTextView.setText(facility.getOwner());
+
+                    if (facility.getFacilityImage() != null && !facility.getFacilityImage().isEmpty()) {
+                        Glide.with(ViewFacilityActivity.this)
+                                .load(facility.getFacilityImage())
+                                .into(facilityImageView);
+                        facilityImageView.setVisibility(View.VISIBLE);
+                    }
 
                     if (deviceID.equals(facility.getOwner())) {
                         isOwner = true;

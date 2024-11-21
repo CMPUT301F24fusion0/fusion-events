@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_add_event">
 
     <ScrollView
         android:id="@+id/scroll_container"
@@ -334,7 +334,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:text="Capacity"
+                android:text="Waitlist Capacity"
                 android:fontFamily="sans-serif"
                 android:textColor="@color/figmaBlue"
                 android:textFontWeight="600"
@@ -348,7 +348,7 @@
                 android:layout_height="60dp"
                 android:layout_width="match_parent"
                 android:layout_marginEnd="100dp"
-                android:hint="Enter Capacity"
+                android:hint="Enter Waitlist Capacity"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/custom_input"
                 android:drawablePadding="12dp"

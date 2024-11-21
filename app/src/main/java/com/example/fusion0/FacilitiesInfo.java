@@ -17,6 +17,7 @@ public class FacilitiesInfo {
     EventFirebase firebase;
     private Double latitude;
     private Double longitude;
+    private String facilityImage;
 
     /**
      * Default constructor. Initializes the firebase instance and prepares
@@ -36,7 +37,7 @@ public class FacilitiesInfo {
      * @param longitude The longitude coordinate of the facility's location.
      * @param latitude The latitude coordinate of the facility's location.
      */
-    public FacilitiesInfo(String address, String facilityName, String owner, Double longitude, Double latitude) {
+    public FacilitiesInfo(String address, String facilityName, String owner, Double longitude, Double latitude, String facilityImage) {
         this.address = address;
         this.facilityName = facilityName;
         this.owner = owner;
@@ -45,6 +46,7 @@ public class FacilitiesInfo {
         this.firebase = new EventFirebase();
         this.latitude = latitude;
         this.longitude = longitude;
+        this.facilityImage = facilityImage;
     }
 
     /**
@@ -114,6 +116,13 @@ public class FacilitiesInfo {
 
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
+    }
+
+    public String getFacilityImage(){
+        return facilityImage;
+    }
+    public void setFacilityImage(String facilityImage){
+        this.facilityImage = facilityImage;
     }
 
 }

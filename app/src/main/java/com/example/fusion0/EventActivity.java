@@ -28,22 +28,36 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.fragment.app.FragmentTransaction;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.places.api.model.AuthorAttributions;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchResolvedPhotoUriRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.zxing.WriterException;
+import com.yalantis.ucrop.UCrop;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -76,6 +90,7 @@ public class EventActivity extends AppCompatActivity {
     private String deviceID;
     private String address;
     private String facilityName;
+    private String facilityImage;
     private Date startDate;
     private Date endDate;
     private String eventPoster;
@@ -122,6 +137,7 @@ public class EventActivity extends AppCompatActivity {
 
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
+        validateUser();
         validateOrganizer();
 
         uploadPoster();
@@ -137,13 +153,26 @@ public class EventActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * @author Simon Haile
-     * Validates and retrieves the organizer associated with the current device ID.
-     * This method checks if an organizer already exists in the database based on the device ID.
-     * If the organizer is found, it is assigned to the `organizer` variable.
-     * If no organizer is found, a new `OrganizerInfo` object is created and added to the database.
-     */
+    private void validateUser() {
+        LoginManagement login = new LoginManagement(this);
+        login.isUserLoggedIn(isLoggedIn -> {
+            if (!isLoggedIn) {
+                Registration registration = new Registration();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.activity_add_event, registration)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
+        /**
+         * @author Simon Haile
+         * Validates and retrieves the organizer associated with the current device ID.
+         * This method checks if an organizer already exists in the database based on the device ID.
+         * If the organizer is found, it is assigned to the `organizer` variable.
+         * If no organizer is found, a new `OrganizerInfo` object is created and added to the database.
+         */
     private void validateOrganizer() {
         EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
             @Override
@@ -174,7 +203,7 @@ public class EventActivity extends AppCompatActivity {
      * the download URL for the uploaded image
      * is stored for later use.
      */
-    private void uploadPoster(){
+    private void uploadPoster() {
         Button uploadImageButton = findViewById(R.id.upload_image_button);
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -184,29 +213,43 @@ public class EventActivity extends AppCompatActivity {
                         uploadedImageView.setVisibility(View.VISIBLE);
                         uploadedImageView.setImageURI(imageUri);
 
-                        StorageReference imageRef = storageRef.child("event_posters/" + UUID.randomUUID().toString() + ".jpg");
+                        Uri destinationUri = Uri.fromFile(new File(getCacheDir(), "cropped_image.jpg"));
 
-                        imageRef.putFile(imageUri)
-                                .addOnSuccessListener(taskSnapshot -> {
-                                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                                        eventPoster = uri.toString();
-                                    }).addOnFailureListener(e -> {
-                                        Log.e(TAG, "Error getting download URL", e);
-                                    });
-                                })
-                                .addOnFailureListener(e -> {
-                                    Log.e(TAG, "Upload failed", e);
-                                });
+                        UCrop.of(imageUri, destinationUri)
+                                .withAspectRatio(9, 16)
+                                .withMaxResultSize(800, 1600)
+                                .start(this);
                     }
                 }
         );
 
-        uploadImageButton.setOnClickListener(v ->{
+        uploadImageButton.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
             imagePickerLauncher.launch(intent);
         });
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+            Uri resultUri = UCrop.getOutput(data);
+            if (resultUri != null) {
+                uploadedImageView.setVisibility(View.VISIBLE);
+                uploadedImageView.setImageURI(resultUri);
+                uploadedImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            }
+        } else if (resultCode == UCrop.RESULT_ERROR) {
+            Throwable cropError = UCrop.getError(data);
+            if (cropError != null) {
+                Log.e(TAG, "Crop error", cropError);
+            }
+        }
+    }
+
+
+
 
     /**
      * @author Simon Haile
@@ -297,15 +340,18 @@ public class EventActivity extends AppCompatActivity {
         addFacilityText.setVisibility(View.VISIBLE);
 
         if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
+            Places.initializeWithNewPlacesApiEnabled(getApplicationContext(), BuildConfig.API_KEY);
         }
+
+        // Initialize PlacesClient after the API is enabled
+        PlacesClient placesClient = Places.createClient(this);
 
         // Initialize the AutocompleteSupportFragment
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         // Specify the types of place data to return
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.FORMATTED_ADDRESS, Place.Field.LAT_LNG));
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.FORMATTED_ADDRESS, Place.Field.LAT_LNG, Place.Field.PHOTO_METADATAS));
 
         // Set up the PlaceSelectionListener
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
@@ -320,25 +366,69 @@ public class EventActivity extends AppCompatActivity {
                     longitude = latLng.longitude;
                 }
 
-                // Check if the facility name already exists in the list of facility names
-                if (facilityNames.contains(facilityName)) {
-                    Log.i(TAG, "Facility already exists: " + facilityName);
-                    // Optionally show a message to the user
-                    Toast.makeText(getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Create new facility and proceed
-                    newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude);
-                    facility = newFacility;
+                final List<Place.Field> fields = Collections.singletonList(Place.Field.PHOTO_METADATAS);
 
-                    // Add the new facility name to the facilityNames list
-                    facilityNames.add(facilityName);
+                final FetchPlaceRequest placeRequest = FetchPlaceRequest.newInstance(place.getId(), fields);
+                placesClient.fetchPlace(placeRequest).addOnSuccessListener((response) -> {
+                    Place placeDetails = response.getPlace();
 
-                    // Notify the adapter that the data has changed
-                    adapter.notifyDataSetChanged();
+                    // Get photo metadata
+                    List<PhotoMetadata> metadata = placeDetails.getPhotoMetadatas();
+                    if (metadata == null || metadata.isEmpty()) {
+                        Log.w(TAG, "No photo metadata available for this place.");
+                        return;
+                    }
 
-                    // Optionally, show a toast indicating the facility was added
-                    Toast.makeText(getApplicationContext(), "New facility added: " + facilityName, Toast.LENGTH_SHORT).show();
-                }
+                    // Fetch photo URI
+                    PhotoMetadata photoMetadata = metadata.get(0);
+                    String attributions = photoMetadata.getAttributions();
+                    AuthorAttributions authorAttributions = photoMetadata.getAuthorAttributions();
+
+                    // Create and send photo request
+                    FetchResolvedPhotoUriRequest photoRequest =
+                            FetchResolvedPhotoUriRequest.builder(photoMetadata)
+                                    .setMaxWidth(500)
+                                    .setMaxHeight(300)
+                                    .build();
+
+                    placesClient.fetchResolvedPhotoUri(photoRequest)
+                            .addOnSuccessListener((photoUriResponse) -> {
+                                Uri photoUri = photoUriResponse.getUri();
+                                if (photoUri != null) {
+                                    Log.d(TAG, "Fetched photo URI: " + photoUri.toString());
+                                    facilityImage = photoUri.toString();
+
+                                    // Check if the facility name already exists in the list of facility names
+                                    if (facilityNames.contains(facilityName)) {
+                                        Log.i(TAG, "Facility already exists: " + facilityName);
+                                        // Optionally show a message to the user
+                                        Toast.makeText(getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Log.d(TAG, " fetching photo URI: " + facilityImage);
+                                        newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude, facilityImage);
+                                        facility = newFacility;
+
+                                        // Add the new facility name to the facilityNames list
+                                        facilityNames.add(facilityName);
+
+                                        // Notify the adapter that the data has changed
+                                        adapter.notifyDataSetChanged();
+
+                                        // Optionally, show a toast indicating the facility was added
+                                        Toast.makeText(getApplicationContext(), "New facility added: " + facilityName, Toast.LENGTH_SHORT).show();
+                                    }
+                                } else {
+                                    Log.w(TAG, "Fetched photo URI is null.");
+                                }
+                            })
+                            .addOnFailureListener(exception -> {
+                                Log.e(TAG, "Error fetching photo URI: " + exception.getMessage());
+                            });
+
+                }).addOnFailureListener(exception -> {
+                    Log.e(TAG, "Error fetching place details: " + exception.getMessage());
+                });
+
             }
 
             @Override

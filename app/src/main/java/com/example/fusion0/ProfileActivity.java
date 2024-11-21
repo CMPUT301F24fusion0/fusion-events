@@ -41,7 +41,7 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView fullName;
     private TextView emailAddress;
     private TextView phoneNumber;
-  
+
     private EditText editFullName;
     private EditText editEmailAddress;
     private EditText editPhoneNumber;
@@ -61,9 +61,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     // Toolbar buttons
     private ImageButton homeButton;
-    private ImageButton cameraButton;
     private ImageButton addButton;
-    private ImageButton favouriteButton;
 
     /**
      * Initializes the ProfileActivity, setting up view components, loading user data,
@@ -84,7 +82,7 @@ public class ProfileActivity extends AppCompatActivity {
         editFullName = findViewById(R.id.editFullName);
         editEmailAddress = findViewById(R.id.editEmailAddress);
         editPhoneNumber = findViewById(R.id.editPhoneNumber);
-      
+
         profileImage = findViewById(R.id.profileImage);
         editImage = findViewById(R.id.editImage);
         editButton = findViewById(R.id.editButton);
@@ -92,9 +90,7 @@ public class ProfileActivity extends AppCompatActivity {
         cancelButton = findViewById(R.id.cancelButton);
 
         homeButton = findViewById(R.id.toolbar_home);
-        cameraButton = findViewById(R.id.toolbar_camera);
         addButton = findViewById(R.id.toolbar_add);
-        favouriteButton = findViewById(R.id.toolbar_favourite);
         settingsButton = findViewById(R.id.settingsButton);
 
 
@@ -262,20 +258,12 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        cameraButton.setOnClickListener(view -> {
-            Intent intent = new Intent(ProfileActivity.this, QRActivity.class);
-            startActivity(intent);
-        });
 
         addButton.setOnClickListener(view -> {
             Intent intent = new Intent(ProfileActivity.this, EventActivity.class);
             startActivity(intent);
         });
 
-        favouriteButton.setOnClickListener(view -> {
-            Intent intent = new Intent(ProfileActivity.this, FavouriteActivity.class);
-            startActivity(intent);
-        });
 
         settingsButton.setOnClickListener(view -> {
             Settings settings = new Settings();

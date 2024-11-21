@@ -161,7 +161,8 @@ public class JoinedEventActivity extends AppCompatActivity {
             UserFirestore.editUserEvents(user);
 
             EventFirebase.editEvent(event);
-            finish();
+            Intent intent = new Intent(JoinedEventActivity.this, FavouriteActivity.class);
+            startActivity(intent);
             //remove user from event chosenlist if in, cancelled list if in
         });
 

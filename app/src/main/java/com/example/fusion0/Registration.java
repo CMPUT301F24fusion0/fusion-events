@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -23,6 +24,7 @@ public class Registration extends Fragment {
     EditText firstName, lastName, email, phoneNumber;
     UserFirestore firebase;
     Button register;
+    ImageButton backButton;
 
     /**
      * @author Sehej Brar
@@ -48,6 +50,7 @@ public class Registration extends Fragment {
         email = view.findViewById(R.id.email);
         phoneNumber = view.findViewById(R.id.phone);
         register = view.findViewById(R.id.confirm);
+        backButton = view.findViewById(R.id.backButton);
         firebase = new UserFirestore();
 
         return view;
@@ -84,7 +87,15 @@ public class Registration extends Fragment {
                 Log.d("Checkpoint", "the bundle was null - going back to vea");
                 Intent intent = new Intent(getActivity(), ViewEventActivity.class);
                 startActivity(intent);
+            }else{
+                Intent intent = new Intent(getActivity(), EventActivity.class);
+                startActivity(intent);
             }
+        });
+
+        backButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            startActivity(intent);
         });
     }
 

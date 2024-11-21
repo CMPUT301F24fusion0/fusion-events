@@ -55,6 +55,8 @@
         <activity android:name=".ViewEventActivity"/>
         <activity android:name=".ViewFacilityActivity"/>
         <activity android:name=".JoinedEventActivity"/>
+        <activity android:name="com.yalantis.ucrop.UCropActivity" /> <!-- for cropping pictures when adding event poster -->
+
     </application>
 
 </manifest>

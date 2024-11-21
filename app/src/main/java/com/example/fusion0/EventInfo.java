@@ -36,7 +36,7 @@ public class EventInfo {
     private String eventPoster;
     private String qrCode;
     EventFirebase firebase;
-    private Long acceptedCount;
+    private Integer acceptedCount;
     private Boolean geolocation;
     private Double latitude;
     private Double longitude;
@@ -63,7 +63,7 @@ public class EventInfo {
         this.qrCode = (new QRCode(eventID)).getQrCode();
         this.waitinglist = new ArrayList<Map<String, String>>();
         this.firebase = new EventFirebase();
-        this.acceptedCount = 0L;
+        this.acceptedCount = 0;
         this.eventPoster = null;
         this.geolocation = false;
         this.latitude = 0.0;
@@ -107,7 +107,7 @@ public class EventInfo {
         this.qrCode =(new QRCode(eventID)).getQrCode();
         this.waitinglist = new ArrayList<>();
         this.firebase = new EventFirebase();
-        this.acceptedCount = 0L;
+        this.acceptedCount = 0;
         this.eventPoster = eventPoster;
         this.geolocation = geolocation;
         this.latitude = latitude;
@@ -140,6 +140,8 @@ public class EventInfo {
         event.put("latitude", this.latitude);
         event.put("longitude", this.longitude);
         event.put("radius", this.radius);
+        event.put("acceptedCount", this.acceptedCount);
+
         return event;
     }
 
@@ -206,11 +208,11 @@ public class EventInfo {
         this.capacity = capacity;
     }
 
-    public Long getAcceptedCount() {
+    public Integer getAcceptedCount() {
         return acceptedCount;
     }
 
-    public void setAcceptedCount(Long acceptedCount) {
+    public void setAcceptedCount(Integer acceptedCount) {
         this.acceptedCount = acceptedCount;
     }
 
