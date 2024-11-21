@@ -3,6 +3,7 @@ package com.example.fusion0;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +78,11 @@ public class Registration extends Fragment {
                 String eventId = bundle.getString("eventID");
                 Intent intent = new Intent(getActivity(), ViewEventActivity.class);
                 intent.putExtra("eventID", eventId);
+                Log.d("Checkpoint", "bundle was good - going back to vea");
+                startActivity(intent);
+            } else {
+                Log.d("Checkpoint", "the bundle was null - going back to vea");
+                Intent intent = new Intent(getActivity(), ViewEventActivity.class);
                 startActivity(intent);
             }
         });
@@ -106,9 +112,9 @@ public class Registration extends Fragment {
                     System.out.println("This user already exists.");
                 } else {
                     if (!phone.isEmpty()) {
-                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, phone, dID, new ArrayList<EventInfo>());
+                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, phone, dID, new ArrayList<String>());
                     } else {
-                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, dID, new ArrayList<EventInfo>());
+                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, dID, new ArrayList<String>());
                     }
                     firebase.addUser(newUser);
                 }

@@ -20,6 +20,7 @@ import com.google.zxing.WriterException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author Simon Haile
@@ -148,14 +149,14 @@ public class JoinedEventActivity extends AppCompatActivity {
         }
 
         unjoinButton.setOnClickListener(view ->{
-            ArrayList<String> newWaitingList = event.removeUserFromWaitingList(deviceID, event.getWaitinglist());
+            ArrayList<Map<String, String>> newWaitingList = event.removeUserFromWaitingList(deviceID, event.getWaitinglist());
             event.setWaitinglist(newWaitingList);
 
             EventFirebase.editEvent(event);
 
 
-            ArrayList<EventInfo> userEvents =  user.getEvents();
-            ArrayList<EventInfo> newEventsList = user.removeEventFromEventList(event, userEvents);
+            ArrayList<String> userEvents =  user.getEvents();
+            ArrayList<String> newEventsList = user.removeEventFromEventList(event.getEventID(), userEvents);
             user.setEvents(newEventsList);
             UserFirestore.editUserEvents(user);
 

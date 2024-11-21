@@ -84,13 +84,13 @@ public class FavouriteActivity extends AppCompatActivity {
                     joinedEventsButton.setText("View");
                 } else {
                     user = userInfo;
-                    ArrayList<EventInfo> events = user.getEvents();
+                    ArrayList<String> events = user.getEvents();
 
                     if (joinedEventsList.getAdapter() == null) {
                         ArrayList<String> eventNames = new ArrayList<>();
-                        for (EventInfo event : events) {
-                            if (event != null && event.getEventName() != null) {
-                                eventNames.add(event.getEventName());
+                        for (String event : events) {
+                            if (event != null) {
+                                eventNames.add(event);
                             }
                         }
                         ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(FavouriteActivity.this, android.R.layout.simple_list_item_1, eventNames);
@@ -116,8 +116,7 @@ public class FavouriteActivity extends AppCompatActivity {
             });
 
             joinedEventsList.setOnItemClickListener((parent, view1, position, id) -> {
-                EventInfo event = user.getEvents().get(position);
-                String eventID = event.getEventID();
+                String eventID = user.getEvents().get(position);
 
                 Intent intent = new Intent(FavouriteActivity.this, JoinedEventActivity.class);
                 intent.putExtra("eventID", eventID);
