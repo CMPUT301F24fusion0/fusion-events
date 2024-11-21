@@ -1,6 +1,5 @@
 package com.example.fusion0.helpers;
 
-
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -18,6 +17,12 @@ import androidx.fragment.app.FragmentActivity;
 import com.example.fusion0.fragments.MapDialogFragment;
 
 
+import com.example.fusion0.MapDialogFragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
 /**
  * GeoLocation class manages the user's geolocation, calculates distances
  * to an event location, and determines whether the user can register based
@@ -33,10 +38,12 @@ public class GeoLocation implements LocationListener {
     private Location userLocation;
     private Location eventLocation;
     private double acceptableRadius;
+    private List<Location> userLocations;
+
 
 
     /**
-     * Constructor for GeoLocation that sets an event location and acceptable radius.
+     * Constructor with event details.
      *
      * @param fragmentActivity The activity context to display dialogs.
      * @param context The context in which the location service is accessed.
@@ -51,12 +58,13 @@ public class GeoLocation implements LocationListener {
         this.eventLocation = new Location("eventLocation");
         this.eventLocation.setLatitude(eventLatitude);
         this.eventLocation.setLongitude(eventLongitude);
+        this.userLocations = new ArrayList<>();
         initializeLocationManager();
     }
 
 
     /**
-     * Constructor for GeoLocation to compare a user location to an event location without a pre-set event location and already known user location (User setters).
+     * Constructor without event details.
      *
      * @param fragmentActivity The activity context to display dialogs.
      * @param context The context in which the location service is accessed.
@@ -64,6 +72,7 @@ public class GeoLocation implements LocationListener {
     public GeoLocation(FragmentActivity fragmentActivity, Context context) {
         this.fragmentActivity = fragmentActivity;
         this.context = context;
+        this.userLocations = new ArrayList<>();
         initializeLocationManager();
     }
 
@@ -80,7 +89,7 @@ public class GeoLocation implements LocationListener {
     private void initializeLocationManager() {
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         if (isLocationPermissionGranted()) {
-            setLastKnownLocation();
+            requestLocationUpdates();
         }
     }
 
@@ -88,12 +97,10 @@ public class GeoLocation implements LocationListener {
     /**
      * Sets the last known location for a quicker initial value.
      */
-    private void setLastKnownLocation() {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (lastKnownLocation != null) {
-                userLocation = lastKnownLocation;
-            }
+    private void requestLocationUpdates() {
+        if (isLocationPermissionGranted()) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, this);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5, this);
         }
     }
 
@@ -148,28 +155,17 @@ public class GeoLocation implements LocationListener {
      *         is available or permissions are not granted.
      */
     public Location getLocation() {
-
-
-        //If location was not yet set
-        if (isLocationPermissionGranted()) {
-
-
-            // Try to get the last known location
-            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (lastKnownLocation != null) {
-                userLocation = lastKnownLocation;
-                return userLocation;
-            }
-
-
-            // Request location updates if no immediate location is available
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, this);
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5, this);
+        if (userLocation != null) {
+            return userLocation;
         }
-        return null;
+
+        if (isLocationPermissionGranted()) {
+            requestLocationUpdates();
+        }
+
+        // Return the current user location, which will be updated as location changes
+        return userLocation;
     }
-
-
 
 
 
@@ -262,7 +258,14 @@ public class GeoLocation implements LocationListener {
      * @param radius The acceptable radius of the event.
      */
     public void setEventRadius(int radius){
+
         acceptableRadius = radius;
+    }
+    /**
+     * Gets the event acceptable radius.
+     */
+    public double getEventRadius() {
+        return acceptableRadius;
     }
 
     /**
@@ -291,4 +294,54 @@ public class GeoLocation implements LocationListener {
             Toast.makeText(context, "Locations not set", Toast.LENGTH_SHORT).show();
         }
     }
+
+
+    //The following will be logic in the case of multiple user locations
+
+
+    /**
+     * Adds a list of user locations.
+     *
+     * @param userLatLngList A list of latitude-longitude pairs representing user locations.
+     */
+    public void setUserLocations(List<double[]> userLatLngList) {
+        userLocations.clear(); // Clear existing locations
+        for (double[] latLng : userLatLngList) {
+            Location location = new Location("User");
+            location.setLatitude(latLng[0]);
+            location.setLongitude(latLng[1]);
+            userLocations.add(location);
+        }
+    }
+
+    /**
+     * Returns the list of user locations.
+     *
+     * @return A list of user locations.
+     */
+    public List<Location> getUserLocations() {
+        return userLocations;
+    }
+
+
+    /**
+     * Show the map for multiple users compared to the event location.
+     *
+     * @param userLatLngList A list of latitude-longitude pairs representing user locations.
+     */
+    public void showMapDialog(List<double[]> userLatLngList) {
+        if (eventLocation != null && userLatLngList != null && !userLatLngList.isEmpty()) {
+            MapDialogFragment mapDialogFragment = new MapDialogFragment(
+                    eventLocation.getLatitude(),
+                    eventLocation.getLongitude(),
+                    userLatLngList,
+                    acceptableRadius
+            );
+            mapDialogFragment.show(fragmentActivity.getSupportFragmentManager(), "mapDialog");
+        } else {
+            Toast.makeText(context, "Locations not set or user list is empty", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 }
