@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
@@ -41,6 +42,27 @@ public class AppNotifications {
     }
 
     /**
+     * Changes permission if need be
+     * Adapted from: <a href="https://stackoverflow.com/questions/58047177/how-to-turn-off-app-notification-from-inside-the-app">...</a>
+     * @param context context
+     * @param perm true for notifications can be sent, false otherwise
+     */
+    public static void setNotificationPermission(Context context, boolean perm) {
+        SharedPreferences sp = context.getSharedPreferences("notifications", Context.MODE_PRIVATE);
+        sp.edit().putBoolean("permission", perm).apply();
+    }
+
+    /**
+     * Returns true if permission has been given or if nothing explicit has been given.
+     * @param context context
+     * @return a boolean
+     */
+    public static boolean checkNotificationPermission(Context context) {
+        SharedPreferences sp = context.getSharedPreferences("notifications", Context.MODE_PRIVATE);
+        return sp.getBoolean("permission", true);
+    }
+
+    /**
      * @author Sehej Brar
      * Ask for permission to send notifications for Android versions 13
      * @param activity the activity to ask for permission in
@@ -68,14 +90,14 @@ public class AppNotifications {
      * @param title title of notification
      * @param body body of notification
      */
-    public static void sendNotification(String dID, String title, String body) {
+    public static void sendNotification(String dID, String title, String body, String flag) {
         UserFirestore firebase = new UserFirestore();
-        firebase.findUser(dID, new UserFirestore.Callback() {
+        UserFirestore.findUser(dID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
                 if (user != null) {
                     user.editMode(true);
-                    user.addNotifications(title, body);
+                    user.addNotifications(title, body, flag);
                     user.editMode(false);
                 }
             }
@@ -101,7 +123,7 @@ public class AppNotifications {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "lottery");
         if (notifications != null) {
-            for (int i = 0; i < notifications.size(); i += 2) {
+            for (int i = 0; i < notifications.size(); i += 3) {
                 Intent intent = new Intent(context, MainActivity.class);
                 PendingIntent pendingIntent = PendingIntent.getActivity(context, i, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
                 builder.setContentTitle(notifications.get(i))
@@ -128,7 +150,9 @@ public class AppNotifications {
         userFirestore.findUser(dID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
-                sendAllNotifications(context, user.getNotifications());
+                if (AppNotifications.checkNotificationPermission(context)) {
+                    sendAllNotifications(context, user.getNotifications());
+                }
                 user.editMode(true);
                 user.setNotifications(new ArrayList<String>());
                 System.out.println("Notifications removed successfully");

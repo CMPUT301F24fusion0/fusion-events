@@ -374,12 +374,12 @@ public class Waitlist {
      * @param title title of notification
      * @param message message of notification
      */
-    public void allNotification(String eventId, String title, String message) {
+    public void allNotification(String eventId, String title, String message, String flag) {
         getAll(eventId, new AllCB() {
             @Override
             public void allDid(ArrayList<String> all) {
                 for (String dID: all) {
-                    AppNotifications.sendNotification(dID, title, message);
+                    AppNotifications.sendNotification(dID, title, message, flag);
                 }
             }
         });
@@ -392,11 +392,29 @@ public class Waitlist {
      * @param title title of notification
      * @param message message of notification
      */
-    public void chosenNotification(String eventId, String title, String message) {
+    public void chosenNotification(String eventId, String title, String message, String flag) {
         getChosen(eventId, chosen -> {
             for (String dID: chosen) {
-                AppNotifications.sendNotification(dID, title, message);
+                AppNotifications.sendNotification(dID, title, message, flag);
             }
+        });
+    }
+
+    /**
+     * Sends notification to the ones not chosen in the lottery
+     * @author Sehej Brar
+     * @param eventId event id
+     * @param title title of notification
+     * @param message message of notification
+     */
+    public void loseNotification(String eventId, String title, String message, String flag) {
+        getAll(eventId, all -> {
+            getChosen(eventId, chosen -> {
+                all.removeAll(chosen);
+                for (String dID: all) {
+                    AppNotifications.sendNotification(dID, title, message, flag);
+                }
+            });
         });
     }
 
@@ -407,10 +425,10 @@ public class Waitlist {
      * @param title title of notification
      * @param message message of notification
      */
-    public void cancelNotifications(String eventId, String title, String message) {
+    public void cancelNotifications(String eventId, String title, String message, String flag) {
         getCancel(eventId, cancel -> {
             for (String dID: cancel) {
-                AppNotifications.sendNotification(dID, title, message);
+                AppNotifications.sendNotification(dID, title, message, flag);
             }
         });
     }

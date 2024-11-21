@@ -5,9 +5,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 /**
- * This class contains the information regarding the facility. For brevity, getters and setters do not include
- * Javadocs as they are self-explanatory.
  * @author Simon Haile
+ * This class contains the information for facilities.
  */
 public class FacilitiesInfo {
     public String facilityID;
@@ -20,19 +19,22 @@ public class FacilitiesInfo {
     private Double longitude;
 
     /**
-     * Constructor to initialize the firebase. Takes in no parameters.
+     * Default constructor. Initializes the firebase instance and prepares
+     * an empty list of events. The facilityID is left unset.
      */
     public FacilitiesInfo() {
         this.firebase = new EventFirebase();
     }
 
     /**
-     * Takes in parameters and initializes the facility based on that information
-     * @param address address of facility
-     * @param facilityName facility name
-     * @param owner owner of facility
-     * @param longitude location of facility
-     * @param latitude location of facility
+     * Constructs a new FacilitiesInfo object with specified address, facility name,
+     * owner, longitude, and latitude. A unique facility ID is generated automatically.
+     *
+     * @param address The address of the facility.
+     * @param facilityName The name of the facility.
+     * @param owner The owner of the facility.
+     * @param longitude The longitude coordinate of the facility's location.
+     * @param latitude The latitude coordinate of the facility's location.
      */
     public FacilitiesInfo(String address, String facilityName, String owner, Double longitude, Double latitude) {
         this.address = address;
@@ -46,8 +48,10 @@ public class FacilitiesInfo {
     }
 
     /**
-     * Facility is put into a hashmap for easier insertion into DB
-     * @return hashmap of facility
+     * Returns a map representation of the facility's information. The map contains
+     * the facility's address, name, owner, and events.
+     *
+     * @return A hashmap containing the facility's data.
      */
     public HashMap<String, Object> facility() {
         HashMap<String, Object> facility = new HashMap<>();

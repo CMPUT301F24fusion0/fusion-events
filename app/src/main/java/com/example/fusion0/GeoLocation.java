@@ -1,4 +1,5 @@
 package com.example.fusion0;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -7,15 +8,18 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.widget.Toast;
 
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+
 import com.example.fusion0.MapDialogFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * GeoLocation class manages the user's geolocation, calculates distances
@@ -24,6 +28,7 @@ import java.util.List;
  */
 public class GeoLocation implements LocationListener {
 
+
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
     private final Context context;
     private final FragmentActivity fragmentActivity;
@@ -31,9 +36,8 @@ public class GeoLocation implements LocationListener {
     private Location userLocation;
     private Location eventLocation;
     private double acceptableRadius;
-
-    //NEW ADDED
     private List<Location> userLocations;
+
 
 
     /**
@@ -56,6 +60,7 @@ public class GeoLocation implements LocationListener {
         initializeLocationManager();
     }
 
+
     /**
      * Constructor without event details.
      *
@@ -70,8 +75,11 @@ public class GeoLocation implements LocationListener {
     }
 
 
+
+
     //The follow 4 functions were implemented with the help of "https://www.youtube.com/watch?v=qY-xFxZ7HKY" - 2024-10-27
     //ChatGPT made changes to help improve the speed at which location was retrieved, "(Provided code in video in function form)  How can I make it so location is retrieved quicker to avoid issues?" - 2024-10-27
+
 
     /**
      * Initializes the LocationManager and sets the initial user location if permissions are granted.
@@ -83,6 +91,7 @@ public class GeoLocation implements LocationListener {
         }
     }
 
+
     /**
      * Sets the last known location for a quicker initial value.
      */
@@ -93,6 +102,7 @@ public class GeoLocation implements LocationListener {
         }
     }
 
+
     /**
      * Callback method invoked when the user's location changes. Updates userLocation and displays a Toast message.
      *
@@ -102,6 +112,7 @@ public class GeoLocation implements LocationListener {
     public void onLocationChanged(@NonNull Location location) {
         userLocation = location;
     }
+
 
     /**
      * Checks if location permissions are granted.
@@ -114,6 +125,7 @@ public class GeoLocation implements LocationListener {
         return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
+
     /**
      * Requests location permission from the user if it isn’t already granted.
      */
@@ -122,6 +134,7 @@ public class GeoLocation implements LocationListener {
             ActivityCompat.requestPermissions(fragmentActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
+
 
     /**
      * Attempts to retrieve the user's current location.
@@ -153,6 +166,10 @@ public class GeoLocation implements LocationListener {
     }
 
 
+
+
+
+
     /**
      * Determines if the user can register based on their distance from the event location.
      *
@@ -166,6 +183,7 @@ public class GeoLocation implements LocationListener {
         return false;
     }
 
+
     /**
      * Sets the event location based on provided latitude and longitude.
      *
@@ -177,6 +195,7 @@ public class GeoLocation implements LocationListener {
         eventLocation.setLatitude(latitude);
         eventLocation.setLongitude(longitude);
     }
+
 
     /**
      * Sets the user location based on provided latitude and longitude.
@@ -190,6 +209,7 @@ public class GeoLocation implements LocationListener {
         userLocation.setLongitude(longitude);
     }
 
+
     /**
      * Retrieves the user's current latitude.
      *
@@ -198,6 +218,7 @@ public class GeoLocation implements LocationListener {
     public double getUserLatitude() {
         return userLocation != null ? userLocation.getLatitude() : 0.0;
     }
+
 
     /**
      * Retrieves the user's current longitude.
@@ -208,6 +229,7 @@ public class GeoLocation implements LocationListener {
         return userLocation != null ? userLocation.getLongitude() : 0.0;
     }
 
+
     /**
      * Retrieves the event's current latitude.
      *
@@ -217,6 +239,7 @@ public class GeoLocation implements LocationListener {
         return eventLocation != null ? eventLocation.getLatitude() : 0.0;
     }
 
+
     /**
      * Retrieves the event's current longitude.
      *
@@ -225,6 +248,7 @@ public class GeoLocation implements LocationListener {
     public double getEventLongitude() {
         return eventLocation != null ? eventLocation.getLongitude() : 0.0;
     }
+
 
     /**
      * Sets the event acceptable radius.
@@ -242,6 +266,14 @@ public class GeoLocation implements LocationListener {
         return acceptableRadius;
     }
 
+    /**
+     * Returns the event acceptable radius.
+     */
+    public double getEventRadius(){
+        return acceptableRadius;
+    }
+
+
 
     /**
      * Displays a map dialog showing user and event locations with an indicator of the acceptable radius.
@@ -252,6 +284,7 @@ public class GeoLocation implements LocationListener {
             double eventLng = eventLocation.getLongitude();
             double userLat = userLocation.getLatitude();
             double userLng = userLocation.getLongitude();
+
 
             MapDialogFragment mapDialogFragment = new MapDialogFragment(eventLat, eventLng, userLat, userLng, acceptableRadius);
             mapDialogFragment.show(fragmentActivity.getSupportFragmentManager(), "mapDialog");

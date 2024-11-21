@@ -47,16 +47,19 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
-
+/**
+ * @author Simon Haile
+ * This activity allows users to create events
+ */
 public class EventActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private StorageReference storageRef;
 
     private static final String TAG = "EventActivity";
-    private EditText eventName,description, capacity;
+    private EditText eventName,description, capacity, radius;
     private androidx.fragment.app.FragmentContainerView autocompletePlaceFragment;
     private Calendar startDateCalendar;
-    private TextView addFacilityText,dateRequirementsTextView, startDateTextView, startTimeTextView, endDateTextView, endTimeTextView, geolocationTextView;
+    private TextView addFacilityText,dateRequirementsTextView, startDateTextView, startTimeTextView, endDateTextView, endTimeTextView, geolocationTextView, radiusText;
     private Button addButton, exitButton;
     private ImageView uploadedImageView;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
@@ -81,6 +84,13 @@ public class EventActivity extends AppCompatActivity {
     private Boolean geolocation = false;
 
 
+    /**
+     * Initializes the activity when it is first created. This method sets up the user interface
+     * and prepares the necessary components for the event creation process. It handles view initialization,
+     * Firebase setup, and event handling methods for the user to create an event.
+     * @param savedInstanceState A Bundle object containing the activity's previously saved state,
+     * or null if the activity is being created for the first time.
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,6 +115,10 @@ public class EventActivity extends AppCompatActivity {
         exitButton = findViewById(R.id.exit_button);
         geolocationTextView = findViewById(R.id.geolocation_text);
         geolocationSwitchCompact = findViewById(R.id.geolocation_switchcompat);
+        radius = findViewById(R.id.radius);
+        radius.setText("0");
+        radiusText = findViewById(R.id.radius_text);
+
 
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
@@ -118,11 +132,18 @@ public class EventActivity extends AppCompatActivity {
         EndDateButtonHandling();
 
         AddEvent();
-        ExitButtonHandling();
+
+        exitButton.setOnClickListener(v -> finish());
     }
 
 
-
+    /**
+     * @author Simon Haile
+     * Validates and retrieves the organizer associated with the current device ID.
+     * This method checks if an organizer already exists in the database based on the device ID.
+     * If the organizer is found, it is assigned to the `organizer` variable.
+     * If no organizer is found, a new `OrganizerInfo` object is created and added to the database.
+     */
     private void validateOrganizer() {
         EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
             @Override
@@ -142,7 +163,17 @@ public class EventActivity extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * @author Simon Haile
+     * Initializes the image upload process by setting up an image picker and handling the image
+     * upload to Firebase Storage.
+     * This method sets up an `ActivityResultLauncher` to handle the image selection from the device.
+     * When an image is selected, it is displayed in an `ImageView` (`eventPosterImageView`).
+     * The image is then uploaded to Firebase Storage under the "event_posters"
+     * directory, with a unique file name generated using `UUID`. Once the upload is successful,
+     * the download URL for the uploaded image
+     * is stored for later use.
+     */
     private void uploadPoster(){
         Button uploadImageButton = findViewById(R.id.upload_image_button);
         imagePickerLauncher = registerForActivityResult(
@@ -177,10 +208,22 @@ public class EventActivity extends AppCompatActivity {
         });
     }
 
-    private void handleFacility(OrganizerInfo organizer){
+
+    /**
+     * @author Simon Haile
+     * Displays a spinner to allow the event organizer to choose or add a facility for the event.
+     * The spinner is populated with existing facilities, and the "Add Facility" option is added at the end.
+     * If a facility is selected, its details are fetched from Firebase. If "Add Facility" is selected,
+     * the user can add a new facility using a place autocomplete fragment.
+     *
+     * @param organizer The organizer's information used to retrieve their facilities.
+     */
+
+    private void handleFacility(OrganizerInfo organizer) {
         ArrayList<String> facilityNames = new ArrayList<>();
 
-        if (organizer.getFacilities() != null){
+        // Add existing facilities to the facilityNames list
+        if (organizer.getFacilities() != null) {
             ArrayList<FacilitiesInfo> facilities = organizer.getFacilities();
             for (FacilitiesInfo facility : facilities) {
                 if (facility != null) {
@@ -191,22 +234,30 @@ public class EventActivity extends AppCompatActivity {
             }
         }
 
+        // Add the "Add Facility" option at the end
         facilityNames.add("Add Facility");
 
+        // Create the ArrayAdapter for the spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, facilityNames);
 
+        // Set drop-down view resource
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+        // Set the adapter to the spinner
         spinnerFacilities.setAdapter(adapter);
 
+        // Set the item selection listener for the spinner
         spinnerFacilities.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedFacility = parent.getItemAtPosition(position).toString();
-                if (selectedFacility.equals("Add Facility")){
-                    addFacility();
-                }else{
+
+                // Check if "Add Facility" is selected
+                if (selectedFacility.equals("Add Facility")) {
+                    addFacility(facilityNames, adapter); // Pass the adapter so we can update it
+                } else {
+                    // If the selected facility exists, proceed with fetching it
                     String facilityID = organizer.getFacilityIdByName(selectedFacility);
                     EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
                         @Override
@@ -217,6 +268,7 @@ public class EventActivity extends AppCompatActivity {
                             longitude = facility.getLongitude();
                             latitude = facility.getLatitude();
                         }
+
                         @Override
                         public void onFailure(String error) {
                             Log.e(TAG, "Error fetching facility: " + error);
@@ -227,13 +279,22 @@ public class EventActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                // Handle nothing selected case if necessary
             }
         });
-
     }
 
-    private void addFacility(){
+    /**
+     * @author Simon Haile
+     * Allows the user to add a new facility to the list by using a place autocomplete fragment.
+     * The fragment allows the user to select a place, which is then added as a new facility.
+     * The facility details (address, name, and coordinates) are captured and added to the facility list.
+     * If the facility already exists in the list, a message is displayed to the user.
+     *
+     * @param facilityNames The list of existing facility names.
+     * @param adapter The adapter used for the facility spinner to update the displayed options.
+     */
+    private void addFacility(ArrayList<String> facilityNames, ArrayAdapter<String> adapter) {
         autocompletePlaceFragment.setVisibility(View.VISIBLE);
         addFacilityText.setVisibility(View.VISIBLE);
 
@@ -241,14 +302,14 @@ public class EventActivity extends AppCompatActivity {
             Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
         }
 
-        // Initialize the AutocompleteSupportFragment.
+        // Initialize the AutocompleteSupportFragment
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
-        // Specify the types of place data to return.
+        // Specify the types of place data to return
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.FORMATTED_ADDRESS, Place.Field.LAT_LNG));
 
-        // Set up a PlaceSelectionListener to handle the response.
+        // Set up the PlaceSelectionListener
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
@@ -256,14 +317,30 @@ public class EventActivity extends AppCompatActivity {
                 facilityName = place.getDisplayName();
 
                 LatLng latLng = place.getLatLng();
-
                 if (latLng != null) {
                     latitude = latLng.latitude;
                     longitude = latLng.longitude;
                 }
 
-                newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude);
-                facility = newFacility;
+                // Check if the facility name already exists in the list of facility names
+                if (facilityNames.contains(facilityName)) {
+                    Log.i(TAG, "Facility already exists: " + facilityName);
+                    // Optionally show a message to the user
+                    Toast.makeText(getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Create new facility and proceed
+                    newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude);
+                    facility = newFacility;
+
+                    // Add the new facility name to the facilityNames list
+                    facilityNames.add(facilityName);
+
+                    // Notify the adapter that the data has changed
+                    adapter.notifyDataSetChanged();
+
+                    // Optionally, show a toast indicating the facility was added
+                    Toast.makeText(getApplicationContext(), "New facility added: " + facilityName, Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -273,12 +350,30 @@ public class EventActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * @author Simon Haile
+     * Handles geolocation switch compact. Sets geolocation to true if switch compact is checked.
+     */
     private void geolocationHandling(){
         geolocationSwitchCompact.setOnCheckedChangeListener((buttonView, isChecked) -> {
             geolocation = isChecked;
+            if (isChecked) {
+                radiusText.setVisibility(View.VISIBLE);
+                radius.setVisibility(View.VISIBLE);
+            } else {
+                radiusText.setVisibility(View.GONE);
+                radius.setVisibility(View.GONE);
+                radius.setText("0");
+            }
         });
     }
 
+    /**
+     * @author Simon Haile
+     * Handles the user interaction with the Start Date button. This method sets up a date picker dialog for selecting
+     * the start date and time. It validates the selected date and time to ensure they are not in the past, and displays
+     * appropriate error messages when necessary.
+     */
     private void StartDateButtonHandling() {
         Button startDateButton = findViewById(R.id.start_date_button);
         TextView startDateTextView = findViewById(R.id.start_date_text);
@@ -339,6 +434,13 @@ public class EventActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * @author Simon Haile
+     * Handles the user interaction with the End Date button. This method sets up a date picker dialog for selecting
+     * the end date and time. It ensures that the end date is not earlier than the start date and that the selected
+     * end time is not before the start time.
+     */
     private void EndDateButtonHandling() {
         Button endDateButton = findViewById(R.id.end_date_button);
         TextView endDateTextView = findViewById(R.id.end_date_text);
@@ -417,17 +519,13 @@ public class EventActivity extends AppCompatActivity {
             }
         });
     }
-    private void setDateRequirements(String message, TextView textView, boolean hideOtherTextViews) {
-        dateRequirementsTextView.setText(message);
-        dateRequirementsTextView.setVisibility(View.VISIBLE);
-        textView.setVisibility(View.GONE);
-        if (hideOtherTextViews) {
-            startTimeTextView.setVisibility(View.GONE);
-            endTimeTextView.setVisibility(View.GONE);
-        }
-    }
 
-
+    /**
+     * @author Simon Haile
+     * Handles the addition of a new event. It validates the user input fields for event name, capacity, description,
+     * start time, end time, and other required fields. If all fields are valid, the event is created and added to the
+     * organizer's list of events and the facility's list of events. The event is also added to Firebase.
+     */
     private void AddEvent(){
         addButton.setOnClickListener(v -> {
             if (TextUtils.isEmpty(eventName.getText().toString())) {
@@ -487,7 +585,8 @@ public class EventActivity extends AppCompatActivity {
                         eventPoster,
                         geolocation,
                         longitude,
-                        latitude
+                        latitude,
+                        Integer.parseInt(radius.getText().toString()) * 1000
                 );
             } catch (WriterException e) {
                 throw new RuntimeException(e);
@@ -495,6 +594,10 @@ public class EventActivity extends AppCompatActivity {
 
             if (newFacility != null){
                 EventFirebase.addFacility(newFacility);
+                ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
+                facilitiesList.add(facility);
+                organizer.setFacilities(facilitiesList);
+                EventFirebase.editOrganizer(organizer);
             }
 
             EventFirebase.addEvent(newEvent);
@@ -505,20 +608,16 @@ public class EventActivity extends AppCompatActivity {
             EventFirebase.editOrganizer(organizer);
 
 
-            ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
-            facilitiesList.add(facility);
-            organizer.setFacilities(facilitiesList);
-            EventFirebase.editOrganizer(organizer);
 
             ArrayList<String> facilityEventsList = facility.getEvents();
             facilityEventsList.add(newEvent.eventID);
             facility.setEvents(facilityEventsList);
             EventFirebase.editFacility(facility);
+
+            Toast.makeText(EventActivity.this, "Event Added Successfully!", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(EventActivity.this, MainActivity.class);
+            startActivity(intent);
         });
-    }
-
-    private void ExitButtonHandling() {
-
-        exitButton.setOnClickListener(v -> finish());
     }
 }

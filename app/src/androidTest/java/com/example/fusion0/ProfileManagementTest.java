@@ -19,6 +19,8 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 
 /**
+ * @author Nimi Akinroye
+ *
  * Instrumented test class for the ProfileManagement class.
  * This class tests user data retrieval from Firebase Firestore.
  */
@@ -46,7 +48,7 @@ public class ProfileManagementTest {
         ArrayList<String> notifications = new ArrayList<>();
 
         // Set up a test user in Firestore for the success scenario
-        UserInfo testUser = new UserInfo(notifications, "Alice", "Smith", "alicesmith@gmail.com", "12345678", "test_deviceId", new ArrayList<String>());
+        UserInfo testUser = new UserInfo(notifications, "Alice", "Smith", "alicesmith@gmail.com", "12345678", "test_deviceId", new ArrayList<EventInfo>());
         db.collection("users").document(testDeviceId).set(testUser)
                 .addOnSuccessListener(aVoid -> Log.d("ProfileManagementTest", "Test user set up successfully"))
                 .addOnFailureListener(e -> Log.e("ProfileManagementTest", "Failed to set up test user: " + e.getMessage()));
