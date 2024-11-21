@@ -35,11 +35,17 @@ public class UserFirestore {
      * This method takes in a UserInfo object and adds it to the database.
      * @param userInfo contains the UserInfo object that is to be added to the database
      */
-    public void addUser(UserInfo userInfo) {
+    public void addUser(UserInfo userInfo, Runnable onSuccess) {
         HashMap<String, Object> user = userInfo.user();
         String dID = userInfo.getDeviceID();
+
         usersRef.document(dID).set(user)
-                .addOnSuccessListener(documentReference -> System.out.println("Success"))
+                .addOnSuccessListener(documentReference -> {
+                    System.out.println("Success");
+                    if (onSuccess != null) {
+                        onSuccess.run();
+                    }
+                })
                 .addOnFailureListener(error -> {
                             System.out.println("Fail" + error.getMessage());
                         }

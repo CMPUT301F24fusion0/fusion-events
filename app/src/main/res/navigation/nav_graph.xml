@@ -15,14 +15,16 @@
             app:destination="@id/profileFragment"/>
         <action
             android:id="@+id/action_mainFragment_to_qrFragment"
-            app:destination="@+id/qrFragment" />
+            app:destination="@id/qrFragment" />
         <action
             android:id="@+id/action_mainFragment_to_eventFragment"
-            app:destination="@+id/eventFragment"/>
+            app:destination="@id/eventFragment"/>
         <action
             android:id="@+id/action_mainFragment_to_favouriteFragment"
-            app:destination="@+id/favouriteFragment"/>
-
+            app:destination="@id/favouriteFragment"/>
+        <action
+            android:id="@+id/action_mainFragment_to_registrationPromptFragment"
+            app:destination="@id/registrationPromptFragment"/>
     </fragment>
 
     <fragment
@@ -38,7 +40,7 @@
             app:destination="@id/qrFragment" />
         <action
             android:id="@+id/action_profileFragment_to_eventFragment"
-            app:destination="@+id/eventFragment"/>
+            app:destination="@id/eventFragment"/>
         <action
             android:id="@+id/action_profileFragment_to_favouriteFragment"
             app:destination="@id/favouriteFragment" />
@@ -54,7 +56,7 @@
         tools:layout="@layout/fragment_q_r">
         <action
             android:id="@+id/action_qrFragment_to_mainFragment"
-            app:destination="@+id/mainFragment"/>
+            app:destination="@id/mainFragment"/>
     </fragment>
 
     <fragment
@@ -74,16 +76,29 @@
         tools:layout="@layout/fragment_favourite">
         <action
             android:id="@+id/action_favouriteFragment_to_mainFragment"
-            app:destination="@+id/mainFragment" />
+            app:destination="@id/mainFragment" />
         <action
             android:id="@+id/action_favouriteFragment_to_qrFragment"
-            app:destination="@+id/qrFragment" />
+            app:destination="@id/qrFragment" />
         <action
             android:id="@+id/action_favouriteFragment_to_eventFragment"
-            app:destination="@+id/eventFragment"/>
+            app:destination="@id/eventFragment"/>
         <action
             android:id="@+id/action_favouriteFragment_to_profileFragment"
-            app:destination="@+id/profileFragment"/>
+            app:destination="@id/profileFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/registrationPromptFragment"
+        android:name="com.example.fusion0.fragments.RegistrationPromptFragment"
+        android:label="Registration Prompt Fragment"
+        tools:layout="@layout/fragment_registration_prompt">
+        <action
+            android:id="@+id/action_registrationPromptFragment_to_mainFragment"
+            app:destination="@id/mainFragment"/>
+        <action
+            android:id="@+id/action_registrationPromptFragment_to_registrationFragment"
+            app:destination="@id/registrationFragment"/>
     </fragment>
 
     <fragment
@@ -93,7 +108,20 @@
         tools:layout="@layout/fragment_settings">
         <action
             android:id="@+id/action_settingsFragment_to_profileFragment"
-            app:destination="@+id/profileFragment" />
+            app:destination="@id/profileFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registrationFragment"
+        android:name="com.example.fusion0.fragments.RegistrationFragment"
+        android:label="Registration Fragment"
+        tools:layout="@layout/fragment_registration">
+        <action
+            android:id="@+id/action_registrationFragment_to_profileFragment"
+            app:destination="@id/profileFragment"/>
+        <action
+            android:id="@+id/action_registrationFragment_to_eventFragment"
+            app:destination="@id/eventFragment"/>
     </fragment>
 
 

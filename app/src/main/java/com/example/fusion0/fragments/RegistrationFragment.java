@@ -11,6 +11,7 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.example.fusion0.R;
 import com.example.fusion0.activities.ViewEventActivity;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
  * This is the registration fragment that will be displayed when a user signs up for an waiting
  * for the first time. It will only be used once per user.
  */
-public class Registration extends Fragment {
+public class RegistrationFragment extends Fragment {
     EditText firstName, lastName, email, phoneNumber;
     UserFirestore firebase;
     Button register;
@@ -42,12 +43,17 @@ public class Registration extends Fragment {
      *
      * @return view is the view
      */
+
+    public interface RegistrationCallback {
+        void onRegistrationComplete();
+    }
+
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-        View view = inflater.inflate(R.layout.registration, container, false);
+        View view = inflater.inflate(R.layout.fragment_registration, container, false);
         firstName = view.findViewById(R.id.firstName);
         lastName = view.findViewById(R.id.lastName);
         email = view.findViewById(R.id.email);
@@ -77,13 +83,26 @@ public class Registration extends Fragment {
             String phone = phoneNumber.getText().toString().trim();
 
             String dID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-            registration(dID, first, last, emails, phone);
+
             Bundle bundle = getArguments();
             if (bundle != null) {
-                String eventId = bundle.getString("eventID");
-                Intent intent = new Intent(getActivity(), ViewEventActivity.class);
-                intent.putExtra("eventID", eventId);
-                startActivity(intent);
+                String destination = bundle.getString("destination");
+
+                Runnable navigationCallback = null;
+                if ("event".equals(destination)) {
+                    String eventId = bundle.getString("eventID");
+                    navigationCallback = () -> {
+                        Intent intent = new Intent(getActivity(), ViewEventActivity.class);
+                        intent.putExtra("eventID", eventId);
+                        startActivity(intent);
+                    };
+                } else if ("profile".equals(destination)) {
+                    navigationCallback = () -> Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_profileFragment);
+                } else if ("addEvent".equals(destination)) {
+                    navigationCallback = () -> Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_eventFragment);
+                }
+
+                registration(dID, first, last, emails, phone, navigationCallback);
             }
         });
     }
@@ -97,7 +116,7 @@ public class Registration extends Fragment {
      * @param emails email
      * @param phone phone number
      */
-    private void registration(String dID, String first, String last, String emails, String phone) {
+    private void registration(String dID, String first, String last, String emails, String phone, Runnable onSuccess) {
         UserFirestore.findUser(dID, new UserFirestore.Callback() {
             /**
              * @author Sehej Brar
@@ -116,7 +135,7 @@ public class Registration extends Fragment {
                     } else {
                         newUser = new UserInfo(new ArrayList<String>(), first, last, emails, dID, new ArrayList<EventInfo>());
                     }
-                    firebase.addUser(newUser);
+                    firebase.addUser(newUser, onSuccess);
                 }
             }
 

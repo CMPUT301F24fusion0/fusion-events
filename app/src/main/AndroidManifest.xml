@@ -44,7 +44,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.EventActivity" />
-        <activity android:name=".activities.QRActivity" />
         <activity android:name=".activities.FavouriteActivity"/>
         <activity android:name=".activities.ViewEventActivity"/>
         <activity android:name=".activities.ViewFacilityActivity"/>

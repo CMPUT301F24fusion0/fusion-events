@@ -209,12 +209,24 @@ public class MainFragment extends Fragment {
                 });
 
                 itemTouchHelper.attachToRecyclerView(notificationsListView);
+                initializeToolbarButtons(view);
             } else {
-                // Do something
+                profileButton = view.findViewById(R.id.toolbar_person);
+                addButton = view.findViewById(R.id.toolbar_add);
+
+                profileButton.setOnClickListener(v -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("destination", "profile");
+                    Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_registrationPromptFragment, bundle);
+                });
+
+                addButton.setOnClickListener(v -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("destination", "addEvent");
+                    Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_registrationPromptFragment, bundle);
+                });
             }
         });
-
-        initializeToolbarButtons(view);
 
     }
 
