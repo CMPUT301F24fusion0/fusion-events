@@ -8,6 +8,9 @@ import android.util.Log;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.fusion0.helpers.ProfileManagement;
+import com.example.fusion0.models.EventInfo;
+import com.example.fusion0.models.UserInfo;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
