@@ -10,6 +10,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.fusion0.models.UserInfo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -127,30 +128,48 @@ public class Waitlist {
      */
     public void organizerCancel(String eventID, String userID) {
         getChosen(eventID, chosen -> {
-            DocumentReference documentReference = eventsRef.document(eventID);
             if (!chosen.isEmpty()) {
-                documentReference.get()
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                DocumentSnapshot doc = task.getResult();
-                                if (doc.exists()) {
-                                    ArrayList<Map<String, String>> waitList = (ArrayList<Map<String, String>>) doc.get("waitinglist");
-
-                                    if (waitList != null) {
-                                        for (Map<String, String> user : waitList) {
-                                            if (Objects.equals(user.get("did"), userID)) {
-                                                user.put("status", "cancel");
-                                            }
-                                        }
-
-                                        documentReference.update("waitinglist", waitList);
-
-                                    }
-                                }
-                            }
-                        });
+                for (String did: chosen) {
+                    changeStatus(eventID, did, "cancel");
+                }
             }
         });
+    }
+
+    /**
+     * Changes the user's waiting list status
+     * @param eventID event id
+     * @param userID user's unique id
+     * @param newStatus the status to change the user to
+     */
+    public void changeStatus(String eventID, String userID, String newStatus) {
+        ArrayList<String> allStatus = new ArrayList<>(Arrays.asList("chosen", "waiting", "cancel", "chosen"));
+
+        if (userID == null || !allStatus.contains(newStatus.toLowerCase())) {
+            throw new IllegalArgumentException("The argument provided is not valid");
+        }
+
+        DocumentReference documentReference = eventsRef.document(eventID);
+        documentReference.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot doc = task.getResult();
+                        if (doc.exists()) {
+                            ArrayList<Map<String, String>> waitList = (ArrayList<Map<String, String>>) doc.get("waitinglist");
+
+                            if (waitList != null) {
+                                for (Map<String, String> user : waitList) {
+                                    if (Objects.equals(user.get("did"), userID)) {
+                                        user.put("status", newStatus);
+                                    }
+                                }
+
+                                documentReference.update("waitinglist", waitList);
+
+                            }
+                        }
+                    }
+                });
     }
 
     /**
