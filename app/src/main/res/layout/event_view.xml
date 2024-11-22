@@ -1,0 +1,687 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:id="@+id/event_view">
+
+
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/arrow_back"
+        android:contentDescription="Back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:background="?attr/selectableItemBackgroundBorderless" />
+
+    <ScrollView
+        android:id="@+id/scroll_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="#FFFFFF"
+        android:fillViewport="true"
+        android:scrollbars="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/backButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            tools:ignore="MissingConstraints">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Event Information"
+                android:textSize="23sp"
+                android:textColor="@color/textColor"
+                android:textStyle="bold"
+                android:fontFamily="@font/raleway_medium"
+                android:layout_marginBottom="16dp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Event Name:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"/>
+
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
+
+                <TextView
+                    android:id="@+id/EventName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Event XYZ"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"
+                    android:layout_weight="1"/>
+
+                <EditText
+                    android:id="@+id/editEventName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter Event Name"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:visibility="gone"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Description:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"/>
+
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
+
+                <TextView
+                    android:id="@+id/description"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Description xyz"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"
+                    android:layout_weight="1"/>
+
+                <EditText
+                    android:id="@+id/description_edit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:visibility="gone"
+                    android:layout_weight="1"
+                    android:hint="Enter Event Description"
+                    android:inputType="textMultiLine"
+                    android:maxLines="5"
+                    android:gravity="top|start" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Facility:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"/>
+
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
+
+                <TextView
+                    android:id="@+id/facilityName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Facility 1"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"
+                    android:layout_weight="1"/>
+
+                <Spinner
+                    android:id="@+id/spinner_facilities"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+            <TextView
+                android:id="@+id/add_facility_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Add Facility:"
+                android:textColor="@color/textColor"
+                android:textSize="17sp"
+                android:fontFamily="@font/raleway_semibold"
+                android:layout_marginBottom="2dp"
+                android:visibility="gone">
+            </TextView>
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/autocomplete_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                android:visibility="gone"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Poster:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"/>
+
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
+
+                <Button
+                    android:id="@+id/upload_image_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Choose Image"
+                    android:backgroundTint="@color/textColor"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/uploaded_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:scaleType="centerCrop"
+                android:contentDescription="Uploaded Event Poster"
+                android:layout_marginBottom="16dp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Date:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"/>
+                <TextView
+                    android:id="@+id/date_requirements_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/darker_gray"
+                    android:visibility="gone">
+                </TextView>
+
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="start"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginEnd="16dp">
+
+                        <TextView
+                            android:id="@+id/start_date_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/raleway_semibold"
+                            android:gravity="center_vertical"
+                            android:text="Start Date"
+                            android:textColor="@color/textColor"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/start_time_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Start Time"
+                            android:fontFamily="sans-serif"
+                            android:textColor="@color/figmaBlue"
+                            android:textFontWeight="600"
+                            android:textSize="15sp"
+                            android:layout_marginTop="8dp" />
+
+                        <Button
+                            android:id="@+id/start_date_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Select Start Date"
+                            android:backgroundTint="@color/textColor"
+                            android:layout_marginTop="8dp"
+                            app:cornerRadius="5dp"
+                            android:textSize="10sp"
+                            android:visibility="gone"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/end_date_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="End Date"
+                            android:textColor="@color/textColor"
+                            android:textSize="15sp"
+                            android:fontFamily="@font/raleway_semibold"
+                            android:gravity="center_vertical"/>
+
+                        <TextView
+                            android:id="@+id/end_time_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="End Time"
+                            android:fontFamily="sans-serif"
+                            android:textColor="@color/figmaBlue"
+                            android:textFontWeight="600"
+                            android:textSize="15sp"
+                            android:layout_marginTop="8dp" />
+
+                        <Button
+                            android:id="@+id/end_date_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Select End Date"
+                            android:backgroundTint="@color/textColor"
+                            android:layout_marginTop="8dp"
+                            app:cornerRadius="5dp"
+                            android:textSize="10sp"
+                            android:visibility="gone"
+                            />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Capacity:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"/>
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
+                <TextView
+                    android:id="@+id/capacityTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Description xyz"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"
+                    android:layout_weight="1"/>
+
+                <EditText
+                    android:id="@+id/editCapacity"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:autofillHints=""
+                    android:hint="Enter Capacity"
+                    android:inputType="number"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:visibility="gone"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"/>
+                <Button
+                    android:id="@+id/lottery_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Start Lottery"
+                    android:textColor="@color/white"
+                    android:backgroundTint="@color/figmaBlue"
+                    app:cornerRadius="5dp">
+                </Button>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="QR Code:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"/>
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
+
+                <ImageView
+                    android:id="@+id/qrImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="QR Code"
+                    android:layout_marginBottom="16dp"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Waitinglist:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical" />
+
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
+
+                <Button
+                    android:id="@+id/waitinglistButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Show Waitinglist"
+                    android:backgroundTint="@color/textColor"
+                    app:cornerRadius="5dp"
+                    android:textSize="10sp"
+                    android:layout_gravity="center"/>
+
+                <ListView
+                    android:id="@+id/waitinglistListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@android:color/darker_gray"
+                    android:dividerHeight="0.5dp"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"/>
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Chosen Entrants:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"/>
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
+
+                <ListView
+                    android:id="@+id/chosenEntrantsListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@android:color/darker_gray"
+                    android:dividerHeight="0.5dp"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"/>
+
+                <Button
+                    android:id="@+id/chosenEntrantsButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Show Chosen Entrants List"
+                    android:backgroundTint="@color/textColor"
+                    android:layout_marginTop="8dp"
+                    app:cornerRadius="5dp"
+                    android:textSize="10sp" />
+
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cancelled Entrants:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"/>
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
+
+                <ListView
+                    android:id="@+id/cancelledEntrantsListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@android:color/darker_gray"
+                    android:dividerHeight="0.5dp"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"/>
+                <Button
+                    android:id="@+id/cancelledEntrantsButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Show Cancelled Entrants List"
+                    android:backgroundTint="@color/textColor"
+                    android:layout_marginTop="8dp"
+                    app:cornerRadius="5dp"
+                    android:textSize="10sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/toolbar"
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/waitinglist_full_text_view"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:text="Waiting List Is Full At The Moment"
+            android:background="@android:color/white"
+            android:backgroundTint="@color/figmaBlue"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:padding="10dp"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/join_button"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:text="Join Waiting List"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/figmaBlue"
+            app:cornerRadius="5dp"
+            android:visibility="gone">
+        </Button>
+
+        <Button
+            android:id="@+id/edit_button"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:text="Edit"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/figmaBlue"
+            app:cornerRadius="5dp">
+        </Button>
+
+        <Button
+            android:id="@+id/save_button"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:text="Save"
+            android:backgroundTint="@color/figmaBlue"
+            android:visibility="gone"
+            app:cornerRadius="5dp"/>
+
+        <Button
+            android:id="@+id/delete_button"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:text="Delete"
+            android:textColor="@color/figmaBlue"
+            android:backgroundTint="@color/white"
+            app:cornerRadius="5dp">
+        </Button>
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:text="Cancel"
+            android:textColor="@color/figmaBlue"
+            android:backgroundTint="@color/white"
+            app:cornerRadius="5dp"
+            android:visibility="gone">
+        </Button>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

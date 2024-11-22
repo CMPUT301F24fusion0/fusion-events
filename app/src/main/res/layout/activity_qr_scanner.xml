@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    tools:ignore="ExtraText">
+
+    <!-- Camera Preview for the QR Scanner -->
+    <me.dm7.barcodescanner.zxing.ZXingScannerView
+        android:id="@+id/camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Transparent overlay with a highlighted scanning box -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000">
+
+        <!-- Centered transparent rectangle for QR code alignment -->
+        <View
+            android:id="@+id/scanner_frame"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_gravity="center"
+            android:background="@drawable/scanner_frame_border" />
+
+        <!-- Instruction Text -->
+        <TextView
+            android:id="@+id/instruction_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginTop="32dp"
+            android:fontFamily="@font/raleway_medium"
+            android:text="Align The QR Code Within The Frame To Scan"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+    <!-- Button to handle cancel action if needed -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/cancel_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp"
+        android:text="Cancel"
+        android:textColor="@android:color/white"
+        app:backgroundTint="@color/figmaBlue"
+        app:cornerRadius="16dp" />
+
+</RelativeLayout>

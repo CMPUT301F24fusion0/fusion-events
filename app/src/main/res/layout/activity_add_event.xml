@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <ScrollView
+        android:id="@+id/scroll_container"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:background="#FFFFFF"
+        android:fillViewport="true"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/toolbar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create Event"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:layout_gravity="center_horizontal"
+                android:textFontWeight="800"
+                android:textSize="30sp"
+                android:layout_margin="5dp">
+            </TextView>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Event Name"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp">
+            </TextView>
+
+
+            <EditText
+                android:id="@+id/EventName"
+                android:layout_height="50dp"
+                android:layout_width="match_parent"
+                android:layout_marginEnd="100dp"
+                android:hint="Enter Event Name"
+                android:inputType="text"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/custom_input"
+                android:drawablePadding="12dp"
+                android:padding="12dp">
+            </EditText>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Upload Poster"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp"
+                android:layout_marginBottom="2dp" />
+
+            <ImageView
+                android:id="@+id/uploaded_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginBottom="8dp"
+                android:contentDescription="TODO"
+                android:visibility="gone"
+                android:scaleType="centerCrop" />
+
+            <Button
+                android:id="@+id/upload_image_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Choose Image"
+                android:backgroundTint="@color/figmaBlue"
+                app:cornerRadius="5dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Facility"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp"
+                android:layout_marginBottom="2dp">
+            </TextView>
+
+
+            <Spinner
+                android:id="@+id/spinner_facilities"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="200dp"
+                android:layout_marginBottom="4dp" />
+
+
+            <TextView
+                android:id="@+id/add_facility_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Add Facility"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp"
+                android:layout_marginBottom="2dp"
+                android:visibility="gone">
+            </TextView>
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/autocomplete_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                android:visibility="gone"
+                />
+
+            <TextView
+                android:id="@+id/geolocation_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enable Geolocation"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp"
+                android:layout_marginBottom="2dp"/>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/geolocation_switchcompat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textOn="Geolocation Enabled"
+                android:textOff="Geolocation Disabled"
+                android:checked="false" />
+
+            <TextView
+                android:id="@+id/radius_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Acceptable Sign Up Radius (Km):"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="sans-serif"
+                android:visibility="gone"
+                />
+
+            <EditText
+                android:id="@+id/radius"
+                android:layout_height="60dp"
+                android:layout_width="match_parent"
+                android:layout_marginEnd="100dp"
+                android:hint="Enter Radius In Km"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/custom_input"
+                android:drawablePadding="12dp"
+                android:padding="12dp"
+                android:inputType="number"
+                android:visibility="gone">
+            </EditText>
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Description"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp"
+                android:layout_marginBottom="2dp">
+            </TextView>
+
+
+            <EditText
+                android:id="@+id/Description"
+                android:layout_height="60dp"
+                android:layout_width="match_parent"
+                android:layout_marginEnd="100dp"
+                android:hint="Enter Event Description"
+                android:inputType="textMultiLine"
+                android:layout_marginBottom="4dp"
+                android:maxLines="5"
+                android:background="@drawable/custom_input"
+                android:drawablePadding="12dp"
+                android:padding="12dp"
+                android:gravity="top|start">
+            </EditText>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Select Date"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp"
+                android:layout_marginBottom="2dp">
+            </TextView>
+            <TextView
+                android:id="@+id/date_requirements_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"
+                android:visibility="gone">
+            </TextView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="start"
+                android:layout_marginBottom="16dp">
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="16dp">
+
+
+                    <TextView
+                        android:id="@+id/start_date_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Start Date"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/figmaBlue"
+                        android:textFontWeight="600"
+                        android:textSize="15sp"
+                        android:layout_marginBottom="2dp"
+                        android:visibility="gone" />
+                    <TextView
+                        android:id="@+id/start_time_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Start Time"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/figmaBlue"
+                        android:textFontWeight="600"
+                        android:textSize="15sp"
+                        android:layout_marginTop="8dp"
+                        android:visibility="gone" />
+
+
+                    <Button
+                        android:id="@+id/start_date_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Start Date"
+                        android:backgroundTint="@color/figmaBlue"
+                        app:cornerRadius="5dp"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+
+                    <TextView
+                        android:id="@+id/end_date_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="End Date"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/figmaBlue"
+                        android:textFontWeight="600"
+                        android:textSize="15sp"
+                        android:layout_marginBottom="2dp"
+                        android:visibility="gone" />
+                    <TextView
+                        android:id="@+id/end_time_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="End Time"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/figmaBlue"
+                        android:textFontWeight="600"
+                        android:textSize="15sp"
+                        android:layout_marginTop="8dp"
+                        android:visibility="gone" />
+
+
+                    <Button
+                        android:id="@+id/end_date_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="End Date"
+                        android:backgroundTint="@color/figmaBlue"
+                        app:cornerRadius="5dp"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Capacity"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp"
+                android:layout_marginBottom="2dp">
+            </TextView>
+
+
+            <EditText
+                android:id="@+id/Capacity"
+                android:layout_height="60dp"
+                android:layout_width="match_parent"
+                android:layout_marginEnd="100dp"
+                android:hint="Enter Capacity"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/custom_input"
+                android:drawablePadding="12dp"
+                android:padding="12dp"
+                android:inputType="number">
+            </EditText>
+
+
+
+
+        </LinearLayout>
+    </ScrollView>
+
+
+    <LinearLayout
+        android:id="@+id/toolbar"
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:background="@color/white">
+
+
+        <Button
+            android:id="@+id/exit_button"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:text="Exit"
+            android:textColor="@color/figmaBlue"
+            android:backgroundTint="@android:color/white">
+        </Button>
+
+
+        <Button
+            android:id="@+id/add_button"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:text="Add"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/figmaBlue"
+            app:cornerRadius="5dp">
+        </Button>
+
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
