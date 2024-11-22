@@ -3,15 +3,35 @@ package com.example.fusion0.helpers;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Settings;
+import android.util.Log;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.fusion0.BuildConfig;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -25,6 +45,13 @@ public class ManageImageProfile {
     private FirebaseStorage storage;
     private StorageReference storageReference;
     private String deviceId;
+
+    private static final String OPENAI_API_KEY = BuildConfig.OPENAI_API_KEY;
+    private static final String OPENAI_API_URL = "https://api.openai.com/v1/images/generations";
+    private static final String TAG = "OPENAI";
+
+    private static String stringOutput = "";
+    private static Bitmap bitmapOutputImage;
 
     /**
      * Constructor initializes Firebase Authentication and Storage instances.
@@ -113,9 +140,6 @@ public class ManageImageProfile {
     }
 
 
-
-
-
     /**
      * Retrieves the image URL from Firebase Storage for the current user.
      *
@@ -130,6 +154,107 @@ public class ManageImageProfile {
     }
 
 
+    public static Drawable createTextDrawable(Context context, String initials, int backgroundColor, int textColor, int width, int height) {
+        try {
+            String prompt = "Generate a visually appealing image that connotes the initials: " + initials + ". There should be no letters in there";
+            generateImageFromOpenAI(context, prompt);
+
+            return downloadImageAsDrawable(context, stringOutput, width, height);
+        } catch (Exception e) {
+            return generateFallBackDrawable(context, initials, backgroundColor, textColor, width, height);
+        }
+    }
+
+    private static void generateImageFromOpenAI(Context context, String prompt) throws Exception {
+
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("prompt", prompt);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.POST,
+                OPENAI_API_URL,
+                jsonObject,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            stringOutput = response
+                                    .getJSONArray("data")
+                                    .getJSONObject(0)
+                                    .getString("url");
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        throw new RuntimeException(error);
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+
+                Map<String, String> mapHeader = new HashMap<>();
+                mapHeader.put("Authorization", "Bearer " + OPENAI_API_KEY);
+                mapHeader.put("Content-Type", "application/json");
+
+                return mapHeader;
+            }
+        };
+
+        int intTimeOutPeriod = 60000;
+        RetryPolicy retryPolicy = new DefaultRetryPolicy(
+                intTimeOutPeriod,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        jsonObjectRequest.setRetryPolicy(retryPolicy);
+
+        Volley.newRequestQueue(context).add(jsonObjectRequest);
+    }
+
+    private static Drawable downloadImageAsDrawable(Context context, String imageUrl, int width, int height) throws Exception {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL(stringOutput);
+
+                    bitmapOutputImage = BitmapFactory.decodeStream(url.openStream());
+
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
+        thread.start();
+
+        while (thread.isAlive()) {
+            Log.d(TAG, "Thread is in process");
+        }
+
+        Bitmap bitmapFinalImage = Bitmap.createScaledBitmap(
+                bitmapOutputImage,
+                width,
+                height,
+                true
+        );
+
+        return new BitmapDrawable(context.getResources(), bitmapFinalImage);
+    }
+
+
     /**
      * Creates a text drawable that can be used to deterministically generate a users profile picture
      *
@@ -141,7 +266,7 @@ public class ManageImageProfile {
      * @param height
      * @return
      */
-    public static Drawable createTextDrawable(Context context, String letter, int backgroundColor, int textColor, int width, int height) {
+    public static Drawable generateFallBackDrawable(Context context, String letter, int backgroundColor, int textColor, int width, int height) {
         // Create a bitmap
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
