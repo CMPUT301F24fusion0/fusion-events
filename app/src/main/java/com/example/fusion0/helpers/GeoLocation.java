@@ -259,13 +259,6 @@ public class GeoLocation implements LocationListener {
         acceptableRadius = radius;
     }
 
-    /**
-     * Returns the event acceptable radius.
-     */
-    public double getEventRadius(){
-        return acceptableRadius;
-    }
-
 
 
     /**

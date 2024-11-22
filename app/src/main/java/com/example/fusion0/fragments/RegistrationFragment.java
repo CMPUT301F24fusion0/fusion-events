@@ -3,6 +3,7 @@ package com.example.fusion0.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,10 +44,6 @@ public class RegistrationFragment extends Fragment {
      *
      * @return view is the view
      */
-
-    public interface RegistrationCallback {
-        void onRegistrationComplete();
-    }
 
     @Override
     public View onCreateView(
@@ -131,9 +128,9 @@ public class RegistrationFragment extends Fragment {
                     System.out.println("This user already exists.");
                 } else {
                     if (!phone.isEmpty()) {
-                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, phone, dID, new ArrayList<EventInfo>());
+                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, phone, dID, new ArrayList<String>());
                     } else {
-                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, dID, new ArrayList<EventInfo>());
+                        newUser = new UserInfo(new ArrayList<String>(), first, last, emails, dID, new ArrayList<String>());
                     }
                     firebase.addUser(newUser, onSuccess);
                 }

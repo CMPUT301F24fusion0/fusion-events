@@ -95,7 +95,6 @@ public class AppNotifications {
      * @param body body of notification
      */
     public static void sendNotification(String dID, String title, String body, String flag) {
-        UserFirestore firebase = new UserFirestore();
         UserFirestore.findUser(dID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
@@ -150,15 +149,14 @@ public class AppNotifications {
      * @param context context of activity or fragment
      */
     public static void getNotification(String dID, Context context) {
-        UserFirestore userFirestore = new UserFirestore();
-        userFirestore.findUser(dID, new UserFirestore.Callback() {
+        UserFirestore.findUser(dID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
                 if (AppNotifications.checkNotificationPermission(context)) {
                     sendAllNotifications(context, user.getNotifications());
                 }
                 user.editMode(true);
-                user.setNotifications(new ArrayList<String>());
+                user.setNotifications(new ArrayList<>());
                 System.out.println("Notifications removed successfully");
                 user.editMode(false);
             }

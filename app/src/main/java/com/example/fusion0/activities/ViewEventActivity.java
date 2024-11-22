@@ -33,9 +33,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-
 import com.bumptech.glide.Glide;
-import com.example.fusion0.BuildConfig;
+import com.example.fusion0.fragments.RegistrationFragment;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.FacilitiesInfo;
@@ -62,7 +61,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -90,9 +91,6 @@ public class ViewEventActivity extends AppCompatActivity {
     private androidx.fragment.app.FragmentContainerView autocompletePlaceFragment;
     private Location userLocation;
 
-
-
-
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
     private FusedLocationProviderClient fusedLocationClient;
@@ -109,7 +107,7 @@ public class ViewEventActivity extends AppCompatActivity {
 
 
     /**
-     * @author Simon Haile
+     * @author Simon Haile, Sehej Brar
      * Initializes the activity by setting up the user interface, loading event details,
      * fetching user and event information, and handling user interactions. This method
      * is called when the activity is created.
@@ -124,8 +122,8 @@ public class ViewEventActivity extends AppCompatActivity {
         setContentView(R.layout.event_view);
 
         storageRef = FirebaseStorage.getInstance().getReference();
-        uploadNewPoster();
 
+        uploadNewPoster();
 
         waitlist = new Waitlist();
 
@@ -173,8 +171,6 @@ public class ViewEventActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
 
-
-
         backButton.setOnClickListener(view -> {
             Intent intent = new Intent(ViewEventActivity.this, FavouriteActivity.class);
             startActivity(intent);
@@ -211,7 +207,6 @@ public class ViewEventActivity extends AppCompatActivity {
                         eventCapacityTextView.setText(event.getCapacity());
                         eventFacilityTextView.setText(event.getFacilityName());
 
-
                         eventStartDateTextView.setText(event.getStartDate().toString());
                         eventEndDateTextView.setText(event.getEndDate().toString());
                         eventStartTimeTextView.setText(event.getStartTime());
@@ -222,6 +217,7 @@ public class ViewEventActivity extends AppCompatActivity {
                         facility = event.getFacilityName();
 
                         newEventPoster = event.getEventPoster();
+
                         if (newEventPoster != null && !newEventPoster.isEmpty()) {
                             Glide.with(ViewEventActivity.this)
                                     .load(newEventPoster)
@@ -230,12 +226,11 @@ public class ViewEventActivity extends AppCompatActivity {
                         }
 
                         String qrcode = event.getQrCode();
+
                         if (qrcode != null && !qrcode.isEmpty()) {
                             Bitmap qrBitmap = event.generateQRCodeImage(500, 500, qrcode);
                             qrImageView.setImageBitmap(qrBitmap);
                         }
-
-
 
                         toolbar.setVisibility(View.VISIBLE);
 
@@ -251,46 +246,112 @@ public class ViewEventActivity extends AppCompatActivity {
                                     Log.e(TAG, "Unable to find organizer.");
                                 }
                             });
+
                             isOwner = true;
-                            lotteryButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    int capacity = 1;
 
-                                    try {
-                                        capacity = Integer.parseInt(event.getCapacity());
-                                    } catch (NumberFormatException e) {
-                                        Log.e("Error", "Capacity is not an integer");
-                                    }
-                                    waitlist.sampleAttendees(eventID, capacity);
+                            // TODO: This should be based on something more concrete
+                            int lotteryCapacity = 10;
 
-                                    waitlist.allNotification(eventID, "Lottery",
-                                            "The lottery has started. Please be on the lookout for results.", "0");
+                            // TODO: This should automatically happen after the deadline
+                           lotteryButton.setOnClickListener(view -> {
+                               waitlist.allNotification(eventID, "Starting Lottery",
+                                       "The lottery for an event is starting. Be on the lookout for more information.", "0");
+                               waitlist.conductLottery(eventID, lotteryCapacity);
+                               waitlist.chosenNotification(eventID, "Congratulations", "You've been chosen for an event. Please login and accept " +
+                                       "the invitation.", "1");
+                               waitlist.loseNotification(eventID, "Lottery Results", "You've not been selected for this event. Be on the lookout for another chance" +
+                                       "if any more spots open up.", "0");
+                           });
 
-                                    waitlist.chosenNotification(eventID, "Congratulations",
-                                            "You've won the lottery! Please login and accept the invitation", "1");
-
-                                    waitlist.cancelNotifications(eventID, "Cancel Confirmation", "You have cancelled" +
-                                            "the invitation for the event.", "0");
-
-                                    waitlist.loseNotification(eventID, "Lottery Lose", "Unfortunately, you've lost the lottery." +
-                                            "Better luck next time!", "0");
-                                }
-                            });
-
-
-                        }else{
+                        } else {
                             editButton.setVisibility(View.GONE);
                             deleteButton.setVisibility(View.GONE);
                             cancelButton.setVisibility(View.GONE);
                             saveButton.setVisibility(View.GONE);
 
-
-                            ArrayList<String> currentEntrants = event.getWaitinglist();
+                            ArrayList<Map<String, String>> currentEntrants = event.getWaitinglist();
                             int capacity = Integer.parseInt(event.getCapacity());
+
                             if (currentEntrants.size() < capacity) {
                                 joinButton.setVisibility(View.VISIBLE);
-                            }else{
+                                waitlist.getAll(eventID, all -> {
+                                    if (!all.contains(deviceID)) {
+                                        joinButton.setOnClickListener(view -> {
+                                            UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+                                                @Override
+                                                public void onSuccess(UserInfo user) {
+                                                    if (user != null) {
+                                                        Log.d("Checkpoint", "the user is not null");
+                                                        if (event.getGeolocation()) {
+                                                            GeoLocation geoLocation = new GeoLocation(ViewEventActivity.this, ViewEventActivity.this, event.getLatitude(), event.getLongitude(), event.getRadius());
+                                                            Log.d("ViewEventActivity", "Radius: " + event.getRadius());
+                                                            if (!geoLocation.isLocationPermissionGranted()) {
+                                                                geoLocation.requestLocationPermission();
+                                                            } else {
+                                                                proceedWithJoin(geoLocation);
+                                                            }
+                                                        } else {
+                                                            addUserToWaitingList();
+                                                        }
+                                                    } else {
+                                                        Log.d("Checkpoint", "the user is null, we're going to registration");
+                                                        RegistrationFragment registration = new RegistrationFragment();
+                                                        Bundle bundle = new Bundle();
+                                                        bundle.putString("eventID", eventID);
+                                                        getSupportFragmentManager()
+                                                                .beginTransaction()
+                                                                .replace(R.id.event_view, registration)
+                                                                .addToBackStack(null)
+                                                                .commit();
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onFailure(String error) {
+                                                    System.out.println("Failure" + error);
+                                                }
+                                            });
+                                        });
+                                    } else {
+                                        joinButton.setText("Unjoin Waiting List");
+
+                                        joinButton.setOnClickListener(view -> {
+
+                                            Toast.makeText(ViewEventActivity.this, "You have left the waiting list", Toast.LENGTH_SHORT).show();
+
+                                            // Remove it on the events collection
+                                            ArrayList<Map<String, String>> newWaitingList = event.removeUserFromWaitingList(deviceID, event.getWaitinglist());
+                                            event.setWaitinglist(newWaitingList);
+
+                                            // Remove it on the user's collection
+                                            waitlist.removeFromUserWL(deviceID, eventID, user);
+
+                                            EventFirebase.editEvent(event);
+
+                                            UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+                                                @Override
+                                                public void onSuccess(UserInfo userInfo) {
+                                                    user = userInfo;
+                                                }
+
+                                                @Override
+                                                public void onFailure(String error) {
+                                                    Log.e("JoinedEventActivity", "Error fetching user: " + error);
+                                                }
+                                            });
+
+                                            ArrayList<String> newEventsList = user.removeEventFromEventList(event.getEventID(), user.getEvents());
+                                            user.setEvents(newEventsList);
+                                            UserFirestore.editUserEvents(user);
+
+                                            EventFirebase.editEvent(event);
+
+                                            Intent intent = new Intent(ViewEventActivity.this, MainActivity.class);
+                                            startActivity(intent);
+                                        });
+                                    }
+                                });
+                            } else {
                                 waitinglistFullTextView.setVisibility(View.VISIBLE);
                             }
                         }
@@ -308,15 +369,22 @@ public class ViewEventActivity extends AppCompatActivity {
             finish();
         }
 
-
         waitinglistButton.setOnClickListener(view -> {
             if (event.getWaitinglist().isEmpty()) {
                 Toast.makeText(ViewEventActivity.this, "Waiting list is empty.", Toast.LENGTH_SHORT).show();
             } else {
                 if (waitinglistListView.getVisibility() == View.GONE) {
+                    ArrayList<String> flatList = new ArrayList<String>();
+
                     waitinglistListView.setVisibility(View.VISIBLE);
+
+                    for (Map<String, String> user: event.getWaitinglist()) {
+                        flatList.add("[" +  user.get("did") + ", " + user.get("Longitude") + ", " + user.get("Latitude"));
+                    }
+
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(ViewEventActivity.this,
-                            android.R.layout.simple_list_item_1, event.getWaitinglist());
+                            android.R.layout.simple_list_item_1, flatList);
+
                     waitinglistListView.setAdapter(adapter);
 
                     waitinglistButton.setText("Hide Waitinglist");
@@ -328,42 +396,44 @@ public class ViewEventActivity extends AppCompatActivity {
         });
 
         chosenEntrantsButton.setOnClickListener(view -> {
-            if (event.getChosenEntrants().isEmpty()) {
-                Toast.makeText(ViewEventActivity.this, "Chosen entrants list is empty.", Toast.LENGTH_SHORT).show();
-            } else {
-                if (chosenEntrantsListView.getVisibility() == View.GONE) {
-                    chosenEntrantsListView.setVisibility(View.VISIBLE);
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(ViewEventActivity.this,
-                            android.R.layout.simple_list_item_1, event.getChosenEntrants());
-                    chosenEntrantsListView.setAdapter(adapter);
-
-                    chosenEntrantsButton.setText("Hide Chosen Entrants");
+            waitlist.getAll(eventID, all -> {
+                if (all.isEmpty()) {
+                    Toast.makeText(ViewEventActivity.this, "Chosen entrants list is empty.", Toast.LENGTH_SHORT).show();
                 } else {
-                    chosenEntrantsListView.setVisibility(View.GONE);
-                    chosenEntrantsButton.setText("Show Chosen Entrants");
+                    if (chosenEntrantsListView.getVisibility() == View.GONE) {
+                        chosenEntrantsListView.setVisibility(View.VISIBLE);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(ViewEventActivity.this,
+                                android.R.layout.simple_list_item_1, all);
+                        chosenEntrantsListView.setAdapter(adapter);
+
+                        chosenEntrantsButton.setText("Hide Chosen Entrants");
+                    } else {
+                        chosenEntrantsListView.setVisibility(View.GONE);
+                        chosenEntrantsButton.setText("Show Chosen Entrants");
+                    }
                 }
-            }
+            });
         });
 
         cancelledEntrantsButton.setOnClickListener(view -> {
-            if (event.getCancelledEntrants().isEmpty()) {
-                Toast.makeText(ViewEventActivity.this, "Cancelled entrants list is empty.", Toast.LENGTH_SHORT).show();
-            } else {
-                if (cancelledEntrantsListView.getVisibility() == View.GONE) {
-                    cancelledEntrantsListView.setVisibility(View.VISIBLE);
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(ViewEventActivity.this,
-                            android.R.layout.simple_list_item_1, event.getCancelledEntrants());
-                    cancelledEntrantsListView.setAdapter(adapter);
-
-                    cancelledEntrantsButton.setText("Hide Cancelled Entrants");
+            waitlist.getAll(eventID, all -> {
+                if (all.isEmpty()) {
+                    Toast.makeText(ViewEventActivity.this, "Cancelled entrants list is empty.", Toast.LENGTH_SHORT).show();
                 } else {
-                    cancelledEntrantsListView.setVisibility(View.GONE);
-                    cancelledEntrantsButton.setText("Show Cancelled Entrants");
+                    if (cancelledEntrantsListView.getVisibility() == View.GONE) {
+                        cancelledEntrantsListView.setVisibility(View.VISIBLE);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(ViewEventActivity.this,
+                                android.R.layout.simple_list_item_1, all);
+                        cancelledEntrantsListView.setAdapter(adapter);
+
+                        cancelledEntrantsButton.setText("Hide Cancelled Entrants");
+                    } else {
+                        cancelledEntrantsListView.setVisibility(View.GONE);
+                        cancelledEntrantsButton.setText("Show Cancelled Entrants");
+                    }
                 }
-            }
+            });
         });
-
-
 
         editButton.setOnClickListener(v -> {
             editButton.setVisibility(View.GONE);
@@ -488,62 +558,59 @@ public class ViewEventActivity extends AppCompatActivity {
             Toast.makeText(ViewEventActivity.this, "Event updated successfully!", Toast.LENGTH_SHORT).show();
         });
 
+        startDateButton.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            DatePickerDialog dialog = new DatePickerDialog(ViewEventActivity.this, new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
+                    startDateCalendar = Calendar.getInstance();
+                    startDateCalendar.set(selectedYear, selectedMonth, selectedDay);
+                    Calendar currentDate = Calendar.getInstance();
+                    if (startDateCalendar.before(currentDate)) {
+                        dateRequirementsTextView.setText("Date Must Be Today or Later.");
+                        dateRequirementsTextView.setVisibility(View.VISIBLE);
+                        eventStartDateTextView.setVisibility(View.GONE);
+                        startDateCalendar = null;
+                    } else {
+                        String selectedDate = String.format(Locale.US, "%d/%d/%d", selectedMonth + 1, selectedDay, selectedYear);
+                        eventStartDateTextView.setText(selectedDate);
+                        eventStartDateTextView.setVisibility(View.VISIBLE);
+                        dateRequirementsTextView.setVisibility(View.GONE);
 
-        startDateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar calendar = Calendar.getInstance();
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH);
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dialog = new DatePickerDialog(ViewEventActivity.this, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
-                        startDateCalendar = Calendar.getInstance();
-                        startDateCalendar.set(selectedYear, selectedMonth, selectedDay);
-                        Calendar currentDate = Calendar.getInstance();
-                        if (startDateCalendar.before(currentDate)) {
-                            dateRequirementsTextView.setText("Date Must Be Today or Later.");
-                            dateRequirementsTextView.setVisibility(View.VISIBLE);
-                            eventStartDateTextView.setVisibility(View.GONE);
-                            startDateCalendar = null;
-                        } else {
-                            String selectedDate = String.format(Locale.US, "%d/%d/%d", selectedMonth + 1, selectedDay, selectedYear);
-                            eventStartDateTextView.setText(selectedDate);
-                            eventStartDateTextView.setVisibility(View.VISIBLE);
-                            dateRequirementsTextView.setVisibility(View.GONE);
+                        Date newStartDate = startDateCalendar.getTime();
 
-                            Date newStartDate = startDateCalendar.getTime();
+                        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                        int minute = calendar.get(Calendar.MINUTE);
 
+                        TimePickerDialog timePickerDialog = new TimePickerDialog(ViewEventActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
+                                startDateCalendar.set(Calendar.HOUR_OF_DAY, selectedHour);
+                                startDateCalendar.set(Calendar.MINUTE, selectedMinute);
 
-                            int hour = calendar.get(Calendar.HOUR_OF_DAY);
-                            int minute = calendar.get(Calendar.MINUTE);
-                            TimePickerDialog timePickerDialog = new TimePickerDialog(ViewEventActivity.this, new TimePickerDialog.OnTimeSetListener() {
-                                @Override
-                                public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
-                                    startDateCalendar.set(Calendar.HOUR_OF_DAY, selectedHour);
-                                    startDateCalendar.set(Calendar.MINUTE, selectedMinute);
+                                Calendar currentTime = Calendar.getInstance();
 
-                                    Calendar currentTime = Calendar.getInstance();
-                                    if (startDateCalendar.before(currentTime)) {
-                                        dateRequirementsTextView.setText("Start Time Must Be Now or Later.");
-                                        dateRequirementsTextView.setVisibility(View.VISIBLE);
-                                        eventStartTimeTextView.setVisibility(View.GONE);
-                                    } else {
-                                        String selectedTime = String.format(Locale.US, "%02d:%02d", selectedHour, selectedMinute);
-                                        eventStartTimeTextView.setText(selectedTime);
-                                        eventStartTimeTextView.setVisibility(View.VISIBLE);
-                                        dateRequirementsTextView.setVisibility(View.GONE);
-                                        startDate = newStartDate;
-                                    }
+                                if (startDateCalendar.before(currentTime)) {
+                                    dateRequirementsTextView.setText("Start Time Must Be Now or Later.");
+                                    dateRequirementsTextView.setVisibility(View.VISIBLE);
+                                    eventStartTimeTextView.setVisibility(View.GONE);
+                                } else {
+                                    String selectedTime = String.format(Locale.US, "%02d:%02d", selectedHour, selectedMinute);
+                                    eventStartTimeTextView.setText(selectedTime);
+                                    eventStartTimeTextView.setVisibility(View.VISIBLE);
+                                    dateRequirementsTextView.setVisibility(View.GONE);
+                                    startDate = newStartDate;
                                 }
-                            }, hour, minute, true);
-                            timePickerDialog.show();
-                        }
+                            }
+                        }, hour, minute, true);
+                        timePickerDialog.show();
                     }
-                }, year, month, day);
-                dialog.show();
-            }
+                }
+            }, year, month, day);
+            dialog.show();
         });
 
         endDateButton.setOnClickListener(new View.OnClickListener() {
@@ -558,6 +625,7 @@ public class ViewEventActivity extends AppCompatActivity {
                     public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
                         Calendar endDateCalendar = Calendar.getInstance();
                         endDateCalendar.set(selectedYear, selectedMonth, selectedDay);
+
                         // Copy time from startDateCalendar if the dates are the same
                         if (startDateCalendar != null &&
                                 endDateCalendar.get(Calendar.YEAR) == startDateCalendar.get(Calendar.YEAR) &&
@@ -568,6 +636,7 @@ public class ViewEventActivity extends AppCompatActivity {
                             endDateCalendar.set(Calendar.MINUTE, startDateCalendar.get(Calendar.MINUTE));
                         }
                         Calendar currentDate = Calendar.getInstance();
+
                         if (startDateCalendar == null) {
                             dateRequirementsTextView.setText("Please select a Start Date first.");
                             dateRequirementsTextView.setVisibility(View.VISIBLE);
@@ -593,7 +662,8 @@ public class ViewEventActivity extends AppCompatActivity {
 
                             int hour = calendar.get(Calendar.HOUR_OF_DAY);
                             int minute = calendar.get(Calendar.MINUTE);
-                            TimePickerDialog timePickerDialog = new TimePickerDialog(ViewEventActivity.this, new TimePickerDialog.OnTimeSetListener() {
+
+                            TimePickerDialog timePickerDialog = new TimePickerDialog(com.example.fusion0.ViewEventActivity.this, new TimePickerDialog.OnTimeSetListener() {
                                 @Override
                                 public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
                                     endDateCalendar.set(Calendar.HOUR_OF_DAY, selectedHour);
@@ -619,65 +689,13 @@ public class ViewEventActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
-
-
-        waitlist.getAll(eventID, all -> {
-            if (!all.contains(deviceID)) {
-                joinButton.setOnClickListener(view -> {
-                    if (event.getGeolocation()) {
-                        GeoLocation geoLocation = new GeoLocation(this, this, event.getLatitude(), event.getLongitude(), event.getRadius());
-                        Log.e("ViewEventActivity", "Radius: " + event.getRadius());
-                        if (!geoLocation.isLocationPermissionGranted()) {
-                            geoLocation.requestLocationPermission();
-                        } else {
-                            proceedWithJoin(geoLocation);
-                        }
-                    }else{
-                        addUserToWaitingList();
-                    }
-                });
-            } else {
-                joinButton.setText("Unjoin Waiting List");
-                joinButton.setOnClickListener(view -> {
-                    waitlist.removeEntrantFromWaitingList(eventID, deviceID);
-                    Toast.makeText(ViewEventActivity.this, "You have left the waiting list", Toast.LENGTH_SHORT).show();
-
-                    ArrayList<String> newWaitingList = event.removeUserFromWaitingList(deviceID, event.getWaitinglist());
-                    event.setWaitinglist(newWaitingList);
-
-                    EventFirebase.editEvent(event);
-
-                    UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
-                        @Override
-                        public void onSuccess(UserInfo userInfo) {
-                            user = userInfo;
-                        }
-
-                        @Override
-                        public void onFailure(String error) {
-                            Log.e("JoinedEventActivity", "Error fetching user: " + error);
-                        }
-                    });
-
-                    ArrayList<EventInfo> newEventsList = user.removeEventFromEventList(event, user.getEvents());
-                    user.setEvents(newEventsList);
-                    UserFirestore.editUserEvents(user);
-
-                    EventFirebase.editEvent(event);
-
-                    Intent intent = new Intent(ViewEventActivity.this, MainActivity.class);
-                    startActivity(intent);
-                });
-            }
-        });
-
     }
 
     /**
      * @author Derin Karas
+     * Proceed with join after user's location is validated
      *
-     *
-     * @param geoLocation
+     * @param geoLocation Geolocation object of the user
      */
     private void proceedWithJoin(GeoLocation geoLocation) {
         userLocation = geoLocation.getLocation();
@@ -690,12 +708,10 @@ public class ViewEventActivity extends AppCompatActivity {
         validateDistanceAndJoin(geoLocation);
     }
 
-
     /**
      * @author Derin Karas
-     *
-     *
-     * @param geoLocation
+     * Validate the user's location
+     * @param geoLocation Geolocation object of the user
      */
     private void validateDistanceAndJoin(GeoLocation geoLocation) {
         //geoLocation.setUserLocation(userLocation.getLatitude(), userLocation.getLongitude());
@@ -708,34 +724,40 @@ public class ViewEventActivity extends AppCompatActivity {
         }
     }
 
-
     /**
-     * @author Simon Haile, Derin Karas
+     * @author Simon Haile, Derin Karas, Sehej Brar
      * Adds the joined event to the user attribute 'events' and adds user to the event waitinglist
-     *
      */
     private void addUserToWaitingList() {
-        ArrayList<EventInfo> eventsList = user.getEvents();
-        eventsList.add(event);
-        user.setEvents(eventsList);
-        UserFirestore.editUserEvents(user);
+        ArrayList<String> eventsList = user.getEvents();
+        eventsList.add(event.getEventID());
+        waitlist.addToUserWL(deviceID, event.getEventID(), user);
+
+        ArrayList<Map<String, String>> currentEntrants = event.getWaitinglist();
 
         if (event.getGeolocation()){
-            ArrayList<String> currentEntrants = event.getWaitinglist();
-            String newEntrant = "[" + deviceID + ", " + userLocation.getLatitude() + ", " + userLocation.getLongitude() + "]";
+            Map<String, String> newEntrant = new HashMap<>();
+            newEntrant.put("did", deviceID);
+            newEntrant.put("latitude", String.valueOf(userLocation.getLatitude()));
+            newEntrant.put("longitude", String.valueOf(userLocation.getLongitude()));
+            newEntrant.put("status", "waiting");
             currentEntrants.add(newEntrant);
-            event.setWaitinglist(currentEntrants);
-            EventFirebase.editEvent(event);
-            Toast.makeText(this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
-            finish();
-        }else {
-            ArrayList<String> currentEntrants = event.getWaitinglist();
-            currentEntrants.add(deviceID);
-            event.setWaitinglist(currentEntrants);
-            EventFirebase.editEvent(event);
-            Toast.makeText(this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
-            finish();
+        } else {
+            Map<String, String> newEntrant = new HashMap<>();
+            newEntrant.put("did", deviceID);
+            newEntrant.put("latitude", null);
+            newEntrant.put("longitude", null);
+            newEntrant.put("status", "waiting");
+            currentEntrants.add(newEntrant);
+            Log.d("Checkpoint", "Current Entrants: " + currentEntrants);
         }
+
+        event.setWaitinglist(currentEntrants);
+
+
+        EventFirebase.editEvent(event);
+        Toast.makeText(this, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
+        finish();
     }
 
     /**
