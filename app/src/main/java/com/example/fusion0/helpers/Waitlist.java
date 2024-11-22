@@ -12,7 +12,6 @@ import com.example.fusion0.models.UserInfo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 
@@ -42,7 +41,8 @@ public class Waitlist {
 
     /**
      * @author Sehej Brar
-     * Samples a specified number of attendees from the waiting list for a specific event.
+     * Samples a specified number of entrants from the waiting list for a specific event. Also
+     * can be used to re-sample entrants.
      *
      * @param eventId The unique identifier of the event.
      * @param numToSelect The number of attendees to be randomly selected from the waiting list.
@@ -91,7 +91,7 @@ public class Waitlist {
                     Collections.shuffle(wait);
 
                     // Hashset allows for faster lookup
-                    HashSet<String> winners_set = new HashSet<>(new ArrayList<>(wait.subList(0, finalNumToSelect)));
+                    ArrayList<String> winners_set = new ArrayList<>(wait.subList(0, finalNumToSelect));
 
                     DocumentReference documentReference = eventsRef.document(eventId);
 
@@ -105,7 +105,8 @@ public class Waitlist {
                                         if (waitList != null) {
                                             // If the winners are in the waiting list then their new status is chosen
                                             for (Map<String, String> user : waitList) {
-                                                if (winners_set.contains(user.get("did"))) {
+                                                // Can't select chosen entrants nor cancelled entrants
+                                                if (winners_set.contains(user.get("did")) && !Objects.equals(user.get("status"), "chosen") && !Objects.equals(user.get("status"), "cancel")) {
                                                     user.put("status", "chosen");
                                                 }
                                             }
@@ -122,7 +123,7 @@ public class Waitlist {
 
     /**
      * Allows the organizer to cancel a user's invitation after the lottery has been conducted.
-     * @author Sehej Bra
+     * @author Sehej Brar
      * @param eventID event's unique id
      * @param userID user's unique id
      */
@@ -138,6 +139,7 @@ public class Waitlist {
 
     /**
      * Changes the user's waiting list status
+     * @author Sehej Brar
      * @param eventID event id
      * @param userID user's unique id
      * @param newStatus the status to change the user to
@@ -150,6 +152,7 @@ public class Waitlist {
         }
 
         DocumentReference documentReference = eventsRef.document(eventID);
+
         documentReference.get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
