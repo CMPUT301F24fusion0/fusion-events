@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.fusion0.BuildConfig;
 import com.example.fusion0.fragments.RegistrationFragment;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.models.EventInfo;
@@ -663,7 +664,7 @@ public class ViewEventActivity extends AppCompatActivity {
                             int hour = calendar.get(Calendar.HOUR_OF_DAY);
                             int minute = calendar.get(Calendar.MINUTE);
 
-                            TimePickerDialog timePickerDialog = new TimePickerDialog(com.example.fusion0.ViewEventActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                            TimePickerDialog timePickerDialog = new TimePickerDialog(com.example.fusion0.activities.ViewEventActivity.this, new TimePickerDialog.OnTimeSetListener() {
                                 @Override
                                 public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
                                     endDateCalendar.set(Calendar.HOUR_OF_DAY, selectedHour);

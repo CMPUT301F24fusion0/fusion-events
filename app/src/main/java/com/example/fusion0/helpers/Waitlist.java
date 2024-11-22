@@ -7,6 +7,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.fusion0.models.UserInfo;
 
 import java.util.ArrayList;
 import java.util.Collections;
