@@ -8,6 +8,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -21,10 +22,10 @@ import java.util.Objects;
  * </p>
  */
 
-public class Waitlist {
-    private final FirebaseFirestore db;
-    CollectionReference eventsRef;
-    UserFirestore userFirestore;
+public class Waitlist implements Serializable {
+    private transient FirebaseFirestore db;
+    private transient CollectionReference eventsRef;
+    private transient UserFirestore userFirestore;
 
 
     /**
@@ -49,17 +50,17 @@ public class Waitlist {
         // Fetch event details to get capacity and current acceptedCount
         eventsRef.document(eventId).get().addOnSuccessListener(eventDoc -> {
             if (eventDoc.exists()) {
-                int capacity;
+                int lotteryCapacity;
                 int acceptedCount;
 
                 // Check if capacity is stored as a number or a string, then convert
-                Object capacityField = eventDoc.get("capacity");
+                Object capacityField = eventDoc.get("lotteryCapacity");
                 Object acceptedCountField = eventDoc.get("acceptedCount");
 
                 // Handle capacity conversion
                 if (capacityField instanceof String) {
                     try {
-                        capacity = Integer.parseInt((String) capacityField);
+                        lotteryCapacity = Integer.parseInt((String) capacityField);
                     } catch (NumberFormatException e) {
                         System.out.println("Error: Capacity is not a valid number.");
                         return;
@@ -82,7 +83,7 @@ public class Waitlist {
                 }
 
                 // Calculate the number of entrants we actually need
-                int spotsRemaining = capacity - acceptedCount;
+                int spotsRemaining = lotteryCapacity - acceptedCount;
                 int finalNumToSelect = Math.min(numToSelect, spotsRemaining);
 
                 getWait(eventId, wait -> {

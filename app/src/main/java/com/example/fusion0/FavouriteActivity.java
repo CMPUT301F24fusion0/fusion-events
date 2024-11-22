@@ -70,7 +70,8 @@ public class FavouriteActivity extends AppCompatActivity {
         facilitiesList = findViewById(R.id.facilities_list);
 
 
-        joinedEventsButton.setOnClickListener(view -> {UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+        joinedEventsButton.setOnClickListener(view -> {
+            UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo userInfo) {
                 if (userInfo == null) {

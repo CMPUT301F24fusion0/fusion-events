@@ -160,7 +160,6 @@ public class GeoLocation implements LocationListener {
         if (isLocationPermissionGranted()) {
             requestLocationUpdates();
         }
-
         // Return the current user location, which will be updated as location changes
         return userLocation;
     }

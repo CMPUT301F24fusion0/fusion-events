@@ -4,6 +4,7 @@ package com.example.fusion0;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -32,7 +33,9 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
@@ -70,10 +73,10 @@ public class EventActivity extends AppCompatActivity {
     private StorageReference storageRef;
 
     private static final String TAG = "EventActivity";
-    private EditText eventName,description, capacity, radius;
+    private EditText eventName,description, capacity, radius, lotteryCapacity;
     private androidx.fragment.app.FragmentContainerView autocompletePlaceFragment;
-    private Calendar startDateCalendar;
-    private TextView addFacilityText,dateRequirementsTextView, startDateTextView, startTimeTextView, endDateTextView, endTimeTextView, geolocationTextView, radiusText;
+    private Calendar startDateCalendar , registrationDateCalendar;
+    private TextView addFacilityText,dateRequirementsTextView,registrationDateRequirementsTextView, startDateTextView, startTimeTextView, endDateTextView, endTimeTextView, geolocationTextView, radiusText, registrationDateTextView;
     private Button addButton, exitButton;
     private ImageView uploadedImageView;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
@@ -93,6 +96,7 @@ public class EventActivity extends AppCompatActivity {
     private String facilityImage;
     private Date startDate;
     private Date endDate;
+    private Date registrationDate;
     private String eventPoster;
     private Double latitude;
     private Double longitude;
@@ -121,11 +125,13 @@ public class EventActivity extends AppCompatActivity {
         autocompletePlaceFragment = findViewById(R.id.autocomplete_fragment);
         description = findViewById(R.id.Description);
         dateRequirementsTextView = findViewById(R.id.date_requirements_text);
+        registrationDateRequirementsTextView =findViewById(R.id.registrationDateRequirementsTextView);
         startDateTextView = findViewById(R.id.start_date_text);
         startTimeTextView = findViewById(R.id.start_time_text);
         endDateTextView = findViewById(R.id.end_date_text);
         endTimeTextView = findViewById(R.id.end_time_text);
         capacity = findViewById(R.id.Capacity);
+        lotteryCapacity =findViewById(R.id.lotteryCapacity);
         addButton = findViewById(R.id.add_button);
         exitButton = findViewById(R.id.exit_button);
         geolocationTextView = findViewById(R.id.geolocation_text);
@@ -147,6 +153,8 @@ public class EventActivity extends AppCompatActivity {
         StartDateButtonHandling();
         EndDateButtonHandling();
 
+        registrationDateButtonHandling();
+
         AddEvent();
 
         exitButton.setOnClickListener(v -> finish());
@@ -157,6 +165,9 @@ public class EventActivity extends AppCompatActivity {
         LoginManagement login = new LoginManagement(this);
         login.isUserLoggedIn(isLoggedIn -> {
             if (!isLoggedIn) {
+                String activity = "EventActivity";
+                Bundle bundle = new Bundle();
+                bundle.putString("activity", activity);
                 Registration registration = new Registration();
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.activity_add_event, registration)
@@ -221,6 +232,7 @@ public class EventActivity extends AppCompatActivity {
                                 .start(this);
                     }
                 }
+
         );
 
         uploadImageButton.setOnClickListener(v -> {
@@ -238,8 +250,44 @@ public class EventActivity extends AppCompatActivity {
             if (resultUri != null) {
                 uploadedImageView.setVisibility(View.VISIBLE);
                 uploadedImageView.setImageURI(resultUri);
-                uploadedImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+                StorageReference imageRef = storageRef.child("event_posters/" + UUID.randomUUID().toString() + ".jpg");
+
+                imageRef.putFile(resultUri)
+                        .addOnSuccessListener(taskSnapshot -> {
+                            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                eventPoster = uri.toString();
+                            }).addOnFailureListener(e -> {
+                                Log.e(TAG, "Error getting download URL", e);
+                            });
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e(TAG, "Upload failed", e);
+                        });
             }
+
+
+                Glide.with(this)
+                        .load(resultUri)
+                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) // Get original size
+                        .into(new SimpleTarget<Drawable>() {
+                            @Override
+                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                // Get the original image dimensions
+                                int originalWidth = resource.getIntrinsicWidth();
+                                int originalHeight = resource.getIntrinsicHeight();
+
+                                // Apply the same scaling logic used in Glide loading (1.5 factor)
+                                int newWidth = (int) (originalWidth / 1.5);
+                                int newHeight = (int) (originalHeight / 1.5);
+
+                                Glide.with(EventActivity.this)
+                                        .load(resultUri)
+                                        .override(newWidth, newHeight)
+                                        .into(uploadedImageView);
+                            }
+                        });
+
         } else if (resultCode == UCrop.RESULT_ERROR) {
             Throwable cropError = UCrop.getError(data);
             if (cropError != null) {
@@ -247,8 +295,6 @@ public class EventActivity extends AppCompatActivity {
             }
         }
     }
-
-
 
 
     /**
@@ -320,7 +366,6 @@ public class EventActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // Handle nothing selected case if necessary
             }
         });
     }
@@ -464,8 +509,8 @@ public class EventActivity extends AppCompatActivity {
      */
     private void StartDateButtonHandling() {
         Button startDateButton = findViewById(R.id.start_date_button);
-        TextView startDateTextView = findViewById(R.id.start_date_text);
-        TextView startTimeTextView = findViewById(R.id.start_time_text);
+        startDateTextView = findViewById(R.id.start_date_text);
+        startTimeTextView = findViewById(R.id.start_time_text);
         startDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -531,9 +576,8 @@ public class EventActivity extends AppCompatActivity {
      */
     private void EndDateButtonHandling() {
         Button endDateButton = findViewById(R.id.end_date_button);
-        TextView endDateTextView = findViewById(R.id.end_date_text);
-        TextView endTimeTextView = findViewById(R.id.end_time_text);
-        // End Date Button
+        endDateTextView = findViewById(R.id.end_date_text);
+        endTimeTextView = findViewById(R.id.end_time_text);
         endDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -608,6 +652,55 @@ public class EventActivity extends AppCompatActivity {
         });
     }
 
+    private void registrationDateButtonHandling(){
+        Button registrationDateButton = findViewById(R.id.registration_date_button);
+        registrationDateTextView = findViewById(R.id.registration_date_text);
+        registrationDateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                DatePickerDialog dialog = new DatePickerDialog(com.example.fusion0.EventActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
+                        registrationDateCalendar = Calendar.getInstance();
+                        registrationDateCalendar.set(selectedYear, selectedMonth, selectedDay);
+                        Calendar currentDate = Calendar.getInstance();
+                        if (startDate != null){
+                            if (registrationDateCalendar.before(currentDate)) {
+                                registrationDateRequirementsTextView.setText("Deadline Cannot Be Before Today.");
+                                registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
+                                registrationDateTextView.setVisibility(View.GONE);
+                                registrationDateCalendar = null;
+                            }else if (startDateCalendar.before(registrationDateCalendar)) {
+                                registrationDateRequirementsTextView.setText("Registration deadline must be before the event start date.");
+                                registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
+                                registrationDateTextView.setVisibility(View.GONE);
+                                registrationDateCalendar = null;
+                            }else {
+                                String selectedDate = String.format(Locale.US, "%d/%d/%d", selectedMonth + 1, selectedDay, selectedYear);
+                                registrationDateTextView.setText(selectedDate);
+                                registrationDateTextView.setVisibility(View.VISIBLE);
+                                registrationDateRequirementsTextView.setVisibility(View.GONE);
+                                registrationDate = registrationDateCalendar.getTime();
+                            }
+                        }else{
+                            registrationDateRequirementsTextView.setText("Please Select Start Date.");
+                            registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
+                            registrationDateTextView.setVisibility(View.GONE);
+                            registrationDateCalendar = null;
+                        }
+
+                    }
+                }, year, month, day);
+                dialog.show();
+            }
+        });
+
+    }
+
     /**
      * @author Simon Haile
      * Handles the addition of a new event. It validates the user input fields for event name, capacity, description,
@@ -624,6 +717,11 @@ public class EventActivity extends AppCompatActivity {
             if (TextUtils.isEmpty(capacity.getText().toString())) {
                 capacity.setError("Capacity is required");
                 Toast.makeText(EventActivity.this, "Capacity is required", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (TextUtils.isEmpty(lotteryCapacity.getText().toString()) || Integer.parseInt(lotteryCapacity.getText().toString()) >= Integer.parseInt(capacity.getText().toString())) {
+                lotteryCapacity.setError("Lottery Capacity is required and must be less than Waitlist Capacity");
+                Toast.makeText(EventActivity.this, "Lottery Capacity is required and must be less than Waitlist Capacity", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (TextUtils.isEmpty(description.getText().toString())) {
@@ -646,6 +744,10 @@ public class EventActivity extends AppCompatActivity {
                 Toast.makeText(EventActivity.this, "Start or End date is missing", Toast.LENGTH_SHORT).show();
                 return;
             }
+            if (registrationDate == null) {
+                Toast.makeText(EventActivity.this, "Registration deadline is missing", Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (eventPoster == null) {
                 Toast.makeText(EventActivity.this, "Event poster is missing", Toast.LENGTH_SHORT).show();
                 return;
@@ -665,9 +767,11 @@ public class EventActivity extends AppCompatActivity {
                         address,
                         facilityName,
                         capacity.getText().toString(),
+                        lotteryCapacity.getText().toString(),
                         description.getText().toString(),
                         startDate,
                         endDate,
+                        registrationDate,
                         startTimeTextView.getText().toString(),
                         endTimeTextView.getText().toString(),
                         eventPoster,

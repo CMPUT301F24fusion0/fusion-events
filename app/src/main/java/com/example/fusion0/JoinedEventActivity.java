@@ -78,8 +78,6 @@ public class JoinedEventActivity extends AppCompatActivity {
             @Override
             public void onSuccess(UserInfo userInfo) {
                 user = userInfo;
-                Log.e("JoinedEventActivity", "Error fetching user: " + user.getEvents() + user.getFirstName());
-
             }
 
             @Override

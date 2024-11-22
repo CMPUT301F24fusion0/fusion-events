@@ -76,12 +76,24 @@
             android:padding="16dp">
 
             <ListView
-                android:id="@+id/wishlistListView"
+                android:id="@+id/waitinglistListView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:divider="@android:color/darker_gray"
                 android:dividerHeight="0.5dp"
                 android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:id="@+id/emptyText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="@color/textColor"
+                android:fontFamily="@font/raleway_medium"
+                android:text="The waitinglist is empty!"
+                android:layout_gravity="center"
+                android:visibility="gone">
+            </TextView>
         </LinearLayout>
     </ScrollView>
 

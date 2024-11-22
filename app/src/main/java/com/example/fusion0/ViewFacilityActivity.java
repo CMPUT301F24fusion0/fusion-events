@@ -8,11 +8,13 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +22,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.google.zxing.WriterException;
+
+import java.util.ArrayList;
 
 /**
  * @author Simon Haile
@@ -28,7 +33,7 @@ import com.bumptech.glide.Glide;
 public class ViewFacilityActivity extends AppCompatActivity {
 
     private String deviceID;
-    private TextView facilityNameTextView, addressTextView, ownerTextView;
+    private TextView facilityNameTextView, addressTextView, ownerTextView, facilitiesEventsTextView;
     private EditText facilityNameEditText, addressEditText;
     private FacilitiesInfo facility;
     private ImageView facilityImageView;
@@ -36,6 +41,8 @@ public class ViewFacilityActivity extends AppCompatActivity {
     private LinearLayout toolbar;
     private ImageButton backButton;
     private Button editButton, saveButton, deleteButton, cancelButton;
+    private ListView facilitiesEventsList;
+
 
     /**
      * Called when the activity is first created. This method sets up the user interface
@@ -57,9 +64,13 @@ public class ViewFacilityActivity extends AppCompatActivity {
         addressTextView = findViewById(R.id.address);
         facilityImageView = findViewById(R.id.facilityImage);
         ownerTextView = findViewById(R.id.owner);
+        facilitiesEventsTextView= findViewById(R.id.facilities_events_list_text);
         facilityNameEditText = findViewById(R.id.editFacilityName);
         addressEditText = findViewById(R.id.editAddress);
         toolbar = findViewById(R.id.toolbar);
+
+
+        facilitiesEventsList = findViewById(R.id.facilities_events_list);
 
         backButton = findViewById(R.id.backButton);
         editButton = findViewById(R.id.edit_button);
@@ -87,8 +98,20 @@ public class ViewFacilityActivity extends AppCompatActivity {
                     facility = facilitiesInfo;
                     facilityNameTextView.setText(facility.getFacilityName());
                     addressTextView.setText(facility.getAddress());
-                    ownerTextView.setText(facility.getOwner());
 
+                    UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+                        @Override
+                        public void onSuccess(UserInfo user) {
+                            String fullName = user.getFirstName() + ' ' + user.getLastName();
+                            ownerTextView.setText(fullName);
+                        }
+
+                        @Override
+                        public void onFailure(String error) {
+                            ownerTextView.setText(facility.getOwner());
+
+                        }
+                    });
                     if (facility.getFacilityImage() != null && !facility.getFacilityImage().isEmpty()) {
                         Glide.with(ViewFacilityActivity.this)
                                 .load(facility.getFacilityImage())
@@ -100,6 +123,44 @@ public class ViewFacilityActivity extends AppCompatActivity {
                         isOwner = true;
                         toolbar.setVisibility(View.VISIBLE);
                     }
+
+                    ArrayList<String> eventNames = new ArrayList<>();
+                    ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(ViewFacilityActivity.this, android.R.layout.simple_list_item_1, eventNames);
+                    facilitiesEventsList.setAdapter(eventsAdapter);
+                    if (facility.getEvents() != null) {
+                        ArrayList<String> filteredEvents = new ArrayList<>();
+                        for (String event : facility.getEvents()) {
+                            EventFirebase.findEvent(event, new EventFirebase.EventCallback() {
+                                @Override
+                                public void onSuccess(EventInfo eventInfo) throws WriterException {
+                                    if (eventInfo != null) {
+                                        filteredEvents.add(eventInfo.getEventID());
+                                        eventNames.add(eventInfo.getEventName());
+                                        eventsAdapter.notifyDataSetChanged();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(String error) {
+
+                                }
+                            });
+                        }
+
+                        facility.setEvents(filteredEvents);
+                        facilitiesEventsList.setOnItemClickListener((parent, view1, position, id) -> {
+                            String eventID = facility.getEvents().get(position);
+
+                            Intent intent = new Intent(ViewFacilityActivity.this, ViewEventActivity.class);
+                            intent.putExtra("eventID", eventID);
+                            intent.putExtra("deviceID", deviceID);
+                            startActivity(intent);
+                        });
+
+                    }else{
+                        facilitiesEventsTextView.setVisibility(View.VISIBLE);
+                        facilitiesEventsList.setVisibility(View.GONE);
+                    }
                 }
             }
 
@@ -109,6 +170,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
                 Toast.makeText(ViewFacilityActivity.this, "Failed to load facility data.", Toast.LENGTH_SHORT).show();
             }
         });
+
 
         editButton.setOnClickListener(v -> {
             if (isOwner) {
@@ -170,7 +232,6 @@ public class ViewFacilityActivity extends AppCompatActivity {
         cancelButton.setOnClickListener(view ->{
             facilityNameTextView.setVisibility(View.VISIBLE);
             addressTextView.setVisibility(View.VISIBLE);
-            ownerTextView.setVisibility(View.VISIBLE);
 
             facilityNameEditText.setVisibility(View.GONE);
             addressEditText.setVisibility(View.GONE);
@@ -184,7 +245,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
 
             facilityNameTextView.setText(facility.getFacilityName());
             addressTextView.setText(facility.getAddress());
-            ownerTextView.setText(facility.getOwner());
         });
+
     }
 }

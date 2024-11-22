@@ -379,6 +379,71 @@
                 </LinearLayout>
 
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Registration Deadline:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical">
+                </TextView>
+
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="16dp">
+
+                    <TextView
+                        android:id="@+id/registration_date_requirements_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/darker_gray"
+                        android:visibility="gone">
+                    </TextView>
+
+
+                    <TextView
+                        android:id="@+id/registration_date_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/raleway_semibold"
+                        android:gravity="center_vertical"
+                        android:text="Start Date"
+                        android:textColor="@color/textColor"
+                        android:textSize="15sp" />
+
+                    <Button
+                        android:id="@+id/registration_date_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Select Registration Deadline"
+                        android:backgroundTint="@color/textColor"
+                        android:layout_marginTop="8dp"
+                        app:cornerRadius="5dp"
+                        android:textSize="10sp"
+                        android:visibility="gone"/>
+                </LinearLayout>
+
+            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -459,115 +524,121 @@
                     android:contentDescription="QR Code"
                     android:layout_marginBottom="16dp"/>
             </LinearLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/textColor"
-                android:layout_marginBottom="16dp"/>
-
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp"
-                android:gravity="center_vertical">
+                android:orientation="vertical"
+                android:id="@+id/lists">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/textColor"
+                    android:layout_marginBottom="16dp"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Waitinglist:"
-                    android:textColor="@color/textColor"
-                    android:textSize="17sp"
-                    android:fontFamily="@font/raleway_semibold"
-                    android:gravity="center_vertical" />
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center_vertical">
 
-                <Space
-                    android:layout_width="8dp"
-                    android:layout_height="0dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Waitinglist:"
+                        android:textColor="@color/textColor"
+                        android:textSize="17sp"
+                        android:fontFamily="@font/raleway_semibold"
+                        android:gravity="center_vertical" />
 
-                <Button
-                    android:id="@+id/waitinglistButton"
-                    android:layout_width="wrap_content"
+                    <Space
+                        android:layout_width="8dp"
+                        android:layout_height="0dp"/>
+
+                    <Button
+                        android:id="@+id/waitinglistButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View Waitinglist"
+                        android:backgroundTint="@color/textColor"
+                        app:cornerRadius="5dp"
+                        android:textSize="10sp"
+                        android:layout_gravity="center"/>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/textColor"
+                    android:layout_marginBottom="16dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="View Waitinglist"
-                    android:backgroundTint="@color/textColor"
-                    app:cornerRadius="5dp"
-                    android:textSize="10sp"
-                    android:layout_gravity="center"/>
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center_vertical">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chosen Entrants:"
+                        android:textColor="@color/textColor"
+                        android:textSize="17sp"
+                        android:fontFamily="@font/raleway_semibold"
+                        android:gravity="center_vertical"/>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/textColor"
-                android:layout_marginBottom="16dp"/>
+                    <Space
+                        android:layout_width="8dp"
+                        android:layout_height="0dp"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp"
-                android:gravity="center_vertical">
+                    <Button
+                        android:id="@+id/chosenEntrantsButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View Chosen Entrants List"
+                        android:backgroundTint="@color/textColor"
+                        app:cornerRadius="5dp"
+                        android:textSize="10sp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/textColor"
+                    android:layout_marginBottom="16dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Chosen Entrants:"
-                    android:textColor="@color/textColor"
-                    android:textSize="17sp"
-                    android:fontFamily="@font/raleway_semibold"
-                    android:gravity="center_vertical"/>
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center_vertical">
 
-                <Space
-                    android:layout_width="8dp"
-                    android:layout_height="0dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cancelled Entrants:"
+                        android:textColor="@color/textColor"
+                        android:textSize="17sp"
+                        android:fontFamily="@font/raleway_semibold"
+                        android:gravity="center_vertical"/>
 
-                <Button
-                    android:id="@+id/chosenEntrantsButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="View Chosen Entrants List"
-                    android:backgroundTint="@color/textColor"
-                    app:cornerRadius="5dp"
-                    android:textSize="10sp" />
+                    <Space
+                        android:layout_width="8dp"
+                        android:layout_height="0dp"/>
 
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/textColor"
-                android:layout_marginBottom="16dp"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Cancelled Entrants:"
-                    android:textColor="@color/textColor"
-                    android:textSize="17sp"
-                    android:fontFamily="@font/raleway_semibold"
-                    android:gravity="center_vertical"/>
-
-                <Space
-                    android:layout_width="8dp"
-                    android:layout_height="0dp"/>
-
-                <Button
-                    android:id="@+id/cancelledEntrantsButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="View Cancelled Entrants List"
-                    android:backgroundTint="@color/textColor"
-                    app:cornerRadius="5dp"
-                    android:textSize="10sp" />
+                    <Button
+                        android:id="@+id/cancelledEntrantsButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View Cancelled Entrants List"
+                        android:backgroundTint="@color/textColor"
+                        app:cornerRadius="5dp"
+                        android:textSize="10sp" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

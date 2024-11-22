@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * This is the registration fragment that will be displayed when a user signs up for an waiting
@@ -78,14 +79,14 @@ public class Registration extends Fragment {
             registration(dID, first, last, emails, phone);
             Bundle bundle = getArguments();
             if (bundle != null) {
-                String eventId = bundle.getString("eventID");
+                String eventID = bundle.getString("eventID");
                 Intent intent = new Intent(getActivity(), ViewEventActivity.class);
-                intent.putExtra("eventID", eventId);
+                intent.putExtra("eventID", eventID);
                 Log.d("Checkpoint", "bundle was good - going back to vea");
                 startActivity(intent);
-            } else {
+            } else if(Objects.equals(bundle.getString("activity"), "ViewEventActivity")) {
                 Log.d("Checkpoint", "the bundle was null - going back to vea");
-                Intent intent = new Intent(getActivity(), ViewEventActivity.class);
+                Intent intent = new Intent(getActivity(), MainActivity.class);
                 startActivity(intent);
             }else{
                 Intent intent = new Intent(getActivity(), EventActivity.class);
