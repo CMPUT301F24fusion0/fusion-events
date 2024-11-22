@@ -14,9 +14,9 @@ import org.mockito.Mock;
 
 import static org.junit.Assert.*;
 
+import com.example.fusion0.fragments.TestFragmentActivity;
 import com.example.fusion0.helpers.GeoLocation;
 
-import com.example.fusion0.fragments.TestFragmentActivity;
 
 @RunWith(AndroidJUnit4.class)
 public class GeoLocationTest {
