@@ -2,6 +2,9 @@ package com.example.fusion0;
 
 import static org.junit.Assert.fail;
 
+import com.example.fusion0.helpers.UserFirestore;
+import com.example.fusion0.models.EventInfo;
+import com.example.fusion0.models.UserInfo;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 

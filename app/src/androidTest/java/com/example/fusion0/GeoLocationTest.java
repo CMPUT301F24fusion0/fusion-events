@@ -11,9 +11,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
+
+import com.example.fusion0.fragments.TestFragmentActivity;
+import com.example.fusion0.helpers.GeoLocation;
 
 
 @RunWith(AndroidJUnit4.class)

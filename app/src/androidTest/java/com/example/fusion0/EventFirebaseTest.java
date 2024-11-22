@@ -4,19 +4,17 @@ package com.example.fusion0;
 import static org.junit.Assert.fail;
 
 
+import com.example.fusion0.helpers.EventFirebase;
+import com.example.fusion0.models.EventInfo;
+import com.example.fusion0.models.FacilitiesInfo;
+import com.example.fusion0.models.OrganizerInfo;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.zxing.WriterException;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.UUID;
 
 public class EventFirebaseTest {
     private CollectionReference organizersRef, facilitiesRef, eventsRef;
