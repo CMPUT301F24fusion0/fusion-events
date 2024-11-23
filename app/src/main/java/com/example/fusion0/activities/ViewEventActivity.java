@@ -88,8 +88,8 @@ public class ViewEventActivity extends AppCompatActivity {
     private String deviceID;
     private Boolean isOwner = false;
     private Spinner eventFacility;
-    private TextView eventNameTextView, eventFacilityTextView,addFacilityText, eventDescriptionTextView,registrationDateRequirementsTextView, registrationDateTextView, dateRequirementsTextView,  eventStartDateTextView, eventEndDateTextView,eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, waitinglistFullTextView;
-    private EditText eventNameEditText, eventDescriptionEditText, eventCapacityEditText;
+    private TextView eventNameTextView, eventFacilityTextView,addFacilityText, eventDescriptionTextView,registrationDateRequirementsTextView, registrationDateTextView, dateRequirementsTextView,  eventStartDateTextView, eventEndDateTextView,eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, eventLotteryCapacityTextView,  waitinglistFullTextView;
+    private EditText eventNameEditText, eventDescriptionEditText, eventCapacityEditText, eventLotteryCapacityEditText;
     private ImageView eventPosterImageView, qrImageView;
     private Button startDateButton, endDateButton, registrationDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton, waitinglistButton, cancelledEntrantsButton, chosenEntrantsButton, uploadImageButton, lotteryButton;
     private ImageButton backButton;
@@ -153,6 +153,7 @@ public class ViewEventActivity extends AppCompatActivity {
         eventEndTimeTextView = findViewById(R.id.end_time_text);
         eventStartTimeTextView = findViewById(R.id.start_time_text);
         eventCapacityTextView = findViewById(R.id.capacityTextView);
+        eventLotteryCapacityTextView = findViewById(R.id.lotteryCapacityTextView);
         eventNameEditText = findViewById(R.id.editEventName);
         eventDescriptionEditText = findViewById(R.id.description_edit);
         eventCapacityEditText = findViewById(R.id.editCapacity);
@@ -217,6 +218,7 @@ public class ViewEventActivity extends AppCompatActivity {
                         eventNameTextView.setText(event.getEventName());
                         eventDescriptionTextView.setText(event.getDescription());
                         eventCapacityTextView.setText(event.getCapacity());
+                        eventLotteryCapacityTextView.setText(event.getLotteryCapacity());
                         eventFacilityTextView.setText(event.getFacilityName());
 
                         SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
@@ -481,6 +483,7 @@ public class ViewEventActivity extends AppCompatActivity {
             editDescription();
             editFacility(organizer);
             editCapacity();
+            editLotteryCapacity();
         });
 
         deleteButton.setOnClickListener(v -> {if (isOwner) {
@@ -524,17 +527,29 @@ public class ViewEventActivity extends AppCompatActivity {
             eventCapacityTextView.setVisibility(View.VISIBLE);
             eventCapacityEditText.setVisibility(View.GONE);
 
+            eventLotteryCapacityTextView.setVisibility(View.VISIBLE);
+            eventLotteryCapacityEditText.setVisibility(View.GONE);
+
         });
 
         saveButton.setOnClickListener(view ->{
             String newEventName = eventNameEditText.getText().toString();
             String newDescription = eventDescriptionEditText.getText().toString();
+
             String newEventCapacity = eventCapacityEditText.getText().toString();
+            String newEventLotteryCapacity = eventLotteryCapacityEditText.getText().toString();
+
+            if (Integer.parseInt(newEventLotteryCapacity) >= Integer.parseInt(newEventCapacity)) {
+                Toast.makeText(ViewEventActivity.this, "Lottery capacity must be less than wishlist!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             String newStartTime = eventStartTimeTextView.getText().toString();
             String newEndTime = eventEndTimeTextView.getText().toString();
 
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
 
             event.setEventName(newEventName);
             event.setDescription(newDescription);
@@ -570,7 +585,6 @@ public class ViewEventActivity extends AppCompatActivity {
             dateRequirementsTextView.setVisibility(View.GONE);
 
 
-
             eventNameTextView.setVisibility(View.VISIBLE);
             eventNameEditText.setVisibility(View.GONE);
 
@@ -579,6 +593,9 @@ public class ViewEventActivity extends AppCompatActivity {
 
             eventCapacityTextView.setVisibility(View.VISIBLE);
             eventCapacityEditText.setVisibility(View.GONE);
+
+            eventLotteryCapacityTextView.setVisibility(View.VISIBLE);
+            eventLotteryCapacityEditText.setVisibility(View.GONE);
 
             addFacilityText.setVisibility(View.GONE);
             autocompletePlaceFragment.setVisibility(View.GONE);
@@ -886,6 +903,12 @@ public class ViewEventActivity extends AppCompatActivity {
         eventCapacityTextView.setVisibility(View.GONE);
         eventCapacityEditText.setVisibility(View.VISIBLE);
         eventCapacityEditText.setText(event.getCapacity());
+    }
+
+    private void editLotteryCapacity(){
+        eventLotteryCapacityTextView.setVisibility(View.GONE);
+        eventLotteryCapacityEditText.setVisibility(View.VISIBLE);
+        eventLotteryCapacityEditText.setText(event.getLotteryCapacity());
     }
 
     /**
