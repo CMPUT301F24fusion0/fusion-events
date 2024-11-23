@@ -9,10 +9,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 
@@ -23,10 +22,10 @@ import java.util.Objects;
  * </p>
  */
 
-public class Waitlist implements Serializable {
-    private transient FirebaseFirestore db;
-    private transient CollectionReference eventsRef;
-    private transient UserFirestore userFirestore;
+public class Waitlist {
+    private final FirebaseFirestore db;
+    CollectionReference eventsRef;
+    UserFirestore userFirestore;
 
 
     /**
@@ -42,7 +41,8 @@ public class Waitlist implements Serializable {
 
     /**
      * @author Sehej Brar
-     * Samples a specified number of attendees from the waiting list for a specific event.
+     * Samples a specified number of entrants from the waiting list for a specific event. Also
+     * can be used to re-sample entrants.
      *
      * @param eventId The unique identifier of the event.
      * @param numToSelect The number of attendees to be randomly selected from the waiting list.
@@ -51,47 +51,35 @@ public class Waitlist implements Serializable {
         // Fetch event details to get capacity and current acceptedCount
         eventsRef.document(eventId).get().addOnSuccessListener(eventDoc -> {
             if (eventDoc.exists()) {
-                int lotteryCapacity;
+                int capacity;
                 int acceptedCount;
 
                 // Check if capacity is stored as a number or a string, then convert
-                Object capacityField = eventDoc.get("lotteryCapacity");
+                Object capacityField = eventDoc.get("capacity");
                 Object acceptedCountField = eventDoc.get("acceptedCount");
 
                 // Handle capacity conversion
-                if (capacityField instanceof String) {
+                if (capacityField instanceof Number && acceptedCountField instanceof String) {
                     try {
-                        lotteryCapacity = Integer.parseInt((String) capacityField);
-                    } catch (NumberFormatException e) {
-                        System.out.println("Error: Capacity is not a valid number.");
-                        return;
-                    }
-                } else {
-                    System.out.println("Error: Capacity is missing or invalid.");
-                    return;
-                }
-
-                if (acceptedCountField instanceof String) {
-                    try {
+                        capacity = (int) capacityField;
                         acceptedCount = Integer.parseInt((String) acceptedCountField);
                     } catch (NumberFormatException e) {
-                        System.out.println("Error: AcceptedCount is not a valid number.");
-                        return;
+                        throw new IllegalArgumentException("Accepted Count or Capacity is not a number.");
+
                     }
                 } else {
-                    System.out.println("Error: AcceptedCount is missing or invalid.");
-                    return;
+                    throw new IllegalArgumentException("Capacity is not a number or Accepted Count is not a string");
                 }
 
                 // Calculate the number of entrants we actually need
-                int spotsRemaining = lotteryCapacity - acceptedCount;
+                int spotsRemaining = capacity - acceptedCount;
                 int finalNumToSelect = Math.min(numToSelect, spotsRemaining);
 
                 getWait(eventId, wait -> {
                     Collections.shuffle(wait);
 
                     // Hashset allows for faster lookup
-                    HashSet<String> winners_set = new HashSet<>(new ArrayList<>(wait.subList(0, finalNumToSelect)));
+                    ArrayList<String> winners_set = new ArrayList<>(wait.subList(0, finalNumToSelect));
 
                     DocumentReference documentReference = eventsRef.document(eventId);
 
@@ -105,7 +93,8 @@ public class Waitlist implements Serializable {
                                         if (waitList != null) {
                                             // If the winners are in the waiting list then their new status is chosen
                                             for (Map<String, String> user : waitList) {
-                                                if (winners_set.contains(user.get("did"))) {
+                                                // Can't select chosen entrants nor cancelled entrants
+                                                if (winners_set.contains(user.get("did")) && !Objects.equals(user.get("status"), "chosen") && !Objects.equals(user.get("status"), "cancel")) {
                                                     user.put("status", "chosen");
                                                 }
                                             }
@@ -122,36 +111,56 @@ public class Waitlist implements Serializable {
 
     /**
      * Allows the organizer to cancel a user's invitation after the lottery has been conducted.
-     * @author Sehej Bra
+     * @author Sehej Brar
      * @param eventID event's unique id
      * @param userID user's unique id
      */
     public void organizerCancel(String eventID, String userID) {
         getChosen(eventID, chosen -> {
-            DocumentReference documentReference = eventsRef.document(eventID);
             if (!chosen.isEmpty()) {
-                documentReference.get()
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                DocumentSnapshot doc = task.getResult();
-                                if (doc.exists()) {
-                                    ArrayList<Map<String, String>> waitList = (ArrayList<Map<String, String>>) doc.get("waitinglist");
-
-                                    if (waitList != null) {
-                                        for (Map<String, String> user : waitList) {
-                                            if (Objects.equals(user.get("did"), userID)) {
-                                                user.put("status", "cancel");
-                                            }
-                                        }
-
-                                        documentReference.update("waitinglist", waitList);
-
-                                    }
-                                }
-                            }
-                        });
+                for (String did: chosen) {
+                    changeStatus(eventID, did, "cancel");
+                }
             }
         });
+    }
+
+    /**
+     * Changes the user's waiting list status
+     * @author Sehej Brar
+     * @param eventID event id
+     * @param userID user's unique id
+     * @param newStatus the status to change the user to
+     */
+    public void changeStatus(String eventID, String userID, String newStatus) {
+        ArrayList<String> allStatus = new ArrayList<>(Arrays.asList("chosen", "waiting", "cancel", "chosen"));
+
+        if (userID == null || !allStatus.contains(newStatus.toLowerCase())) {
+            throw new IllegalArgumentException("The argument provided is not valid");
+        }
+
+        DocumentReference documentReference = eventsRef.document(eventID);
+
+        documentReference.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot doc = task.getResult();
+                        if (doc.exists()) {
+                            ArrayList<Map<String, String>> waitList = (ArrayList<Map<String, String>>) doc.get("waitinglist");
+
+                            if (waitList != null) {
+                                for (Map<String, String> user : waitList) {
+                                    if (Objects.equals(user.get("did"), userID)) {
+                                        user.put("status", newStatus);
+                                    }
+                                }
+
+                                documentReference.update("waitinglist", waitList);
+
+                            }
+                        }
+                    }
+                });
     }
 
     /**
