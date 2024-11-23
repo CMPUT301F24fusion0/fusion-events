@@ -59,28 +59,16 @@ public class Waitlist {
                 Object acceptedCountField = eventDoc.get("acceptedCount");
 
                 // Handle capacity conversion
-                if (capacityField instanceof String) {
+                if (capacityField instanceof Number && acceptedCountField instanceof String) {
                     try {
-                        capacity = Integer.parseInt((String) capacityField);
-                    } catch (NumberFormatException e) {
-                        System.out.println("Error: Capacity is not a valid number.");
-                        return;
-                    }
-                } else {
-                    System.out.println("Error: Capacity is missing or invalid.");
-                    return;
-                }
-
-                if (acceptedCountField instanceof String) {
-                    try {
+                        capacity = (int) capacityField;
                         acceptedCount = Integer.parseInt((String) acceptedCountField);
                     } catch (NumberFormatException e) {
-                        System.out.println("Error: AcceptedCount is not a valid number.");
-                        return;
+                        throw new IllegalArgumentException("Accepted Count or Capacity is not a number.");
+
                     }
                 } else {
-                    System.out.println("Error: AcceptedCount is missing or invalid.");
-                    return;
+                    throw new IllegalArgumentException("Capacity is not a number or Accepted Count is not a string");
                 }
 
                 // Calculate the number of entrants we actually need
