@@ -41,5 +41,13 @@
             android:textSize="14sp"
             android:textColor="@color/textColor"
             android:textStyle="italic"/>
+        <TextView
+            android:id="@+id/userStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="status"
+            android:textSize="14sp"
+            android:textColor="@color/textColor"
+            android:textStyle="italic"/>
     </LinearLayout>
 </LinearLayout>

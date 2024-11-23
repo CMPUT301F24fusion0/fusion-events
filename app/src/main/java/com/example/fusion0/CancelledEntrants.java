@@ -42,12 +42,12 @@ public class CancelledEntrants extends Fragment {
         Bundle bundle = getArguments();
 
         if (bundle != null) {
-            ArrayList<Map<String, String>> waitingList = (ArrayList<Map<String, String>>) bundle.getSerializable("waitingListData");
+            ArrayList<Map<String, String>> cancelledEntrants = (ArrayList<Map<String, String>>) bundle.getSerializable("cancelledEntrantsData");
 
-            if (waitingList != null && !waitingList.isEmpty()) {
-                pendingRequests = waitingList.size();
+            if (cancelledEntrants != null && !cancelledEntrants.isEmpty()) {
+                pendingRequests = cancelledEntrants.size();
 
-                for (Map<String, String> entry : waitingList) {
+                for (Map<String, String> entry : cancelledEntrants) {
                     String deviceId = entry.get("did");
                     if (deviceId != null) {
                         Log.e(TAG, "did " + deviceId);
@@ -97,8 +97,6 @@ public class CancelledEntrants extends Fragment {
             cancelledEntrantsListView.setVisibility(View.VISIBLE);
         }
     }
-
-
 
 
     @Override

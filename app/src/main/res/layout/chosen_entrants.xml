@@ -118,27 +118,12 @@
             app:cornerRadius="5dp"
             android:layout_marginEnd="8dp"
             android:layout_weight="1" />
-        <TextView
-            android:id="@+id/full_capacity_text_view"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Full Capacity"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:background="@color/figmaBlue"
-            app:cornerRadius="5dp"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:padding="10dp"
-            android:visibility="gone"
-            >
-        </TextView>
 
         <Button
             android:id="@+id/remove_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Select Entrants"
+            android:text="Remove Entrants"
             android:gravity="center"
             android:textColor="@color/red"
             android:backgroundTint="@color/white"
