@@ -45,11 +45,15 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
             CircleImageView profilePic = convertView.findViewById(R.id.userProfilePic);
             TextView userName = convertView.findViewById(R.id.userName);
             TextView userEmail = convertView.findViewById(R.id.userEmail);
-
+            //TextView userStatus = convertView.findViewById(R.id.userStatus);
 
             String userNameString = user.getFirstName() + " " + user.getLastName();
             userName.setText(userNameString);
             userEmail.setText(user.getEmail());
+
+            //userStatus.setText();
+
+            convertView.setBackgroundResource(R.drawable.selector);
 
             manageImage = new ManageImageProfile(ProfileListAdapter.this.getContext());
             manageImage.checkImageExists(new ManageImageProfile.ImageCheckCallback() {
