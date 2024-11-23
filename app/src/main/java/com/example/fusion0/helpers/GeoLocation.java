@@ -15,7 +15,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 
-import com.example.fusion0.MapDialogFragment;
+import com.example.fusion0.fragments.MapDialogFragment;
 
 import java.util.ArrayList;
 import java.util.List;

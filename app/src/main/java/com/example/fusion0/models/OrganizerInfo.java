@@ -5,7 +5,6 @@ import com.example.fusion0.helpers.EventFirebase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @author Simon Haile

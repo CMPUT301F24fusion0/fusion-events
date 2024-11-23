@@ -39,7 +39,6 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.fusion0.BuildConfig;
-import com.example.fusion0.FavouriteActivity;
 import com.example.fusion0.fragments.CancelledEntrants;
 import com.example.fusion0.fragments.ChosenEntrants;
 import com.example.fusion0.fragments.Registration;
