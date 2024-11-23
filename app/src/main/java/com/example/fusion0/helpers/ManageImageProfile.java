@@ -46,8 +46,7 @@ public class ManageImageProfile {
     private StorageReference storageReference;
     private String deviceId;
 
-    private static final String OPENAI_API_KEY = "some key";
-//    private static final String OPENAI_API_KEY = BuildConfig.OPENAI_API_KEY;
+    private static final String OPENAI_API_KEY = BuildConfig.OPENAI_API_KEY;
     private static final String OPENAI_API_URL = "https://api.openai.com/v1/images/generations";
     private static final String TAG = "OPENAI";
 
