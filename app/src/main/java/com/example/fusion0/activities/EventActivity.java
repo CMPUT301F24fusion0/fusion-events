@@ -17,7 +17,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -28,10 +27,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
@@ -39,7 +36,6 @@ import com.example.fusion0.BuildConfig;
 import com.example.fusion0.models.FacilitiesInfo;
 import com.example.fusion0.models.OrganizerInfo;
 import com.example.fusion0.helpers.LoginManagement;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.model.AuthorAttributions;
@@ -58,7 +54,6 @@ import com.yalantis.ucrop.UCrop;
 import com.example.fusion0.R;
 
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -262,16 +257,8 @@ public class EventActivity extends AppCompatActivity {
                 StorageReference imageRef = storageRef.child("event_posters/" + UUID.randomUUID().toString() + ".jpg");
 
                 imageRef.putFile(resultUri)
-                        .addOnSuccessListener(taskSnapshot -> {
-                            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                                eventPoster = uri.toString();
-                            }).addOnFailureListener(e -> {
-                                Log.e(TAG, "Error getting download URL", e);
-                            });
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e(TAG, "Upload failed", e);
-                        });
+                        .addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> eventPoster = uri.toString()).addOnFailureListener(e -> Log.e(TAG, "Error getting download URL", e)))
+                        .addOnFailureListener(e -> Log.e(TAG, "Upload failed", e));
             }
 
 
@@ -670,38 +657,35 @@ public class EventActivity extends AppCompatActivity {
                 int year = calendar.get(Calendar.YEAR);
                 int month = calendar.get(Calendar.MONTH);
                 int day = calendar.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dialog = new DatePickerDialog(EventActivity.this, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
-                        registrationDateCalendar = Calendar.getInstance();
-                        registrationDateCalendar.set(selectedYear, selectedMonth, selectedDay);
-                        Calendar currentDate = Calendar.getInstance();
-                        if (startDate != null){
-                            if (registrationDateCalendar.before(currentDate)) {
-                                registrationDateRequirementsTextView.setText("Deadline Cannot Be Before Today.");
-                                registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
-                                registrationDateTextView.setVisibility(View.GONE);
-                                registrationDateCalendar = null;
-                            }else if (startDateCalendar.before(registrationDateCalendar)) {
-                                registrationDateRequirementsTextView.setText("Registration deadline must be before the event start date.");
-                                registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
-                                registrationDateTextView.setVisibility(View.GONE);
-                                registrationDateCalendar = null;
-                            }else {
-                                String selectedDate = String.format(Locale.US, "%d/%d/%d", selectedMonth + 1, selectedDay, selectedYear);
-                                registrationDateTextView.setText(selectedDate);
-                                registrationDateTextView.setVisibility(View.VISIBLE);
-                                registrationDateRequirementsTextView.setVisibility(View.GONE);
-                                registrationDate = registrationDateCalendar.getTime();
-                            }
-                        }else{
-                            registrationDateRequirementsTextView.setText("Please Select Start Date.");
+                DatePickerDialog dialog = new DatePickerDialog(EventActivity.this, (view, selectedYear, selectedMonth, selectedDay) -> {
+                    registrationDateCalendar = Calendar.getInstance();
+                    registrationDateCalendar.set(selectedYear, selectedMonth, selectedDay);
+                    Calendar currentDate = Calendar.getInstance();
+                    if (startDate != null){
+                        if (registrationDateCalendar.before(currentDate)) {
+                            registrationDateRequirementsTextView.setText("Deadline Cannot Be Before Today.");
                             registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
                             registrationDateTextView.setVisibility(View.GONE);
                             registrationDateCalendar = null;
+                        }else if (startDateCalendar.before(registrationDateCalendar)) {
+                            registrationDateRequirementsTextView.setText("Registration deadline must be before the event start date.");
+                            registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
+                            registrationDateTextView.setVisibility(View.GONE);
+                            registrationDateCalendar = null;
+                        }else {
+                            String selectedDate = String.format(Locale.US, "%d/%d/%d", selectedMonth + 1, selectedDay, selectedYear);
+                            registrationDateTextView.setText(selectedDate);
+                            registrationDateTextView.setVisibility(View.VISIBLE);
+                            registrationDateRequirementsTextView.setVisibility(View.GONE);
+                            registrationDate = registrationDateCalendar.getTime();
                         }
-
+                    }else{
+                        registrationDateRequirementsTextView.setText("Please Select Start Date.");
+                        registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
+                        registrationDateTextView.setVisibility(View.GONE);
+                        registrationDateCalendar = null;
                     }
+
                 }, year, month, day);
                 dialog.show();
             }

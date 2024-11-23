@@ -1,4 +1,4 @@
-package com.example.fusion0;
+package com.example.fusion0.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +14,14 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.fusion0.helpers.EventFirebase;
+import com.example.fusion0.helpers.UserFirestore;
+import com.example.fusion0.models.EventInfo;
+import com.example.fusion0.models.FacilitiesInfo;
+import com.example.fusion0.models.OrganizerInfo;
+import com.example.fusion0.models.UserInfo;
+import com.example.fusion0.R;
+import com.example.fusion0.fragments.QRFragment;
 import com.google.zxing.WriterException;
 
 import java.util.ArrayList;
@@ -242,7 +250,7 @@ public class FavouriteActivity extends AppCompatActivity {
 
         scannerButton = findViewById(R.id.toolbar_qrscanner);
         scannerButton.setOnClickListener(view -> {
-            Intent intent = new Intent(FavouriteActivity.this, QRActivity.class);
+            Intent intent = new Intent(FavouriteActivity.this, QRFragment.class);
             startActivity(intent);
         });
 
