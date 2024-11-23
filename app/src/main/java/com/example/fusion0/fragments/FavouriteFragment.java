@@ -99,12 +99,7 @@ public class FavouriteFragment extends Fragment {
                         ArrayList<String> events = user.getEvents();
 
                         if (joinedEventsList.getAdapter() == null) {
-                            ArrayList<String> eventNames = new ArrayList<>();
-                            for (String event : events) {
-                                if (event != null ) {
-                                    eventNames.add(event);
-                                }
-                            }
+                            ArrayList<String> eventNames = new ArrayList<>(events);
                             ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, eventNames);
                             joinedEventsList.setAdapter(eventsAdapter);
                         }
@@ -128,10 +123,10 @@ public class FavouriteFragment extends Fragment {
             });
 
             joinedEventsList.setOnItemClickListener((parent, view1, position, id) -> {
-                String eventID = user.getEvents().get(position);
+                String event = user.getEvents().get(position);
 
                 Intent intent = new Intent(requireActivity(), JoinedEventActivity.class);
-                intent.putExtra("eventID", eventID);
+                intent.putExtra("eventID", event);
                 intent.putExtra("deviceID", deviceID);
                 startActivity(intent);
             });

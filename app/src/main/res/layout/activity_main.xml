@@ -1,20 +1,148 @@
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Fragment Container -->
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/nav_host_fragment"
-        android:name="androidx.navigation.fragment.NavHostFragment"
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="250dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/appBackground"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:src="@drawable/curved_background"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:orientation="vertical"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:layout_marginTop="42dp">
+
+            <TextView
+                android:id="@+id/emptyWelcomeMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Welcome"
+                android:textSize="24sp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/raleway_semibold"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/emptyUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New User"
+                android:textSize="36sp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/raleway_bold"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/welcomeMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Welcome Back"
+                android:textSize="24sp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/raleway_semibold"/>
+
+            <TextView
+                android:id="@+id/userName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" "
+                android:textSize="36sp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/raleway_bold"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/noNotifications"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No Notifications"
+        android:gravity="center_vertical"
+        android:textSize="30sp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/raleway_semibold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:navGraph="@navigation/nav_graph"
-        app:defaultNavHost="true" />
+        app:layout_constraintTop_toBottomOf="@id/frameLayout"
+        android:visibility="gone"/>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/notificationsList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/frameLayout"
+        app:layout_constraintBottom_toTopOf="@id/toolbar" />
+
+    <LinearLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/toolbar_home"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/white"
+            android:contentDescription="blue_home"
+            android:src="@drawable/ic_blue_home" />
+
+        <ImageButton
+            android:id="@+id/toolbar_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/white"
+            android:contentDescription="search"
+            android:src="@drawable/ic_grey_qrscanner" />
+
+
+        <ImageButton
+            android:id="@+id/toolbar_add"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/white"
+            android:contentDescription="search"
+            android:src="@drawable/ic_grey_add" />
+
+
+        <ImageButton
+            android:id="@+id/toolbar_favourite"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/white"
+            android:contentDescription="person"
+            android:src="@drawable/ic_grey_favourite" />
+
+        <ImageButton
+            android:id="@+id/toolbar_person"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/white"
+            android:contentDescription="person"
+            android:src="@drawable/ic_grey_person" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

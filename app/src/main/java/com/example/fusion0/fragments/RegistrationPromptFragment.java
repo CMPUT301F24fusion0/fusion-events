@@ -54,9 +54,7 @@ public class RegistrationPromptFragment extends Fragment {
             }
         });
 
-        declineButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_registrationPromptFragment_to_mainFragment);
-        });
+        declineButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_registrationPromptFragment_to_mainFragment));
 
     }
 }

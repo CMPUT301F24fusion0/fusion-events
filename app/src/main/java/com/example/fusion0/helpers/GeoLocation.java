@@ -14,6 +14,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+
 import com.example.fusion0.fragments.MapDialogFragment;
 
 import java.util.ArrayList;
@@ -159,7 +160,6 @@ public class GeoLocation implements LocationListener {
         if (isLocationPermissionGranted()) {
             requestLocationUpdates();
         }
-
         // Return the current user location, which will be updated as location changes
         return userLocation;
     }
@@ -257,6 +257,12 @@ public class GeoLocation implements LocationListener {
     public void setEventRadius(int radius){
 
         acceptableRadius = radius;
+    }
+    /**
+     * Gets the event acceptable radius.
+     */
+    public double getEventRadius() {
+        return acceptableRadius;
     }
 
 

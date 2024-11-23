@@ -46,9 +46,7 @@ public class UserFirestore {
                         onSuccess.run();
                     }
                 })
-                .addOnFailureListener(error -> {
-                            System.out.println("Fail" + error.getMessage());
-                        }
+                .addOnFailureListener(error -> System.out.println("Fail" + error.getMessage())
                 );
     }
 
@@ -94,16 +92,12 @@ public class UserFirestore {
         } else if (!(field.equalsIgnoreCase("notifications")) && !((field.equalsIgnoreCase("events")))) {
             newField = newFields.get(0);
             usersRef.document(user.getDeviceID()).update(field, newField)
-                    .addOnSuccessListener(ref -> {
-                        System.out.println("Update Successful");
-                    })
+                    .addOnSuccessListener(ref -> System.out.println("Update Successful"))
                     .addOnFailureListener(e -> System.out.println("Failure" + e.getMessage()));
         } else if (field.equalsIgnoreCase("notifications")) {
             System.out.println(user.getDeviceID());
             usersRef.document(user.getDeviceID()).update(field, newFields)
-                    .addOnSuccessListener(ref -> {
-                        System.out.println("Array value added successfully");
-                    })
+                    .addOnSuccessListener(ref -> System.out.println("Array value added successfully"))
                     .addOnFailureListener(e -> System.out.println("Failure" + e.getMessage()));
         } else {
             editUserEvents(user);
@@ -129,11 +123,7 @@ public class UserFirestore {
     public static void editUserEvents(UserInfo user) {
         String userID = user.getDeviceID();
         usersRef.document(userID).set(user, SetOptions.merge())
-                .addOnSuccessListener(documentReference -> {
-                    System.out.println("User data updated successfully.");
-                })
-                .addOnFailureListener(error -> {
-                    System.err.println("Error updating user data: " + error.getMessage());
-                });
+                .addOnSuccessListener(documentReference -> System.out.println("User data updated successfully."))
+                .addOnFailureListener(error -> System.err.println("Error updating user data: " + error.getMessage()));
     }
 }

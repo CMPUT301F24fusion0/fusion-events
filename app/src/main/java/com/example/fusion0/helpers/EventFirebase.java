@@ -1,18 +1,21 @@
 package com.example.fusion0.helpers;
 
 import com.example.fusion0.models.EventInfo;
-import com.example.fusion0.models.FacilitiesInfo;
-import com.example.fusion0.models.OrganizerInfo;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.zxing.WriterException;
 import java.util.HashMap;
 
+import com.example.fusion0.models.OrganizerInfo;
+import com.example.fusion0.models.FacilitiesInfo;
+
 /**
  * @author Simon Haile
  * This class provides methods for interacting with Firebase Firestore to manage event-related data.
  * It includes methods to add, update, delete, and retrieve data for organizers, facilities, and events.
+ *
+ * Created by Simon Haile.
  */
 public class EventFirebase {
 
@@ -29,7 +32,6 @@ public class EventFirebase {
     }
 
     /**
-
      * @author Simon Haile
      * Callback interface for handling results related to organizer data retrieval.
      */
@@ -66,12 +68,8 @@ public class EventFirebase {
         HashMap<String, Object> organizer = organizerInfo.organizer();
         String deviceId = organizerInfo.getDeviceId();
         organizersRef.document(deviceId).set(organizer)
-                .addOnSuccessListener(documentReference -> {
-                    System.out.println("Organizer added successfully.");
-                })
-                .addOnFailureListener(error -> {
-                    System.out.println("Failure: " + error.getMessage());
-                });
+                .addOnSuccessListener(documentReference -> System.out.println("Organizer added successfully."))
+                .addOnFailureListener(error -> System.out.println("Failure: " + error.getMessage()));
     }
 
     /**
@@ -83,12 +81,8 @@ public class EventFirebase {
     public static void editOrganizer(OrganizerInfo organizer) {
         String deviceId = organizer.getDeviceId();
         organizersRef.document(deviceId).set(organizer, SetOptions.merge())
-                .addOnSuccessListener(documentReference -> {
-                    System.out.println("Organizer data updated successfully.");
-                })
-                .addOnFailureListener(error -> {
-                    System.err.println("Error updating organizer data: " + error.getMessage());
-                });
+                .addOnSuccessListener(documentReference -> System.out.println("Organizer data updated successfully."))
+                .addOnFailureListener(error -> System.err.println("Error updating organizer data: " + error.getMessage()));
     }
 
     /**
@@ -121,11 +115,7 @@ public class EventFirebase {
      * @param deviceId The device ID of the organizer to be deleted
      */
     public void deleteOrganizer(String deviceId) {
-        organizersRef.document(deviceId).delete().addOnSuccessListener(documentReference -> {
-            System.out.println("Organizer deleted successfully.");
-        }).addOnFailureListener(error -> {
-            System.err.println("Error deleting organizer: " + error.getMessage());
-        });
+        organizersRef.document(deviceId).delete().addOnSuccessListener(documentReference -> System.out.println("Organizer deleted successfully.")).addOnFailureListener(error -> System.err.println("Error deleting organizer: " + error.getMessage()));
     }
 
     /**
@@ -138,12 +128,8 @@ public class EventFirebase {
         HashMap<String, Object> facility = facilitiesInfo.facility();
         String facilityID = facilitiesInfo.getFacilityID();
         facilitiesRef.document(facilityID).set(facility)
-                .addOnSuccessListener(documentReference -> {
-                    System.out.println("Facility added successfully.");
-                })
-                .addOnFailureListener(error -> {
-                    System.out.println("Failure: " + error.getMessage());
-                });
+                .addOnSuccessListener(documentReference -> System.out.println("Facility added successfully."))
+                .addOnFailureListener(error -> System.out.println("Failure: " + error.getMessage()));
     }
 
     /**
@@ -155,12 +141,8 @@ public class EventFirebase {
     public static void editFacility(FacilitiesInfo facility) {
         String facilityID = facility.getFacilityID();
         facilitiesRef.document(facilityID).set(facility, SetOptions.merge())
-                .addOnSuccessListener(documentReference -> {
-                    System.out.println("Facility data updated successfully.");
-                })
-                .addOnFailureListener(error -> {
-                    System.err.println("Error updating facility data: " + error.getMessage());
-                });
+                .addOnSuccessListener(documentReference -> System.out.println("Facility data updated successfully."))
+                .addOnFailureListener(error -> System.err.println("Error updating facility data: " + error.getMessage()));
     }
 
     /**
@@ -193,11 +175,7 @@ public class EventFirebase {
      * @param facilityID The ID of the facility to be deleted
      */
     public static void deleteFacility(String facilityID) {
-        facilitiesRef.document(facilityID).delete().addOnSuccessListener(documentReference -> {
-            System.out.println("Facility deleted successfully.");
-        }).addOnFailureListener(error -> {
-            System.err.println("Error deleting facility: " + error.getMessage());
-        });
+        facilitiesRef.document(facilityID).delete().addOnSuccessListener(documentReference -> System.out.println("Facility deleted successfully.")).addOnFailureListener(error -> System.err.println("Error deleting facility: " + error.getMessage()));
     }
 
     /**
@@ -209,11 +187,7 @@ public class EventFirebase {
     public static void addEvent(EventInfo eventInfo) {
         HashMap<String, Object> event = eventInfo.event();
         String eventID = eventInfo.getEventID();
-        eventsRef.document(eventID).set(event).addOnSuccessListener(documentReference -> {
-            System.out.println("Event added successfully.");
-        }).addOnFailureListener(error -> {
-            System.err.println("Error adding event: " + error.getMessage());
-        });
+        eventsRef.document(eventID).set(event).addOnSuccessListener(documentReference -> System.out.println("Event added successfully.")).addOnFailureListener(error -> System.err.println("Error adding event: " + error.getMessage()));
     }
 
     /**
@@ -256,12 +230,8 @@ public class EventFirebase {
     public static void editEvent(EventInfo event) {
         String eventID = event.getEventID();
         eventsRef.document(eventID).set(event, SetOptions.merge())
-                .addOnSuccessListener(documentReference -> {
-                    System.out.println("Event data updated successfully.");
-                })
-                .addOnFailureListener(error -> {
-                    System.err.println("Error updating event data: " + error.getMessage());
-                });
+                .addOnSuccessListener(documentReference -> System.out.println("Event data updated successfully."))
+                .addOnFailureListener(error -> System.err.println("Error updating event data: " + error.getMessage()));
     }
 
     /**
@@ -271,10 +241,6 @@ public class EventFirebase {
      * @param eventID The ID of the event to be deleted
      */
     public static void deleteEvent(String eventID) {
-        eventsRef.document(eventID).delete().addOnSuccessListener(documentReference -> {
-            System.out.println("Event deleted successfully.");
-        }).addOnFailureListener(error -> {
-            System.err.println("Error deleting event: " + error.getMessage());
-        });
+        eventsRef.document(eventID).delete().addOnSuccessListener(documentReference -> System.out.println("Event deleted successfully.")).addOnFailureListener(error -> System.err.println("Error deleting event: " + error.getMessage()));
     }
 }
