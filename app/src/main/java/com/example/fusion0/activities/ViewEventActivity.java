@@ -433,6 +433,7 @@ public class ViewEventActivity extends AppCompatActivity {
                     bundle.putSerializable("chosenEntrantsData", chosen);
                     bundle.putString("eventID", event.getEventID());
                     bundle.putSerializable("waitlist", waitlist);
+                    bundle.putString("lotteryCapacity", event.getLotteryCapacity());
                     chosenEntrants.setArguments(bundle);
 
                     getSupportFragmentManager().beginTransaction()
