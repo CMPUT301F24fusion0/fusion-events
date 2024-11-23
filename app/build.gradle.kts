@@ -4,7 +4,6 @@ plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.0"
-
 }
 
 val localProperties = Properties()

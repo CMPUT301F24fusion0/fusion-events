@@ -344,7 +344,8 @@ public class EventFragment extends Fragment {
                     Toast.makeText(context.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
                 } else {
                     // Create new facility and proceed
-                    newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude);
+                    // TODO: Chane facilityImage
+                    newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude, "facilityImage");
                     facility = newFacility;
 
                     // Add the new facility name to the facilityNames list
@@ -587,15 +588,21 @@ public class EventFragment extends Fragment {
             EventInfo newEvent = null;
 
             try {
+                // TODO: Needs to be changed
+                String some_lottery_number = "10";
+                // TODO: Needs to be changed
+                Date registrationDate = new Date(2024, 8, 30);
                 newEvent = new EventInfo(
                         deviceID,
                         eventName.getText().toString(),
                         address,
                         facilityName,
                         capacity.getText().toString(),
+                        some_lottery_number,
                         description.getText().toString(),
                         startDate,
                         endDate,
+                        registrationDate,
                         startTimeTextView.getText().toString(),
                         endTimeTextView.getText().toString(),
                         eventPoster,
@@ -622,8 +629,6 @@ public class EventFragment extends Fragment {
             eventsList.add(newEvent);
             organizer.setEvents(eventsList);
             EventFirebase.editOrganizer(organizer);
-
-
 
             ArrayList<String> facilityEventsList = facility.getEvents();
             facilityEventsList.add(newEvent.eventID);

@@ -9,27 +9,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
 
-import com.example.fusion0.R;
-import com.example.fusion0.activities.ViewEventActivity;
+import com.example.fusion0.activities.EventActivity;
+import com.example.fusion0.activities.MainActivity;
 import com.example.fusion0.helpers.UserFirestore;
-import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.UserInfo;
+import com.example.fusion0.R;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * This is the registration fragment that will be displayed when a user signs up for an waiting
  * for the first time. It will only be used once per user.
  */
-public class RegistrationFragment extends Fragment {
+public class Registration extends Fragment {
     EditText firstName, lastName, email, phoneNumber;
     UserFirestore firebase;
     Button register;
+    ImageButton backButton;
 
     /**
      * @author Sehej Brar
@@ -44,7 +46,6 @@ public class RegistrationFragment extends Fragment {
      *
      * @return view is the view
      */
-
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
@@ -56,6 +57,7 @@ public class RegistrationFragment extends Fragment {
         email = view.findViewById(R.id.email);
         phoneNumber = view.findViewById(R.id.phone);
         register = view.findViewById(R.id.confirm);
+        backButton = view.findViewById(R.id.backButton);
         firebase = new UserFirestore();
 
         return view;
@@ -80,27 +82,27 @@ public class RegistrationFragment extends Fragment {
             String phone = phoneNumber.getText().toString().trim();
 
             String dID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-
+            registration(dID, first, last, emails, phone);
             Bundle bundle = getArguments();
             if (bundle != null) {
-                String destination = bundle.getString("destination");
-
-                Runnable navigationCallback = null;
-                if ("event".equals(destination)) {
-                    String eventId = bundle.getString("eventID");
-                    navigationCallback = () -> {
-                        Intent intent = new Intent(getActivity(), ViewEventActivity.class);
-                        intent.putExtra("eventID", eventId);
-                        startActivity(intent);
-                    };
-                } else if ("profile".equals(destination)) {
-                    navigationCallback = () -> Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_profileFragment);
-                } else if ("addEvent".equals(destination)) {
-                    navigationCallback = () -> Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_eventFragment);
-                }
-
-                registration(dID, first, last, emails, phone, navigationCallback);
+                String eventID = bundle.getString("eventID");
+                Intent intent = new Intent(getActivity(), com.example.fusion0.ViewEventActivity.class);
+                intent.putExtra("eventID", eventID);
+                Log.d("Checkpoint", "bundle was good - going back to vea");
+                startActivity(intent);
+            } else if(Objects.equals(bundle.getString("activity"), "ViewEventActivity")) {
+                Log.d("Checkpoint", "the bundle was null - going back to vea");
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                startActivity(intent);
+            }else{
+                Intent intent = new Intent(getActivity(), EventActivity.class);
+                startActivity(intent);
             }
+        });
+
+        backButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -113,7 +115,7 @@ public class RegistrationFragment extends Fragment {
      * @param emails email
      * @param phone phone number
      */
-    private void registration(String dID, String first, String last, String emails, String phone, Runnable onSuccess) {
+    private void registration(String dID, String first, String last, String emails, String phone) {
         UserFirestore.findUser(dID, new UserFirestore.Callback() {
             /**
              * @author Sehej Brar
@@ -132,7 +134,12 @@ public class RegistrationFragment extends Fragment {
                     } else {
                         newUser = new UserInfo(new ArrayList<String>(), first, last, emails, dID, new ArrayList<String>());
                     }
-                    firebase.addUser(newUser, onSuccess);
+                    firebase.addUser(newUser, new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d("Checkpoint", "Called add user.");
+                        }
+                    });
                 }
             }
 

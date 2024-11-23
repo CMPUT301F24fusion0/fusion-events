@@ -1,18 +1,21 @@
 package com.example.fusion0.helpers;
 
 import com.example.fusion0.models.EventInfo;
-import com.example.fusion0.models.FacilitiesInfo;
-import com.example.fusion0.models.OrganizerInfo;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.zxing.WriterException;
 import java.util.HashMap;
 
+import com.example.fusion0.models.OrganizerInfo;
+import com.example.fusion0.models.FacilitiesInfo;
+
 /**
  * @author Simon Haile
  * This class provides methods for interacting with Firebase Firestore to manage event-related data.
  * It includes methods to add, update, delete, and retrieve data for organizers, facilities, and events.
+ *
+ * Created by Simon Haile.
  */
 public class EventFirebase {
 
@@ -29,7 +32,6 @@ public class EventFirebase {
     }
 
     /**
-
      * @author Simon Haile
      * Callback interface for handling results related to organizer data retrieval.
      */

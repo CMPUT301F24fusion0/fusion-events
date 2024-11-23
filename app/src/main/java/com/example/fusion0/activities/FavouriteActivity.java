@@ -14,13 +14,17 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.fusion0.activities.EventActivity;
+import com.example.fusion0.JoinedEventActivity;
+import com.example.fusion0.activities.MainActivity;
+import com.example.fusion0.activities.ProfileActivity;
 import com.example.fusion0.helpers.EventFirebase;
+import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.FacilitiesInfo;
 import com.example.fusion0.models.OrganizerInfo;
-import com.example.fusion0.R;
-import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.UserInfo;
+import com.google.zxing.WriterException;
 
 import java.util.ArrayList;
 
@@ -48,9 +52,6 @@ public class FavouriteActivity extends AppCompatActivity {
     private ImageButton addButton;
     private ImageButton scannerButton;
     private ImageButton homeButton;
-
-
-
 
     /**
      * Called when the activity is first created. This method initializes the activity's user
@@ -93,17 +94,38 @@ public class FavouriteActivity extends AppCompatActivity {
                     joinedEventsButton.setText("View");
                 } else {
                     user = userInfo;
-                    ArrayList<String> events = user.getEvents();
+                    ArrayList<String> eventNames = new ArrayList<>();
+                    ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(FavouriteActivity.this, android.R.layout.simple_list_item_1, eventNames);
+                    joinedEventsList.setAdapter(eventsAdapter);
+                    if (user.getEvents() != null) {
+                        ArrayList<String> filteredEvents = new ArrayList<>();
+                        for (String event : user.getEvents()) {
+                            EventFirebase.findEvent(event, new EventFirebase.EventCallback() {
+                                @Override
+                                public void onSuccess(EventInfo eventInfo) throws WriterException {
+                                    if (eventInfo != null) {
+                                        filteredEvents.add(eventInfo.getEventID());
+                                        eventNames.add(eventInfo.getEventName());
+                                        eventsAdapter.notifyDataSetChanged();
+                                    }
+                                }
 
-                    if (joinedEventsList.getAdapter() == null) {
-                        ArrayList<String> eventNames = new ArrayList<>();
-                        for (String event : events) {
-                            if (event != null) {
-                                eventNames.add(event);
-                            }
+                                @Override
+                                public void onFailure(String error) {
+
+                                }
+                            });
                         }
-                        ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(FavouriteActivity.this, android.R.layout.simple_list_item_1, eventNames);
-                        joinedEventsList.setAdapter(eventsAdapter);
+
+                        user.setEvents(filteredEvents);
+                        joinedEventsList.setOnItemClickListener((parent, view1, position, id) -> {
+                            String eventID = user.getEvents().get(position);
+
+                            Intent intent = new Intent(FavouriteActivity.this, com.example.fusion0.ViewEventActivity.class);
+                            intent.putExtra("eventID", eventID);
+                            intent.putExtra("deviceID", deviceID);
+                            startActivity(intent);
+                        });
                     }
 
                     if (isJoinedEventsListVisible) {
@@ -134,8 +156,7 @@ public class FavouriteActivity extends AppCompatActivity {
             });
         });
 
-        createdEventsButton.setOnClickListener(view -> {
-            EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
+        createdEventsButton.setOnClickListener(view -> {EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
                 @Override
                 public void onSuccess(OrganizerInfo organizerInfo) {
                     if (organizerInfo == null) {
@@ -171,7 +192,7 @@ public class FavouriteActivity extends AppCompatActivity {
                 EventInfo event = organizer.getEvents().get(position);
                 String eventID = event.getEventID();
 
-                Intent intent = new Intent(FavouriteActivity.this, ViewEventActivity.class);
+                Intent intent = new Intent(FavouriteActivity.this, com.example.fusion0.ViewEventActivity.class);
                 intent.putExtra("eventID", eventID);
                 startActivity(intent);
             });
@@ -219,34 +240,39 @@ public class FavouriteActivity extends AppCompatActivity {
                 FacilitiesInfo facility = organizer.getFacilities().get(position);
                 String facilityID = facility.getFacilityID();
 
-                Intent intent = new Intent(FavouriteActivity.this, ViewFacilityActivity.class);
+                Intent intent = new Intent(FavouriteActivity.this, com.example.fusion0.ViewFacilityActivity.class);
                 intent.putExtra("facilityID", facilityID);
                 startActivity(intent);
             });
         });
 
-//
-//        scannerButton = findViewById(R.id.toolbar_qrscanner);
-//        scannerButton.setOnClickListener(view -> {
-//            Intent intent = new Intent(FavouriteActivity.this, QRActivity.class);
-//            startActivity(intent);
-//        });
-//
-//        addButton = findViewById(R.id.toolbar_add);
-//
-//        addButton.setOnClickListener(view -> {
-//            Intent intent = new Intent(FavouriteActivity.this, EventActivity.class);
-//            startActivity(intent);
-//        });
-//
-//        // Initialize profile button to navigate to ProfileActivity
-//        profileButton = findViewById(R.id.toolbar_person);
-//
-//        homeButton = findViewById(R.id.toolbar_home);
-//
-//        homeButton.setOnClickListener(view -> {
-//            Intent intent = new Intent(FavouriteActivity.this, MainActivity.class);
-//            startActivity(intent);
-//        });
+
+        scannerButton = findViewById(R.id.toolbar_qrscanner);
+        scannerButton.setOnClickListener(view -> {
+            Intent intent = new Intent(FavouriteActivity.this, QRActivity.class);
+            startActivity(intent);
+        });
+
+        addButton = findViewById(R.id.toolbar_add);
+
+        addButton.setOnClickListener(view -> {
+            Intent intent = new Intent(FavouriteActivity.this, EventActivity.class);
+            startActivity(intent);
+        });
+
+        // Initialize profile button to navigate to ProfileActivity
+        profileButton = findViewById(R.id.toolbar_person);
+
+        profileButton.setOnClickListener(view -> {
+            Intent intent = new Intent(FavouriteActivity.this, ProfileActivity.class);
+            startActivity(intent);
+        });
+
+        homeButton = findViewById(R.id.toolbar_home);
+
+        homeButton.setOnClickListener(view -> {
+            Intent intent = new Intent(FavouriteActivity.this, MainActivity.class);
+            startActivity(intent);
+        });
     }
 }

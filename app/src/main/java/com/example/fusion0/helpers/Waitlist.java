@@ -9,6 +9,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.fusion0.models.UserInfo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,7 +23,7 @@ import java.util.Objects;
  * </p>
  */
 
-public class Waitlist {
+public class Waitlist implements Serializable {
     private final FirebaseFirestore db;
     CollectionReference eventsRef;
     UserFirestore userFirestore;

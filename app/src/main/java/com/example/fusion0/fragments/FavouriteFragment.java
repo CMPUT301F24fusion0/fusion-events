@@ -96,15 +96,10 @@ public class FavouriteFragment extends Fragment {
                         joinedEventsButton.setText("View");
                     } else {
                         user = userInfo;
-                        ArrayList<EventInfo> events = user.getEvents();
+                        ArrayList<String> events = user.getEvents();
 
                         if (joinedEventsList.getAdapter() == null) {
-                            ArrayList<String> eventNames = new ArrayList<>();
-                            for (EventInfo event : events) {
-                                if (event != null && event.getEventName() != null) {
-                                    eventNames.add(event.getEventName());
-                                }
-                            }
+                            ArrayList<String> eventNames = new ArrayList<>(events);
                             ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, eventNames);
                             joinedEventsList.setAdapter(eventsAdapter);
                         }
@@ -128,11 +123,10 @@ public class FavouriteFragment extends Fragment {
             });
 
             joinedEventsList.setOnItemClickListener((parent, view1, position, id) -> {
-                EventInfo event = user.getEvents().get(position);
-                String eventID = event.getEventID();
+                String event = user.getEvents().get(position);
 
                 Intent intent = new Intent(requireActivity(), JoinedEventActivity.class);
-                intent.putExtra("eventID", eventID);
+                intent.putExtra("eventID", event);
                 intent.putExtra("deviceID", deviceID);
                 startActivity(intent);
             });
