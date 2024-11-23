@@ -1,4 +1,4 @@
-package com.example.fusion0.activities;
+package com.example.fusion0;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,16 +14,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.fusion0.activities.EventActivity;
-import com.example.fusion0.JoinedEventActivity;
-import com.example.fusion0.activities.MainActivity;
-import com.example.fusion0.activities.ProfileActivity;
-import com.example.fusion0.helpers.EventFirebase;
-import com.example.fusion0.helpers.UserFirestore;
-import com.example.fusion0.models.EventInfo;
-import com.example.fusion0.models.FacilitiesInfo;
-import com.example.fusion0.models.OrganizerInfo;
-import com.example.fusion0.models.UserInfo;
 import com.google.zxing.WriterException;
 
 import java.util.ArrayList;
@@ -52,6 +42,9 @@ public class FavouriteActivity extends AppCompatActivity {
     private ImageButton addButton;
     private ImageButton scannerButton;
     private ImageButton homeButton;
+
+
+
 
     /**
      * Called when the activity is first created. This method initializes the activity's user
@@ -121,7 +114,7 @@ public class FavouriteActivity extends AppCompatActivity {
                         joinedEventsList.setOnItemClickListener((parent, view1, position, id) -> {
                             String eventID = user.getEvents().get(position);
 
-                            Intent intent = new Intent(FavouriteActivity.this, com.example.fusion0.ViewEventActivity.class);
+                            Intent intent = new Intent(FavouriteActivity.this, ViewEventActivity.class);
                             intent.putExtra("eventID", eventID);
                             intent.putExtra("deviceID", deviceID);
                             startActivity(intent);
@@ -192,7 +185,7 @@ public class FavouriteActivity extends AppCompatActivity {
                 EventInfo event = organizer.getEvents().get(position);
                 String eventID = event.getEventID();
 
-                Intent intent = new Intent(FavouriteActivity.this, com.example.fusion0.ViewEventActivity.class);
+                Intent intent = new Intent(FavouriteActivity.this, ViewEventActivity.class);
                 intent.putExtra("eventID", eventID);
                 startActivity(intent);
             });
@@ -240,7 +233,7 @@ public class FavouriteActivity extends AppCompatActivity {
                 FacilitiesInfo facility = organizer.getFacilities().get(position);
                 String facilityID = facility.getFacilityID();
 
-                Intent intent = new Intent(FavouriteActivity.this, com.example.fusion0.ViewFacilityActivity.class);
+                Intent intent = new Intent(FavouriteActivity.this, ViewFacilityActivity.class);
                 intent.putExtra("facilityID", facilityID);
                 startActivity(intent);
             });

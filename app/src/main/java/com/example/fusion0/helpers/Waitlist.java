@@ -2,17 +2,17 @@ package com.example.fusion0.helpers;
 
 import android.util.Log;
 
+import com.example.fusion0.models.UserInfo;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.example.fusion0.models.UserInfo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 
@@ -24,9 +24,9 @@ import java.util.Objects;
  */
 
 public class Waitlist implements Serializable {
-    private final FirebaseFirestore db;
-    CollectionReference eventsRef;
-    UserFirestore userFirestore;
+    private transient FirebaseFirestore db;
+    private transient CollectionReference eventsRef;
+    private transient UserFirestore userFirestore;
 
 
     /**
@@ -42,8 +42,7 @@ public class Waitlist implements Serializable {
 
     /**
      * @author Sehej Brar
-     * Samples a specified number of entrants from the waiting list for a specific event. Also
-     * can be used to re-sample entrants.
+     * Samples a specified number of attendees from the waiting list for a specific event.
      *
      * @param eventId The unique identifier of the event.
      * @param numToSelect The number of attendees to be randomly selected from the waiting list.
@@ -52,35 +51,47 @@ public class Waitlist implements Serializable {
         // Fetch event details to get capacity and current acceptedCount
         eventsRef.document(eventId).get().addOnSuccessListener(eventDoc -> {
             if (eventDoc.exists()) {
-                int capacity;
+                int lotteryCapacity;
                 int acceptedCount;
 
                 // Check if capacity is stored as a number or a string, then convert
-                Object capacityField = eventDoc.get("capacity");
+                Object capacityField = eventDoc.get("lotteryCapacity");
                 Object acceptedCountField = eventDoc.get("acceptedCount");
 
                 // Handle capacity conversion
-                if (capacityField instanceof Number && acceptedCountField instanceof String) {
+                if (capacityField instanceof String) {
                     try {
-                        capacity = (int) capacityField;
-                        acceptedCount = Integer.parseInt((String) acceptedCountField);
+                        lotteryCapacity = Integer.parseInt((String) capacityField);
                     } catch (NumberFormatException e) {
-                        throw new IllegalArgumentException("Accepted Count or Capacity is not a number.");
-
+                        System.out.println("Error: Capacity is not a valid number.");
+                        return;
                     }
                 } else {
-                    throw new IllegalArgumentException("Capacity is not a number or Accepted Count is not a string");
+                    System.out.println("Error: Capacity is missing or invalid.");
+                    return;
+                }
+
+                if (acceptedCountField instanceof String) {
+                    try {
+                        acceptedCount = Integer.parseInt((String) acceptedCountField);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error: AcceptedCount is not a valid number.");
+                        return;
+                    }
+                } else {
+                    System.out.println("Error: AcceptedCount is missing or invalid.");
+                    return;
                 }
 
                 // Calculate the number of entrants we actually need
-                int spotsRemaining = capacity - acceptedCount;
+                int spotsRemaining = lotteryCapacity - acceptedCount;
                 int finalNumToSelect = Math.min(numToSelect, spotsRemaining);
 
                 getWait(eventId, wait -> {
                     Collections.shuffle(wait);
 
                     // Hashset allows for faster lookup
-                    ArrayList<String> winners_set = new ArrayList<>(wait.subList(0, finalNumToSelect));
+                    HashSet<String> winners_set = new HashSet<>(new ArrayList<>(wait.subList(0, finalNumToSelect)));
 
                     DocumentReference documentReference = eventsRef.document(eventId);
 
@@ -94,8 +105,7 @@ public class Waitlist implements Serializable {
                                         if (waitList != null) {
                                             // If the winners are in the waiting list then their new status is chosen
                                             for (Map<String, String> user : waitList) {
-                                                // Can't select chosen entrants nor cancelled entrants
-                                                if (winners_set.contains(user.get("did")) && !Objects.equals(user.get("status"), "chosen") && !Objects.equals(user.get("status"), "cancel")) {
+                                                if (winners_set.contains(user.get("did"))) {
                                                     user.put("status", "chosen");
                                                 }
                                             }
@@ -112,56 +122,36 @@ public class Waitlist implements Serializable {
 
     /**
      * Allows the organizer to cancel a user's invitation after the lottery has been conducted.
-     * @author Sehej Brar
+     * @author Sehej Bra
      * @param eventID event's unique id
      * @param userID user's unique id
      */
     public void organizerCancel(String eventID, String userID) {
         getChosen(eventID, chosen -> {
+            DocumentReference documentReference = eventsRef.document(eventID);
             if (!chosen.isEmpty()) {
-                for (String did: chosen) {
-                    changeStatus(eventID, did, "cancel");
-                }
-            }
-        });
-    }
+                documentReference.get()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot doc = task.getResult();
+                                if (doc.exists()) {
+                                    ArrayList<Map<String, String>> waitList = (ArrayList<Map<String, String>>) doc.get("waitinglist");
 
-    /**
-     * Changes the user's waiting list status
-     * @author Sehej Brar
-     * @param eventID event id
-     * @param userID user's unique id
-     * @param newStatus the status to change the user to
-     */
-    public void changeStatus(String eventID, String userID, String newStatus) {
-        ArrayList<String> allStatus = new ArrayList<>(Arrays.asList("chosen", "waiting", "cancel", "chosen"));
+                                    if (waitList != null) {
+                                        for (Map<String, String> user : waitList) {
+                                            if (Objects.equals(user.get("did"), userID)) {
+                                                user.put("status", "cancel");
+                                            }
+                                        }
 
-        if (userID == null || !allStatus.contains(newStatus.toLowerCase())) {
-            throw new IllegalArgumentException("The argument provided is not valid");
-        }
+                                        documentReference.update("waitinglist", waitList);
 
-        DocumentReference documentReference = eventsRef.document(eventID);
-
-        documentReference.get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot doc = task.getResult();
-                        if (doc.exists()) {
-                            ArrayList<Map<String, String>> waitList = (ArrayList<Map<String, String>>) doc.get("waitinglist");
-
-                            if (waitList != null) {
-                                for (Map<String, String> user : waitList) {
-                                    if (Objects.equals(user.get("did"), userID)) {
-                                        user.put("status", newStatus);
                                     }
                                 }
-
-                                documentReference.update("waitinglist", waitList);
-
                             }
-                        }
-                    }
-                });
+                        });
+            }
+        });
     }
 
     /**

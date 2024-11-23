@@ -21,13 +21,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.example.fusion0.activities.ViewEventActivity;
-import com.example.fusion0.adapters.ProfileListAdapter;
-import com.example.fusion0.R;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.UserInfo;
+import com.example.fusion0.R;
+import com.example.fusion0.adapters.ProfileListAdapter;
 import com.google.zxing.WriterException;
 
 import java.util.ArrayList;
@@ -171,7 +171,7 @@ public class WaitlistFragment extends Fragment {
 
 
                     if (!(event.getLotteryCapacity().equals("0"))) {
-                        ViewEventActivity.waitlist.conductLottery(event.getEventID(), Integer.parseInt(event.getLotteryCapacity()));
+                        waitlist.conductLottery(event.getEventID(), Integer.parseInt(event.getLotteryCapacity()));
 
                         waitlist.getChosen(event.getEventID(), chosen -> {
                             if (chosen.isEmpty()) {

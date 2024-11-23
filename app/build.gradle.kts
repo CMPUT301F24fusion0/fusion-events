@@ -1,19 +1,11 @@
-import java.util.Properties
-
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.0"
-}
 
-val localProperties = Properties()
-val localPropertiesFile = rootProject.file("local.properties")
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.inputStream().use { localProperties.load(it) }
 }
 
 val apiKey: String? = project.findProperty("API_KEY") as String?
-val openaiApiKey: String? = localProperties.getProperty("OPENAI_API_KEY")
 
 android {
     namespace = "com.example.fusion0"
@@ -26,7 +18,6 @@ android {
         versionCode = 1
         versionName = "1.0"
         buildConfigField("String", "API_KEY",  "\"${apiKey}\"")
-        buildConfigField("String", "OPENAI_API_KEY", "\"$openaiApiKey\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -89,8 +80,8 @@ dependencies {
     androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation ("androidx.test.espresso:espresso-intents:3.5.1")
 
-    // OpenAI related dependencies
-    implementation("com.android.volley:volley:1.2.1")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation ("com.google.code.gson:gson:2.11.0")
+    implementation ("com.github.yalantis:ucrop:2.2.6")
+
+
+
 }

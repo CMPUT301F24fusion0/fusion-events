@@ -22,13 +22,15 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.fusion0.FavouriteActivity;
+import com.example.fusion0.ViewEventActivity;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.FacilitiesInfo;
 import com.example.fusion0.models.UserInfo;
-import com.example.fusion0.R;
 import com.google.zxing.WriterException;
+import com.example.fusion0.R;
 
 import java.util.ArrayList;
 

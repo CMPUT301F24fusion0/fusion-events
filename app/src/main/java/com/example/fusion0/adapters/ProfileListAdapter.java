@@ -15,9 +15,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
-import com.example.fusion0.R;
 import com.example.fusion0.helpers.ManageImageProfile;
 import com.example.fusion0.models.UserInfo;
+import com.example.fusion0.R;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
