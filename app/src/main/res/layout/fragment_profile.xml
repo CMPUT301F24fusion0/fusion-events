@@ -214,6 +214,41 @@
 
                 </LinearLayout>
 
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/textColor"
+                    android:layout_marginVertical="5dp" />
+
+                <!-- Admin Features Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_admin_features"
+                        app:tint="@color/textColor" />
+
+                    <Space
+                        android:layout_width="8dp"
+                        android:layout_height="0dp" />
+
+                    <TextView
+                        android:id="@+id/adminFeatures"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Admin Features"
+                        android:fontFamily="@font/raleway_semibold"
+                        android:gravity="bottom"
+                        android:textSize="17sp"
+                        android:textColor="@color/textColor"/>
+
+                </LinearLayout>
+
             </LinearLayout>
 
         </LinearLayout>
