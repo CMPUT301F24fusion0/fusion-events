@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Initializes the MainActivity and manages user session and state.
-     * Sets up Firebase, handles login state, and initializes the profile button to access the ProfileActivity.
+     * Sets up Firebase, handles login state, and initializes the profile button to access the ProfileFragment.
      *
      * @param savedInstanceState If the activity is being re-initialized after previously being shut down.
      */
