@@ -18,7 +18,7 @@ import com.example.fusion0.helpers.AppNotifications;
 
 /**
  * The Settings fragment allows users to manage their notification preferences
- * and navigate back to the ProfileActivity.
+ * and navigate back to the ProfileFragment.
  *
  * @author Nimi Akinroye
  */
