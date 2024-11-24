@@ -12,7 +12,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.fusion0.activities.MainActivity;
-import com.example.fusion0.activities.ProfileActivity;
 
 import org.junit.After;
 import org.junit.Before;

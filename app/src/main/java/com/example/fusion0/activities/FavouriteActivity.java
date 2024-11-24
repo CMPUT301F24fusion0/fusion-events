@@ -264,11 +264,6 @@ public class FavouriteActivity extends AppCompatActivity {
         // Initialize profile button to navigate to ProfileActivity
         profileButton = findViewById(R.id.toolbar_person);
 
-        profileButton.setOnClickListener(view -> {
-            Intent intent = new Intent(FavouriteActivity.this, ProfileActivity.class);
-            startActivity(intent);
-        });
-
         homeButton = findViewById(R.id.toolbar_home);
 
         homeButton.setOnClickListener(view -> {
