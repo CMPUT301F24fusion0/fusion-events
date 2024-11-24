@@ -2,6 +2,7 @@ package com.example.fusion0.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -212,7 +213,9 @@ public class MainFragment extends Fragment {
                 initializeToolbarButtons(view);
             } else {
                 profileButton = view.findViewById(R.id.toolbar_person);
+                scannerButton = view.findViewById(R.id.toolbar_qrscanner);
                 addButton = view.findViewById(R.id.toolbar_add);
+                favouriteButton = view.findViewById(R.id.toolbar_favourite);
 
                 profileButton.setOnClickListener(v -> {
                     Bundle bundle = new Bundle();
@@ -223,6 +226,16 @@ public class MainFragment extends Fragment {
                 addButton.setOnClickListener(v -> {
                     Bundle bundle = new Bundle();
                     bundle.putString("destination", "addEvent");
+                    Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_registrationPromptFragment, bundle);
+                });
+
+                scannerButton.setOnClickListener(v -> {
+                    Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_qrFragment);
+                });
+
+                favouriteButton.setOnClickListener(v -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("destination", "favourite");
                     Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_registrationPromptFragment, bundle);
                 });
             }
@@ -244,7 +257,6 @@ public class MainFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
 
         if (requestCode == REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

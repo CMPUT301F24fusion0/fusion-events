@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.example.fusion0.activities.MainActivity;
 import com.example.fusion0.activities.ViewEventActivity;
@@ -91,11 +92,18 @@ public class Registration extends Fragment {
                 Intent intent = new Intent(getActivity(), ViewEventActivity.class);
                 intent.putExtra("eventID", eventID);
                 Log.d("Checkpoint", "bundle was good - going back to vea");
+                Log.d("Checkpoint", "bundle was good - going back to vea");
                 startActivity(intent);
             } else if(Objects.equals(bundle.getString("activity"), "ViewEventActivity")) {
                 Log.d("Checkpoint", "the bundle was null - going back to vea");
                 Intent intent = new Intent(getActivity(), MainActivity.class);
                 startActivity(intent);
+            } else if (Objects.equals(bundle.getString("destination"), "addEvent")) {
+                Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_eventFragment);
+            } else if (Objects.equals(bundle.getString("destination"), "profile")) {
+                Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_profileFragment);
+            } else if (Objects.equals(bundle.getString("destination"), "favourite")) {
+                Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_favFragment);
             } else {
                 Intent intent = new Intent(getActivity(), EventActivity.class);
                 startActivity(intent);
