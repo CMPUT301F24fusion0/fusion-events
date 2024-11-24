@@ -3,35 +3,22 @@ package com.example.fusion0.helpers;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Settings;
 import android.util.Log;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.example.fusion0.BuildConfig;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Random;
 
 
 /**
@@ -45,13 +32,6 @@ public class ManageImageProfile {
     private FirebaseStorage storage;
     private StorageReference storageReference;
     private String deviceId;
-
-    private static final String OPENAI_API_KEY = BuildConfig.OPENAI_API_KEY;
-    private static final String OPENAI_API_URL = "https://api.openai.com/v1/images/generations";
-    private static final String TAG = "OPENAI";
-
-    private static String stringOutput = "";
-    private static Bitmap bitmapOutputImage;
 
     /**
      * Constructor initializes Firebase Authentication and Storage instances.
@@ -153,105 +133,80 @@ public class ManageImageProfile {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    public static Drawable generateArtFromName(Context context, String name, int width, int height) {
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
 
-    public static Drawable createTextDrawable(Context context, String initials, int backgroundColor, int textColor, int width, int height) {
+        String hash = hashName(name); // Generate deterministic hash
+
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+
+        // 1. Background Gradient
+        int color1 = getColorFromHash(hash.substring(0, 6));  // Color 1
+        int color2 = getColorFromHash(hash.substring(6, 12)); // Color 2
+        LinearGradient gradient = new LinearGradient(0, 0, width, height, color1, color2, Shader.TileMode.MIRROR);
+        paint.setShader(gradient);
+        canvas.drawRect(0, 0, width, height, paint);
+
+        // 2. Procedural Shapes
+        paint.setShader(null);
+        for (int i = 0; i < 5; i++) {
+            int shapeColor = getColorFromHash(hash.substring(12 + i * 6, 18 + i * 6));
+            paint.setColor(shapeColor);
+
+            // Position and size based on hash
+            float x = (i * width / 5f) + (hash.charAt(i) % 20);
+            float y = (i * height / 5f) + (hash.charAt(i + 1) % 20);
+            float radius = (hash.charAt(i + 2) % 50) + 30;
+
+            // Draw circles
+            canvas.drawCircle(x, y, radius, paint);
+        }
+
+        // 3. Add Noise/Texture for Artistic Effect
+        addNoiseToCanvas(canvas, hash, width, height);
+
+        return new BitmapDrawable(context.getResources(), bitmap);
+    }
+
+    // Helper Functions
+    private static String hashName(String name) {
         try {
-            String prompt = "Generate a visually appealing image that connotes the initials: " + initials + ". There should be no letters in there";
-            generateImageFromOpenAI(context, prompt);
-
-            return downloadImageAsDrawable(context, stringOutput, width, height);
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(name.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
         } catch (Exception e) {
-            return generateFallBackDrawable(context, initials, backgroundColor, textColor, width, height);
+            throw new RuntimeException("Failed to hash name", e);
         }
     }
 
-    private static void generateImageFromOpenAI(Context context, String prompt) throws Exception {
-
-        JSONObject jsonObject = new JSONObject();
-
-        try {
-            jsonObject.put("prompt", prompt);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                Request.Method.POST,
-                OPENAI_API_URL,
-                jsonObject,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            stringOutput = response
-                                    .getJSONArray("data")
-                                    .getJSONObject(0)
-                                    .getString("url");
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        throw new RuntimeException(error);
-                    }
-                }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-
-                Map<String, String> mapHeader = new HashMap<>();
-                mapHeader.put("Authorization", "Bearer " + OPENAI_API_KEY);
-                mapHeader.put("Content-Type", "application/json");
-
-                return mapHeader;
-            }
-        };
-
-        int intTimeOutPeriod = 60000;
-        RetryPolicy retryPolicy = new DefaultRetryPolicy(
-                intTimeOutPeriod,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-
-        jsonObjectRequest.setRetryPolicy(retryPolicy);
-
-        Volley.newRequestQueue(context).add(jsonObjectRequest);
-    }
-
-    private static Drawable downloadImageAsDrawable(Context context, String imageUrl, int width, int height) throws Exception {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    URL url = new URL(stringOutput);
-
-                    bitmapOutputImage = BitmapFactory.decodeStream(url.openStream());
-
-                } catch (MalformedURLException e) {
-                    throw new RuntimeException(e);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-
-        thread.start();
-
-        while (thread.isAlive()) {
-            Log.d(TAG, "Thread is in process");
-        }
-
-        Bitmap bitmapFinalImage = Bitmap.createScaledBitmap(
-                bitmapOutputImage,
-                width,
-                height,
-                true
+    private static int getColorFromHash(String hex) {
+        return Color.rgb(
+                Integer.parseInt(hex.substring(0, 2), 16),
+                Integer.parseInt(hex.substring(2, 4), 16),
+                Integer.parseInt(hex.substring(4, 6), 16)
         );
+    }
 
-        return new BitmapDrawable(context.getResources(), bitmapFinalImage);
+    private static void addNoiseToCanvas(Canvas canvas, String hash, int width, int height) {
+        Paint noisePaint = new Paint();
+        Random random = new Random(hash.hashCode());
+
+        for (int i = 0; i < 500; i++) {
+            int color = Color.argb(50, random.nextInt(256), random.nextInt(256), random.nextInt(256));
+            noisePaint.setColor(color);
+
+            float x = random.nextFloat() * width;
+            float y = random.nextFloat() * height;
+            canvas.drawCircle(x, y, 2, noisePaint);
+        }
     }
 
 
