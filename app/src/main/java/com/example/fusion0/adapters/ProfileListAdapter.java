@@ -76,9 +76,11 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
 
                 @Override
                 public void onImageDoesNotExist() {
-                    String firstLetter = user.getFirstName().substring(0, 1).toUpperCase();
+                    String firstName = user.getFirstName();
+                    String lastName = user.getLastName();
+                    String fullName = firstName + " " + lastName;
 
-                    Drawable deterministicImage = ManageImageProfile.createTextDrawable(ProfileListAdapter.this.getContext(), firstLetter, getContext().getResources().getColor(R.color.textColor), Color.WHITE, 100, 100);
+                    Drawable deterministicImage = ManageImageProfile.generateArtFromName(ProfileListAdapter.this.getContext(), fullName,  100, 100);
 
                     profilePic.setImageDrawable(deterministicImage);
 

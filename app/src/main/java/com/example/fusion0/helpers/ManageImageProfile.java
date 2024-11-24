@@ -170,7 +170,7 @@ public class ManageImageProfile {
         return new BitmapDrawable(context.getResources(), bitmap);
     }
 
-    // Helper Functions
+
     private static String hashName(String name) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -207,50 +207,6 @@ public class ManageImageProfile {
             float y = random.nextFloat() * height;
             canvas.drawCircle(x, y, 2, noisePaint);
         }
-    }
-
-
-    /**
-     * Creates a text drawable that can be used to deterministically generate a users profile picture
-     *
-     * @param context
-     * @param letter
-     * @param backgroundColor
-     * @param textColor
-     * @param width
-     * @param height
-     * @return
-     */
-    public static Drawable generateFallBackDrawable(Context context, String letter, int backgroundColor, int textColor, int width, int height) {
-        // Create a bitmap
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-
-        // Create a Canvas to draw on the Bitmap
-        Canvas canvas = new Canvas(bitmap);
-
-        // Set up Paint for the background
-        Paint backgroundPaint = new Paint();
-        backgroundPaint.setColor(backgroundColor);
-        backgroundPaint.setStyle(Paint.Style.FILL);
-
-        // Draw a background
-        canvas.drawRect(0, 0, width, height, backgroundPaint);
-
-        // Set up Paint for the text
-        Paint textPaint = new Paint();
-        textPaint.setColor(textColor);
-        textPaint.setTextSize(Math.min(width, height) / 2f);
-        textPaint.setTextAlign(Paint.Align.CENTER);
-        textPaint.setAntiAlias(true);
-
-        // Calculate the position to the center the text
-        float xPos = width / 2f;
-        float yPos = (height / 2f) - ((textPaint.descent() + textPaint.ascent()) / 2f);
-
-        // Draw the letter
-        canvas.drawText(letter, xPos, yPos, textPaint);
-
-        return new BitmapDrawable(context.getResources(), bitmap);
     }
 
 }
