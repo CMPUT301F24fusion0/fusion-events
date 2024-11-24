@@ -103,7 +103,7 @@ public class Registration extends Fragment {
                 Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_profileFragment);
             } else if (Objects.equals(bundle.getString("destination"), "favourite")) {
                 Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_favFragment);
-            }else {
+            } else {
                 Intent intent = new Intent(getActivity(), EventActivity.class);
                 startActivity(intent);
             }
