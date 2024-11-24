@@ -89,6 +89,9 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation ("com.google.code.gson:gson:2.11.0")
 
-    implementation ("com.github.yalantis:ucrop:2.2.6")
+    implementation("com.github.yalantis:ucrop:2.2.6")
+    implementation("com.github.ybq:Android-SpinKit:1.4.0")
+
+    implementation("com.airbnb.android:lottie-compose:6.6.0")
 
 }
