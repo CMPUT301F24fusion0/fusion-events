@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_add_event">
-
+    android:id="@+id/activity_add_event">.
 
     <ScrollView
         android:id="@+id/scroll_container"
@@ -335,6 +334,7 @@
                 android:textSize="20sp"
                 android:layout_marginBottom="2dp">
             </TextView>
+          
             <TextView
                 android:id="@+id/registrationDateRequirementsTextView"
                 android:layout_width="wrap_content"

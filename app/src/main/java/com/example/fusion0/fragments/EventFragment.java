@@ -178,6 +178,7 @@ public class EventFragment extends Fragment {
 
         AddEvent(context, view);
 
+
         exitButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_eventFragment_to_mainFragment);
         });
@@ -255,6 +256,13 @@ public class EventFragment extends Fragment {
                                 .withAspectRatio(9, 16)
                                 .withMaxResultSize(150, 150)
                                 .start(context, this);
+                      
+                        Uri destinationUri = Uri.fromFile(new File(context.getCacheDir(), "cropped_image.jpg"));
+
+                        UCrop.of(imageUri, destinationUri)
+                                .withAspectRatio(9, 16)
+                                .withMaxResultSize(800, 1600)
+                                .start(requireActivity());
                     }
                 }
 
@@ -268,7 +276,7 @@ public class EventFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode,@Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         Uri resultUri = UCrop.getOutput(data);
@@ -319,6 +327,27 @@ public class EventFragment extends Fragment {
                             Log.e(TAG, "Upload failed", e);
                         });
             }
+
+            Glide.with(this)
+                    .load(resultUri)
+                    .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) // Get original size
+                    .into(new SimpleTarget<Drawable>() {
+                        @Override
+                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                            // Get the original image dimensions
+                            int originalWidth = resource.getIntrinsicWidth();
+                            int originalHeight = resource.getIntrinsicHeight();
+
+                            // Apply the same scaling logic used in Glide loading (1.5 factor)
+                            int newWidth = (int) (originalWidth / 1.5);
+                            int newHeight = (int) (originalHeight / 1.5);
+
+                            Glide.with(requireContext())
+                                    .load(resultUri)
+                                    .override(newWidth, newHeight)
+                                    .into(uploadedImageView);
+                        }
+                    });
 
         } else if (resultCode == UCrop.RESULT_ERROR) {
             Throwable cropError = UCrop.getError(data);
@@ -741,6 +770,7 @@ public class EventFragment extends Fragment {
      * organizer's list of events and the facility's list of events. The event is also added to Firebase.
      */
     private void AddEvent(Context context, View view){
+
         addButton.setOnClickListener(v -> {
             if (TextUtils.isEmpty(eventName.getText().toString())) {
                 eventName.setError("Event name is required");
