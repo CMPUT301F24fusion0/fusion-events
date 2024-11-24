@@ -19,6 +19,7 @@ import java.util.UUID;
 /**
  * @author Simon Haile
  * This class contains the information for events.
+ * Note getters/setters are not provided JavaDocs as their function is trivial.
  */
 public class EventInfo {
     public String eventID;

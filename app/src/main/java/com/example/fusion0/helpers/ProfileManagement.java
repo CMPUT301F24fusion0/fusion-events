@@ -17,6 +17,7 @@ public class ProfileManagement {
 
     /**
      * Constructor initializes Firebase Authentication and Firestore instances.
+     * @author Nimi Akinroye
      */
     public ProfileManagement() {
         auth = FirebaseAuth.getInstance();
@@ -25,6 +26,7 @@ public class ProfileManagement {
 
     /**
      * Callback interface for handling user data retrieval.
+     * @author Nimi Akinroye
      */
     public interface UserDataCallback {
         void onUserDataReceived(UserInfo user);
@@ -34,7 +36,7 @@ public class ProfileManagement {
 
     /**
      * Retrieves user data from Firestore for the current authenticated user.
-     *
+     * @author Nimi Akinroye
      * @param callback the callback to handle the result of user data retrieval
      */
     public void getUserData(final String deviceId, final UserDataCallback callback) {
