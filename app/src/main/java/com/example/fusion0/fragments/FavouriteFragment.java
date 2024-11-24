@@ -78,7 +78,8 @@ public class FavouriteFragment extends Fragment {
         joinedEventsButton = view.findViewById(R.id.joined_events_view_button);
         createdEventsButton = view.findViewById(R.id.created_events_view_button);
         facilitiesButton = view.findViewById(R.id.facilities_view_button);
-        joinedEventsList = view.findViewById(R.id.created_events_list);
+        joinedEventsList = view.findViewById(R.id.joined_events_list);
+        createdEventsList = view.findViewById(R.id.created_events_list);
         facilitiesList = view.findViewById(R.id.facilities_list);
 
         joinedEventsButton.setOnClickListener(v -> {

@@ -38,6 +38,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
@@ -66,6 +67,7 @@ import com.google.zxing.WriterException;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -73,6 +75,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -108,6 +111,7 @@ public class EventFragment extends Fragment {
     private Date endDate;
     private Date registrationDate;
     private String eventPoster;
+    private Uri eventPosterUri;
     private Double latitude;
     private Double longitude;
     private Boolean geolocation = false;
@@ -172,7 +176,8 @@ public class EventFragment extends Fragment {
 
         registrationDateButtonHandling(view, context);
 
-        AddEvent(context);
+        AddEvent(context, view);
+
 
         exitButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_eventFragment_to_mainFragment);
@@ -240,9 +245,18 @@ public class EventFragment extends Fragment {
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri imageUri = result.getData().getData();
-                        uploadedImageView.setVisibility(View.VISIBLE);
-                        uploadedImageView.setImageURI(imageUri);
+                        Uri destinationUri = Uri.fromFile(new File(context.getCacheDir(), "cropped_image.jpg"));
 
+                        File destinationFile = new File(Objects.requireNonNull(destinationUri.getPath()));
+
+                        Log.d(TAG, "Image URI: " + imageUri.toString());
+                        Log.d(TAG , "Destination URI: " + destinationUri.toString());
+
+                        UCrop.of(imageUri, destinationUri)
+                                .withAspectRatio(9, 16)
+                                .withMaxResultSize(150, 150)
+                                .start(context, this);
+                      
                         Uri destinationUri = Uri.fromFile(new File(context.getCacheDir(), "cropped_image.jpg"));
 
                         UCrop.of(imageUri, destinationUri)
@@ -262,20 +276,49 @@ public class EventFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        Uri resultUri = UCrop.getOutput(data);
+
+        Log.d(TAG, "Result URI: " + resultUri.toString());
         if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
-            Uri resultUri = UCrop.getOutput(data);
             if (resultUri != null) {
                 uploadedImageView.setVisibility(View.VISIBLE);
-                uploadedImageView.setImageURI(resultUri);
+//                uploadedImageView.setImageURI(resultUri);
 
                 StorageReference imageRef = storageRef.child("event_posters/" + UUID.randomUUID().toString() + ".jpg");
 
                 imageRef.putFile(resultUri)
                         .addOnSuccessListener(taskSnapshot -> {
                             imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                eventPosterUri = uri;
                                 eventPoster = uri.toString();
+
+                                Glide.with(requireContext())
+                                        .load(eventPosterUri)
+                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) // Get original size
+                                        .into(new SimpleTarget<Drawable>() {
+                                            @Override
+                                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                                // Get the original image dimensions
+                                                int originalWidth = resource.getIntrinsicWidth();
+                                                int originalHeight = resource.getIntrinsicHeight();
+
+                                                // Apply the same scaling logic used in Glide loading (1.5 factor)
+                                                int newWidth = (int) (originalWidth / 1.5);
+                                                int newHeight = (int) (originalHeight / 1.5);
+
+                                                Glide.with(requireContext())
+                                                        .load(eventPosterUri)
+                                                        .override(newWidth, newHeight)
+                                                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                                        .skipMemoryCache(true)
+                                                        .into(uploadedImageView);
+                                            }
+                                        });
+
+                                Log.d(TAG, "Event poster: " + eventPoster);
                             }).addOnFailureListener(e -> {
                                 Log.e(TAG, "Error getting download URL", e);
                             });
@@ -284,7 +327,6 @@ public class EventFragment extends Fragment {
                             Log.e(TAG, "Upload failed", e);
                         });
             }
-
 
             Glide.with(this)
                     .load(resultUri)
@@ -727,7 +769,8 @@ public class EventFragment extends Fragment {
      * start time, end time, and other required fields. If all fields are valid, the event is created and added to the
      * organizer's list of events and the facility's list of events. The event is also added to Firebase.
      */
-    private void AddEvent(Context context){
+    private void AddEvent(Context context, View view){
+
         addButton.setOnClickListener(v -> {
             if (TextUtils.isEmpty(eventName.getText().toString())) {
                 eventName.setError("Event name is required");
@@ -828,8 +871,7 @@ public class EventFragment extends Fragment {
 
             Toast.makeText(context, "Event Added Successfully!", Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(context, MainActivity.class);
-            startActivity(intent);
+            Navigation.findNavController(view).navigate(R.id.action_eventFragment_to_mainFragment);
         });
     }
 }
