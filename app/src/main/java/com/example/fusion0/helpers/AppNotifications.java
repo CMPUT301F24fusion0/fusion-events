@@ -47,6 +47,7 @@ public class AppNotifications {
 
     /**
      * Changes permission if need be
+     * @author Sehej Brar
      * Adapted from: <a href="https://stackoverflow.com/questions/58047177/how-to-turn-off-app-notification-from-inside-the-app">...</a>
      * @param context context
      * @param perm true for notifications can be sent, false otherwise
@@ -58,6 +59,7 @@ public class AppNotifications {
 
     /**
      * Returns true if permission has been given or if nothing explicit has been given.
+     * @author Sehej Brar
      * @param context context
      * @return a boolean
      */

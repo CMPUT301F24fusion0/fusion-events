@@ -67,7 +67,6 @@ import com.google.zxing.WriterException;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -116,17 +115,39 @@ public class EventFragment extends Fragment {
     private Double longitude;
     private Boolean geolocation = false;
 
+    /**
+     * Required empty public constructor for firebase
+     * @author Simon Haile
+     */
     public EventFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * Inflates the view
+     * @author Simon Haile
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return the view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for the fragment
         return inflater.inflate(R.layout.fragment_event, container, false);
     }
 
-    
+    /**
+     * Sets up firebase
+     * @author Simon Haile
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -135,7 +156,14 @@ public class EventFragment extends Fragment {
         storageRef = storage.getReference();
         
     }
-    
+
+    /**
+     * Calls the methods required for this class
+     * @author Simon Haile
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @SuppressLint("HardwareIds")
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Context context = requireContext();
@@ -256,8 +284,6 @@ public class EventFragment extends Fragment {
                                 .withAspectRatio(9, 16)
                                 .withMaxResultSize(150, 150)
                                 .start(context, this);
-                      
-                        Uri destinationUri = Uri.fromFile(new File(context.getCacheDir(), "cropped_image.jpg"));
 
                         UCrop.of(imageUri, destinationUri)
                                 .withAspectRatio(9, 16)
@@ -275,6 +301,13 @@ public class EventFragment extends Fragment {
         });
     }
 
+    /**
+     * Checks results after coming back from another activity
+     * @author Simon Haile
+     * @param requestCode see if the activity we came back from was correct
+     * @param resultCode whether the activity finished correctly
+     * @param data the data obtained from the activity
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -714,51 +747,54 @@ public class EventFragment extends Fragment {
         });
     }
 
+    /**
+     * Allows for organizer to select dates
+     * @author Simon Haile
+     * @param view the view
+     * @param context the context
+     */
     private void registrationDateButtonHandling(View view, Context context){
         Button registrationDateButton = view.findViewById(R.id.registration_date_button);
         registrationDateTextView = view.findViewById(R.id.registration_date_text);
-        registrationDateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar calendar = Calendar.getInstance();
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH);
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
-                        registrationDateCalendar = Calendar.getInstance();
-                        registrationDateCalendar.set(selectedYear, selectedMonth, selectedDay);
-                        Calendar currentDate = Calendar.getInstance();
-                        if (startDate != null){
-                            if (registrationDateCalendar.before(currentDate)) {
-                                registrationDateRequirementsTextView.setText("Deadline Cannot Be Before Today.");
-                                registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
-                                registrationDateTextView.setVisibility(View.GONE);
-                                registrationDateCalendar = null;
-                            }else if (startDateCalendar.before(registrationDateCalendar)) {
-                                registrationDateRequirementsTextView.setText("Registration deadline must be before the event start date.");
-                                registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
-                                registrationDateTextView.setVisibility(View.GONE);
-                                registrationDateCalendar = null;
-                            }else {
-                                String selectedDate = String.format(Locale.US, "%d/%d/%d", selectedMonth + 1, selectedDay, selectedYear);
-                                registrationDateTextView.setText(selectedDate);
-                                registrationDateTextView.setVisibility(View.VISIBLE);
-                                registrationDateRequirementsTextView.setVisibility(View.GONE);
-                                registrationDate = registrationDateCalendar.getTime();
-                            }
-                        }else{
-                            registrationDateRequirementsTextView.setText("Please Select Start Date.");
+        registrationDateButton.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            DatePickerDialog dialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view1, int selectedYear, int selectedMonth, int selectedDay) {
+                    registrationDateCalendar = Calendar.getInstance();
+                    registrationDateCalendar.set(selectedYear, selectedMonth, selectedDay);
+                    Calendar currentDate = Calendar.getInstance();
+                    if (startDate != null){
+                        if (registrationDateCalendar.before(currentDate)) {
+                            registrationDateRequirementsTextView.setText("Deadline Cannot Be Before Today.");
                             registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
                             registrationDateTextView.setVisibility(View.GONE);
                             registrationDateCalendar = null;
+                        }else if (startDateCalendar.before(registrationDateCalendar)) {
+                            registrationDateRequirementsTextView.setText("Registration deadline must be before the event start date.");
+                            registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
+                            registrationDateTextView.setVisibility(View.GONE);
+                            registrationDateCalendar = null;
+                        }else {
+                            String selectedDate = String.format(Locale.US, "%d/%d/%d", selectedMonth + 1, selectedDay, selectedYear);
+                            registrationDateTextView.setText(selectedDate);
+                            registrationDateTextView.setVisibility(View.VISIBLE);
+                            registrationDateRequirementsTextView.setVisibility(View.GONE);
+                            registrationDate = registrationDateCalendar.getTime();
                         }
-
+                    }else{
+                        registrationDateRequirementsTextView.setText("Please Select Start Date.");
+                        registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
+                        registrationDateTextView.setVisibility(View.GONE);
+                        registrationDateCalendar = null;
                     }
-                }, year, month, day);
-                dialog.show();
-            }
+
+                }
+            }, year, month, day);
+            dialog.show();
         });
 
     }

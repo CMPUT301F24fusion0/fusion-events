@@ -17,7 +17,7 @@ public class LoginManagement {
 
     /**
      * Constructor initializes Firebase Firestore and sets the device ID.
-     *
+     * @author Nimi Akinroye
      * @param context The application context, used to retrieve the device ID.
      */
     public LoginManagement(Context context) {
@@ -28,7 +28,7 @@ public class LoginManagement {
 
     /**
      * Checks if the user is currently registered in the Firestore database using the device ID.
-     *
+     * @author Nimi Akinroye
      * @param callback Callback to handle the boolean result
      */
     public void isUserLoggedIn(LoginStateCallback callback) {
@@ -53,7 +53,7 @@ public class LoginManagement {
 
     /**
      * Retrieves the device ID.
-     *
+     * @author Nimi Akinroye
      * @return the device ID
      */
     public String getDeviceID() {
@@ -62,6 +62,7 @@ public class LoginManagement {
 
     /**
      * Callback interface for returning the login state as a boolean.
+     * @author Nimi Akinroye
      */
     public interface LoginStateCallback {
         void onResult(boolean isLoggedIn);

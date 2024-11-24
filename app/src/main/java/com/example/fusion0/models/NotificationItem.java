@@ -13,7 +13,7 @@ public class NotificationItem {
 
     /**
      * Constructs a new NotificationItem.
-     *
+     * @author Nimi Akinroye
      * @param title The title of the notification.
      * @param body  The body/content of the notification.
      * @param flag  The flag indicating the type of notification (e.g., "0" for standard, "1" for accept/decline type).
@@ -26,7 +26,7 @@ public class NotificationItem {
 
     /**
      * Returns the title of the notification.
-     *
+     * @author Nimi Akinroye
      * @return The notification title.
      */
     public String getTitle() {
@@ -35,7 +35,7 @@ public class NotificationItem {
 
     /**
      * Returns the body/content of the notification.
-     *
+     * @author Nimi Akinroye
      * @return The notification body.
      */
     public String getBody() {
@@ -44,7 +44,7 @@ public class NotificationItem {
 
     /**
      * Returns the flag indicating the type of notification.
-     *
+     * @author Nimi Akinroye
      * @return The notification flag.
      */
     public String getFlag() {

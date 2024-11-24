@@ -36,7 +36,7 @@ public class QRCode {
      * Constructs a QRCode object for a specified event ID.
      * This constructor initializes the QR code as a hashed string and generates
      * the QR code image as a Bitmap.
-     *
+     * @author Malshaan
      * @param eventId The ID of the event for which the QR code is generated.
      * @throws WriterException If an error occurs during QR code image generation.
      */
@@ -49,7 +49,7 @@ public class QRCode {
      * Generates a hashed QR code string using the SHA-256 algorithm.
      * This method takes an input string, typically an event ID, and returns a
      * hashed representation to uniquely identify the event.
-     *
+     * @author Malshaan
      * @param input The input string to be hashed (e.g., an event ID).
      * @return A hashed string representing the QR code.
      * @throws RuntimeException if SHA-256 algorithm is unavailable.
@@ -73,7 +73,7 @@ public class QRCode {
 
     /**
      * Returns the hashed QR code string.
-     *
+     * @author Malshaan
      * @return The hashed string that represents the QR code.
      */
     public String getQrCode() {
@@ -85,7 +85,7 @@ public class QRCode {
 
     /**
      * Returns the generated QR code image as a  Bitmap.
-     *
+     * @author Malshaan
      * @return The QR code image as a Bitmap.
      */
     public Bitmap getQrImage() { return this.qrImage;}
@@ -93,7 +93,7 @@ public class QRCode {
     /**
      * Generates a QR code image from the given QR code string.
      * This method uses ZXing to create a Bitmap from the hashed QR code string.
-     *
+     * @author Malshaan
      * @param width  The width of the QR code image.
      * @param height The height of the QR code image.
      * @param qrCode The hashed string to be encoded into a QR code image.
@@ -118,7 +118,7 @@ public class QRCode {
      * Retrieves the event ID associated with a specified QR code hash from Firestore.
      * This method performs an asynchronous Firestore query to find the event associated
      * with the given QR code hash. The result is provided via the EventIdCallback.
-     *
+     * @author Malshaan
      * @param hash     The hashed QR code string to search for in Firestore.
      * @param callback Callback interface to handle the Firestore response.
      */
@@ -143,6 +143,7 @@ public class QRCode {
      * Callback interface for handling the Firestore response for an event ID lookup.
      * Implement this interface to define actions to take when an event ID is found
      * or not found in Firestore.
+     * @author Malshaan
      */
     public interface EventIdCallback {
         void onEventIdFound(String eventId);

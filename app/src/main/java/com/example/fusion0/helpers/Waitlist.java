@@ -120,7 +120,9 @@ public class Waitlist implements Serializable {
         getChosen(eventID, chosen -> {
             if (!chosen.isEmpty()) {
                 for (String did: chosen) {
-                    changeStatus(eventID, did, "cancel");
+                    if (Objects.equals(did, userID)) {
+                        changeStatus(eventID, did, "cancel");
+                    }
                 }
             }
         });

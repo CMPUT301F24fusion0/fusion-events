@@ -18,7 +18,10 @@ public class OrganizerInfo {
     private ArrayList<String> eventsNames;
     private ArrayList<String> facilitiesNames;
 
-
+    /**
+     * Default constructor
+     * @author Simon Haile
+     */
     public OrganizerInfo(){
         this.events = new ArrayList<>();
         this.deviceId = "deviceID";
@@ -28,6 +31,7 @@ public class OrganizerInfo {
 
     /**
      * Default constructor for the OrganizerInfo class
+     * @author Simon Haile
      * @param deviceId the device ID of the organizer
      */
     public OrganizerInfo(String deviceId){
@@ -41,6 +45,7 @@ public class OrganizerInfo {
 
     /**
      * Creates a hashmap of the information needed for Firebase for the organizer
+     * @author Simon Haile
      * @return the hashmap for the organizer
      */
     public HashMap<String,Object> organizer() {
@@ -75,7 +80,10 @@ public class OrganizerInfo {
         return facilities;
     }
 
-
+    /**
+     * Sets facilities
+     * @param facilities the list of facilities
+     */
     public void setFacilities(ArrayList<FacilitiesInfo> facilities) {
         this.facilities = facilities;
     }
@@ -99,6 +107,7 @@ public class OrganizerInfo {
 
     /**
      * Returns the facility id or null if facility id not found
+     * @author Simon Haile
      * @param facilityName the facility name
      * @return facility id if found or null if facility not found
      */
@@ -113,6 +122,7 @@ public class OrganizerInfo {
 
     /**
      * Returns an array of the event names
+     * @author Simon Haile
      * @return eventsName An array of event names
      */
     public ArrayList<String> getEventsNames() {
@@ -126,8 +136,9 @@ public class OrganizerInfo {
     }
 
     /**
-     * Returns an array of facilites name
-     * @return facilitesName an array of facilites name
+     * Returns an array of facilities name
+     * @author Simon Haile
+     * @return facilitiesName an array of facilities name
      */
     public ArrayList<String> getFacilitiesNames() {
         ArrayList<String> facilitiesName = new ArrayList<>();
