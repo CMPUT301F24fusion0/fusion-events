@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -17,11 +16,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.fusion0.activities.ViewEventActivity;
+import com.example.fusion0.adapters.ProfileListAdapter;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.UserInfo;
 import com.example.fusion0.R;
-import com.example.fusion0.adapters.ProfileListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

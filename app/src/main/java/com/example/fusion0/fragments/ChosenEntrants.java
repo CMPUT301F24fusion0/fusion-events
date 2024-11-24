@@ -14,9 +14,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.fusion0.activities.MainActivity;
-import com.example.fusion0.adapters.ProfileListAdapter;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.R;
+import com.example.fusion0.adapters.ProfileListAdapter;
+
 import com.example.fusion0.models.UserInfo;
 
 import java.util.ArrayList;
