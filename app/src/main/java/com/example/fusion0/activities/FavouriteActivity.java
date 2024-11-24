@@ -22,6 +22,7 @@ import com.example.fusion0.models.OrganizerInfo;
 import com.example.fusion0.models.UserInfo;
 import com.example.fusion0.R;
 import com.example.fusion0.fragments.QRFragment;
+import com.example.fusion0.fragments.ProfileFragment;
 import com.google.zxing.WriterException;
 
 import java.util.ArrayList;
@@ -261,12 +262,19 @@ public class FavouriteActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Initialize profile button to navigate to ProfileActivity
+        // Initialize profile button to navigate to ProfileFragment
         profileButton = findViewById(R.id.toolbar_person);
 
         profileButton.setOnClickListener(view -> {
-            Intent intent = new Intent(FavouriteActivity.this, ProfileActivity.class);
-            startActivity(intent);
+            ProfileFragment profileFragment = new ProfileFragment();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.activity_favourite, profileFragment)
+                    .addToBackStack(null)
+                    .commit();
+
+//            Intent intent = new Intent(FavouriteActivity.this, ProfileActivity.class);
+//            startActivity(intent);
         });
 
         homeButton = findViewById(R.id.toolbar_home);
