@@ -86,12 +86,9 @@ public class EventActivity extends AppCompatActivity {
     private Spinner spinnerFacilities;
     private SwitchCompat geolocationSwitchCompact;
 
-
-
     private OrganizerInfo organizer;
     private FacilitiesInfo facility;
     private FacilitiesInfo newFacility = null;
-
 
     private String deviceID;
     private String address;
