@@ -1,8 +1,13 @@
 package com.example.fusion0.fragments;
 
 
+import static android.app.Activity.RESULT_OK;
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -10,7 +15,9 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -26,8 +33,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
@@ -71,7 +79,7 @@ import java.util.UUID;
  * @author Simon Haile
  * This activity allows users to create events
  */
-public class EventFragment extends AppCompatActivity {
+public class EventFragment extends Fragment {
     private FirebaseStorage storage;
     private StorageReference storageRef;
 
@@ -85,8 +93,7 @@ public class EventFragment extends AppCompatActivity {
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private Spinner spinnerFacilities;
     private SwitchCompat geolocationSwitchCompact;
-
-
+    
 
     private OrganizerInfo organizer;
     private FacilitiesInfo facility;
@@ -105,89 +112,98 @@ public class EventFragment extends AppCompatActivity {
     private Double longitude;
     private Boolean geolocation = false;
 
+    public EventFragment() {
+        // Required empty public constructor
+    }
 
-    /**
-     * Initializes the activity when it is first created. This method sets up the user interface
-     * and prepares the necessary components for the event creation process. It handles view initialization,
-     * Firebase setup, and event handling methods for the user to create an event.
-     * @param savedInstanceState A Bundle object containing the activity's previously saved state,
-     * or null if the activity is being created for the first time.
-     */
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for the fragment
+        return inflater.inflate(R.layout.fragment_event, container, false);
+    }
+
+    
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_event);
 
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
+        
+    }
+    
+    @SuppressLint("HardwareIds")
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        Context context = requireContext();
 
-        eventName = findViewById(R.id.EventName);
-        uploadedImageView = findViewById(R.id.uploaded_image_view);
-        spinnerFacilities = findViewById(R.id.spinner_facilities);
-        addFacilityText = findViewById(R.id.add_facility_text);
-        autocompletePlaceFragment = findViewById(R.id.autocomplete_fragment);
-        description = findViewById(R.id.Description);
-        dateRequirementsTextView = findViewById(R.id.date_requirements_text);
-        registrationDateRequirementsTextView =findViewById(R.id.registrationDateRequirementsTextView);
-        startDateTextView = findViewById(R.id.start_date_text);
-        startTimeTextView = findViewById(R.id.start_time_text);
-        endDateTextView = findViewById(R.id.end_date_text);
-        endTimeTextView = findViewById(R.id.end_time_text);
-        capacity = findViewById(R.id.Capacity);
-        lotteryCapacity =findViewById(R.id.lotteryCapacity);
-        addButton = findViewById(R.id.add_button);
-        exitButton = findViewById(R.id.exit_button);
-        geolocationTextView = findViewById(R.id.geolocation_text);
-        geolocationSwitchCompact = findViewById(R.id.geolocation_switchcompat);
-        radius = findViewById(R.id.radius);
+        eventName = view.findViewById(R.id.EventName);
+        uploadedImageView = view.findViewById(R.id.uploaded_image_view);
+        spinnerFacilities = view.findViewById(R.id.spinner_facilities);
+        addFacilityText = view.findViewById(R.id.add_facility_text);
+        description = view.findViewById(R.id.Description);
+        dateRequirementsTextView = view.findViewById(R.id.date_requirements_text);
+        registrationDateRequirementsTextView =view.findViewById(R.id.registrationDateRequirementsTextView);
+        startDateTextView = view.findViewById(R.id.start_date_text);
+        startTimeTextView = view.findViewById(R.id.start_time_text);
+        endDateTextView = view.findViewById(R.id.end_date_text);
+        endTimeTextView = view.findViewById(R.id.end_time_text);
+        capacity = view.findViewById(R.id.Capacity);
+        lotteryCapacity =view.findViewById(R.id.lotteryCapacity);
+        addButton = view.findViewById(R.id.add_button);
+        exitButton = view.findViewById(R.id.exit_button);
+        geolocationTextView = view.findViewById(R.id.geolocation_text);
+        geolocationSwitchCompact = view.findViewById(R.id.geolocation_switchcompat);
+        radius = view.findViewById(R.id.radius);
         radius.setText("0");
-        radiusText = findViewById(R.id.radius_text);
+        radiusText = view.findViewById(R.id.radius_text);
 
 
-        deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        deviceID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        validateUser();
-        validateOrganizer();
+//        validateUser(context);
+        validateOrganizer(context);
 
-        uploadPoster();
+        uploadPoster(view, context);
 
         geolocationHandling();
 
-        StartDateButtonHandling();
-        EndDateButtonHandling();
+        StartDateButtonHandling(view, context);
+        EndDateButtonHandling(view, context);
 
-        registrationDateButtonHandling();
+        registrationDateButtonHandling(view, context);
 
-        AddEvent();
+        AddEvent(context);
 
-        exitButton.setOnClickListener(v -> finish());
-    }
-
-
-    private void validateUser() {
-        LoginManagement login = new LoginManagement(this);
-        login.isUserLoggedIn(isLoggedIn -> {
-            if (!isLoggedIn) {
-                String activity = "EventFragment";
-                Bundle bundle = new Bundle();
-                bundle.putString("activity", activity);
-                Registration registration = new Registration();
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.activity_add_event, registration)
-                        .addToBackStack(null)
-                        .commit();
-            }
+        exitButton.setOnClickListener(v -> {
+            Navigation.findNavController(view).navigate(R.id.action_eventFragment_to_mainFragment);
         });
     }
 
-        /**
-         * @author Simon Haile
-         * Validates and retrieves the organizer associated with the current device ID.
-         * This method checks if an organizer already exists in the database based on the device ID.
-         * If the organizer is found, it is assigned to the `organizer` variable.
-         * If no organizer is found, a new `OrganizerInfo` object is created and added to the database.
-         */
-    private void validateOrganizer() {
+
+//    private void validateUser(Context context) {
+//        LoginManagement login = new LoginManagement(context);
+//        login.isUserLoggedIn(isLoggedIn -> {
+//            if (!isLoggedIn) {
+//                String fragment = "eventFragment";
+//                Bundle bundle = new Bundle();
+//                bundle.putString("activity", activity);
+//                Registration registration = new Registration();
+//                getSupportFragmentManager().beginTransaction()
+//                        .replace(R.id.activity_add_event, registration)
+//                        .addToBackStack(null)
+//                        .commit();
+//            }
+//        });
+//    }
+
+    /**
+     * @author Simon Haile
+     * Validates and retrieves the organizer associated with the current device ID.
+     * This method checks if an organizer already exists in the database based on the device ID.
+     * If the organizer is found, it is assigned to the `organizer` variable.
+     * If no organizer is found, a new `OrganizerInfo` object is created and added to the database.
+     */
+    private void validateOrganizer(Context context) {
         EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
             @Override
             public void onSuccess(OrganizerInfo organizerInfo) {
@@ -197,7 +213,7 @@ public class EventFragment extends AppCompatActivity {
                 } else {
                     organizer = organizerInfo;
                 }
-                handleFacility(organizer);
+                handleFacility(organizer, context);
             }
             @Override
             public void onFailure(String error) {
@@ -217,8 +233,8 @@ public class EventFragment extends AppCompatActivity {
      * the download URL for the uploaded image
      * is stored for later use.
      */
-    private void uploadPoster() {
-        Button uploadImageButton = findViewById(R.id.upload_image_button);
+    private void uploadPoster(View view, Context context) {
+        Button uploadImageButton = view.findViewById(R.id.upload_image_button);
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -227,26 +243,26 @@ public class EventFragment extends AppCompatActivity {
                         uploadedImageView.setVisibility(View.VISIBLE);
                         uploadedImageView.setImageURI(imageUri);
 
-                        Uri destinationUri = Uri.fromFile(new File(getCacheDir(), "cropped_image.jpg"));
+                        Uri destinationUri = Uri.fromFile(new File(context.getCacheDir(), "cropped_image.jpg"));
 
                         UCrop.of(imageUri, destinationUri)
                                 .withAspectRatio(9, 16)
                                 .withMaxResultSize(800, 1600)
-                                .start(this);
+                                .start(requireActivity());
                     }
                 }
 
         );
 
         uploadImageButton.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_PICK);
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
             imagePickerLauncher.launch(intent);
         });
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             Uri resultUri = UCrop.getOutput(data);
@@ -270,26 +286,26 @@ public class EventFragment extends AppCompatActivity {
             }
 
 
-                Glide.with(this)
-                        .load(resultUri)
-                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) // Get original size
-                        .into(new SimpleTarget<Drawable>() {
-                            @Override
-                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                                // Get the original image dimensions
-                                int originalWidth = resource.getIntrinsicWidth();
-                                int originalHeight = resource.getIntrinsicHeight();
+            Glide.with(this)
+                    .load(resultUri)
+                    .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) // Get original size
+                    .into(new SimpleTarget<Drawable>() {
+                        @Override
+                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                            // Get the original image dimensions
+                            int originalWidth = resource.getIntrinsicWidth();
+                            int originalHeight = resource.getIntrinsicHeight();
 
-                                // Apply the same scaling logic used in Glide loading (1.5 factor)
-                                int newWidth = (int) (originalWidth / 1.5);
-                                int newHeight = (int) (originalHeight / 1.5);
+                            // Apply the same scaling logic used in Glide loading (1.5 factor)
+                            int newWidth = (int) (originalWidth / 1.5);
+                            int newHeight = (int) (originalHeight / 1.5);
 
-                                Glide.with(EventFragment.this)
-                                        .load(resultUri)
-                                        .override(newWidth, newHeight)
-                                        .into(uploadedImageView);
-                            }
-                        });
+                            Glide.with(requireContext())
+                                    .load(resultUri)
+                                    .override(newWidth, newHeight)
+                                    .into(uploadedImageView);
+                        }
+                    });
 
         } else if (resultCode == UCrop.RESULT_ERROR) {
             Throwable cropError = UCrop.getError(data);
@@ -309,7 +325,7 @@ public class EventFragment extends AppCompatActivity {
      *
      * @param organizer The organizer's information used to retrieve their facilities.
      */
-    private void handleFacility(OrganizerInfo organizer) {
+    private void handleFacility(OrganizerInfo organizer, Context context) {
         ArrayList<String> facilityNames = new ArrayList<>();
 
         // Add existing facilities to the facilityNames list
@@ -328,8 +344,7 @@ public class EventFragment extends AppCompatActivity {
         facilityNames.add("Add Facility");
 
         // Create the ArrayAdapter for the spinner
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, facilityNames);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, facilityNames);
 
         // Set drop-down view resource
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -345,7 +360,7 @@ public class EventFragment extends AppCompatActivity {
 
                 // Check if "Add Facility" is selected
                 if (selectedFacility.equals("Add Facility")) {
-                    addFacility(facilityNames, adapter); // Pass the adapter so we can update it
+                    addFacility(facilityNames, adapter, context); // Pass the adapter so we can update it
                 } else {
                     // If the selected facility exists, proceed with fetching it
                     String facilityID = organizer.getFacilityIdByName(selectedFacility);
@@ -383,22 +398,24 @@ public class EventFragment extends AppCompatActivity {
      * @param facilityNames The list of existing facility names.
      * @param adapter The adapter used for the facility spinner to update the displayed options.
      */
-    private void addFacility(ArrayList<String> facilityNames, ArrayAdapter<String> adapter) {
-        autocompletePlaceFragment.setVisibility(View.VISIBLE);
+    private void addFacility(ArrayList<String> facilityNames, ArrayAdapter<String> adapter, Context context) {
+        Activity activity = requireActivity();
+
         addFacilityText.setVisibility(View.VISIBLE);
 
         if (!Places.isInitialized()) {
-            Places.initializeWithNewPlacesApiEnabled(getApplicationContext(), BuildConfig.API_KEY);
+            Places.initializeWithNewPlacesApiEnabled(activity.getApplicationContext(), BuildConfig.API_KEY);
         }
 
         // Initialize PlacesClient after the API is enabled
-        PlacesClient placesClient = Places.createClient(this);
+        PlacesClient placesClient = Places.createClient(context);
 
         // Initialize the AutocompleteSupportFragment
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         // Specify the types of place data to return
+        assert autocompleteFragment != null;
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.FORMATTED_ADDRESS, Place.Field.LAT_LNG, Place.Field.PHOTO_METADATAS));
 
         // Set up the PlaceSelectionListener
@@ -450,7 +467,7 @@ public class EventFragment extends AppCompatActivity {
                                     if (facilityNames.contains(facilityName)) {
                                         Log.i(TAG, "Facility already exists: " + facilityName);
                                         // Optionally show a message to the user
-                                        Toast.makeText(getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(activity.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
                                     } else {
                                         Log.d(TAG, " fetching photo URI: " + facilityImage);
                                         newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude, facilityImage);
@@ -463,7 +480,7 @@ public class EventFragment extends AppCompatActivity {
                                         adapter.notifyDataSetChanged();
 
                                         // Optionally, show a toast indicating the facility was added
-                                        Toast.makeText(getApplicationContext(), "New facility added: " + facilityName, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(activity.getApplicationContext(), "New facility added: " + facilityName, Toast.LENGTH_SHORT).show();
                                     }
                                 } else {
                                     Log.w(TAG, "Fetched photo URI is null.");
@@ -510,10 +527,10 @@ public class EventFragment extends AppCompatActivity {
      * the start date and time. It validates the selected date and time to ensure they are not in the past, and displays
      * appropriate error messages when necessary.
      */
-    private void StartDateButtonHandling() {
-        Button startDateButton = findViewById(R.id.start_date_button);
-        startDateTextView = findViewById(R.id.start_date_text);
-        startTimeTextView = findViewById(R.id.start_time_text);
+    private void StartDateButtonHandling(View view, Context context) {
+        Button startDateButton = view.findViewById(R.id.start_date_button);
+        startDateTextView = view.findViewById(R.id.start_date_text);
+        startTimeTextView = view.findViewById(R.id.start_time_text);
         startDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -521,7 +538,7 @@ public class EventFragment extends AppCompatActivity {
                 int year = calendar.get(Calendar.YEAR);
                 int month = calendar.get(Calendar.MONTH);
                 int day = calendar.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dialog = new DatePickerDialog(EventFragment.this, new DatePickerDialog.OnDateSetListener() {
+                DatePickerDialog dialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
                         startDateCalendar = Calendar.getInstance();
@@ -543,7 +560,7 @@ public class EventFragment extends AppCompatActivity {
 
                             int hour = calendar.get(Calendar.HOUR_OF_DAY);
                             int minute = calendar.get(Calendar.MINUTE);
-                            TimePickerDialog timePickerDialog = new TimePickerDialog(EventFragment.this, new TimePickerDialog.OnTimeSetListener() {
+                            TimePickerDialog timePickerDialog = new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
                                 @Override
                                 public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
                                     startDateCalendar.set(Calendar.HOUR_OF_DAY, selectedHour);
@@ -577,10 +594,10 @@ public class EventFragment extends AppCompatActivity {
      * the end date and time. It ensures that the end date is not earlier than the start date and that the selected
      * end time is not before the start time.
      */
-    private void EndDateButtonHandling() {
-        Button endDateButton = findViewById(R.id.end_date_button);
-        endDateTextView = findViewById(R.id.end_date_text);
-        endTimeTextView = findViewById(R.id.end_time_text);
+    private void EndDateButtonHandling(View view, Context context) {
+        Button endDateButton = view.findViewById(R.id.end_date_button);
+        endDateTextView = view.findViewById(R.id.end_date_text);
+        endTimeTextView = view.findViewById(R.id.end_time_text);
         endDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -588,7 +605,7 @@ public class EventFragment extends AppCompatActivity {
                 int year = calendar.get(Calendar.YEAR);
                 int month = calendar.get(Calendar.MONTH);
                 int day = calendar.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dialog = new DatePickerDialog(EventFragment.this, new DatePickerDialog.OnDateSetListener() {
+                DatePickerDialog dialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
                         Calendar endDateCalendar = Calendar.getInstance();
@@ -628,7 +645,7 @@ public class EventFragment extends AppCompatActivity {
 
                             int hour = calendar.get(Calendar.HOUR_OF_DAY);
                             int minute = calendar.get(Calendar.MINUTE);
-                            TimePickerDialog timePickerDialog = new TimePickerDialog(EventFragment.this, new TimePickerDialog.OnTimeSetListener() {
+                            TimePickerDialog timePickerDialog = new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
                                 @Override
                                 public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
                                     endDateCalendar.set(Calendar.HOUR_OF_DAY, selectedHour);
@@ -655,9 +672,9 @@ public class EventFragment extends AppCompatActivity {
         });
     }
 
-    private void registrationDateButtonHandling(){
-        Button registrationDateButton = findViewById(R.id.registration_date_button);
-        registrationDateTextView = findViewById(R.id.registration_date_text);
+    private void registrationDateButtonHandling(View view, Context context){
+        Button registrationDateButton = view.findViewById(R.id.registration_date_button);
+        registrationDateTextView = view.findViewById(R.id.registration_date_text);
         registrationDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -665,7 +682,7 @@ public class EventFragment extends AppCompatActivity {
                 int year = calendar.get(Calendar.YEAR);
                 int month = calendar.get(Calendar.MONTH);
                 int day = calendar.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dialog = new DatePickerDialog(EventFragment.this, new DatePickerDialog.OnDateSetListener() {
+                DatePickerDialog dialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
                         registrationDateCalendar = Calendar.getInstance();
@@ -710,54 +727,54 @@ public class EventFragment extends AppCompatActivity {
      * start time, end time, and other required fields. If all fields are valid, the event is created and added to the
      * organizer's list of events and the facility's list of events. The event is also added to Firebase.
      */
-    private void AddEvent(){
+    private void AddEvent(Context context){
         addButton.setOnClickListener(v -> {
             if (TextUtils.isEmpty(eventName.getText().toString())) {
                 eventName.setError("Event name is required");
-                Toast.makeText(EventFragment.this, "Event name is required", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Event name is required", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (TextUtils.isEmpty(capacity.getText().toString())) {
                 capacity.setError("Capacity is required");
-                Toast.makeText(EventFragment.this, "Capacity is required", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Capacity is required", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (TextUtils.isEmpty(lotteryCapacity.getText().toString()) || Integer.parseInt(lotteryCapacity.getText().toString()) >= Integer.parseInt(capacity.getText().toString())) {
                 lotteryCapacity.setError("Lottery Capacity is required and must be less than Waitlist Capacity");
-                Toast.makeText(EventFragment.this, "Lottery Capacity is required and must be less than Waitlist Capacity", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Lottery Capacity is required and must be less than Waitlist Capacity", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (TextUtils.isEmpty(description.getText().toString())) {
                 description.setError("Description is required");
-                Toast.makeText(EventFragment.this, "Description is required", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Description is required", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (TextUtils.isEmpty(startTimeTextView.getText().toString())) {
                 startTimeTextView.setError("Start time is required");
-                Toast.makeText(EventFragment.this, "Start time is required", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Start time is required", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (TextUtils.isEmpty(endTimeTextView.getText().toString())) {
                 endTimeTextView.setError("End time is required");
-                Toast.makeText(EventFragment.this, "End time is required", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "End time is required", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (startDate == null || endDate == null) {
-                Toast.makeText(EventFragment.this, "Start or End date is missing", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Start or End date is missing", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (registrationDate == null) {
-                Toast.makeText(EventFragment.this, "Registration deadline is missing", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Registration deadline is missing", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (eventPoster == null) {
-                Toast.makeText(EventFragment.this, "Event poster is missing", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Event poster is missing", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (facilityName == null || facility == null) {
-                Toast.makeText(EventFragment.this, "Facility name or facility is missing", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Facility name or facility is missing", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -809,9 +826,9 @@ public class EventFragment extends AppCompatActivity {
             facility.setEvents(facilityEventsList);
             EventFirebase.editFacility(facility);
 
-            Toast.makeText(EventFragment.this, "Event Added Successfully!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Event Added Successfully!", Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(EventFragment.this, MainActivity.class);
+            Intent intent = new Intent(context, MainActivity.class);
             startActivity(intent);
         });
     }
