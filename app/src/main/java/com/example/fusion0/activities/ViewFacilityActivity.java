@@ -54,6 +54,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
      * and handles the logic for displaying, editing, and deleting facility details.
      * It initializes UI components, retrieves facility data from Firebase, and manages
      * user interaction for viewing and modifying the facility information.
+     * @author Simon Haile
      *
      * @param savedInstanceState This Bundle contains the data it most recently supplied in
      * onSaveInstanceState(Bundle), otherwise null.

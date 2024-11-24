@@ -47,7 +47,19 @@ public class WaitlistFragment extends Fragment {
 
     private Waitlist waitlist;
 
-
+    /**
+     * Find the user on the waiting list
+     * @author Simon Haile
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.waitlist, container, false);
@@ -106,6 +118,10 @@ public class WaitlistFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Update the waiting list fragment for organizers
+     * @param bundle contains the updated information
+     */
     private void updateUI(Bundle bundle) {
         String eventCapacity = bundle != null ? bundle.getString("eventCapacity", "0") : "0";
         String ratio = users.size() + "/" + eventCapacity;
@@ -125,6 +141,12 @@ public class WaitlistFragment extends Fragment {
         }
     }
 
+    /**
+     * Establish the back and lottery button
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -185,13 +207,13 @@ public class WaitlistFragment extends Fragment {
                                 bundle.putSerializable("waitlist", waitlist);
                                 chosenEntrants.setArguments(bundle);
 
-                                getActivity().getSupportFragmentManager().beginTransaction()
+                                requireActivity().getSupportFragmentManager().beginTransaction()
                                         .replace(R.id.event_view, chosenEntrants)
                                         .addToBackStack(null)
                                         .commit();
                             }
                         });
-                    }else {
+                    } else {
                         Toast.makeText(WaitlistFragment.this.getContext(), "Please enter a valid lottery capacity greater than 0", Toast.LENGTH_SHORT).show();
                     }
                 }

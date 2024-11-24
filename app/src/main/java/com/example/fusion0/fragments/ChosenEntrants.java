@@ -29,6 +29,18 @@ public class ChosenEntrants extends Fragment {
     Button lotteryButton;
     EventFirebase firebase;
 
+    /**
+     * Sets up the variables required in this class and uses the adapter to show selected entrants
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return the view
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.chosen_entrants, container, false);
@@ -48,6 +60,12 @@ public class ChosenEntrants extends Fragment {
         return view;
     }
 
+    /**
+     * Establishes the back button
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -56,9 +74,9 @@ public class ChosenEntrants extends Fragment {
             Intent intent = new Intent(getActivity(), MainActivity.class);
             startActivity(intent);
         });
-
-        lotteryButton.setOnClickListener(v -> {
-        });
+        // Don't think this is needed
+//        lotteryButton.setOnClickListener(v -> {
+//        });
     }
 }
 

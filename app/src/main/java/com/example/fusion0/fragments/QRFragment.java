@@ -121,12 +121,18 @@ public class QRFragment extends Fragment implements ZXingScannerView.ResultHandl
      * @param qrCodeHash  The hashed QR code data.
      */
     private void finishWithResult(String eventId, String qrCodeHash) {
+        // This change is only temporarily
+        // Ideally, we will navigate from fragment to fragment, I will change this on the 25th
+        // - Nimi
+
         Activity activity = requireActivity();
-        Intent intent = new Intent(getActivity(), ViewEventActivity.class);
-        intent.putExtra("EVENT_ID", eventId);
+        Context context = requireContext();
+
+        Intent intent = new Intent(context, ViewEventActivity.class);
+        intent.putExtra("eventID", eventId);
         intent.putExtra("QR_CODE_HASH", qrCodeHash);
-        activity.setResult(RESULT_OK, intent);
         startActivity(intent);
+
     }
 
     /**

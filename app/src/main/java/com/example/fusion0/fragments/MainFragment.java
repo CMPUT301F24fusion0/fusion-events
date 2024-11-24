@@ -65,10 +65,18 @@ public class MainFragment extends Fragment {
 
     private final int REQUEST_CODE = 100;
 
+    /**
+     * Required empty public constructor
+     */
     public MainFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * Call the methods required for initially setting up the app
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @SuppressLint("HardwareIds")
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,12 +89,30 @@ public class MainFragment extends Fragment {
         notificationList = new ArrayList<>();
     }
 
+    /**
+     * Inflate the view
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return the view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
+    /**
+     * Controls the accept/decline seen in the home page and checks if user is logged in or new
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -296,6 +322,11 @@ public class MainFragment extends Fragment {
 
     }
 
+    /**
+     * A notification pop up
+     * @param notificationItem the custom notificationItem that contains the required info
+     * @param context context from class
+     */
     public void showNotificationDialog(@NonNull NotificationItem notificationItem, Context context) {
         View dialogView = getLayoutInflater().inflate(R.layout.notifications_dialog, null);
 
@@ -315,6 +346,10 @@ public class MainFragment extends Fragment {
         dialog.show();
     }
 
+    /**
+     * Update notifications if their are none
+     * @param view the current view
+     */
     private void updateNotificationView(@NonNull View view) {
         TextView noNotifications = view.findViewById(R.id.noNotifications);
 

@@ -36,6 +36,19 @@ public class CancelledEntrants extends Fragment {
 
     private int pendingRequests = 0;
 
+    /**
+     * Creates the list for cancelled entrants
+     * @author Simon Haile
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return the View
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.cancelled_entrants, container, false);
@@ -92,6 +105,11 @@ public class CancelledEntrants extends Fragment {
 
         return view;
     }
+
+    /**
+     * Updates the UI to allow organizers to see the cancelled entrants
+     * @param bundle contains information
+     */
     private void updateUI(Bundle bundle) {
         ProfileListAdapter adapter = new ProfileListAdapter(getContext(), users);
         cancelledEntrantsListView.setAdapter(adapter);
@@ -105,9 +123,13 @@ public class CancelledEntrants extends Fragment {
         }
     }
 
-
-
-
+    /**
+     * Establish the back button
+     * @author Simon Haile
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

@@ -9,6 +9,7 @@ import java.util.UUID;
 /**
  * @author Simon Haile
  * This class contains the information for facilities.
+ * Note getters/setters are not provided JavaDocs as their function is trivial.
  */
 public class FacilitiesInfo {
     public String facilityID;

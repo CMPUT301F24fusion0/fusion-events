@@ -1065,6 +1065,13 @@ public class ViewEventActivity extends AppCompatActivity {
         });
     };
 
+    /**
+     * Checks results after coming back from another activity
+     * @author Simon Haile
+     * @param requestCode see if the activity we came back from was correct
+     * @param resultCode whether the activity finished correctly
+     * @param data the data obtained from the activity
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
