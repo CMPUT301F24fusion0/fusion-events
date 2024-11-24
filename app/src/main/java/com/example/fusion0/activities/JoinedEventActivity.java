@@ -15,12 +15,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.fusion0.activities.FavouriteActivity;
 import com.example.fusion0.helpers.EventFirebase;
-import com.example.fusion0.models.EventInfo;
-import com.example.fusion0.R;
 import com.example.fusion0.helpers.UserFirestore;
+import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.UserInfo;
 import com.google.zxing.WriterException;
+import com.example.fusion0.R;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -83,8 +84,6 @@ public class JoinedEventActivity extends AppCompatActivity {
             @Override
             public void onSuccess(UserInfo userInfo) {
                 user = userInfo;
-                Log.e("JoinedEventActivity", "Error fetching user: " + user.getEvents() + user.getFirstName());
-
             }
 
             @Override
@@ -166,7 +165,8 @@ public class JoinedEventActivity extends AppCompatActivity {
             UserFirestore.editUserEvents(user);
 
             EventFirebase.editEvent(event);
-            finish();
+            Intent intent = new Intent(JoinedEventActivity.this, FavouriteActivity.class);
+            startActivity(intent);
             //remove user from event chosenlist if in, cancelled list if in
         });
 

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#FFFFFF"
+    android:id="@+id/chosen_entrants">
+
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/arrow_back"
+        android:contentDescription="Back"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/chosen_entrants_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/backButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chosen Entrants"
+            android:textSize="23sp"
+            android:textColor="@color/textColor"
+            android:textStyle="bold"
+            android:fontFamily="@font/raleway_medium"
+            android:layout_marginEnd="16dp"/>
+
+        <TextView
+            android:id="@+id/ratio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30/45"
+            android:textSize="20sp"
+            android:textColor="@color/textColor"
+            android:fontFamily="@font/raleway_medium" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/textColor"
+        app:layout_constraintTop_toBottomOf="@id/chosen_entrants_text"
+        android:layout_marginBottom="16dp" />
+
+    <ScrollView
+        android:id="@+id/scroll_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:scrollbars="vertical"
+        app:layout_constraintTop_toBottomOf="@id/chosen_entrants_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/fill_lottery_button">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <ListView
+                android:id="@+id/chosenEntrantsListView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@android:color/darker_gray"
+                android:dividerHeight="0.5dp"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:id="@+id/emptyText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="@color/textColor"
+                android:fontFamily="@font/raleway_medium"
+                android:text="No entrants have been chosen!"
+                android:layout_gravity="center"
+                android:visibility="gone">
+            </TextView>
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/fill_lottery_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fill Chosen Entrants"
+        android:gravity="center_vertical"
+        android:backgroundTint="@color/figmaBlue"
+        app:cornerRadius="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

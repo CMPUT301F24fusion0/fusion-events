@@ -2,16 +2,14 @@ package com.example.fusion0.models;
 
 import android.graphics.Bitmap;
 
-import com.example.fusion0.helpers.EventFirebase;
-import com.example.fusion0.helpers.QRCode;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
+import com.example.fusion0.helpers.QRCode;
+import com.example.fusion0.helpers.EventFirebase;
 import java.util.HashMap;
-
-
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Map;
@@ -30,15 +28,17 @@ public class EventInfo {
     private String address;
     private String facilityName;
     private String capacity;
+    private String lotteryCapacity;
     private Date startDate;
     private Date endDate;
+    private Date registrationDate;
     private String startTime;
     private String endTime;
     ArrayList<Map<String, String>> waitinglist;
     private String eventPoster;
     private String qrCode;
     EventFirebase firebase;
-    private Long acceptedCount;
+    private Integer acceptedCount;
     private Boolean geolocation;
     private Double latitude;
     private Double longitude;
@@ -65,12 +65,14 @@ public class EventInfo {
         this.qrCode = (new QRCode(eventID)).getQrCode();
         this.waitinglist = new ArrayList<Map<String, String>>();
         this.firebase = new EventFirebase();
-        this.acceptedCount = 0L;
+        this.acceptedCount = 0;
         this.eventPoster = null;
         this.geolocation = false;
         this.latitude = 0.0;
         this.longitude = 0.0;
         this.radius = 0;
+        this.lotteryCapacity ="0";
+        this.registrationDate = new Date();
     }
 
     /**
@@ -94,7 +96,7 @@ public class EventInfo {
      * @param radius         The radius within which the event is valid (if geolocation is enabled).
      * @throws WriterException If an error occurs while generating the QR code.
      */
-    public EventInfo(String organizer, String eventName, String address, String facilityName, String capacity, String description, Date startDate, Date endDate, String startTime, String endTime, String eventPoster, Boolean geolocation, Double longitude, Double latitude, Integer radius) throws WriterException {
+    public EventInfo(String organizer, String eventName, String address, String facilityName, String capacity, String lotteryCapacity, String description, Date startDate, Date endDate, Date registrationDate, String startTime, String endTime, String eventPoster, Boolean geolocation, Double longitude, Double latitude, Integer radius) throws WriterException {
         this.eventID = UUID.randomUUID().toString();
         this.organizer = organizer;
         this.eventName = eventName;
@@ -109,12 +111,14 @@ public class EventInfo {
         this.qrCode =(new QRCode(eventID)).getQrCode();
         this.waitinglist = new ArrayList<>();
         this.firebase = new EventFirebase();
-        this.acceptedCount = 0L;
+        this.acceptedCount = 0;
         this.eventPoster = eventPoster;
         this.geolocation = geolocation;
         this.latitude = latitude;
         this.longitude = longitude;
         this.radius = radius;
+        this.lotteryCapacity = lotteryCapacity;
+        this.registrationDate = registrationDate;
     }
 
     /**
@@ -142,6 +146,8 @@ public class EventInfo {
         event.put("latitude", this.latitude);
         event.put("longitude", this.longitude);
         event.put("radius", this.radius);
+        event.put("acceptedCount", this.acceptedCount);
+        event.put("lotteryCapacity", this.lotteryCapacity);
         return event;
     }
 
@@ -208,11 +214,19 @@ public class EventInfo {
         this.capacity = capacity;
     }
 
-    public Long getAcceptedCount() {
+    public String getLotteryCapacity() {
+        return lotteryCapacity;
+    }
+
+    public void setLotteryCapacity(String capacity) {
+        this.lotteryCapacity = lotteryCapacity;
+    }
+
+    public Integer getAcceptedCount() {
         return acceptedCount;
     }
 
-    public void setAcceptedCount(Long acceptedCount) {
+    public void setAcceptedCount(Integer acceptedCount) {
         this.acceptedCount = acceptedCount;
     }
 
@@ -235,6 +249,15 @@ public class EventInfo {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public Date getRegistrationDate() {
+        return registrationDate;
+    }
+
+
+    public void setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
     }
 
 
@@ -316,7 +339,7 @@ public class EventInfo {
     }
 
     /**
-     * @author Simon Haile
+     * @author Malshaan
      * Generates a QR code image from the given QR code string.
      * This method uses ZXing to create a Bitmap from the hashed QR code string.
      *
@@ -351,24 +374,5 @@ public class EventInfo {
         waitingList.removeIf(next -> next.containsKey("did") && Objects.equals(next.get("did"), deviceID));
         return waitingList;
     }
-
-    /*
-    if this is necessary, just copy the wishlist one
-    public removeUserFromCancelledEntrants(String deviceID){
-
-    }
-
-    This was already made (see waitlist)
-    public removeUserFromChosenEntrants(String deviceID){
-
-    }
-
-    this was already made (see waitlist)
-    call new Waitlist().getAll()
-    public ArrayList<String> getArrayOfEntrants(ArrayList<String> list){
-        ArrayList<String> userNames = new ArrayList<>();
-    }
-
-     */
 
 }
