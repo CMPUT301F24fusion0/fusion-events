@@ -1,5 +1,6 @@
 package com.example.fusion0.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -82,7 +83,7 @@ public class Registration extends Fragment {
             String emails = email.getText().toString().trim();
             String phone = phoneNumber.getText().toString().trim();
 
-            String dID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+            @SuppressLint("HardwareIds") String dID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
             registration(dID, first, last, emails, phone);
             Bundle bundle = getArguments();
             if (bundle != null) {
@@ -95,7 +96,7 @@ public class Registration extends Fragment {
                 Log.d("Checkpoint", "the bundle was null - going back to vea");
                 Intent intent = new Intent(getActivity(), MainActivity.class);
                 startActivity(intent);
-            }else{
+            } else {
                 Intent intent = new Intent(getActivity(), EventActivity.class);
                 startActivity(intent);
             }
