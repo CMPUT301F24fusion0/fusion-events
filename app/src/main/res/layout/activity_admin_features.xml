@@ -100,7 +100,6 @@
             android:background="@color/textColor"
             android:layout_marginVertical="5dp" />
 
-        <!-- Browse Images Button -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -121,7 +120,7 @@
                 android:id="@+id/browseFacilitiesButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Browse Images"
+                android:text="Browse Facilities"
                 android:fontFamily="@font/raleway_semibold"
                 android:textSize="17sp"
                 android:textColor="@color/textColor" />
