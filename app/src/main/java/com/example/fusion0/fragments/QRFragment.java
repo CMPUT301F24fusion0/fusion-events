@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.fusion0.R;
+import com.example.fusion0.activities.ViewEventActivity;
 import com.example.fusion0.helpers.QRCode;
 import com.google.zxing.Result;
 
@@ -121,11 +122,11 @@ public class QRFragment extends Fragment implements ZXingScannerView.ResultHandl
      */
     private void finishWithResult(String eventId, String qrCodeHash) {
         Activity activity = requireActivity();
-        Intent intent = new Intent();
+        Intent intent = new Intent(getActivity(), ViewEventActivity.class);
         intent.putExtra("EVENT_ID", eventId);
         intent.putExtra("QR_CODE_HASH", qrCodeHash);
         activity.setResult(RESULT_OK, intent);
-        activity.finish();
+        startActivity(intent);
     }
 
     /**

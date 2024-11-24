@@ -201,6 +201,8 @@ public class ViewEventActivity extends AppCompatActivity {
             }
         });
 
+        Log.d("Here", "we're before eventID!= null");
+
         if (eventID != null) {
             EventFirebase.findEvent(eventID, new EventFirebase.EventCallback() {
                 @Override
@@ -288,7 +290,6 @@ public class ViewEventActivity extends AppCompatActivity {
                             });
 
                             isOwner = true;
-
 
                         } else {
                             lists.setVisibility(View.GONE);
@@ -736,49 +737,46 @@ public class ViewEventActivity extends AppCompatActivity {
             }
         });
 
-        registrationDateButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Calendar calendar = Calendar.getInstance();
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH);
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dialog = new DatePickerDialog(ViewEventActivity.this, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
-                        registrationDateCalendar = Calendar.getInstance();
-                        registrationDateCalendar.set(selectedYear, selectedMonth, selectedDay);
-                        Calendar currentDate = Calendar.getInstance();
-                        if (startDate != null){
-                            if (registrationDateCalendar.before(currentDate)) {
-                                registrationDateRequirementsTextView.setText("Deadline Cannot Be Before Today.");
-                                registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
-                                registrationDateTextView.setVisibility(View.GONE);
-                                registrationDateCalendar = null;
-                            }else if (startDate.before(registrationDateCalendar.getTime())) {
-                                registrationDateRequirementsTextView.setText("Registration deadline must be before the event start date.");
-                                registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
-                                registrationDateTextView.setVisibility(View.GONE);
-                                registrationDateButton.setVisibility(View.VISIBLE);
-                                registrationDateCalendar = null;
-                            }else {
-                                String selectedDate = String.format(Locale.US, "%d/%d/%d", selectedMonth + 1, selectedDay, selectedYear);
-                                registrationDateTextView.setText(selectedDate);
-                                registrationDateTextView.setVisibility(View.VISIBLE);
-                                registrationDateRequirementsTextView.setVisibility(View.GONE);
-                                registrationDate = registrationDateCalendar.getTime();
-                            }
-                        }else{
-                            registrationDateRequirementsTextView.setText("Please Select Start Date.");
+        registrationDateButton.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            DatePickerDialog dialog = new DatePickerDialog(ViewEventActivity.this, new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
+                    registrationDateCalendar = Calendar.getInstance();
+                    registrationDateCalendar.set(selectedYear, selectedMonth, selectedDay);
+                    Calendar currentDate = Calendar.getInstance();
+                    if (startDate != null){
+                        if (registrationDateCalendar.before(currentDate)) {
+                            registrationDateRequirementsTextView.setText("Deadline Cannot Be Before Today.");
                             registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
                             registrationDateTextView.setVisibility(View.GONE);
                             registrationDateCalendar = null;
+                        }else if (startDate.before(registrationDateCalendar.getTime())) {
+                            registrationDateRequirementsTextView.setText("Registration deadline must be before the event start date.");
+                            registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
+                            registrationDateTextView.setVisibility(View.GONE);
+                            registrationDateButton.setVisibility(View.VISIBLE);
+                            registrationDateCalendar = null;
+                        }else {
+                            String selectedDate = String.format(Locale.US, "%d/%d/%d", selectedMonth + 1, selectedDay, selectedYear);
+                            registrationDateTextView.setText(selectedDate);
+                            registrationDateTextView.setVisibility(View.VISIBLE);
+                            registrationDateRequirementsTextView.setVisibility(View.GONE);
+                            registrationDate = registrationDateCalendar.getTime();
                         }
-
+                    }else{
+                        registrationDateRequirementsTextView.setText("Please Select Start Date.");
+                        registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
+                        registrationDateTextView.setVisibility(View.GONE);
+                        registrationDateCalendar = null;
                     }
-                }, year, month, day);
-                dialog.show();
-            }
+
+                }
+            }, year, month, day);
+            dialog.show();
         });
     }
 
