@@ -7,14 +7,8 @@ plugins {
 
 }
 
-val localProperties = Properties()
-val localPropertiesFile = rootProject.file("local.properties")
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.inputStream().use { localProperties.load(it) }
-}
 
 val apiKey: String? = project.findProperty("API_KEY") as String?
-val openaiApiKey: String? = localProperties.getProperty("OPENAI_API_KEY")
 
 android {
     namespace = "com.example.fusion0"
@@ -26,10 +20,10 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-        buildConfigField("String", "API_KEY",  "\"${apiKey}\"")
-        buildConfigField("String", "OPENAI_API_KEY", "\"$openaiApiKey\"")
+        manifestPlaceholders["API_KEY"] = apiKey ?: "Nimi is the goat!"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
 
     buildTypes {
         release {
