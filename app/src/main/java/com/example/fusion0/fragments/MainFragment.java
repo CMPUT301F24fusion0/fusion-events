@@ -2,7 +2,6 @@ package com.example.fusion0.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -42,7 +41,6 @@ public class MainFragment extends Fragment {
 
     private LoginManagement loginManagement;
     private Boolean loginState;
-    private UserFirestore userFirestore;
     private String deviceId;
 
 
@@ -85,7 +83,6 @@ public class MainFragment extends Fragment {
         deviceId = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         loginManagement = new LoginManagement(requireContext());
-        userFirestore = new UserFirestore();
         notificationList = new ArrayList<>();
     }
 
@@ -255,9 +252,7 @@ public class MainFragment extends Fragment {
                     Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_registrationPromptFragment, bundle);
                 });
 
-                scannerButton.setOnClickListener(v -> {
-                    Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_qrFragment);
-                });
+                scannerButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_qrFragment));
 
                 favouriteButton.setOnClickListener(v -> {
                     Bundle bundle = new Bundle();
@@ -304,21 +299,13 @@ public class MainFragment extends Fragment {
         addButton = view.findViewById(R.id.toolbar_add);
         favouriteButton = view.findViewById(R.id.toolbar_favourite);
 
-        profileButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_profileFragment);
-        });
+        profileButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_profileFragment));
 
-        scannerButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_qrFragment);
-        });
+        scannerButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_qrFragment));
 
-        addButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_eventFragment);
-        });
+        addButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_eventFragment));
 
-        favouriteButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_favouriteFragment);
-        });
+        favouriteButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_favouriteFragment));
 
     }
 
