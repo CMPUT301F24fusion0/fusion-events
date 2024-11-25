@@ -1,14 +1,19 @@
 package com.example.fusion0.helpers;
 
+import android.util.Log;
+
 import com.example.fusion0.models.EventInfo;
+import com.example.fusion0.models.FacilitiesInfo;
+import com.example.fusion0.models.OrganizerInfo;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.zxing.WriterException;
-import java.util.HashMap;
 
-import com.example.fusion0.models.OrganizerInfo;
-import com.example.fusion0.models.FacilitiesInfo;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author Simon Haile
@@ -241,4 +246,42 @@ public class EventFirebase {
     public static void deleteEvent(String eventID) {
         eventsRef.document(eventID).delete().addOnSuccessListener(documentReference -> System.out.println("Event deleted successfully.")).addOnFailureListener(error -> System.err.println("Error deleting event: " + error.getMessage()));
     }
+
+    /**
+     * @author Derin Karas
+     * Callback method of getAllEvents()
+     */
+
+    public interface EventListCallback {
+        void onSuccess(List<EventInfo> events);
+        void onFailure(String error);
+    }
+
+    /**
+     * @author Derin Karas
+     * Retrieves all events from Firebase Firestore.
+     * @param callback The callback to handle the result of the retrieval
+     */
+    public static void getAllEvents(EventListCallback callback) {
+        eventsRef.get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<EventInfo> events = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : querySnapshot) {
+                        try {
+                            EventInfo event = document.toObject(EventInfo.class);
+                            if (event.getWaitinglist() == null || !(event.getWaitinglist() instanceof List)) {
+                                event.setWaitinglist(new ArrayList<>()); // Default to an empty list
+                            }
+                            events.add(event);
+                        } catch (Exception e) {
+                            // Handle deserialization errors (optional logging if necessary)
+                        }
+                    }
+                    callback.onSuccess(events);
+                })
+                .addOnFailureListener(e -> {
+                    callback.onFailure(e.getMessage());
+                });
+    }
+
 }

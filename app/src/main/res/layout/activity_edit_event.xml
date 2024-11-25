@@ -1,0 +1,265 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:id="@+id/scroll_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/activity_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit Event"
+                android:textSize="24sp"
+                android:textColor="@color/figmaBlue"
+                android:textStyle="bold"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Event Name"
+                android:textSize="16sp"
+                android:textColor="@color/figmaBlue"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/EventName"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Enter Event Name"
+                android:inputType="text"
+                android:background="@drawable/custom_input"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Poster"
+                android:textSize="16sp"
+                android:textColor="@color/figmaBlue"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <ImageView
+                android:id="@+id/uploaded_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                android:layout_marginBottom="8dp"
+                android:contentDescription="Event Poster" />
+
+            <Button
+                android:id="@+id/upload_image_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Edit Poster"
+                android:backgroundTint="@color/figmaBlue"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Description"
+                android:textSize="16sp"
+                android:textColor="@color/figmaBlue"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/Description"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:hint="Enter Event Description"
+                android:inputType="textMultiLine"
+                android:gravity="top|start"
+                android:maxLines="5"
+                android:background="@drawable/custom_input"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Capacity"
+                android:textSize="16sp"
+                android:textColor="@color/figmaBlue"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/Capacity"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Enter Capacity"
+                android:inputType="number"
+                android:background="@drawable/custom_input"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enable Geolocation"
+                android:textSize="16sp"
+                android:textColor="@color/figmaBlue"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/geolocation_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textOff="Disabled"
+                android:textOn="Enabled"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/radius_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Radius (Km)"
+                android:textSize="16sp"
+                android:textColor="@color/figmaBlue"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp"
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/radius_input"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Enter Radius"
+                android:inputType="numberDecimal"
+                android:background="@drawable/custom_input"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Current Location"
+                android:textSize="16sp"
+                android:textColor="@color/figmaBlue"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/location_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No location set"
+                android:textColor="@android:color/darker_gray"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Update Location"
+                android:textSize="16sp"
+                android:textColor="@color/figmaBlue"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/autocomplete_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start Date and Time"
+                android:textSize="16sp"
+                android:textColor="@color/figmaBlue"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/start_date_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Select Start Date and Time"
+                android:backgroundTint="@color/figmaBlue"
+                android:textColor="@color/white"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/start_date_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No date selected"
+                android:textColor="@android:color/darker_gray"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="End Date and Time"
+                android:textSize="16sp"
+                android:textColor="@color/figmaBlue"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/end_date_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Select End Date and Time"
+                android:backgroundTint="@color/figmaBlue"
+                android:textColor="@color/white"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/end_date_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No date selected"
+                android:textColor="@android:color/darker_gray"
+                android:layout_marginBottom="16dp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/exit_button"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:text="Cancel"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/figmaBlue" />
+
+        <Button
+            android:id="@+id/add_button"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:text="Save"
+            android:backgroundTint="@color/figmaBlue"
+            android:textColor="@color/white" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
