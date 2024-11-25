@@ -82,7 +82,7 @@ public class Waitlist implements Serializable {
                     ArrayList<Map<String, String>> waitList = (ArrayList<Map<String, String>>) waitField;
 
                     // Check if the wait list is empty
-                    if (waitList == null || waitList.isEmpty()) {
+                    if (waitList.isEmpty()) {
                         Log.w("Lottery", "Wait list is empty. No entrants to select.");
                         return;
                     }

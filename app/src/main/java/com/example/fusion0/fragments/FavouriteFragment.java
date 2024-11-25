@@ -84,7 +84,7 @@ public class FavouriteFragment extends Fragment {
         createdEventsList = view.findViewById(R.id.created_events_list);
 
         joinedEventsButton.setOnClickListener(v -> {
-            UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+            new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
                 @Override
                 public void onSuccess(UserInfo userInfo) {
                     if (userInfo == null) {

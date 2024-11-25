@@ -172,7 +172,7 @@ public class MainFragment extends Fragment {
         loginManagement.isUserLoggedIn(isLoggedIn -> {
             if (isLoggedIn) {
                 AppNotifications.permission(requireActivity(), deviceId);
-                UserFirestore.findUser(deviceId, new UserFirestore.Callback() {
+                new UserFirestore().findUser(deviceId, new UserFirestore.Callback() {
                     @Override
                     public void onSuccess(UserInfo user) {
                         userName = view.findViewById(R.id.userName);

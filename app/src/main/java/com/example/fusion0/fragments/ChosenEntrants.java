@@ -95,7 +95,7 @@ public class ChosenEntrants extends Fragment {
                     if (deviceId != null) {
                         Log.e(TAG, "did " + deviceId);
 
-                        UserFirestore.findUser(deviceId, new UserFirestore.Callback() {
+                        new UserFirestore().findUser(deviceId, new UserFirestore.Callback() {
                             @Override
                             public void onSuccess(UserInfo user) {
                                 users.add(user);

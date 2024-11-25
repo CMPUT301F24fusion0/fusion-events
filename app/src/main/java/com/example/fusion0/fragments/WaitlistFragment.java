@@ -82,7 +82,7 @@ public class WaitlistFragment extends Fragment {
                     String deviceId = entry.get("did");
                     if (deviceId != null) {
 
-                        UserFirestore.findUser(deviceId, new UserFirestore.Callback() {
+                        new UserFirestore().findUser(deviceId, new UserFirestore.Callback() {
                             @Override
                             public void onSuccess(UserInfo user) {
                                 users.add(user);
