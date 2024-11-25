@@ -91,5 +91,4 @@ dependencies {
     implementation("com.github.ybq:Android-SpinKit:1.4.0")
 
     implementation("com.airbnb.android:lottie-compose:6.6.0")
-
 }

@@ -261,19 +261,58 @@ public class EventFirebase {
      * Retrieves all facilities from Firebase Firestore.
      * @param callback The callback to handle the result of the retrieval
      */
-    public static void getAllFacilities(FacilityCallback callback) {
+    public static void getAllFacilities(FacilityListCallBack callback) {
         facilitiesRef.get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<FacilitiesInfo> facilities = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         if (document.exists()) {
                             FacilitiesInfo facility = document.toObject(FacilitiesInfo.class);
-                            callback.onSuccess(facility);
+                            facilities.add(facility);
+                            callback.onSuccess(facilities);
                         }
                     }
                 })
                 .addOnFailureListener(error -> {
                     System.err.println("Error fetching facilities: " + error.getMessage());
                     callback.onFailure(error.getMessage());
+                });
+    }
+
+    /**
+     * @author Derin Karas
+     * Callback method of getAllEvents()
+     */
+
+    public interface EventListCallback {
+        void onSuccess(List<EventInfo> events);
+        void onFailure(String error);
+    }
+
+    /**
+     * @author Derin Karas
+     * Retrieves all events from Firebase Firestore.
+     * @param callback The callback to handle the result of the retrieval
+     */
+    public static void getAllEvents(EventListCallback callback) {
+        eventsRef.get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<EventInfo> events = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : querySnapshot) {
+                        try {
+                            EventInfo event = document.toObject(EventInfo.class);
+                            if (event.getWaitinglist() == null || !(event.getWaitinglist() instanceof List)) {
+                                event.setWaitinglist(new ArrayList<>()); // Default to an empty list
+                            }
+                            events.add(event);
+                        } catch (Exception e) {
+                            // Handle deserialization errors (optional logging if necessary)
+                        }
+                    }
+                    callback.onSuccess(events);
+                })
+                .addOnFailureListener(e -> {
+                    callback.onFailure(e.getMessage());
                 });
     }
 }
