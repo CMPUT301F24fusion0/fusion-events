@@ -15,7 +15,6 @@ public class UserInfo {
     String firstName, lastName, email, phoneNumber, deviceID;
     ArrayList<String> notifications;
     ArrayList<String> events;
-    UserFirestore firebase;
     Boolean edit;
 
 
@@ -24,7 +23,6 @@ public class UserInfo {
      * Used by firestore to create objects in findUser()
      */
     public UserInfo() {
-        this.firebase = new UserFirestore();
         this.edit = false;
     }
 
@@ -42,7 +40,6 @@ public class UserInfo {
         this.lastName = last;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.firebase = new UserFirestore();
         this.edit = false;
         this.deviceID = dID;
         this.events = new ArrayList<>();
@@ -60,7 +57,6 @@ public class UserInfo {
         this.firstName = first;
         this.lastName = last;
         this.email = email;
-        this.firebase = new UserFirestore();
         this.edit = false;
         this.deviceID = dID;
         this.events = new ArrayList<>();
@@ -251,7 +247,10 @@ public class UserInfo {
      * @param newItem new attribute
      */
     private void updateUser(String field, ArrayList<String> newItem) {
-        if (edit) new UserFirestore().editUser(this, field, newItem);
+
+        if (edit) {
+            new UserFirestore().editUser(this, field, newItem);
+        }
     }
 
     /**
