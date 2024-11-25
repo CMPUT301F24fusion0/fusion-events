@@ -20,6 +20,7 @@ import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.UserInfo;
+import com.google.firebase.firestore.auth.User;
 import com.google.zxing.WriterException;
 import com.example.fusion0.R;
 
@@ -80,7 +81,7 @@ public class JoinedEventActivity extends AppCompatActivity {
         String eventID = intentReceived.getStringExtra("eventID");
         String deviceID = intentReceived.getStringExtra("deviceID");
 
-        UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+        new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo userInfo) {
                 user = userInfo;
@@ -162,7 +163,7 @@ public class JoinedEventActivity extends AppCompatActivity {
             ArrayList<String> userEvents =  user.getEvents();
             ArrayList<String> newEventsList = user.removeEventFromEventList(event.getEventID(), userEvents);
             user.setEvents(newEventsList);
-            UserFirestore.editUserEvents(user);
+            new UserFirestore().editUserEvents(user);
 
             EventFirebase.editEvent(event);
             Intent intent = new Intent(JoinedEventActivity.this, FavouriteActivity.class);

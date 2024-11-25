@@ -251,7 +251,7 @@ public class UserInfo {
      * @param newItem new attribute
      */
     private void updateUser(String field, ArrayList<String> newItem) {
-        if (edit) UserFirestore.editUser(this, field, newItem);
+        if (edit) new UserFirestore().editUser(this, field, newItem);
     }
 
     /**

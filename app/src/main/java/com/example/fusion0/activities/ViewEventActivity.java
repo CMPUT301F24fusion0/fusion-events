@@ -191,7 +191,7 @@ public class ViewEventActivity extends AppCompatActivity {
         Intent intentReceived = getIntent();
         String eventID = intentReceived.getStringExtra("eventID");
 
-        UserFirestore.findUser(deviceID,new UserFirestore.Callback(){
+        new UserFirestore().findUser(deviceID,new UserFirestore.Callback(){
             @Override
             public void onSuccess(UserInfo userInfo) {
                 user = userInfo;
@@ -306,7 +306,7 @@ public class ViewEventActivity extends AppCompatActivity {
                                 if (!all.contains(deviceID) & (currentEntrants.size() < capacity)) {
                                     joinButton.setVisibility(View.VISIBLE);
                                     joinButton.setOnClickListener(view -> {
-                                        UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+                                        new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
                                             @Override
                                             public void onSuccess(UserInfo userInfo) {
                                                 if (userInfo != null) {
@@ -366,7 +366,7 @@ public class ViewEventActivity extends AppCompatActivity {
 
                                         EventFirebase.editEvent(event);
 
-                                        UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+                                        new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
                                             @Override
                                             public void onSuccess(UserInfo userInfo) {
                                                 user = userInfo;
@@ -380,7 +380,7 @@ public class ViewEventActivity extends AppCompatActivity {
 
                                         ArrayList<String> newEventsList = user.removeEventFromEventList(event.getEventID(), user.getEvents());
                                         user.setEvents(newEventsList);
-                                        UserFirestore.editUserEvents(user);
+                                        new UserFirestore().editUserEvents(user);
 
                                         EventFirebase.editEvent(event);
 

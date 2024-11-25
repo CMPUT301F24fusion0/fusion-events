@@ -97,7 +97,7 @@ public class AppNotifications {
      * @param body body of notification
      */
     public static void sendNotification(String dID, String title, String body, String flag) {
-        UserFirestore.findUser(dID, new UserFirestore.Callback() {
+        new UserFirestore().findUser(dID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
                 if (user != null) {
@@ -151,7 +151,7 @@ public class AppNotifications {
      * @param context context of activity or fragment
      */
     public static void getNotification(String dID, Context context) {
-        UserFirestore.findUser(dID, new UserFirestore.Callback() {
+        new UserFirestore().findUser(dID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
                 if (AppNotifications.checkNotificationPermission(context)) {

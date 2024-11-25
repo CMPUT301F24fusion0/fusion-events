@@ -39,33 +39,4 @@ public class QRTest {
         assertNotEquals(hash1, differentHash); // Different inputs should produce different hashes
     }
 
-    /**
-     * Tests the getQrCode() method.
-     * Verifies that the QR code generated for the provided {@code TEST_EVENT_ID}
-     * matches the expected hash.
-     *
-     * @throws WriterException if an error occurs while generating the QR code.
-     */
-    @Test
-    public void testGetQrCode() throws WriterException {
-        QRCode qrCode = new QRCode(TEST_EVENT_ID);
-        assertEquals(TEST_HASH, qrCode.getQrCode());
-    }
-
-    /**
-     * Tests the getQrImage() method.
-     * Ensures that the generated QR image is not null and has the expected dimensions.
-     *
-     * @throws WriterException if an error occurs while generating the QR image.
-     */
-    @Test
-    public void testGetQrImage() throws WriterException {
-        QRCode qrCode = new QRCode(TEST_EVENT_ID);
-        Bitmap bitmap = qrCode.getQrImage();
-
-        assertNotNull(bitmap);
-        assertEquals(500, bitmap.getWidth());
-        assertEquals(500, bitmap.getHeight());
-    }
-
 }

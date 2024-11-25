@@ -105,7 +105,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
                     facilityNameTextView.setText(facility.getFacilityName());
                     addressTextView.setText(facility.getAddress());
 
-                    UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+                    new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
                         @Override
                         public void onSuccess(UserInfo user) {
                             String fullName = user.getFirstName() + ' ' + user.getLastName();
