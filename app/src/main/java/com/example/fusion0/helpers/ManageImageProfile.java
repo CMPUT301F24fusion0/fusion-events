@@ -127,22 +127,6 @@ public class ManageImageProfile {
     }
 
 
-
-    /**
-     * Deletes an image from firebase.
-     * @author Nimi Akinroye
-     *
-     * @param callback the callback for checking if the image was successfully deleted.
-     */
-    public void deleteImage(final ImageDeleteCallback callback) {
-        StorageReference userImageRef = storageReference.child("profile_images/" + deviceId + ".jpg");
-
-        userImageRef.delete()
-                .addOnSuccessListener(unused -> callback.onSuccess())
-                .addOnFailureListener(callback::onFailure);
-    }
-
-
     /**
      * Retrieves the image URL from Firebase Storage for the current user.
      * @author Nimi Akinroye
