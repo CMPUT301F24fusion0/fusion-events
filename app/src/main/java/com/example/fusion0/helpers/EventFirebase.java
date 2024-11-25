@@ -3,9 +3,13 @@ package com.example.fusion0.helpers;
 import com.example.fusion0.models.EventInfo;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.zxing.WriterException;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.example.fusion0.models.OrganizerInfo;
 import com.example.fusion0.models.FacilitiesInfo;
@@ -240,5 +244,36 @@ public class EventFirebase {
      */
     public static void deleteEvent(String eventID) {
         eventsRef.document(eventID).delete().addOnSuccessListener(documentReference -> System.out.println("Event deleted successfully.")).addOnFailureListener(error -> System.err.println("Error deleting event: " + error.getMessage()));
+    }
+
+    /**
+     * @author Malshaan Kodithuwakku
+     * Callback method of getAllFacilities()
+     */
+
+    public interface FacilityListCallBack {
+        void onSuccess(List<FacilitiesInfo> facilities);
+        void onFailure(String error);
+    }
+
+    /**
+     * @author Malshaan Kodithuwakku
+     * Retrieves all facilities from Firebase Firestore.
+     * @param callback The callback to handle the result of the retrieval
+     */
+    public static void getAllFacilities(FacilityCallback callback) {
+        facilitiesRef.get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        if (document.exists()) {
+                            FacilitiesInfo facility = document.toObject(FacilitiesInfo.class);
+                            callback.onSuccess(facility);
+                        }
+                    }
+                })
+                .addOnFailureListener(error -> {
+                    System.err.println("Error fetching facilities: " + error.getMessage());
+                    callback.onFailure(error.getMessage());
+                });
     }
 }
