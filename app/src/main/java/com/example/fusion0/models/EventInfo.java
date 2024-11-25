@@ -123,7 +123,45 @@ public class EventInfo {
         this.lotteryCapacity = lotteryCapacity;
         this.registrationDate = registrationDate;
         this.lotteryConducted = false;
+    }
 
+    /**
+     * This constructor is used for testing only.
+     *
+     * @param organizer      The organizer of the event.
+     * @param eventName      The name of the event.
+     * @param address        The address where the event is held.
+     * @param facilityName   The name of the facility hosting the event.
+     * @param capacity       The maximum number of participants allowed for the event.
+     * @param description    A description of the event.
+     * @param startDate      The starting date of the event.
+     * @param endDate        The ending date of the event.
+     * @param startTime      The starting time of the event.
+     * @param endTime        The ending time of the event.
+     * @param eventPoster    The URL or path of the event poster image.
+     */
+    public EventInfo(String organizer, String eventName, String address, String facilityName, String capacity, String lotteryCapacity, String description, Date startDate, Date endDate, Date registrationDate, String startTime, String endTime, String eventPoster) {
+        this.eventID = UUID.randomUUID().toString();
+        this.organizer = organizer;
+        this.eventName = eventName;
+        this.address = address;
+        this.facilityName = facilityName;
+        this.capacity = capacity;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.waitinglist = new ArrayList<>();
+        this.acceptedCount = "0";
+        this.eventPoster = eventPoster;
+        this.geolocation = geolocation;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.radius = radius;
+        this.lotteryCapacity = lotteryCapacity;
+        this.registrationDate = registrationDate;
+        this.lotteryConducted = false;
     }
 
     /**
