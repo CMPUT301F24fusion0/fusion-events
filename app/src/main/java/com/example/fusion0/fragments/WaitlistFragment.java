@@ -21,13 +21,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.example.fusion0.activities.ViewEventActivity;
+import com.example.fusion0.adapters.ProfileListAdapter;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.UserInfo;
 import com.example.fusion0.R;
-import com.example.fusion0.adapters.ProfileListAdapter;
 import com.google.zxing.WriterException;
 
 import java.util.ArrayList;
@@ -38,7 +38,6 @@ public class WaitlistFragment extends Fragment {
     ImageButton backButton;
     TextView waitlistCapacityRatio, emptyTextView;
     ListView waitlistListView;
-    Button lotteryButton;
     EventFirebase firebase;
     EventInfo event;
     List<UserInfo> users = new ArrayList<>();
@@ -67,7 +66,6 @@ public class WaitlistFragment extends Fragment {
         backButton = view.findViewById(R.id.backButton);
         waitlistCapacityRatio = view.findViewById(R.id.ratio);
         waitlistListView = view.findViewById(R.id.waitinglistListView);
-        lotteryButton = view.findViewById(R.id.generate_lottery_button);
         emptyTextView = view.findViewById(R.id.emptyText);
         firebase = new EventFirebase();
 
@@ -75,6 +73,7 @@ public class WaitlistFragment extends Fragment {
 
         if (bundle != null) {
             ArrayList<Map<String, String>> waitingList = (ArrayList<Map<String, String>>) bundle.getSerializable("waitingListData");
+            Log.e(TAG, "user " + waitingList);
 
             if (waitingList != null && !waitingList.isEmpty()) {
                 pendingRequests = waitingList.size();
@@ -82,7 +81,6 @@ public class WaitlistFragment extends Fragment {
                 for (Map<String, String> entry : waitingList) {
                     String deviceId = entry.get("did");
                     if (deviceId != null) {
-                        Log.e(TAG, "did " + deviceId);
 
                         UserFirestore.findUser(deviceId, new UserFirestore.Callback() {
                             @Override
@@ -133,11 +131,9 @@ public class WaitlistFragment extends Fragment {
         if (users.isEmpty()) {
             emptyTextView.setVisibility(View.VISIBLE);
             waitlistListView.setVisibility(View.GONE);
-            lotteryButton.setVisibility(View.GONE);
         } else {
             emptyTextView.setVisibility(View.GONE);
             waitlistListView.setVisibility(View.VISIBLE);
-            lotteryButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -161,7 +157,7 @@ public class WaitlistFragment extends Fragment {
                 startActivity(intent);
             }
         });
-
+/*
         lotteryButton.setOnClickListener(v -> {
             EventFirebase.findEvent(bundle.getString("eventID"), new EventFirebase.EventCallback() {
                 @Override
@@ -225,5 +221,6 @@ public class WaitlistFragment extends Fragment {
             });
 
         });
+        */
     }
 }

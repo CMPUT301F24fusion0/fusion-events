@@ -39,11 +39,12 @@ public class EventInfo {
     private String eventPoster;
     private String qrCode;
     EventFirebase firebase;
-    private Integer acceptedCount;
+    private String acceptedCount;
     private Boolean geolocation;
     private Double latitude;
     private Double longitude;
     private Integer radius;
+    private Boolean lotteryConducted = false;
 
     /**
      * Default constructor that initializes an empty event with default values.
@@ -66,7 +67,7 @@ public class EventInfo {
         this.qrCode = (new QRCode(eventID)).getQrCode();
         this.waitinglist = new ArrayList<Map<String, String>>();
         this.firebase = new EventFirebase();
-        this.acceptedCount = 0;
+        this.acceptedCount = "0";
         this.eventPoster = null;
         this.geolocation = false;
         this.latitude = 0.0;
@@ -74,6 +75,7 @@ public class EventInfo {
         this.radius = 0;
         this.lotteryCapacity ="0";
         this.registrationDate = new Date();
+        this.lotteryConducted = false;
     }
 
     /**
@@ -112,7 +114,7 @@ public class EventInfo {
         this.qrCode =(new QRCode(eventID)).getQrCode();
         this.waitinglist = new ArrayList<>();
         this.firebase = new EventFirebase();
-        this.acceptedCount = 0;
+        this.acceptedCount = "0";
         this.eventPoster = eventPoster;
         this.geolocation = geolocation;
         this.latitude = latitude;
@@ -120,6 +122,8 @@ public class EventInfo {
         this.radius = radius;
         this.lotteryCapacity = lotteryCapacity;
         this.registrationDate = registrationDate;
+        this.lotteryConducted = false;
+
     }
 
     /**
@@ -219,15 +223,15 @@ public class EventInfo {
         return lotteryCapacity;
     }
 
-    public void setLotteryCapacity(String capacity) {
+    public void setLotteryCapacity(String lotteryCapacity) {
         this.lotteryCapacity = lotteryCapacity;
     }
 
-    public Integer getAcceptedCount() {
+    public String getAcceptedCount() {
         return acceptedCount;
     }
 
-    public void setAcceptedCount(Integer acceptedCount) {
+    public void setAcceptedCount(String acceptedCount) {
         this.acceptedCount = acceptedCount;
     }
 
@@ -313,6 +317,14 @@ public class EventInfo {
 
     public void setGeolocation(Boolean geolocation) {
         this.geolocation = geolocation;
+    }
+
+    public Boolean getLotteryConducted() {
+        return lotteryConducted;
+    }
+
+    public void setLotteryConducted(Boolean lotteryConducted) {
+        this.lotteryConducted = lotteryConducted;
     }
 
     public Double getLongitude() {

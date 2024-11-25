@@ -72,7 +72,7 @@
                 android:textSize="20sp"
                 android:textColor="@color/textColor"
                 android:fontFamily="@font/raleway_medium"
-                android:text="No entrants have cancelled!"
+                android:text="No entrants have cancelled"
                 android:layout_gravity="center"
                 android:visibility="gone">
             </TextView>

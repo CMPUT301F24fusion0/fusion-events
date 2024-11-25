@@ -10,4 +10,7 @@
     <color name="textFieldColor">#F2F8FD</color>
     <color name="textColor">#243B55</color>
 
+
+    <color name="light_red">#fce2e2</color>
+
 </resources>
