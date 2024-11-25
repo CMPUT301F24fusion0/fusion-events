@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -17,11 +16,13 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.fusion0.activities.ViewEventActivity;
+import com.example.fusion0.adapters.ProfileListAdapter;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
+import com.example.fusion0.helpers.Waitlist;
+import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.UserInfo;
 import com.example.fusion0.R;
-import com.example.fusion0.adapters.ProfileListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class CancelledEntrants extends Fragment {
     TextView emptyTextView;
     EventFirebase firebase;
     List<UserInfo> users = new ArrayList<>();
+    Waitlist waitlist;
 
     private int pendingRequests = 0;
 
@@ -62,12 +64,14 @@ public class CancelledEntrants extends Fragment {
         Bundle bundle = getArguments();
 
         if (bundle != null) {
-            ArrayList<Map<String, String>> waitingList = (ArrayList<Map<String, String>>) bundle.getSerializable("waitingListData");
+            waitlist = (Waitlist) bundle.getSerializable("waitlist");
 
-            if (waitingList != null && !waitingList.isEmpty()) {
-                pendingRequests = waitingList.size();
+            ArrayList<Map<String, String>> cancelledList = (ArrayList<Map<String, String>>) bundle.getSerializable("cancelledEntrantsData");
 
-                for (Map<String, String> entry : waitingList) {
+            if (cancelledList != null && !cancelledList.isEmpty()) {
+                pendingRequests = cancelledList.size();
+
+                for (Map<String, String> entry : cancelledList) {
                     String deviceId = entry.get("did");
                     if (deviceId != null) {
                         Log.e(TAG, "did " + deviceId);
