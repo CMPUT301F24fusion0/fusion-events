@@ -123,14 +123,15 @@
                 android:textSize="20sp"
                 android:layout_marginBottom="2dp"
                 android:visibility="gone">
+
             </TextView>
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/autocomplete_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-                android:visibility="gone"
-                />
+                android:visibility="gone" />
+
 
             <TextView
                 android:id="@+id/geolocation_text"

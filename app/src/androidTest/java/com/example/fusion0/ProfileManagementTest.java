@@ -1,5 +1,6 @@
 package com.example.fusion0;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -31,7 +32,6 @@ import java.util.ArrayList;
 public class ProfileManagementTest {
 
     private ProfileManagement profileManagement;
-    private FirebaseAuth auth;
     private FirebaseFirestore db;
     private String testDeviceId;
 
@@ -42,7 +42,6 @@ public class ProfileManagementTest {
     @Before
     public void setUp() {
         profileManagement = new ProfileManagement();
-        auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
         // Use a test device ID (update as needed)
@@ -51,7 +50,7 @@ public class ProfileManagementTest {
         ArrayList<String> notifications = new ArrayList<>();
 
         // Set up a test user in Firestore for the success scenario
-        UserInfo testUser = new UserInfo(notifications, "Alice", "Smith", "alicesmith@gmail.com", "12345678", "test_deviceId", new ArrayList<EventInfo>());
+        UserInfo testUser = new UserInfo(notifications, "Alice", "Smith", "alicesmith@gmail.com", "12345678", "test_deviceId", new ArrayList<String>());
         db.collection("users").document(testDeviceId).set(testUser)
                 .addOnSuccessListener(aVoid -> Log.d("ProfileManagementTest", "Test user set up successfully"))
                 .addOnFailureListener(e -> Log.e("ProfileManagementTest", "Failed to set up test user: " + e.getMessage()));
@@ -67,9 +66,9 @@ public class ProfileManagementTest {
             @Override
             public void onUserDataReceived(UserInfo user) {
                 assertNotNull("User data retrieved successfully", user);
-                assertTrue("Correct user name", "Alice Smith".equals(user.firstName + " " + user.lastName));
-                assertTrue("Correct user email", "alice@gmail.com".equals(user.getEmail()));
-                assertTrue("Correct user phone number", "123-456-789".equals(user.getPhoneNumber()));
+                assertEquals("Correct user name", "Alice Smith", user.getFirstName() + " " + user.getLastName());
+                assertEquals("Correct user email", "alice@gmail.com", user.getEmail());
+                assertEquals("Correct user phone number", "123-456-789", user.getPhoneNumber());
             }
 
             @Override

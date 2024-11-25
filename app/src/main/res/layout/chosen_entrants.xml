@@ -66,7 +66,7 @@
         app:layout_constraintTop_toBottomOf="@id/chosen_entrants_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/fill_lottery_button">
+        app:layout_constraintBottom_toTopOf="@id/button_container">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -80,7 +80,8 @@
                 android:layout_height="wrap_content"
                 android:divider="@android:color/darker_gray"
                 android:dividerHeight="0.5dp"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp"
+                android:choiceMode="multipleChoice"/>
 
             <TextView
                 android:id="@+id/emptyText"
@@ -96,16 +97,77 @@
         </LinearLayout>
     </ScrollView>
 
-    <Button
-        android:id="@+id/fill_lottery_button"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/button_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Fill Chosen Entrants"
-        android:gravity="center_vertical"
-        android:backgroundTint="@color/figmaBlue"
-        app:cornerRadius="5dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/fill_lottery_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Fill Chosen Entrants"
+            android:gravity="center"
+            android:backgroundTint="@color/figmaBlue"
+            app:cornerRadius="5dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1" />
+        <TextView
+            android:id="@+id/full_capacity_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Full Capacity"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:background="@color/figmaBlue"
+            app:cornerRadius="5dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:visibility="gone"
+            >
+        </TextView>
+
+        <Button
+            android:id="@+id/remove_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Select Entrants"
+            android:gravity="center"
+            android:textColor="@color/red"
+            android:backgroundTint="@color/white"
+            app:cornerRadius="5dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/remove_second_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Remove"
+            android:gravity="center"
+            android:backgroundTint="@color/figmaBlue"
+            app:cornerRadius="5dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:gravity="center"
+            android:textColor="@color/red"
+            android:backgroundTint="@color/white"
+            app:cornerRadius="5dp"
+            android:layout_weight="1"
+            android:visibility="gone"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

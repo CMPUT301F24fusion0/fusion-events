@@ -460,7 +460,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=" Waitlist Capacity:"
+                    android:text="Waitlist Capacity:"
                     android:textColor="@color/textColor"
                     android:textSize="17sp"
                     android:fontFamily="@font/raleway_semibold"/>
@@ -471,7 +471,7 @@
                     android:id="@+id/capacityTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Description xyz"
+                    android:text="20"
                     android:textColor="@color/textColor"
                     android:textSize="17sp"
                     android:fontFamily="@font/raleway_semibold"
@@ -484,6 +484,53 @@
                     android:layout_height="wrap_content"
                     android:autofillHints=""
                     android:hint="Enter Waitlist Capacity"
+                    android:inputType="number"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:visibility="gone"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lottery Capacity:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"/>
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
+                <TextView
+                    android:id="@+id/lotteryCapacityTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="20"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"
+                    android:layout_weight="1"/>
+
+                <EditText
+                    android:id="@+id/editLotteryCapacity"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:autofillHints=""
+                    android:hint="Enter Lottery Capacity"
                     android:inputType="number"
                     android:textColor="@color/textColor"
                     android:textSize="17sp"

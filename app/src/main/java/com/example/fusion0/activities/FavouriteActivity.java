@@ -23,6 +23,7 @@ import com.example.fusion0.models.UserInfo;
 import com.example.fusion0.R;
 import com.example.fusion0.fragments.QRFragment;
 import com.example.fusion0.fragments.ProfileFragment;
+import com.google.firebase.firestore.auth.User;
 import com.google.zxing.WriterException;
 
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ public class FavouriteActivity extends AppCompatActivity {
 
 
         joinedEventsButton.setOnClickListener(view -> {
-            UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+            new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo userInfo) {
                 if (userInfo == null) {

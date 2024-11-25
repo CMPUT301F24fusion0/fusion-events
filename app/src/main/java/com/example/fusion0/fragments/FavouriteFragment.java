@@ -81,9 +81,10 @@ public class FavouriteFragment extends Fragment {
         joinedEventsList = view.findViewById(R.id.joined_events_list);
         createdEventsList = view.findViewById(R.id.created_events_list);
         facilitiesList = view.findViewById(R.id.facilities_list);
+        createdEventsList = view.findViewById(R.id.created_events_list);
 
         joinedEventsButton.setOnClickListener(v -> {
-            UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+            new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
                 @Override
                 public void onSuccess(UserInfo userInfo) {
                     if (userInfo == null) {
@@ -239,7 +240,7 @@ public class FavouriteFragment extends Fragment {
         });
 
         scannerButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_profileFragment);
+            Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_qrFragment);
         });
 
         addButton.setOnClickListener(v -> {
