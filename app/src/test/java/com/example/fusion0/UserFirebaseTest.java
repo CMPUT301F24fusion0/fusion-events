@@ -20,8 +20,12 @@ public class UserFirebaseTest {
     private UserFirestore userFirestore;
     UserInfo userInfo;
 
+    /**
+     * Setup the required mocks
+     * @author Sehej Brar
+     */
     @Before
-    public void setup() {
+    public void initialize() {
         FirebaseFirestore mockedFirestore = mock(FirebaseFirestore.class);
         mockedCollectionRef = mock(CollectionReference.class);
         mockedDocRef = mock(DocumentReference.class);
@@ -37,9 +41,12 @@ public class UserFirebaseTest {
         userFirestore = new UserFirestore(mockedFirestore);
     }
 
+    /**
+     * Add the user using the userFirestore.addUser() method
+     * @author Sehej Brar
+     */
     @Test
     public void testAddUser() {
-
         Task<Void> mockTask = mock(Task.class); // returned by .set
 
         when(mockedDocRef.set(any(HashMap.class))).thenReturn(mockTask);
