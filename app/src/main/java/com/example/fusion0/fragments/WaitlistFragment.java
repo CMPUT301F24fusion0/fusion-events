@@ -38,7 +38,6 @@ public class WaitlistFragment extends Fragment {
     ImageButton backButton;
     TextView waitlistCapacityRatio, emptyTextView;
     ListView waitlistListView;
-    Button lotteryButton;
     EventFirebase firebase;
     EventInfo event;
     List<UserInfo> users = new ArrayList<>();
@@ -74,6 +73,7 @@ public class WaitlistFragment extends Fragment {
 
         if (bundle != null) {
             ArrayList<Map<String, String>> waitingList = (ArrayList<Map<String, String>>) bundle.getSerializable("waitingListData");
+            Log.e(TAG, "user " + waitingList);
 
             if (waitingList != null && !waitingList.isEmpty()) {
                 pendingRequests = waitingList.size();
@@ -81,7 +81,6 @@ public class WaitlistFragment extends Fragment {
                 for (Map<String, String> entry : waitingList) {
                     String deviceId = entry.get("did");
                     if (deviceId != null) {
-                        Log.e(TAG, "did " + deviceId);
 
                         UserFirestore.findUser(deviceId, new UserFirestore.Callback() {
                             @Override
@@ -132,11 +131,9 @@ public class WaitlistFragment extends Fragment {
         if (users.isEmpty()) {
             emptyTextView.setVisibility(View.VISIBLE);
             waitlistListView.setVisibility(View.GONE);
-            lotteryButton.setVisibility(View.GONE);
         } else {
             emptyTextView.setVisibility(View.GONE);
             waitlistListView.setVisibility(View.VISIBLE);
-            lotteryButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -160,7 +157,7 @@ public class WaitlistFragment extends Fragment {
                 startActivity(intent);
             }
         });
-
+/*
         lotteryButton.setOnClickListener(v -> {
             EventFirebase.findEvent(bundle.getString("eventID"), new EventFirebase.EventCallback() {
                 @Override
@@ -224,5 +221,6 @@ public class WaitlistFragment extends Fragment {
             });
 
         });
+        */
     }
 }

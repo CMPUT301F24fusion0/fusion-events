@@ -141,6 +141,7 @@ public class EventFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for the fragment
         return inflater.inflate(R.layout.fragment_event, container, false);
+
     }
 
     /**
@@ -173,6 +174,7 @@ public class EventFragment extends Fragment {
         uploadedImageView = view.findViewById(R.id.uploaded_image_view);
         spinnerFacilities = view.findViewById(R.id.spinner_facilities);
         addFacilityText = view.findViewById(R.id.add_facility_text);
+        autocompletePlaceFragment = view.findViewById(R.id.autocomplete_fragment);
         description = view.findViewById(R.id.Description);
         dateRequirementsTextView = view.findViewById(R.id.date_requirements_text);
         registrationDateRequirementsTextView =view.findViewById(R.id.registrationDateRequirementsTextView);
@@ -193,7 +195,6 @@ public class EventFragment extends Fragment {
 
         deviceID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
 
-//        validateUser(context);
         validateOrganizer(context);
 
         uploadPoster(view, context);
@@ -212,23 +213,6 @@ public class EventFragment extends Fragment {
             Navigation.findNavController(view).navigate(R.id.action_eventFragment_to_mainFragment);
         });
     }
-
-
-//    private void validateUser(Context context) {
-//        LoginManagement login = new LoginManagement(context);
-//        login.isUserLoggedIn(isLoggedIn -> {
-//            if (!isLoggedIn) {
-//                String fragment = "eventFragment";
-//                Bundle bundle = new Bundle();
-//                bundle.putString("activity", activity);
-//                Registration registration = new Registration();
-//                getSupportFragmentManager().beginTransaction()
-//                        .replace(R.id.activity_add_event, registration)
-//                        .addToBackStack(null)
-//                        .commit();
-//            }
-//        });
-//    }
 
     /**
      * @author Simon Haile
@@ -274,22 +258,15 @@ public class EventFragment extends Fragment {
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri imageUri = result.getData().getData();
+                        uploadedImageView.setVisibility(View.VISIBLE);
+                        uploadedImageView.setImageURI(imageUri);
+
                         Uri destinationUri = Uri.fromFile(new File(context.getCacheDir(), "cropped_image.jpg"));
-
-                        File destinationFile = new File(Objects.requireNonNull(destinationUri.getPath()));
-
-                        Log.d(TAG, "Image URI: " + imageUri.toString());
-                        Log.d(TAG , "Destination URI: " + destinationUri.toString());
-
-                        UCrop.of(imageUri, destinationUri)
-                                .withAspectRatio(9, 16)
-                                .withMaxResultSize(150, 150)
-                                .start(context, this);
 
                         UCrop.of(imageUri, destinationUri)
                                 .withAspectRatio(9, 16)
                                 .withMaxResultSize(800, 1600)
-                                .start(requireActivity());
+                                .start(context, this);
                     }
                 }
 
@@ -319,7 +296,7 @@ public class EventFragment extends Fragment {
         if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             if (resultUri != null) {
                 uploadedImageView.setVisibility(View.VISIBLE);
-//                uploadedImageView.setImageURI(resultUri);
+                uploadedImageView.setImageURI(resultUri);
 
                 StorageReference imageRef = storageRef.child("event_posters/" + UUID.randomUUID().toString() + ".jpg");
 
@@ -477,10 +454,11 @@ public class EventFragment extends Fragment {
     private void addFacility(ArrayList<String> facilityNames, ArrayAdapter<String> adapter, Context context) {
         Activity activity = requireActivity();
 
+        autocompletePlaceFragment.setVisibility(View.VISIBLE);
         addFacilityText.setVisibility(View.VISIBLE);
 
         if (!Places.isInitialized()) {
-            Places.initializeWithNewPlacesApiEnabled(activity.getApplicationContext(), BuildConfig.API_KEY);
+            Places.initializeWithNewPlacesApiEnabled(requireContext(), BuildConfig.API_KEY);
         }
 
         // Initialize PlacesClient after the API is enabled

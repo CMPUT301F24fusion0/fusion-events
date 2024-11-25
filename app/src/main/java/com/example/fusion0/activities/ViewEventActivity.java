@@ -157,6 +157,7 @@ public class ViewEventActivity extends AppCompatActivity {
         eventNameEditText = findViewById(R.id.editEventName);
         eventDescriptionEditText = findViewById(R.id.description_edit);
         eventCapacityEditText = findViewById(R.id.editCapacity);
+        eventLotteryCapacityEditText = findViewById(R.id.editLotteryCapacity);
         dateRequirementsTextView = findViewById(R.id.date_requirements_text);
         registrationDateRequirementsTextView=findViewById(R.id.registration_date_requirements_text);
         registrationDateTextView = findViewById(R.id.registration_date_text);
@@ -235,7 +236,7 @@ public class ViewEventActivity extends AppCompatActivity {
 
 
                         endDate = event.getEndDate();
-                        startDate =event.getStartDate();
+                        startDate = event.getStartDate();
                         registrationDate = event.getRegistrationDate();
                         facility = event.getFacilityName();
 
@@ -262,8 +263,6 @@ public class ViewEventActivity extends AppCompatActivity {
                                                     .override(newWidth, newHeight)
                                                     .into(eventPosterImageView);
 
-
-                                            // Set the visibility of the ImageView
                                             eventPosterImageView.setVisibility(View.VISIBLE);
                                         }
                                     });
@@ -303,96 +302,96 @@ public class ViewEventActivity extends AppCompatActivity {
                             ArrayList<Map<String, String>> currentEntrants = event.getWaitinglist();
                             int capacity = Integer.parseInt(event.getCapacity());
 
-                            if (currentEntrants.size() < capacity) {
-                                joinButton.setVisibility(View.VISIBLE);
-                                waitlist.getAll(eventID, all -> {
-                                    if (!all.contains(deviceID)) {
-                                        joinButton.setOnClickListener(view -> {
-                                            UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
-                                                @Override
-                                                public void onSuccess(UserInfo userInfo) {
-                                                    if (userInfo != null) {
-                                                        user = userInfo;
-                                                        Log.d("Checkpoint", "the user is not null");
-                                                        if (event.getGeolocation()) {
-                                                            GeoLocation geoLocation = new GeoLocation(ViewEventActivity.this, ViewEventActivity.this, event.getLatitude(), event.getLongitude(), event.getRadius());
-                                                            Log.d("ViewEventActivity", "Radius: " + event.getRadius());
-                                                            if (!geoLocation.isLocationPermissionGranted()) {
-                                                                geoLocation.requestLocationPermission();
-                                                            } else {
-                                                                proceedWithJoin(geoLocation);
-                                                            }
+                            waitlist.getAll(eventID, all -> {
+                                if (!all.contains(deviceID) & (currentEntrants.size() < capacity)) {
+                                    joinButton.setVisibility(View.VISIBLE);
+                                    joinButton.setOnClickListener(view -> {
+                                        UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+                                            @Override
+                                            public void onSuccess(UserInfo userInfo) {
+                                                if (userInfo != null) {
+                                                    user = userInfo;
+                                                    Log.d("Checkpoint", "the user is not null");
+                                                    if (event.getGeolocation()) {
+                                                        GeoLocation geoLocation = new GeoLocation(ViewEventActivity.this, ViewEventActivity.this, event.getLatitude(), event.getLongitude(), event.getRadius());
+                                                        Log.d("ViewEventActivity", "Radius: " + event.getRadius());
+                                                        if (!geoLocation.isLocationPermissionGranted()) {
+                                                            geoLocation.requestLocationPermission();
                                                         } else {
-                                                            addUserToWaitingList();
+                                                            proceedWithJoin(geoLocation);
                                                         }
                                                     } else {
-                                                        String activity = "ViewEventActivity";
-                                                        Log.d("Checkpoint", "the user is null, we're going to registration");
-                                                        Registration registration = new Registration();
-                                                        Bundle bundle = new Bundle();
-                                                        bundle.putString("eventID", eventID);
-                                                        bundle.putString("activity", activity);
-                                                        registration.setArguments(bundle);
-                                                        getSupportFragmentManager()
-                                                                .beginTransaction()
-                                                                .replace(R.id.event_view, registration)
-                                                                .addToBackStack(null)
-                                                                .commit();
+                                                        addUserToWaitingList();
                                                     }
+                                                } else {
+                                                    String activity = "ViewEventActivity";
+                                                    Log.d("Checkpoint", "the user is null, we're going to registration");
+                                                    Registration registration = new Registration();
+                                                    Bundle bundle = new Bundle();
+                                                    bundle.putString("eventID", eventID);
+                                                    bundle.putString("activity", activity);
+                                                    registration.setArguments(bundle);
+                                                    getSupportFragmentManager()
+                                                            .beginTransaction()
+                                                            .replace(R.id.event_view, registration)
+                                                            .addToBackStack(null)
+                                                            .commit();
                                                 }
+                                            }
 
-                                                @Override
-                                                public void onFailure(String error) {
-                                                    System.out.println("Failure" + error);
-                                                }
-                                            });
+                                            @Override
+                                            public void onFailure(String error) {
+                                                System.out.println("Failure" + error);
+                                            }
                                         });
-                                    } else {
-                                        joinButton.setText("Unjoin Waiting List");
+                                    });
+                                } else if (!all.contains(deviceID) & (currentEntrants.size() >= capacity)) {
+                                    waitinglistFullTextView.setVisibility(View.VISIBLE);
 
-                                        joinButton.setOnClickListener(view -> {
+                                } else if (all.contains(deviceID)) {
+                                    joinButton.setVisibility(View.VISIBLE);
 
-                                            Toast.makeText(ViewEventActivity.this, "You have left the waiting list", Toast.LENGTH_SHORT).show();
+                                    joinButton.setText("Unjoin Waiting List");
 
-                                            // Remove it on the events collection
-                                            ArrayList<Map<String, String>> newWaitingList = event.removeUserFromWaitingList(deviceID, event.getWaitinglist());
-                                            event.setWaitinglist(newWaitingList);
+                                    joinButton.setOnClickListener(view -> {
 
-                                            // Remove it on the user's collection
-                                            waitlist.removeFromUserWL(deviceID, eventID, user);
+                                        Toast.makeText(ViewEventActivity.this, "You have left the waiting list", Toast.LENGTH_SHORT).show();
 
-                                            EventFirebase.editEvent(event);
+                                        // Remove it on the events collection
+                                        ArrayList<Map<String, String>> newWaitingList = event.removeUserFromWaitingList(deviceID, event.getWaitinglist());
+                                        event.setWaitinglist(newWaitingList);
 
-                                            UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
-                                                @Override
-                                                public void onSuccess(UserInfo userInfo) {
-                                                    user = userInfo;
-                                                }
+                                        // Remove it on the user's collection
+                                        waitlist.removeFromUserWL(deviceID, eventID, user);
 
-                                                @Override
-                                                public void onFailure(String error) {
-                                                    Log.e("JoinedEventActivity", "Error fetching user: " + error);
-                                                }
-                                            });
+                                        EventFirebase.editEvent(event);
 
-                                            ArrayList<String> newEventsList = user.removeEventFromEventList(event.getEventID(), user.getEvents());
-                                            user.setEvents(newEventsList);
-                                            UserFirestore.editUserEvents(user);
+                                        UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+                                            @Override
+                                            public void onSuccess(UserInfo userInfo) {
+                                                user = userInfo;
+                                            }
 
-                                            EventFirebase.editEvent(event);
-
-                                            Intent intent = new Intent(ViewEventActivity.this, MainActivity.class);
-                                            startActivity(intent);
+                                            @Override
+                                            public void onFailure(String error) {
+                                                Log.e("JoinedEventActivity", "Error fetching user: " + error);
+                                            }
                                         });
-                                    }
-                                });
-                            } else {
-                                waitinglistFullTextView.setVisibility(View.VISIBLE);
-                            }
+
+                                        ArrayList<String> newEventsList = user.removeEventFromEventList(event.getEventID(), user.getEvents());
+                                        user.setEvents(newEventsList);
+                                        UserFirestore.editUserEvents(user);
+
+                                        EventFirebase.editEvent(event);
+
+                                        Intent intent = new Intent(ViewEventActivity.this, MainActivity.class);
+                                        startActivity(intent);
+                                    });
+                                }
+                            });
                         }
                     }
                 }
-
                 @Override
                 public void onFailure(String error) {
                     Log.e("ViewEventActivity", "Error fetching event: " + error);
@@ -405,44 +404,63 @@ public class ViewEventActivity extends AppCompatActivity {
         }
 
         waitinglistButton.setOnClickListener(view -> {
-            if (event.getWaitinglist().isEmpty()) {
-                Toast.makeText(ViewEventActivity.this, "Waiting list is empty.", Toast.LENGTH_SHORT).show();
-            }else{
-                WaitlistFragment waitlistFragment = new WaitlistFragment();
+            waitlist.getWait(eventID, wait -> {
+                if (wait.isEmpty()) {
+                    Toast.makeText(ViewEventActivity.this, "Waiting list is empty.", Toast.LENGTH_SHORT).show();
+                }else{
+                    ArrayList<Map<String, String>> fullWaitingListEntrants = new ArrayList<>();
 
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("waitingListData", (ArrayList<Map<String, String>>) event.getWaitinglist());
-                bundle.putString("eventCapacity", event.getCapacity());
-                bundle.putString("eventID", event.getEventID());
-                bundle.putSerializable("waitlist", waitlist);
-                waitlistFragment.setArguments(bundle);
+                    if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
+                        for (Map<String, String> user : event.getWaitinglist()) {
+                            if (wait.contains(user.get("did")) && "waiting".equals(user.get("status"))) {
+                                fullWaitingListEntrants.add(user);
+                            }
+                        }
+                    }
+                    WaitlistFragment waitlistFragment = new WaitlistFragment();
 
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.event_view, waitlistFragment)
-                        .addToBackStack(null)
-                        .commit();
-            }
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("waitingListData",fullWaitingListEntrants);
+                    bundle.putString("eventCapacity", event.getCapacity());
+                    bundle.putString("eventID", event.getEventID());
+                    bundle.putSerializable("waitlist", waitlist);
+                    waitlistFragment.setArguments(bundle);
+
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.event_view, waitlistFragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
+
+            });
         });
 
         chosenEntrantsButton.setOnClickListener(view -> {
             waitlist.getChosen(eventID, chosen -> {
-                if (chosen.isEmpty()) {
-                    Toast.makeText(ViewEventActivity.this, "Chosen entrants list is empty.", Toast.LENGTH_SHORT).show();
-                }else{
-                    ChosenEntrants chosenEntrants = new ChosenEntrants();
+                ArrayList<Map<String, String>> fullChosenEntrants = new ArrayList<>();
 
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("chosenEntrantsData", chosen);
-                    bundle.putString("eventID", event.getEventID());
-                    bundle.putSerializable("waitlist", waitlist);
-                    bundle.putString("lotteryCapacity", event.getLotteryCapacity());
-                    chosenEntrants.setArguments(bundle);
 
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.event_view, chosenEntrants)
-                            .addToBackStack(null)
-                            .commit();
+                if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
+                    for (Map<String, String> user :  event.getWaitinglist()) {
+                        if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
+                            fullChosenEntrants.add(user);
+                        }
+                    }
                 }
+                ChosenEntrants chosenEntrants = new ChosenEntrants();
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("chosenEntrantsData", fullChosenEntrants);
+                bundle.putString("eventID", event.getEventID());
+                bundle.putSerializable("waitlist", waitlist);
+                bundle.putString("lotteryCapacity", event.getLotteryCapacity());
+                chosenEntrants.setArguments(bundle);
+
+                // Launch the ChosenEntrants fragment with the filtered data
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.event_view, chosenEntrants)
+                        .addToBackStack(null)
+                        .commit();
             });
         });
 
@@ -451,12 +469,23 @@ public class ViewEventActivity extends AppCompatActivity {
                 if (cancel.isEmpty()) {
                     Toast.makeText(ViewEventActivity.this, "Cancelled entrants list is empty.", Toast.LENGTH_SHORT).show();
                 }else{
+                    ArrayList<Map<String, String>> fullCancelledEntrants = new ArrayList<>();
+
+
+                    if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
+                        for (Map<String, String> user :  event.getWaitinglist()) {
+                            if (cancel.contains(user.get("did")) && "cancel".equals(user.get("status"))) {
+                                fullCancelledEntrants.add(user);
+                            }
+                        }
+                    }
+
                     CancelledEntrants cancelledEntrants = new CancelledEntrants();
 
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("cancelledEntrantsData", cancel);
+                    bundle.putSerializable("cancelledEntrantsData", fullCancelledEntrants);
                     bundle.putString("eventID", event.getEventID());
-                    bundle.putSerializable("waitlist", (Serializable) waitlist);
+                    bundle.putSerializable("waitlist",  waitlist);
                     cancelledEntrants.setArguments(bundle);
 
                     getSupportFragmentManager().beginTransaction()
@@ -554,6 +583,7 @@ public class ViewEventActivity extends AppCompatActivity {
             event.setEventName(newEventName);
             event.setDescription(newDescription);
             event.setCapacity(newEventCapacity);
+            event.setLotteryCapacity(newEventLotteryCapacity);
             event.setFacilityName(facility);
             event.setAddress(address);
             event.setLatitude(newLatitude);
@@ -568,6 +598,7 @@ public class ViewEventActivity extends AppCompatActivity {
             eventNameTextView.setText(newEventName);
             eventDescriptionTextView.setText(newDescription);
             eventCapacityTextView.setText(newEventCapacity);
+            eventLotteryCapacityTextView.setText(newEventLotteryCapacity);
             eventFacilityTextView.setText(facility);
             eventStartDateTextView.setText(dateFormat.format(startDate));
             eventEndDateTextView.setText(dateFormat.format(endDate));

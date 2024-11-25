@@ -19,6 +19,8 @@ import com.example.fusion0.activities.ViewEventActivity;
 import com.example.fusion0.adapters.ProfileListAdapter;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
+import com.example.fusion0.helpers.Waitlist;
+import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.UserInfo;
 import com.example.fusion0.R;
 
@@ -32,6 +34,7 @@ public class CancelledEntrants extends Fragment {
     TextView emptyTextView;
     EventFirebase firebase;
     List<UserInfo> users = new ArrayList<>();
+    Waitlist waitlist;
 
     private int pendingRequests = 0;
 
@@ -61,12 +64,14 @@ public class CancelledEntrants extends Fragment {
         Bundle bundle = getArguments();
 
         if (bundle != null) {
-            ArrayList<Map<String, String>> waitingList = (ArrayList<Map<String, String>>) bundle.getSerializable("waitingListData");
+            waitlist = (Waitlist) bundle.getSerializable("waitlist");
 
-            if (waitingList != null && !waitingList.isEmpty()) {
-                pendingRequests = waitingList.size();
+            ArrayList<Map<String, String>> cancelledList = (ArrayList<Map<String, String>>) bundle.getSerializable("cancelledEntrantsData");
 
-                for (Map<String, String> entry : waitingList) {
+            if (cancelledList != null && !cancelledList.isEmpty()) {
+                pendingRequests = cancelledList.size();
+
+                for (Map<String, String> entry : cancelledList) {
                     String deviceId = entry.get("did");
                     if (deviceId != null) {
                         Log.e(TAG, "did " + deviceId);

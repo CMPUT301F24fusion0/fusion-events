@@ -240,7 +240,7 @@ public class FavouriteFragment extends Fragment {
         });
 
         scannerButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_profileFragment);
+            Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_qrFragment);
         });
 
         addButton.setOnClickListener(v -> {
