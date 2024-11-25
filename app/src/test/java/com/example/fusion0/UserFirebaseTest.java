@@ -39,11 +39,8 @@ public class UserFirebaseTest {
 
     @Test
     public void testAddUser() {
-        // To check for success
-        Runnable onSuccess = mock(Runnable.class);
 
         Task<Void> mockTask = mock(Task.class); // returned by .set
-
 
         when(mockedDocRef.set(any(HashMap.class))).thenReturn(mockTask);
 
@@ -55,13 +52,14 @@ public class UserFirebaseTest {
             return mockTask;
         });
 
-        // now we can our method
-        userFirestore.addUser(userInfo, onSuccess);
+        // now we can call our method
+        Runnable runnable = mock(Runnable.class);
+        userFirestore.addUser(userInfo, runnable);
 
         // verify that it worked by checking that there exists a document with our id
         verify(mockedCollectionRef).document("testDeviceID");
         verify(mockedDocRef).set(any(HashMap.class));
-        verify(onSuccess).run();
+        verify(runnable).run();
     }
 
 }
