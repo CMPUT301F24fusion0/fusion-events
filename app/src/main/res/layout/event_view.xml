@@ -177,7 +177,7 @@
 
                 <TextView
                     android:id="@+id/facilityName"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Facility 1"
                     android:textColor="@color/textColor"
@@ -185,6 +185,14 @@
                     android:fontFamily="@font/raleway_semibold"
                     android:gravity="center_vertical"
                     android:layout_weight="1"/>
+
+                <Button
+                    android:id="@+id/facility_view_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:backgroundTint="@color/figmaBlue"
+                    android:text="View" />
 
                 <Spinner
                     android:id="@+id/spinner_facilities"
@@ -700,6 +708,18 @@
         android:orientation="horizontal"
         android:background="@color/white"
         android:visibility="gone">
+        <TextView
+            android:id="@+id/registration_passed_text_view"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:text="Registrtion Deadline Passed"
+            android:background="@android:color/white"
+            android:backgroundTint="@color/figmaBlue"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:padding="10dp"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/waitinglist_full_text_view"

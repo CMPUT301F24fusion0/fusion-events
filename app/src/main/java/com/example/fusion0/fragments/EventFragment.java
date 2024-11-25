@@ -105,6 +105,7 @@ public class EventFragment extends Fragment {
 
     private String deviceID;
     private String address;
+    private String facilityID;
     private String facilityName;
     private String facilityImage;
     private Date startDate;
@@ -843,6 +844,7 @@ public class EventFragment extends Fragment {
                         deviceID,
                         eventName.getText().toString(),
                         address,
+                        facility.getFacilityID(),
                         facilityName,
                         capacity.getText().toString(),
                         lotteryCapacity.getText().toString(),

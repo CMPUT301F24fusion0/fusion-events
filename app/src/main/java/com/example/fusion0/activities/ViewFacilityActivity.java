@@ -134,7 +134,9 @@ public class ViewFacilityActivity extends AppCompatActivity {
                     ArrayList<String> eventNames = new ArrayList<>();
                     ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(ViewFacilityActivity.this, android.R.layout.simple_list_item_1, eventNames);
                     facilitiesEventsList.setAdapter(eventsAdapter);
-                    if (facility.getEvents() != null) {
+
+
+                    if ((facility.getEvents() != null) && !(facility.getEvents().isEmpty())) {
                         ArrayList<String> filteredEvents = new ArrayList<>();
                         for (String event : facility.getEvents()) {
                             EventFirebase.findEvent(event, new EventFirebase.EventCallback() {

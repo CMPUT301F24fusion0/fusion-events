@@ -28,6 +28,7 @@ public class EventInfo {
     private String description;
     private String address;
     private String facilityName;
+    private String facilityID;
     private String capacity;
     private String lotteryCapacity;
     private Date startDate;
@@ -57,6 +58,7 @@ public class EventInfo {
         this.organizer = "";
         this.eventName = "";
         this.address = "";
+        this.facilityID ="";
         this.facilityName = "";
         this.capacity = "0";
         this.description = "";
@@ -99,11 +101,12 @@ public class EventInfo {
      * @param radius         The radius within which the event is valid (if geolocation is enabled).
      * @throws WriterException If an error occurs while generating the QR code.
      */
-    public EventInfo(String organizer, String eventName, String address, String facilityName, String capacity, String lotteryCapacity, String description, Date startDate, Date endDate, Date registrationDate, String startTime, String endTime, String eventPoster, Boolean geolocation, Double longitude, Double latitude, Integer radius) throws WriterException {
+    public EventInfo(String organizer, String eventName, String address, String facilityID, String facilityName, String capacity, String lotteryCapacity, String description, Date startDate, Date endDate, Date registrationDate, String startTime, String endTime, String eventPoster, Boolean geolocation, Double longitude, Double latitude, Integer radius) throws WriterException {
         this.eventID = UUID.randomUUID().toString();
         this.organizer = organizer;
         this.eventName = eventName;
         this.address = address;
+        this.facilityID = facilityID;
         this.facilityName = facilityName;
         this.capacity = capacity;
         this.description = description;
@@ -138,6 +141,7 @@ public class EventInfo {
         event.put("eventName", this.eventName);
         event.put("address", this.address);
         event.put("facilityName", this.facilityName);
+        event.put("facilityID", this.facilityID);
         event.put("capacity", this.capacity);
         event.put("startDate", this.startDate);
         event.put("endDate", this.endDate);
@@ -168,6 +172,15 @@ public class EventInfo {
 
     public void setOrganizer(String organizer) {
         this.organizer = organizer;
+    }
+
+    public String getFacilityID(){
+        return facilityID;
+    }
+
+
+    public void setFacilityID(String facilityID) {
+        this.facilityID = facilityID;
     }
 
 

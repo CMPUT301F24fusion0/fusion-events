@@ -89,10 +89,10 @@ public class ViewEventActivity extends AppCompatActivity {
     private String deviceID;
     private Boolean isOwner = false;
     private Spinner eventFacility;
-    private TextView eventNameTextView, eventFacilityTextView,addFacilityText, eventDescriptionTextView,registrationDateRequirementsTextView, registrationDateTextView, dateRequirementsTextView,  eventStartDateTextView, eventEndDateTextView,eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, eventLotteryCapacityTextView,  waitinglistFullTextView;
+    private TextView eventNameTextView, eventFacilityTextView,addFacilityText, eventDescriptionTextView,registrationDateRequirementsTextView, registrationDateTextView, dateRequirementsTextView,  eventStartDateTextView, eventEndDateTextView,eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, eventLotteryCapacityTextView,  waitinglistFullTextView, registrationPassedFullTextView;
     private EditText eventNameEditText, eventDescriptionEditText, eventCapacityEditText, eventLotteryCapacityEditText;
     private ImageView eventPosterImageView, qrImageView;
-    private Button startDateButton, endDateButton, registrationDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton, waitinglistButton, cancelledEntrantsButton, chosenEntrantsButton, uploadImageButton, lotteryButton;
+    private Button facilityButton, startDateButton, endDateButton, registrationDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton, waitinglistButton, cancelledEntrantsButton, chosenEntrantsButton, uploadImageButton, lotteryButton;
     private ImageButton backButton;
     private EventInfo event;
     private UserInfo user;
@@ -109,7 +109,7 @@ public class ViewEventActivity extends AppCompatActivity {
 
     private Double newLongitude = null;
     private Double newLatitude = null;
-    private String newEventPoster, facility, address;
+    private String newEventPoster, facility, address, facilityID;
     private Date endDate, startDate, registrationDate;
     private FacilitiesInfo newFacility;
 
@@ -148,6 +148,7 @@ public class ViewEventActivity extends AppCompatActivity {
         eventFacility = findViewById(R.id.spinner_facilities);
         eventFacilityTextView = findViewById(R.id.facilityName);
         addFacilityText = findViewById(R.id.add_facility_text);
+        facilityButton = findViewById(R.id.facility_view_button);
         autocompletePlaceFragment = findViewById(R.id.autocomplete_fragment);
         eventStartDateTextView = findViewById(R.id.start_date_text);
         eventEndDateTextView = findViewById(R.id.end_date_text);
@@ -182,6 +183,7 @@ public class ViewEventActivity extends AppCompatActivity {
         cancelButton = findViewById(R.id.cancel_button);
         saveButton = findViewById(R.id.save_button);
         waitinglistFullTextView = findViewById(R.id.waitinglist_full_text_view);
+        registrationPassedFullTextView = findViewById(R.id.registration_passed_text_view);
         lists = findViewById(R.id.lists);
         toolbar = findViewById(R.id.toolbar);
 
@@ -189,6 +191,13 @@ public class ViewEventActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.event_view, new FavouriteFragment())
                     .commit();
+        });
+
+        facilityButton.setOnClickListener(view -> {
+            Intent intent = new Intent(ViewEventActivity.this, ViewFacilityActivity.class);
+            intent.putExtra("facilityID", event.getFacilityID());
+            intent.putExtra("deviceID", deviceID);
+            startActivity(intent);
         });
 
         Intent intentReceived = getIntent();
@@ -306,7 +315,9 @@ public class ViewEventActivity extends AppCompatActivity {
                             int capacity = Integer.parseInt(event.getCapacity());
 
                             waitlist.getAll(eventID, all -> {
-                                if (!all.contains(deviceID) & (currentEntrants.size() < capacity)) {
+                                Calendar calendar = Calendar.getInstance();
+                                Date currentDate = calendar.getTime();
+                                if (!all.contains(deviceID) & (currentEntrants.size() < capacity) & !(event.getRegistrationDate().after(currentDate))) {
                                     joinButton.setVisibility(View.VISIBLE);
                                     joinButton.setOnClickListener(view -> {
                                         new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
@@ -348,6 +359,9 @@ public class ViewEventActivity extends AppCompatActivity {
                                             }
                                         });
                                     });
+                                } else if(!all.contains(deviceID) & event.getRegistrationDate().after(currentDate)){
+                                    registrationPassedFullTextView.setVisibility(View.VISIBLE);
+
                                 } else if (!all.contains(deviceID) & (currentEntrants.size() >= capacity)) {
                                     waitinglistFullTextView.setVisibility(View.VISIBLE);
 
@@ -508,6 +522,8 @@ public class ViewEventActivity extends AppCompatActivity {
             startDateButton.setVisibility(View.VISIBLE);
             endDateButton.setVisibility(View.VISIBLE);
             registrationDateButton.setVisibility(View.VISIBLE);
+            facilityButton.setVisibility(View.GONE);
+
 
 
 
@@ -549,6 +565,8 @@ public class ViewEventActivity extends AppCompatActivity {
             autocompletePlaceFragment.setVisibility(View.GONE);
             eventFacilityTextView.setVisibility(View.VISIBLE);
             eventFacility.setVisibility(View.GONE);
+            facilityButton.setVisibility(View.VISIBLE);
+
 
             eventNameTextView.setVisibility(View.VISIBLE);
             eventNameEditText.setVisibility(View.GONE);
@@ -587,6 +605,7 @@ public class ViewEventActivity extends AppCompatActivity {
             event.setDescription(newDescription);
             event.setCapacity(newEventCapacity);
             event.setLotteryCapacity(newEventLotteryCapacity);
+            event.setFacilityID(facilityID);
             event.setFacilityName(facility);
             event.setAddress(address);
             event.setLatitude(newLatitude);
@@ -635,6 +654,8 @@ public class ViewEventActivity extends AppCompatActivity {
             autocompletePlaceFragment.setVisibility(View.GONE);
             eventFacilityTextView.setVisibility(View.VISIBLE);
             eventFacility.setVisibility(View.GONE);
+            facilityButton.setVisibility(View.VISIBLE);
+
 
             if (newFacility != null){
                 EventFirebase.addFacility(newFacility);
@@ -957,6 +978,7 @@ public class ViewEventActivity extends AppCompatActivity {
     private void editFacility(OrganizerInfo organizer){
         eventFacility.setVisibility(View.VISIBLE);
         eventFacilityTextView.setVisibility(View.GONE);
+        facilityButton.setVisibility(View.GONE);
 
         ArrayList<String> facilityNames = new ArrayList<>();
 
@@ -1068,7 +1090,7 @@ public class ViewEventActivity extends AppCompatActivity {
                 } else {
                     // Create new facility and proceed
                     newFacility = new FacilitiesInfo(address, facility, deviceID, newLatitude, newLongitude, newEventPoster);
-
+                    facilityID = newFacility.getFacilityID();
                     // Add the new facility name to the facilityNames list
                     facilityNames.add(facility);
 
