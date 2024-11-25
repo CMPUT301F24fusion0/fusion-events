@@ -36,10 +36,9 @@ public class AdminFeaturesActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 // Navigate to Browse Events screen or handle action
-                Toast.makeText(AdminFeaturesActivity.this, "Browse Events clicked", Toast.LENGTH_SHORT).show();
-                // Example: Start a new activity
-                //Intent intent = new Intent(AdminFeaturesActivity.this, BrowseEventsActivity.class);
-                //startActivity(intent);
+                //Toast.makeText(AdminFeaturesActivity.this, "Browse Events clicked", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(AdminFeaturesActivity.this, BrowseEventsActivity.class);
+                startActivity(intent); // Start the new activity
             }
         });
 
