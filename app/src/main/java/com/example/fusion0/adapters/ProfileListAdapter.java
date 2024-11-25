@@ -66,6 +66,34 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
             viewHolder.userName.setText(userNameString);
             viewHolder.userEmail.setText(user.getEmail());
 
+            manageImage.checkImageExists(new ManageImageProfile.ImageCheckCallback() {
+                @Override
+                public void onImageExists() {
+                    manageImage.getImage(new ManageImageProfile.ImageRetrievedCallback() {
+                        @Override
+                        public void onImageRetrieved(Uri uri) {
+                            Log.d("ProfileImage", "Image URI: " + uri.toString());
+
+                            Glide.with(ProfileListAdapter.this.getContext())
+                                    .load(uri)
+                                    .into(viewHolder.profilePic);
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Toast.makeText(ProfileListAdapter.this.getContext(), "Error fetching image", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onImageDoesNotExist() {
+                    String fullName = user.getFirstName() + " " + user.getLastName();
+                    Drawable image = ManageImageProfile.generateArtFromName(ProfileListAdapter.this.getContext(), fullName, 100, 100);
+                    viewHolder.profilePic.setImageDrawable(image);
+                }
+            });
+
             // Handle item background and click based on selection mode
             if (isSelectionMode) {
                 if (selectedItems.get(position, false)) {

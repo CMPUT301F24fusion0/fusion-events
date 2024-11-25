@@ -21,6 +21,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.fusion0.fragments.FavouriteFragment;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.EventInfo;
@@ -85,10 +86,10 @@ public class ViewFacilityActivity extends AppCompatActivity {
         cancelButton = findViewById(R.id.cancel_button);
 
 
-        // Back button logic
         backButton.setOnClickListener(view -> {
-            Intent intent = new Intent(ViewFacilityActivity.this, FavouriteActivity.class);
-            startActivity(intent);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.facility_view, new FavouriteFragment())
+                    .commit();
         });
 
         Intent intentReceived = getIntent();

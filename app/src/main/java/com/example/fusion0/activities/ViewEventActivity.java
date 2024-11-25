@@ -41,6 +41,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.example.fusion0.BuildConfig;
 import com.example.fusion0.fragments.CancelledEntrants;
 import com.example.fusion0.fragments.ChosenEntrants;
+import com.example.fusion0.fragments.FavouriteFragment;
 import com.example.fusion0.fragments.Registration;
 import com.example.fusion0.fragments.WaitlistFragment;
 import com.example.fusion0.helpers.EventFirebase;
@@ -185,7 +186,9 @@ public class ViewEventActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
 
         backButton.setOnClickListener(view -> {
-            finish();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.event_view, new FavouriteFragment())
+                    .commit();
         });
 
         Intent intentReceived = getIntent();
