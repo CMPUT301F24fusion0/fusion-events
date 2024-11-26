@@ -1,7 +1,10 @@
 package com.example.fusion0.helpers;
 
+import android.util.Log;
+
 import com.example.fusion0.models.UserInfo;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -12,20 +15,20 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class ProfileManagement {
 
     // Firebase Authentication and Firestore instances
-    private FirebaseAuth auth;
     private FirebaseFirestore db;
 
     /**
      * Constructor initializes Firebase Authentication and Firestore instances.
+     *
      * @author Nimi Akinroye
      */
     public ProfileManagement() {
-        auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
     }
 
     /**
      * Callback interface for handling user data retrieval.
+     *
      * @author Nimi Akinroye
      */
     public interface UserDataCallback {
@@ -36,8 +39,9 @@ public class ProfileManagement {
 
     /**
      * Retrieves user data from Firestore for the current authenticated user.
-     * @author Nimi Akinroye
+     *
      * @param callback the callback to handle the result of user data retrieval
+     * @author Nimi Akinroye
      */
     public void getUserData(final String deviceId, final UserDataCallback callback) {
         // Access Firestore and retrieve the user's document
@@ -54,6 +58,42 @@ public class ProfileManagement {
                 callback.onError(task.getException());
             }
         });
+    }
+
+
+    /**
+     * Callback interface for handling device ID admin status.
+     * @author Malshaan Kodithuwakku
+     *
+     */
+    public interface IsDeviceIDAdminCallback {
+        void onDeviceIDAdmin(boolean isDeviceIDAdmin);
+        void onError(Exception e);
+    }
+
+    /**
+     * Determines if deviceID is in admins collection
+     *
+     * @param deviceId the device ID to check
+     * @return true if the device ID is an admin, false otherwise
+     * @author Malshaan Kodithuwakku
+     */
+    public void isDeviceIDAdmin(String deviceId, IsDeviceIDAdminCallback callback) {
+        // Access Firestore and check if the device ID is in the admins collection
+        db.collection("admins").document(deviceId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // Device ID exists in the admins collection
+                        callback.onDeviceIDAdmin(true);
+                    } else {
+                        // Device ID does not exist in the admins collection
+                        callback.onDeviceIDAdmin(false);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle Firestore error
+                    callback.onError(e);
+                });
     }
 }
 

@@ -3,9 +3,13 @@ package com.example.fusion0.helpers;
 import com.example.fusion0.models.EventInfo;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.zxing.WriterException;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.example.fusion0.models.OrganizerInfo;
 import com.example.fusion0.models.FacilitiesInfo;
@@ -20,6 +24,7 @@ public class EventFirebase {
     private static final CollectionReference organizersRef;
     private static final CollectionReference facilitiesRef;
     private static final CollectionReference eventsRef;
+    private static final CollectionReference adminsRef;
 
     // Static initialization of Firebase Firestore references
     static {
@@ -27,6 +32,7 @@ public class EventFirebase {
         organizersRef = db.collection("organizers");
         facilitiesRef = db.collection("facilities");
         eventsRef = db.collection("events");
+        adminsRef = db.collection("admins");
     }
 
     /**
@@ -240,5 +246,88 @@ public class EventFirebase {
      */
     public static void deleteEvent(String eventID) {
         eventsRef.document(eventID).delete().addOnSuccessListener(documentReference -> System.out.println("Event deleted successfully.")).addOnFailureListener(error -> System.err.println("Error deleting event: " + error.getMessage()));
+    }
+
+    /**
+     * @author Malshaan Kodithuwakku
+     * Determines if deviceID is in admin collection
+     *
+     * @param deviceID The deviceID to be checked
+     *
+     * @return True if deviceID is in admin collection, false otherwise
+     */
+
+    public static boolean isDeviceIDAdmin(String deviceID) {
+        return adminsRef.document(deviceID).get().isSuccessful();
+    }
+
+    /**
+     * @author Malshaan Kodithuwakku
+     * Callback method of getAllFacilities()
+     */
+
+    public interface FacilityListCallBack {
+        void onSuccess(List<FacilitiesInfo> facilities);
+        void onFailure(String error);
+    }
+
+    /**
+     * @author Malshaan Kodithuwakku
+     * Retrieves all facilities from Firebase Firestore.
+     * @param callback The callback to handle the result of the retrieval
+     */
+    public static void getAllFacilities(FacilityListCallBack callback) {
+        facilitiesRef.get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<FacilitiesInfo> facilities = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        if (document.exists()) {
+                            FacilitiesInfo facility = document.toObject(FacilitiesInfo.class);
+                            facilities.add(facility);
+                            callback.onSuccess(facilities);
+                        }
+                    }
+                })
+                .addOnFailureListener(error -> {
+                    System.err.println("Error fetching facilities: " + error.getMessage());
+                    callback.onFailure(error.getMessage());
+                });
+    }
+
+    /**
+     * @author Derin Karas
+     * Callback method of getAllEvents()
+     */
+
+    public interface EventListCallback {
+        void onSuccess(List<EventInfo> events);
+        void onFailure(String error);
+    }
+
+    /**
+     * @author Derin Karas
+     * Retrieves all events from Firebase Firestore.
+     * @param callback The callback to handle the result of the retrieval
+     */
+    public static void getAllEvents(EventListCallback callback) {
+        eventsRef.get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<EventInfo> events = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : querySnapshot) {
+                        try {
+                            EventInfo event = document.toObject(EventInfo.class);
+                            if (event.getWaitinglist() == null || !(event.getWaitinglist() instanceof List)) {
+                                event.setWaitinglist(new ArrayList<>()); // Default to an empty list
+                            }
+                            events.add(event);
+                        } catch (Exception e) {
+                            // Handle deserialization errors (optional logging if necessary)
+                        }
+                    }
+                    callback.onSuccess(events);
+                })
+                .addOnFailureListener(e -> {
+                    callback.onFailure(e.getMessage());
+                });
     }
 }
