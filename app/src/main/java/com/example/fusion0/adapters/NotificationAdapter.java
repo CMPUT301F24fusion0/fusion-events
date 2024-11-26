@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.NotificationItem;
 import com.example.fusion0.R;
 
@@ -29,6 +30,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private Context context;
     private List<NotificationItem> notificationList;
+    private Waitlist waitlist;
+    private String eventId;
+    private String userId;
 
     /**
      * Constructor for the NotificationAdapter.
@@ -36,9 +40,12 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      * @param context       The context of the activity where the adapter is used.
      * @param notifications The list of NotificationItem objects to display.
      */
-    public NotificationAdapter(@NonNull Context context, @NonNull List<NotificationItem> notifications) {
+    public NotificationAdapter(@NonNull Context context, @NonNull List<NotificationItem> notifications, String eventId, String userId) {
         this.context = context;
         this.notificationList = notifications;
+        this.waitlist = new Waitlist();
+        this.eventId = eventId;
+        this.userId = userId;
     }
 
     /**
@@ -89,12 +96,12 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             lotteryHolder.acceptButton.setOnClickListener(v -> {
                 Toast.makeText(context, "Event Accepted", Toast.LENGTH_SHORT).show();
-                // Handle accept action here
+                waitlist.changeStatus(eventId, userId, "accept");
             });
 
             lotteryHolder.declineButton.setOnClickListener(v -> {
                 Toast.makeText(context, "Event Declined", Toast.LENGTH_SHORT).show();
-                // Handle decline action here
+                waitlist.changeStatus(eventId, userId, "cancel");
             });
 
         } else if (holder instanceof StandardNotificationViewHolder) {

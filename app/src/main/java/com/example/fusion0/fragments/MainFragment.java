@@ -144,7 +144,8 @@ public class MainFragment extends Fragment {
                                 if (registrationDeadline != null) {
                                     Date now = new Date();
                                     if (now.after(registrationDeadline.toDate()) && !document.getBoolean("lotteryConducted")) {
-                                        runLottery(document.getId(), document);
+                                        String eventId = document.getId();
+                                        runLottery(eventId, document);
                                         document.getReference().update("lotteryConducted", true);
                                     }
                                 } else {
@@ -394,7 +395,11 @@ public class MainFragment extends Fragment {
     private void runLottery(String eventId, DocumentSnapshot eventDoc) {
         if (eventDoc != null) {
             if (!eventDoc.getString("lotteryCapacity").equals("0")) {
+                waitlist.allNotification(eventId, "Lottery Starting",
+                        "The lottery is not starting. Be on the look out for the results!", "0");
                 waitlist.conductLottery(eventId, Integer.parseInt(eventDoc.getString("lotteryCapacity")));
+                waitlist.chosenNotification(eventId, "Winner!",
+                        "Congratulations, you have won the lottery! Please accept the invitation in the app.", "1");
 
                 waitlist.getChosen(eventId, chosen -> {
                     if (!chosen.isEmpty()) {
