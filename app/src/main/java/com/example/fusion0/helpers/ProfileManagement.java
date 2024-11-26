@@ -1,5 +1,7 @@
 package com.example.fusion0.helpers;
 
+import android.util.Log;
+
 import com.example.fusion0.models.UserInfo;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
