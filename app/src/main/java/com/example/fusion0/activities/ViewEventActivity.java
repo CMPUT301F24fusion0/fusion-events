@@ -41,6 +41,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.example.fusion0.BuildConfig;
 import com.example.fusion0.fragments.CancelledEntrants;
 import com.example.fusion0.fragments.ChosenEntrants;
+import com.example.fusion0.fragments.FavouriteFragment;
 import com.example.fusion0.fragments.Registration;
 import com.example.fusion0.fragments.WaitlistFragment;
 import com.example.fusion0.helpers.EventFirebase;
@@ -56,7 +57,12 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AuthorAttributions;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchResolvedPhotoUriRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -71,8 +77,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -88,10 +96,10 @@ public class ViewEventActivity extends AppCompatActivity {
     private String deviceID;
     private Boolean isOwner = false;
     private Spinner eventFacility;
-    private TextView eventNameTextView, eventFacilityTextView,addFacilityText, eventDescriptionTextView,registrationDateRequirementsTextView, registrationDateTextView, dateRequirementsTextView,  eventStartDateTextView, eventEndDateTextView,eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, waitinglistFullTextView;
-    private EditText eventNameEditText, eventDescriptionEditText, eventCapacityEditText;
+    private TextView eventNameTextView, eventFacilityTextView,addFacilityText, eventDescriptionTextView,registrationDateRequirementsTextView, registrationDateTextView, dateRequirementsTextView,  eventStartDateTextView, eventEndDateTextView,eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, eventLotteryCapacityTextView,  waitinglistFullTextView, registrationPassedFullTextView;
+    private EditText eventNameEditText, eventDescriptionEditText, eventCapacityEditText, eventLotteryCapacityEditText;
     private ImageView eventPosterImageView, qrImageView;
-    private Button startDateButton, endDateButton, registrationDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton, waitinglistButton, cancelledEntrantsButton, chosenEntrantsButton, uploadImageButton, lotteryButton;
+    private Button facilityButton, startDateButton, endDateButton, registrationDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton, waitinglistButton, cancelledEntrantsButton, chosenEntrantsButton, uploadImageButton, lotteryButton;
     private ImageButton backButton;
     private EventInfo event;
     private UserInfo user;
@@ -108,7 +116,7 @@ public class ViewEventActivity extends AppCompatActivity {
 
     private Double newLongitude = null;
     private Double newLatitude = null;
-    private String newEventPoster, facility, address;
+    private String newEventPoster, facility, address, facilityID;
     private Date endDate, startDate, registrationDate;
     private FacilitiesInfo newFacility;
 
@@ -147,15 +155,18 @@ public class ViewEventActivity extends AppCompatActivity {
         eventFacility = findViewById(R.id.spinner_facilities);
         eventFacilityTextView = findViewById(R.id.facilityName);
         addFacilityText = findViewById(R.id.add_facility_text);
+        facilityButton = findViewById(R.id.facility_view_button);
         autocompletePlaceFragment = findViewById(R.id.autocomplete_fragment);
         eventStartDateTextView = findViewById(R.id.start_date_text);
         eventEndDateTextView = findViewById(R.id.end_date_text);
         eventEndTimeTextView = findViewById(R.id.end_time_text);
         eventStartTimeTextView = findViewById(R.id.start_time_text);
         eventCapacityTextView = findViewById(R.id.capacityTextView);
+        eventLotteryCapacityTextView = findViewById(R.id.lotteryCapacityTextView);
         eventNameEditText = findViewById(R.id.editEventName);
         eventDescriptionEditText = findViewById(R.id.description_edit);
         eventCapacityEditText = findViewById(R.id.editCapacity);
+        eventLotteryCapacityEditText = findViewById(R.id.editLotteryCapacity);
         dateRequirementsTextView = findViewById(R.id.date_requirements_text);
         registrationDateRequirementsTextView=findViewById(R.id.registration_date_requirements_text);
         registrationDateTextView = findViewById(R.id.registration_date_text);
@@ -179,17 +190,27 @@ public class ViewEventActivity extends AppCompatActivity {
         cancelButton = findViewById(R.id.cancel_button);
         saveButton = findViewById(R.id.save_button);
         waitinglistFullTextView = findViewById(R.id.waitinglist_full_text_view);
+        registrationPassedFullTextView = findViewById(R.id.registration_passed_text_view);
         lists = findViewById(R.id.lists);
         toolbar = findViewById(R.id.toolbar);
 
         backButton.setOnClickListener(view -> {
-            finish();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.event_view, new FavouriteFragment())
+                    .commit();
+        });
+
+        facilityButton.setOnClickListener(view -> {
+            Intent intent = new Intent(ViewEventActivity.this, ViewFacilityActivity.class);
+            intent.putExtra("facilityID", event.getFacilityID());
+            intent.putExtra("deviceID", deviceID);
+            startActivity(intent);
         });
 
         Intent intentReceived = getIntent();
         String eventID = intentReceived.getStringExtra("eventID");
 
-        UserFirestore.findUser(deviceID,new UserFirestore.Callback(){
+        new UserFirestore().findUser(deviceID,new UserFirestore.Callback(){
             @Override
             public void onSuccess(UserInfo userInfo) {
                 user = userInfo;
@@ -217,6 +238,7 @@ public class ViewEventActivity extends AppCompatActivity {
                         eventNameTextView.setText(event.getEventName());
                         eventDescriptionTextView.setText(event.getDescription());
                         eventCapacityTextView.setText(event.getCapacity());
+                        eventLotteryCapacityTextView.setText(event.getLotteryCapacity());
                         eventFacilityTextView.setText(event.getFacilityName());
 
                         SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
@@ -233,7 +255,7 @@ public class ViewEventActivity extends AppCompatActivity {
 
 
                         endDate = event.getEndDate();
-                        startDate =event.getStartDate();
+                        startDate = event.getStartDate();
                         registrationDate = event.getRegistrationDate();
                         facility = event.getFacilityName();
 
@@ -260,8 +282,6 @@ public class ViewEventActivity extends AppCompatActivity {
                                                     .override(newWidth, newHeight)
                                                     .into(eventPosterImageView);
 
-
-                                            // Set the visibility of the ImageView
                                             eventPosterImageView.setVisibility(View.VISIBLE);
                                         }
                                     });
@@ -301,96 +321,101 @@ public class ViewEventActivity extends AppCompatActivity {
                             ArrayList<Map<String, String>> currentEntrants = event.getWaitinglist();
                             int capacity = Integer.parseInt(event.getCapacity());
 
-                            if (currentEntrants.size() < capacity) {
-                                joinButton.setVisibility(View.VISIBLE);
-                                waitlist.getAll(eventID, all -> {
-                                    if (!all.contains(deviceID)) {
-                                        joinButton.setOnClickListener(view -> {
-                                            UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
-                                                @Override
-                                                public void onSuccess(UserInfo userInfo) {
-                                                    if (userInfo != null) {
-                                                        user = userInfo;
-                                                        Log.d("Checkpoint", "the user is not null");
-                                                        if (event.getGeolocation()) {
-                                                            GeoLocation geoLocation = new GeoLocation(ViewEventActivity.this, ViewEventActivity.this, event.getLatitude(), event.getLongitude(), event.getRadius());
-                                                            Log.d("ViewEventActivity", "Radius: " + event.getRadius());
-                                                            if (!geoLocation.isLocationPermissionGranted()) {
-                                                                geoLocation.requestLocationPermission();
-                                                            } else {
-                                                                proceedWithJoin(geoLocation);
-                                                            }
+                            waitlist.getAll(eventID, all -> {
+                                Calendar calendar = Calendar.getInstance();
+                                Date currentDate = calendar.getTime();
+                                if (!all.contains(deviceID) & (currentEntrants.size() < capacity) & !(event.getRegistrationDate().after(currentDate))) {
+                                    joinButton.setVisibility(View.VISIBLE);
+                                    joinButton.setOnClickListener(view -> {
+                                        new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
+                                            @Override
+                                            public void onSuccess(UserInfo userInfo) {
+                                                if (userInfo != null) {
+                                                    user = userInfo;
+                                                    Log.d("Checkpoint", "the user is not null");
+                                                    if (event.getGeolocation()) {
+                                                        GeoLocation geoLocation = new GeoLocation(ViewEventActivity.this, ViewEventActivity.this, event.getLatitude(), event.getLongitude(), event.getRadius());
+                                                        Log.d("ViewEventActivity", "Radius: " + event.getRadius());
+                                                        if (!geoLocation.isLocationPermissionGranted()) {
+                                                            geoLocation.requestLocationPermission();
                                                         } else {
-                                                            addUserToWaitingList();
+                                                            proceedWithJoin(geoLocation);
                                                         }
                                                     } else {
-                                                        String activity = "ViewEventActivity";
-                                                        Log.d("Checkpoint", "the user is null, we're going to registration");
-                                                        Registration registration = new Registration();
-                                                        Bundle bundle = new Bundle();
-                                                        bundle.putString("eventID", eventID);
-                                                        bundle.putString("activity", activity);
-                                                        registration.setArguments(bundle);
-                                                        getSupportFragmentManager()
-                                                                .beginTransaction()
-                                                                .replace(R.id.event_view, registration)
-                                                                .addToBackStack(null)
-                                                                .commit();
+                                                        addUserToWaitingList();
                                                     }
+                                                } else {
+                                                    String activity = "ViewEventActivity";
+                                                    Log.d("Checkpoint", "the user is null, we're going to registration");
+                                                    Registration registration = new Registration();
+                                                    Bundle bundle = new Bundle();
+                                                    bundle.putString("eventID", eventID);
+                                                    bundle.putString("activity", activity);
+                                                    registration.setArguments(bundle);
+                                                    getSupportFragmentManager()
+                                                            .beginTransaction()
+                                                            .replace(R.id.event_view, registration)
+                                                            .addToBackStack(null)
+                                                            .commit();
                                                 }
+                                            }
 
-                                                @Override
-                                                public void onFailure(String error) {
-                                                    System.out.println("Failure" + error);
-                                                }
-                                            });
+                                            @Override
+                                            public void onFailure(String error) {
+                                                System.out.println("Failure" + error);
+                                            }
                                         });
-                                    } else {
-                                        joinButton.setText("Unjoin Waiting List");
+                                    });
+                                } else if(!all.contains(deviceID) & event.getRegistrationDate().after(currentDate)){
+                                    registrationPassedFullTextView.setVisibility(View.VISIBLE);
 
-                                        joinButton.setOnClickListener(view -> {
+                                } else if (!all.contains(deviceID) & (currentEntrants.size() >= capacity)) {
+                                    waitinglistFullTextView.setVisibility(View.VISIBLE);
 
-                                            Toast.makeText(ViewEventActivity.this, "You have left the waiting list", Toast.LENGTH_SHORT).show();
+                                } else if (all.contains(deviceID)) {
+                                    joinButton.setVisibility(View.VISIBLE);
 
-                                            // Remove it on the events collection
-                                            ArrayList<Map<String, String>> newWaitingList = event.removeUserFromWaitingList(deviceID, event.getWaitinglist());
-                                            event.setWaitinglist(newWaitingList);
+                                    joinButton.setText("Unjoin Waiting List");
 
-                                            // Remove it on the user's collection
-                                            waitlist.removeFromUserWL(deviceID, eventID, user);
+                                    joinButton.setOnClickListener(view -> {
 
-                                            EventFirebase.editEvent(event);
+                                        Toast.makeText(ViewEventActivity.this, "You have left the waiting list", Toast.LENGTH_SHORT).show();
 
-                                            UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
-                                                @Override
-                                                public void onSuccess(UserInfo userInfo) {
-                                                    user = userInfo;
-                                                }
+                                        // Remove it on the events collection
+                                        ArrayList<Map<String, String>> newWaitingList = event.removeUserFromWaitingList(deviceID, event.getWaitinglist());
+                                        event.setWaitinglist(newWaitingList);
 
-                                                @Override
-                                                public void onFailure(String error) {
-                                                    Log.e("JoinedEventActivity", "Error fetching user: " + error);
-                                                }
-                                            });
+                                        // Remove it on the user's collection
+                                        waitlist.removeFromUserWL(deviceID, eventID, user);
 
-                                            ArrayList<String> newEventsList = user.removeEventFromEventList(event.getEventID(), user.getEvents());
-                                            user.setEvents(newEventsList);
-                                            UserFirestore.editUserEvents(user);
+                                        EventFirebase.editEvent(event);
 
-                                            EventFirebase.editEvent(event);
+                                        new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
+                                            @Override
+                                            public void onSuccess(UserInfo userInfo) {
+                                                user = userInfo;
+                                            }
 
-                                            Intent intent = new Intent(ViewEventActivity.this, MainActivity.class);
-                                            startActivity(intent);
+                                            @Override
+                                            public void onFailure(String error) {
+                                                Log.e("JoinedEventActivity", "Error fetching user: " + error);
+                                            }
                                         });
-                                    }
-                                });
-                            } else {
-                                waitinglistFullTextView.setVisibility(View.VISIBLE);
-                            }
+
+                                        ArrayList<String> newEventsList = user.removeEventFromEventList(event.getEventID(), user.getEvents());
+                                        user.setEvents(newEventsList);
+                                        new UserFirestore().editUserEvents(user);
+
+                                        EventFirebase.editEvent(event);
+
+                                        Intent intent = new Intent(ViewEventActivity.this, MainActivity.class);
+                                        startActivity(intent);
+                                    });
+                                }
+                            });
                         }
                     }
                 }
-
                 @Override
                 public void onFailure(String error) {
                     Log.e("ViewEventActivity", "Error fetching event: " + error);
@@ -403,43 +428,63 @@ public class ViewEventActivity extends AppCompatActivity {
         }
 
         waitinglistButton.setOnClickListener(view -> {
-            if (event.getWaitinglist().isEmpty()) {
-                Toast.makeText(ViewEventActivity.this, "Waiting list is empty.", Toast.LENGTH_SHORT).show();
-            }else{
-                WaitlistFragment waitlistFragment = new WaitlistFragment();
+            waitlist.getWait(eventID, wait -> {
+                if (wait.isEmpty()) {
+                    Toast.makeText(ViewEventActivity.this, "Waiting list is empty.", Toast.LENGTH_SHORT).show();
+                }else{
+                    ArrayList<Map<String, String>> fullWaitingListEntrants = new ArrayList<>();
 
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("waitingListData", (ArrayList<Map<String, String>>) event.getWaitinglist());
-                bundle.putString("eventCapacity", event.getCapacity());
-                bundle.putString("eventID", event.getEventID());
-                bundle.putSerializable("waitlist", waitlist);
-                waitlistFragment.setArguments(bundle);
+                    if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
+                        for (Map<String, String> user : event.getWaitinglist()) {
+                            if (wait.contains(user.get("did")) && "waiting".equals(user.get("status"))) {
+                                fullWaitingListEntrants.add(user);
+                            }
+                        }
+                    }
+                    WaitlistFragment waitlistFragment = new WaitlistFragment();
 
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.event_view, waitlistFragment)
-                        .addToBackStack(null)
-                        .commit();
-            }
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("waitingListData",fullWaitingListEntrants);
+                    bundle.putString("eventCapacity", event.getCapacity());
+                    bundle.putString("eventID", event.getEventID());
+                    bundle.putSerializable("waitlist", waitlist);
+                    waitlistFragment.setArguments(bundle);
+
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.event_view, waitlistFragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
+
+            });
         });
 
         chosenEntrantsButton.setOnClickListener(view -> {
             waitlist.getChosen(eventID, chosen -> {
-                if (chosen.isEmpty()) {
-                    Toast.makeText(ViewEventActivity.this, "Chosen entrants list is empty.", Toast.LENGTH_SHORT).show();
-                }else{
-                    ChosenEntrants chosenEntrants = new ChosenEntrants();
+                ArrayList<Map<String, String>> fullChosenEntrants = new ArrayList<>();
 
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("chosenEntrantsData", chosen);
-                    bundle.putString("eventID", event.getEventID());
-                    bundle.putSerializable("waitlist", waitlist);
-                    chosenEntrants.setArguments(bundle);
 
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.event_view, chosenEntrants)
-                            .addToBackStack(null)
-                            .commit();
+                if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
+                    for (Map<String, String> user :  event.getWaitinglist()) {
+                        if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
+                            fullChosenEntrants.add(user);
+                        }
+                    }
                 }
+                ChosenEntrants chosenEntrants = new ChosenEntrants();
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("chosenEntrantsData", fullChosenEntrants);
+                bundle.putString("eventID", event.getEventID());
+                bundle.putSerializable("waitlist", waitlist);
+                bundle.putString("lotteryCapacity", event.getLotteryCapacity());
+                chosenEntrants.setArguments(bundle);
+
+                // Launch the ChosenEntrants fragment with the filtered data
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.event_view, chosenEntrants)
+                        .addToBackStack(null)
+                        .commit();
             });
         });
 
@@ -448,12 +493,23 @@ public class ViewEventActivity extends AppCompatActivity {
                 if (cancel.isEmpty()) {
                     Toast.makeText(ViewEventActivity.this, "Cancelled entrants list is empty.", Toast.LENGTH_SHORT).show();
                 }else{
+                    ArrayList<Map<String, String>> fullCancelledEntrants = new ArrayList<>();
+
+
+                    if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
+                        for (Map<String, String> user :  event.getWaitinglist()) {
+                            if (cancel.contains(user.get("did")) && "cancel".equals(user.get("status"))) {
+                                fullCancelledEntrants.add(user);
+                            }
+                        }
+                    }
+
                     CancelledEntrants cancelledEntrants = new CancelledEntrants();
 
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("cancelledEntrantsData", cancel);
+                    bundle.putSerializable("cancelledEntrantsData", fullCancelledEntrants);
                     bundle.putString("eventID", event.getEventID());
-                    bundle.putSerializable("waitlist", (Serializable) waitlist);
+                    bundle.putSerializable("waitlist",  waitlist);
                     cancelledEntrants.setArguments(bundle);
 
                     getSupportFragmentManager().beginTransaction()
@@ -473,6 +529,8 @@ public class ViewEventActivity extends AppCompatActivity {
             startDateButton.setVisibility(View.VISIBLE);
             endDateButton.setVisibility(View.VISIBLE);
             registrationDateButton.setVisibility(View.VISIBLE);
+            facilityButton.setVisibility(View.GONE);
+
 
 
 
@@ -480,6 +538,7 @@ public class ViewEventActivity extends AppCompatActivity {
             editDescription();
             editFacility(organizer);
             editCapacity();
+            editLotteryCapacity();
         });
 
         deleteButton.setOnClickListener(v -> {if (isOwner) {
@@ -513,6 +572,8 @@ public class ViewEventActivity extends AppCompatActivity {
             autocompletePlaceFragment.setVisibility(View.GONE);
             eventFacilityTextView.setVisibility(View.VISIBLE);
             eventFacility.setVisibility(View.GONE);
+            facilityButton.setVisibility(View.VISIBLE);
+
 
             eventNameTextView.setVisibility(View.VISIBLE);
             eventNameEditText.setVisibility(View.GONE);
@@ -523,21 +584,97 @@ public class ViewEventActivity extends AppCompatActivity {
             eventCapacityTextView.setVisibility(View.VISIBLE);
             eventCapacityEditText.setVisibility(View.GONE);
 
+            eventLotteryCapacityTextView.setVisibility(View.VISIBLE);
+            eventLotteryCapacityEditText.setVisibility(View.GONE);
+
         });
 
         saveButton.setOnClickListener(view ->{
             String newEventName = eventNameEditText.getText().toString();
             String newDescription = eventDescriptionEditText.getText().toString();
+
             String newEventCapacity = eventCapacityEditText.getText().toString();
+            String newEventLotteryCapacity = eventLotteryCapacityEditText.getText().toString();
+
+            if (Integer.parseInt(newEventLotteryCapacity) >= Integer.parseInt(newEventCapacity)) {
+                Toast.makeText(ViewEventActivity.this, "Lottery capacity must be less than wishlist!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             String newStartTime = eventStartTimeTextView.getText().toString();
             String newEndTime = eventEndTimeTextView.getText().toString();
 
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
+
             event.setEventName(newEventName);
             event.setDescription(newDescription);
             event.setCapacity(newEventCapacity);
+            event.setLotteryCapacity(newEventLotteryCapacity);
+            if (newFacility != null){
+                EventFirebase.addFacility(newFacility);
+                ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
+                facilitiesList.add(newFacility);
+                organizer.setFacilities(facilitiesList);
+                EventFirebase.editOrganizer(organizer);
+            }
+
+            if (!event.getFacilityID().equals(facilityID)) {
+                EventFirebase.findFacility(event.getFacilityID(), new EventFirebase.FacilityCallback() {
+                    @Override
+                    public void onSuccess(FacilitiesInfo facilitiesInfo) {
+                        if (facilitiesInfo != null) {
+                            ArrayList<String> facilityEvents = facilitiesInfo.getEvents();
+                            Log.e(TAG, " old facility: " + facilityEvents);
+
+                            facilityEvents.remove(event.getEventID());
+                            Log.e(TAG, " old facility updated: " + facilityEvents);
+
+                            facilitiesInfo.setEvents(facilityEvents);
+
+                            String facilityID = facilitiesInfo.getFacilityID();
+                            Log.e(TAG, "Facility ID: " + facilityID);
+
+                            if (facilityID != null && !facilityID.isEmpty()) {
+                                EventFirebase.editFacility(facilitiesInfo);
+                            } else {
+                                Log.e(TAG, "Invalid facility ID, cannot update facility.");
+                            }                        }
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        Log.e(TAG, "Error fetching old facility: " + error);
+                    }
+                });
+
+                EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
+                    @Override
+                    public void onSuccess(FacilitiesInfo newFacility) {
+                        if (newFacility != null) {
+                            ArrayList<String> newFacilityEvents = newFacility.getEvents();
+                            Log.e(TAG, " new facility: " + newFacilityEvents);
+
+                            newFacilityEvents.add(event.getEventID());
+                            Log.e(TAG, " new facility updated: " + newFacilityEvents);
+
+                            newFacility.setEvents(newFacilityEvents);
+
+                            EventFirebase.editFacility(newFacility);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        Log.e(TAG, "Error fetching new facility: " + error);
+                    }
+                });
+
+                event.setFacilityID(facilityID);
+
+            }
+
             event.setFacilityName(facility);
             event.setAddress(address);
             event.setLatitude(newLatitude);
@@ -552,6 +689,7 @@ public class ViewEventActivity extends AppCompatActivity {
             eventNameTextView.setText(newEventName);
             eventDescriptionTextView.setText(newDescription);
             eventCapacityTextView.setText(newEventCapacity);
+            eventLotteryCapacityTextView.setText(newEventLotteryCapacity);
             eventFacilityTextView.setText(facility);
             eventStartDateTextView.setText(dateFormat.format(startDate));
             eventEndDateTextView.setText(dateFormat.format(endDate));
@@ -569,7 +707,6 @@ public class ViewEventActivity extends AppCompatActivity {
             dateRequirementsTextView.setVisibility(View.GONE);
 
 
-
             eventNameTextView.setVisibility(View.VISIBLE);
             eventNameEditText.setVisibility(View.GONE);
 
@@ -579,18 +716,15 @@ public class ViewEventActivity extends AppCompatActivity {
             eventCapacityTextView.setVisibility(View.VISIBLE);
             eventCapacityEditText.setVisibility(View.GONE);
 
+            eventLotteryCapacityTextView.setVisibility(View.VISIBLE);
+            eventLotteryCapacityEditText.setVisibility(View.GONE);
+
             addFacilityText.setVisibility(View.GONE);
             autocompletePlaceFragment.setVisibility(View.GONE);
             eventFacilityTextView.setVisibility(View.VISIBLE);
             eventFacility.setVisibility(View.GONE);
+            facilityButton.setVisibility(View.VISIBLE);
 
-            if (newFacility != null){
-                EventFirebase.addFacility(newFacility);
-                ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
-                facilitiesList.add(newFacility);
-                organizer.setFacilities(facilitiesList);
-                EventFirebase.editOrganizer(organizer);
-            }
 
             editButton.setVisibility(View.VISIBLE);
             deleteButton.setVisibility(View.VISIBLE);
@@ -887,6 +1021,12 @@ public class ViewEventActivity extends AppCompatActivity {
         eventCapacityEditText.setText(event.getCapacity());
     }
 
+    private void editLotteryCapacity(){
+        eventLotteryCapacityTextView.setVisibility(View.GONE);
+        eventLotteryCapacityEditText.setVisibility(View.VISIBLE);
+        eventLotteryCapacityEditText.setText(event.getLotteryCapacity());
+    }
+
     /**
      * @author Simon Haile
      * Displays a spinner to allow the event organizer to choose or add a facility for the event.
@@ -899,6 +1039,7 @@ public class ViewEventActivity extends AppCompatActivity {
     private void editFacility(OrganizerInfo organizer){
         eventFacility.setVisibility(View.VISIBLE);
         eventFacilityTextView.setVisibility(View.GONE);
+        facilityButton.setVisibility(View.GONE);
 
         ArrayList<String> facilityNames = new ArrayList<>();
 
@@ -938,7 +1079,7 @@ public class ViewEventActivity extends AppCompatActivity {
                     addFacility(facilityNames, adapter); // Pass the adapter so we can update it
                 } else {
                     // If the selected facility exists, proceed with fetching it
-                    String facilityID = organizer.getFacilityIdByName(selectedFacility);
+                    facilityID = organizer.getFacilityIdByName(selectedFacility);
                     EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
                         @Override
                         public void onSuccess(FacilitiesInfo existingFacility) {
@@ -979,15 +1120,18 @@ public class ViewEventActivity extends AppCompatActivity {
         addFacilityText.setVisibility(View.VISIBLE);
 
         if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
+            Places.initializeWithNewPlacesApiEnabled(this, BuildConfig.API_KEY);
         }
+
+        PlacesClient placesClient = Places.createClient(this);
+
 
         // Initialize the AutocompleteSupportFragment
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         // Specify the types of place data to return
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.FORMATTED_ADDRESS, Place.Field.LAT_LNG));
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.FORMATTED_ADDRESS, Place.Field.LAT_LNG, Place.Field.PHOTO_METADATAS));
 
         // Set up the PlaceSelectionListener
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
@@ -1001,22 +1145,51 @@ public class ViewEventActivity extends AppCompatActivity {
                     newLatitude = latLng.latitude;
                     newLongitude = latLng.longitude;
                 }
+                final List<Place.Field> fields = Collections.singletonList(Place.Field.PHOTO_METADATAS);
 
-                // Check if the facility name already exists in the list of facility names
-                if (facilityNames.contains(facility)) {
-                    Log.i(TAG, "Facility already exists: " + facility);
-                    // Optionally show a message to the user
-                    Toast.makeText(getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Create new facility and proceed
-                    newFacility = new FacilitiesInfo(address, facility, deviceID, newLatitude, newLongitude, newEventPoster);
+                final FetchPlaceRequest placeRequest = FetchPlaceRequest.newInstance(place.getId(), fields);
+                placesClient.fetchPlace(placeRequest).addOnSuccessListener((response) -> {
+                            Place placeDetails = response.getPlace();
 
-                    // Add the new facility name to the facilityNames list
-                    facilityNames.add(facility);
+                            // Get photo metadata
+                            List<PhotoMetadata> metadata = placeDetails.getPhotoMetadatas();
+                            if (metadata == null || metadata.isEmpty()) {
+                                Log.w(TAG, "No photo metadata available for this place.");
+                                return;
+                            }
 
-                    // Notify the adapter that the data has changed
-                    adapter.notifyDataSetChanged();
-                }
+                            // Fetch photo URI
+                            PhotoMetadata photoMetadata = metadata.get(0);
+                            String attributions = photoMetadata.getAttributions();
+                            AuthorAttributions authorAttributions = photoMetadata.getAuthorAttributions();
+
+                            // Create and send photo request
+                            FetchResolvedPhotoUriRequest photoRequest =
+                                    FetchResolvedPhotoUriRequest.builder(photoMetadata)
+                                            .setMaxWidth(500)
+                                            .setMaxHeight(300)
+                                            .build();
+
+                            placesClient.fetchResolvedPhotoUri(photoRequest)
+                                    .addOnSuccessListener((photoUriResponse) -> {
+                                        Uri photoUri = photoUriResponse.getUri();
+                                        if (photoUri != null) {
+                                            Log.d(TAG, "Fetched photo URI: " + photoUri.toString());
+                                            String facilityImage = photoUri.toString();
+
+                                            if (facilityNames.contains(facility)) {
+                                                Toast.makeText(getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                newFacility = new FacilitiesInfo(address, facility, deviceID, newLatitude, newLongitude, facilityImage);
+                                                facilityID = newFacility.getFacilityID();
+                                                facilityNames.add(facility);
+
+                                                // Notify the adapter that the data has changed
+                                                adapter.notifyDataSetChanged();
+                                            }
+                                        }
+                                    });
+                });
             }
 
             @Override

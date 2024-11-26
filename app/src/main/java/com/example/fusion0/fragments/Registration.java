@@ -129,7 +129,7 @@ public class Registration extends Fragment {
      * @param phone phone number
      */
     private void registration(String dID, String first, String last, String emails, String phone) {
-        UserFirestore.findUser(dID, new UserFirestore.Callback() {
+        new UserFirestore().findUser(dID, new UserFirestore.Callback() {
             /**
              * @author Sehej Brar
              * This method checks to see if the same user already exists, if it doesn't then the new

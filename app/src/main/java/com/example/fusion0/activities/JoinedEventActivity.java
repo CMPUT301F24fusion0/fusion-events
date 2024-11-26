@@ -2,6 +2,7 @@ package com.example.fusion0.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,14 +13,20 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.fusion0.activities.FavouriteActivity;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.UserInfo;
+import com.google.firebase.firestore.auth.User;
 import com.google.zxing.WriterException;
 import com.example.fusion0.R;
 
@@ -35,14 +42,13 @@ import java.util.Map;
 public class JoinedEventActivity extends AppCompatActivity {
 
     private ImageButton backButton;
-    private ScrollView scrollContainer;
-    private TextView eventName, facility, description;
+    private TextView eventName, facility, description, registrationDate;
     private ImageView uploadedImageView;
     private TextView startDateText;
     private TextView endDateText;
-    private TextView capacity;
+    private TextView capacity, lotteryCapacity;
     private ImageView qrImage;
-    private Button unjoinButton;
+    private Button unjoinButton, facilityButton;
 
     private UserInfo user;
     private EventInfo event;
@@ -60,27 +66,37 @@ public class JoinedEventActivity extends AppCompatActivity {
         setContentView(R.layout.joined_events_view);
 
         backButton = findViewById(R.id.backButton);
-        scrollContainer = findViewById(R.id.scroll_container);
         eventName = findViewById(R.id.EventName);
         description = findViewById(R.id.description);
         facility = findViewById(R.id.facilityName);
         uploadedImageView = findViewById(R.id.uploaded_image_view);
         startDateText = findViewById(R.id.start_date_text);
         endDateText = findViewById(R.id.end_date_text);
+        registrationDate = findViewById(R.id.registration_date_text);
         capacity = findViewById(R.id.capacity);
+        lotteryCapacity = findViewById(R.id.lotteryCapacityTextView);
         qrImage = findViewById(R.id.qrImage);
         unjoinButton = findViewById(R.id.unjoin_button);
+        facilityButton = findViewById(R.id.facility_view_button);
 
         backButton.setOnClickListener(view -> {
             Intent intent = new Intent(JoinedEventActivity.this, FavouriteActivity.class);
             startActivity(intent);
         });
 
+
         Intent intentReceived = getIntent();
         String eventID = intentReceived.getStringExtra("eventID");
         String deviceID = intentReceived.getStringExtra("deviceID");
 
-        UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+        facilityButton.setOnClickListener(view -> {
+            Intent intent = new Intent(JoinedEventActivity.this, ViewFacilityActivity.class);
+            intent.putExtra("facilityID", event.getFacilityID());
+            intent.putExtra("deviceID", deviceID);
+            startActivity(intent);
+        });
+
+        new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo userInfo) {
                 user = userInfo;
@@ -113,19 +129,40 @@ public class JoinedEventActivity extends AppCompatActivity {
                         description.setText(event.getDescription());
                         facility.setText(event.getFacilityName());
                         capacity.setText(String.valueOf(event.getCapacity()));
+                        lotteryCapacity.setText(String.valueOf(event.getLotteryCapacity()));
 
                         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a", Locale.getDefault());
 
                         startDateText.setText(dateFormat.format(event.getStartDate()));
                         endDateText.setText(dateFormat.format(event.getEndDate()));
+                        registrationDate.setText(dateFormat.format(event.getRegistrationDate()));
 
 
                         String eventPoster = event.getEventPoster();
                         if (eventPoster != null && !eventPoster.isEmpty()) {
                             Glide.with(JoinedEventActivity.this)
                                     .load(eventPoster)
-                                    .into(uploadedImageView);
-                            uploadedImageView.setVisibility(View.VISIBLE);
+                                    .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                                    .into(new SimpleTarget<Drawable>() {
+                                        @Override
+                                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                            // Get the original image dimensions
+                                            int originalWidth = resource.getIntrinsicWidth();
+                                            int originalHeight = resource.getIntrinsicHeight();
+
+
+                                            int newWidth = (int) (originalWidth / 1.5);
+                                            int newHeight = (int) (originalHeight / 1.5);
+
+
+                                            Glide.with(JoinedEventActivity.this)
+                                                    .load(eventPoster)
+                                                    .override(newWidth, newHeight)
+                                                    .into(uploadedImageView);
+
+                                            uploadedImageView.setVisibility(View.VISIBLE);
+                                        }
+                                    });
                         }
 
                         String qrcode = event.getQrCode();
@@ -162,12 +199,11 @@ public class JoinedEventActivity extends AppCompatActivity {
             ArrayList<String> userEvents =  user.getEvents();
             ArrayList<String> newEventsList = user.removeEventFromEventList(event.getEventID(), userEvents);
             user.setEvents(newEventsList);
-            UserFirestore.editUserEvents(user);
+            new UserFirestore().editUserEvents(user);
 
             EventFirebase.editEvent(event);
             Intent intent = new Intent(JoinedEventActivity.this, FavouriteActivity.class);
             startActivity(intent);
-            //remove user from event chosenlist if in, cancelled list if in
         });
 
     }

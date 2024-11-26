@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,13 +30,20 @@ import com.example.fusion0.helpers.AppNotifications;
 import com.example.fusion0.helpers.LoginManagement;
 import com.example.fusion0.helpers.NotificationHelper;
 import com.example.fusion0.helpers.UserFirestore;
+import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.NotificationItem;
 import com.example.fusion0.models.UserInfo;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class MainFragment extends Fragment {
 
@@ -63,6 +71,9 @@ public class MainFragment extends Fragment {
 
     private final int REQUEST_CODE = 100;
 
+    private Waitlist waitlist;
+
+
     /**
      * Required empty public constructor
      */
@@ -84,6 +95,8 @@ public class MainFragment extends Fragment {
 
         loginManagement = new LoginManagement(requireContext());
         notificationList = new ArrayList<>();
+
+        waitlist = new Waitlist();
     }
 
     /**
@@ -117,6 +130,36 @@ public class MainFragment extends Fragment {
         Context context = requireContext();
 
         FirebaseApp.initializeApp(context);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("events").get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot querySnapshot = task.getResult();
+
+                        if (querySnapshot != null) {
+                            for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                                Timestamp registrationDeadline = document.getTimestamp("registrationDate");
+
+                                if (registrationDeadline != null) {
+                                    Date now = new Date();
+                                    if (now.after(registrationDeadline.toDate()) && !document.getBoolean("lotteryConducted")) {
+                                        runLottery(document.getId(), document);
+                                        document.getReference().update("lotteryConducted", true);
+                                    }
+                                } else {
+                                    Log.e("FirestoreError", "Registration deadline not found for event: " + document.getId());
+                                }
+                            }
+                        } else {
+                            Log.e("FirestoreError", "QuerySnapshot is null.");
+                        }
+                    } else {
+                        Log.e("FirestoreError", "Error getting events", task.getException());
+                    }
+                });
+
+
         AppNotifications.createChannel(context);
 
         notificationsListView = view.findViewById(R.id.notificationsList);
@@ -129,7 +172,7 @@ public class MainFragment extends Fragment {
         loginManagement.isUserLoggedIn(isLoggedIn -> {
             if (isLoggedIn) {
                 AppNotifications.permission(requireActivity(), deviceId);
-                UserFirestore.findUser(deviceId, new UserFirestore.Callback() {
+                new UserFirestore().findUser(deviceId, new UserFirestore.Callback() {
                     @Override
                     public void onSuccess(UserInfo user) {
                         userName = view.findViewById(R.id.userName);
@@ -346,6 +389,34 @@ public class MainFragment extends Fragment {
         } else {
             noNotifications.setVisibility(View.GONE);
             notificationsListView.setVisibility(View.VISIBLE);
+        }
+    }
+    private void runLottery(String eventId, DocumentSnapshot eventDoc) {
+        if (eventDoc != null) {
+            if (!eventDoc.getString("lotteryCapacity").equals("0")) {
+                waitlist.conductLottery(eventId, Integer.parseInt(eventDoc.getString("lotteryCapacity")));
+
+                waitlist.getChosen(eventId, chosen -> {
+                    if (!chosen.isEmpty()) {
+                        ChosenEntrants chosenEntrants = new ChosenEntrants();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("chosenEntrantsData", chosen);
+                        bundle.putString("eventID", eventId);
+                        bundle.putSerializable("waitlist", waitlist);
+                        chosenEntrants.setArguments(bundle);
+
+                        // Replace fragment to show chosen entrants
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.event_view, chosenEntrants)
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                });
+            } else {
+                Log.d("Lottery", "Lottery capacity is 0, skipping lottery.");
+            }
+        } else {
+            Log.e("Lottery", "Event document is null.");
         }
     }
 
