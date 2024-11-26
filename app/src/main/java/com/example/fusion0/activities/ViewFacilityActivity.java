@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.fusion0.fragments.FavouriteFragment;
+import com.example.fusion0.fragments.ViewEventFragment;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.ProfileManagement;
 import com.example.fusion0.helpers.UserFirestore;
@@ -174,7 +175,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
                         facilitiesEventsList.setOnItemClickListener((parent, view1, position, id) -> {
                             String eventID = facility.getEvents().get(position);
 
-                            Intent intent = new Intent(ViewFacilityActivity.this, ViewEventActivity.class);
+                            Intent intent = new Intent(ViewFacilityActivity.this, ViewEventFragment.class);
                             intent.putExtra("eventID", eventID);
                             intent.putExtra("deviceID", deviceID);
                             startActivity(intent);

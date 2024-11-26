@@ -17,8 +17,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.fusion0.activities.MainActivity;
-import com.example.fusion0.activities.ViewEventActivity;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.R;
 import com.example.fusion0.adapters.ProfileListAdapter;
@@ -33,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ChosenEntrants extends Fragment {
+public class ChosenEntrantsFragment extends Fragment {
     ImageButton backButton;
     TextView chosenEntrantsCapacityRatio, fullCapacityTextView, emptyTextView;
     ListView chosenEntrantsListView;
@@ -67,7 +65,7 @@ public class ChosenEntrants extends Fragment {
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.chosen_entrants, container, false);
+        View view = inflater.inflate(R.layout.fragment_chosen_entrants, container, false);
 
         backButton = view.findViewById(R.id.backButton);
         chosenEntrantsCapacityRatio = view.findViewById(R.id.ratio);
@@ -83,7 +81,7 @@ public class ChosenEntrants extends Fragment {
         Bundle bundle = getArguments();
 
         if (bundle != null) {
-            waitlist = (Waitlist) bundle.getSerializable("waitlist");
+            waitlist = (Waitlist) bundle.getSerializable("fragment_waitlist");
 
             chosenList = (ArrayList<Map<String, String>>) bundle.getSerializable("chosenEntrantsData");
 
@@ -163,7 +161,7 @@ public class ChosenEntrants extends Fragment {
 
         backButton.setOnClickListener(v -> {
             if (bundle != null) {
-                Intent intent = new Intent(getActivity(), ViewEventActivity.class);
+                Intent intent = new Intent(getActivity(), ViewEventFragment.class);
                 intent.putExtra("eventID", bundle.getString("eventID"));
                 startActivity(intent);
             }
@@ -237,7 +235,7 @@ public class ChosenEntrants extends Fragment {
             if (users.size() == Integer.parseInt(bundle.getString("lotteryCapacity"))) {
                 fullCapacityTextView.setVisibility(View.VISIBLE);
                 fillLotteryButton.setVisibility(View.GONE);
-            }else{
+            } else{
                 fullCapacityTextView.setVisibility(View.GONE);
                 fillLotteryButton.setVisibility(View.VISIBLE);
             }
@@ -257,7 +255,7 @@ public class ChosenEntrants extends Fragment {
             if (users.size() == Integer.parseInt(bundle.getString("lotteryCapacity"))){
                 fullCapacityTextView.setVisibility(View.VISIBLE);
                 fillLotteryButton.setVisibility(View.GONE);
-            }else{
+            } else{
                 fullCapacityTextView.setVisibility(View.GONE);
                 fillLotteryButton.setVisibility(View.VISIBLE);
             }

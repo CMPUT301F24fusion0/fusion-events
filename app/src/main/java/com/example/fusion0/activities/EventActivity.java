@@ -65,7 +65,7 @@ import java.util.UUID;
 
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.models.EventInfo;
-import com.example.fusion0.fragments.Registration;
+import com.example.fusion0.fragments.RegistrationFragment;
 
 /**
  * @author Simon Haile
@@ -172,9 +172,9 @@ public class EventActivity extends AppCompatActivity {
                 String activity = "EventActivity";
                 Bundle bundle = new Bundle();
                 bundle.putString("activity", activity);
-                Registration registration = new Registration();
+                RegistrationFragment registrationFragment = new RegistrationFragment();
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.activity_add_event, registration)
+                        .replace(R.id.activity_add_event, registrationFragment)
                         .addToBackStack(null)
                         .commit();
             }
@@ -680,7 +680,7 @@ public class EventActivity extends AppCompatActivity {
                             registrationDateTextView.setVisibility(View.GONE);
                             registrationDateCalendar = null;
                         }else if (startDateCalendar.before(registrationDateCalendar)) {
-                            registrationDateRequirementsTextView.setText("Registration deadline must be before the event start date.");
+                            registrationDateRequirementsTextView.setText("RegistrationFragment deadline must be before the event start date.");
                             registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
                             registrationDateTextView.setVisibility(View.GONE);
                             registrationDateCalendar = null;
@@ -749,7 +749,7 @@ public class EventActivity extends AppCompatActivity {
                 return;
             }
             if (registrationDate == null) {
-                Toast.makeText(EventActivity.this, "Registration deadline is missing", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EventActivity.this, "RegistrationFragment deadline is missing", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (eventPoster == null) {
