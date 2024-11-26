@@ -114,7 +114,6 @@ public class ManageImageProfile {
 
     /**
      * Deletes an image from firebase.
-     * @author Nimi Akinroye
      *
      * @param callback the callback for checking if the image was successfully deleted.
      */

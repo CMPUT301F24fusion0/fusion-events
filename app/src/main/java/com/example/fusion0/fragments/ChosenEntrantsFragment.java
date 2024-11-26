@@ -180,6 +180,14 @@ public class ChosenEntrantsFragment extends Fragment {
                         @Override
                         public void onSuccess(EventInfo eventInfo) throws WriterException {
                             event = eventInfo;
+
+                            if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
+                                for (Map<String, String> user :  event.getWaitinglist()) {
+                                    if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
+                                        fullChosenEntrants.add(user);
+                                    }
+                                }
+                            }
                         }
 
                         @Override
@@ -188,13 +196,7 @@ public class ChosenEntrantsFragment extends Fragment {
                         }
                     });
                 }
-                if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
-                    for (Map<String, String> user :  event.getWaitinglist()) {
-                        if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
-                            fullChosenEntrants.add(user);
-                        }
-                    }
-                }
+
                 chosenList = fullChosenEntrants;
             });
         });

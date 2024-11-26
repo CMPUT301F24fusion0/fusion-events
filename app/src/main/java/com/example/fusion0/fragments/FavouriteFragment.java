@@ -30,6 +30,7 @@ import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.FacilitiesInfo;
 import com.example.fusion0.models.OrganizerInfo;
 import com.example.fusion0.models.UserInfo;
+import com.google.zxing.WriterException;
 
 import java.util.ArrayList;
 
@@ -99,10 +100,34 @@ public class FavouriteFragment extends Fragment {
                     } else {
                         user = userInfo;
                         ArrayList<String> events = user.getEvents();
+                        ArrayList<String> eventNames = new ArrayList<>();
 
-                        if (joinedEventsList.getAdapter() == null) {
-                            ArrayList<String> eventNames = new ArrayList<>(events);
-                            ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, eventNames);
+                        final int totalEvents = events.size();
+                        final int[] eventsFetchedCount = {0};
+
+                        for (String eventId : events) {
+                            EventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
+                                @Override
+                                public void onSuccess(EventInfo eventInfo) throws WriterException {
+                                    if (eventInfo != null) {
+                                        eventNames.add(eventInfo.getEventName());
+                                    }
+                                    eventsFetchedCount[0]++;
+
+                                    if (eventsFetchedCount[0] == totalEvents) {
+                                        ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, eventNames);
+                                        joinedEventsList.setAdapter(eventsAdapter);
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(String error) {
+                                    Log.e(TAG, "Error fetching event: " + error);
+                                }
+                            });
+                        }
+
+                        ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, eventNames);
                             joinedEventsList.setAdapter(eventsAdapter);
                         }
 
@@ -115,8 +140,6 @@ public class FavouriteFragment extends Fragment {
                         }
                         isJoinedEventsListVisible = !isJoinedEventsListVisible;
                     }
-                }
-
 
                 @Override
                 public void onFailure(String error) {
