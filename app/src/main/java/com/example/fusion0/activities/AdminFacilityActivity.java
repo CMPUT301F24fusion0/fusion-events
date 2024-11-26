@@ -77,7 +77,7 @@ public class AdminFacilityActivity extends AppCompatActivity {
                 throw new NullPointerException("Facility ID is null when attempting to edit facility: " + facility.getFacilityName());
             }
             Intent intent = new Intent(AdminFacilityActivity.this, ViewFacilityActivity.class);
-            intent.putExtra("facilityId", facilityId);
+            intent.putExtra("facilityID", facilityId);
             startActivity(intent);
         }
 

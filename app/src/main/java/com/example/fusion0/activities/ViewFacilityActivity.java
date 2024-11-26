@@ -49,6 +49,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
     private ListView facilitiesEventsList;
 
 
+
     /**
      * Called when the activity is first created. This method sets up the user interface
      * and handles the logic for displaying, editing, and deleting facility details.
@@ -83,6 +84,8 @@ public class ViewFacilityActivity extends AppCompatActivity {
         saveButton = findViewById(R.id.save_button);
         deleteButton = findViewById(R.id.delete_button);
         cancelButton = findViewById(R.id.cancel_button);
+
+
 
 
         // Back button logic
@@ -125,7 +128,10 @@ public class ViewFacilityActivity extends AppCompatActivity {
                         facilityImageView.setVisibility(View.VISIBLE);
                     }
 
-                    if (deviceID.equals(facility.getOwner())) {
+                    if (deviceID.equals(facility.getOwner()) || EventFirebase.isDeviceIDAdmin(deviceID)) {
+                        if(EventFirebase.isDeviceIDAdmin(deviceID)){
+                            Toast.makeText(ViewFacilityActivity.this, "You are an admin.", Toast.LENGTH_SHORT).show();
+                        }
                         isOwner = true;
                         toolbar.setVisibility(View.VISIBLE);
                     }

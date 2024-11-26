@@ -24,6 +24,7 @@ public class EventFirebase {
     private static final CollectionReference organizersRef;
     private static final CollectionReference facilitiesRef;
     private static final CollectionReference eventsRef;
+    private static final CollectionReference adminsRef;
 
     // Static initialization of Firebase Firestore references
     static {
@@ -31,6 +32,7 @@ public class EventFirebase {
         organizersRef = db.collection("organizers");
         facilitiesRef = db.collection("facilities");
         eventsRef = db.collection("events");
+        adminsRef = db.collection("admins");
     }
 
     /**
@@ -244,6 +246,19 @@ public class EventFirebase {
      */
     public static void deleteEvent(String eventID) {
         eventsRef.document(eventID).delete().addOnSuccessListener(documentReference -> System.out.println("Event deleted successfully.")).addOnFailureListener(error -> System.err.println("Error deleting event: " + error.getMessage()));
+    }
+
+    /**
+     * @author Malshaan Kodithuwakku
+     * Determines if deviceID is in admin collection
+     *
+     * @param deviceID The deviceID to be checked
+     *
+     * @return True if deviceID is in admin collection, false otherwise
+     */
+
+    public static boolean isDeviceIDAdmin(String deviceID) {
+        return adminsRef.document(deviceID).get().isSuccessful();
     }
 
     /**

@@ -9,14 +9,18 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textSize="18sp"
-        android:text="Facility Name"
         android:ellipsize="end"
-        android:maxLines="1" />
+        android:maxLines="1"
+        android:text="Facility Name"
+        android:textAlignment="center"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/editFacilityButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Edit" />
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/figmaBlue"
+        android:text="View"
+        android:textColor="@android:color/white" />
 </LinearLayout>
