@@ -144,10 +144,9 @@ public class FavouriteFragment extends Fragment {
                     } else {
                         organizer = organizerInfo;
 
-                        if (createdEventsList.getAdapter() == null) {
-                            ArrayAdapter<String> facilitiesAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, organizer.getEventsNames());
-                            createdEventsList.setAdapter(facilitiesAdapter);
-                        }
+                        ArrayAdapter<String> facilitiesAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, organizer.getEventsNames());
+                        createdEventsList.setAdapter(facilitiesAdapter);
+
 
                         if (isCreatedEventsListVisible) {
                             createdEventsList.setVisibility(View.GONE);
