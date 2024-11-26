@@ -90,9 +90,6 @@ public class ViewFacilityActivity extends AppCompatActivity {
 
         profileManager = new ProfileManagement();
 
-
-
-
         backButton.setOnClickListener(view -> {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.facility_view, new FavouriteFragment())
@@ -113,6 +110,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
                     facilityNameTextView.setText(facility.getFacilityName());
                     addressTextView.setText(facility.getAddress());
                     ownerTextView.setVisibility(View.GONE);
+
 
                     /*
                     new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
@@ -137,13 +135,28 @@ public class ViewFacilityActivity extends AppCompatActivity {
                         facilityImageView.setVisibility(View.VISIBLE);
                     }
 
-                    if (deviceID.equals(facility.getOwner()) || EventFirebase.isDeviceIDAdmin(deviceID)) {
-                        if(EventFirebase.isDeviceIDAdmin(deviceID)){
-                            Toast.makeText(ViewFacilityActivity.this, "You are an admin.", Toast.LENGTH_SHORT).show();
-                        }
+                    if (deviceID.equals(facility.getOwner())) {
                         isOwner = true;
                         toolbar.setVisibility(View.VISIBLE);
                     }
+
+
+                    profileManager.isDeviceIDAdmin(deviceID, new ProfileManagement.IsDeviceIDAdminCallback() {
+                        @Override
+                        public void onDeviceIDAdmin(boolean isAdmin) {
+                            if (isAdmin) {
+                                Toast.makeText(ViewFacilityActivity.this, "Admin", Toast.LENGTH_SHORT).show();
+                                isOwner = true;
+                                toolbar.setVisibility(View.VISIBLE);
+                            }
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            // do nothing
+                        }
+                    });
+
 
                     ArrayList<String> eventNames = new ArrayList<>();
                     ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(ViewFacilityActivity.this, android.R.layout.simple_list_item_1, eventNames);
