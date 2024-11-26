@@ -46,6 +46,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.example.fusion0.BuildConfig;
 import com.example.fusion0.R;
 import com.example.fusion0.activities.MainActivity;
+import com.example.fusion0.activities.ViewEventActivity;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.GeoLocation;
 import com.example.fusion0.helpers.UserFirestore;
@@ -59,7 +60,12 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AuthorAttributions;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchResolvedPhotoUriRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -72,8 +78,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -88,10 +96,10 @@ public class ViewEventFragment extends Fragment {
     private String deviceID;
     private Boolean isOwner = false;
     private Spinner eventFacility;
-    private TextView eventNameTextView, eventFacilityTextView,addFacilityText, eventDescriptionTextView,registrationDateRequirementsTextView, registrationDateTextView, dateRequirementsTextView,  eventStartDateTextView, eventEndDateTextView,eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, eventLotteryCapacityTextView,  waitinglistFullTextView;
+    private TextView eventNameTextView, eventFacilityTextView, addFacilityText, eventDescriptionTextView, registrationDateRequirementsTextView, registrationDateTextView, registrationPassedFullTextView, dateRequirementsTextView, eventStartDateTextView, eventEndDateTextView, eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, eventLotteryCapacityTextView, waitinglistFullTextView;
     private EditText eventNameEditText, eventDescriptionEditText, eventCapacityEditText, eventLotteryCapacityEditText;
     private ImageView eventPosterImageView, qrImageView;
-    private Button startDateButton, endDateButton, registrationDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton, waitinglistButton, cancelledEntrantsButton, chosenEntrantsButton, uploadImageButton, lotteryButton;
+    private Button facilityButton, startDateButton, endDateButton, registrationDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton, waitinglistButton, cancelledEntrantsButton, chosenEntrantsButton, uploadImageButton, lotteryButton;
     private ImageButton backButton;
     private EventInfo event;
     private UserInfo user;
@@ -108,14 +116,14 @@ public class ViewEventFragment extends Fragment {
 
     private Double newLongitude = null;
     private Double newLatitude = null;
-    private String newEventPoster, facility, address;
+    private String newEventPoster, facility, address, facilityID;
     private Date endDate, startDate, registrationDate;
     private FacilitiesInfo newFacility;
 
     public static Waitlist waitlist;
 
     private StorageReference storageRef;
-    
+
     public ViewEventFragment() {
         // Required empty public constructor
     }
@@ -123,7 +131,7 @@ public class ViewEventFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         storageRef = FirebaseStorage.getInstance().getReference();
         waitlist = new Waitlist();
         deviceID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -135,7 +143,7 @@ public class ViewEventFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_view_event, container, false);
     }
-    
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -149,6 +157,7 @@ public class ViewEventFragment extends Fragment {
         eventFacility = view.findViewById(R.id.spinner_facilities);
         eventFacilityTextView = view.findViewById(R.id.facilityName);
         addFacilityText = view.findViewById(R.id.add_facility_text);
+        facilityButton = view.findViewById(R.id.facility_view_button);
         autocompletePlaceFragment = view.findViewById(R.id.autocomplete_fragment);
         eventStartDateTextView = view.findViewById(R.id.start_date_text);
         eventEndDateTextView = view.findViewById(R.id.end_date_text);
@@ -161,10 +170,9 @@ public class ViewEventFragment extends Fragment {
         eventCapacityEditText = view.findViewById(R.id.editCapacity);
         eventLotteryCapacityEditText = view.findViewById(R.id.editLotteryCapacity);
         dateRequirementsTextView = view.findViewById(R.id.date_requirements_text);
-        registrationDateRequirementsTextView=view.findViewById(R.id.registration_date_requirements_text);
+        registrationDateRequirementsTextView = view.findViewById(R.id.registration_date_requirements_text);
         registrationDateTextView = view.findViewById(R.id.registration_date_text);
         registrationDateButton = view.findViewById(R.id.registration_date_button);
-
 
         eventPosterImageView = view.findViewById(R.id.uploaded_image_view);
         uploadImageButton = view.findViewById(R.id.upload_image_button);
@@ -183,17 +191,22 @@ public class ViewEventFragment extends Fragment {
         cancelButton = view.findViewById(R.id.cancel_button);
         saveButton = view.findViewById(R.id.save_button);
         waitinglistFullTextView = view.findViewById(R.id.waitinglist_full_text_view);
+        registrationPassedFullTextView = view.findViewById(R.id.registration_passed_text_view);
         lists = view.findViewById(R.id.lists);
         toolbar = view.findViewById(R.id.toolbar);
 
-        backButton.setOnClickListener(v -> {Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_mainFragment);});
+        backButton.setOnClickListener(v -> {
+            Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_mainFragment);
+        });
 
         Bundle bundle = getArguments();
         String eventID = bundle.getString("eventID");
 
         new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
             @Override
-            public void onSuccess(UserInfo userInfo) { user = userInfo; }
+            public void onSuccess(UserInfo userInfo) {
+                user = userInfo;
+            }
 
             @Override
             public void onFailure(String error) {
@@ -299,7 +312,9 @@ public class ViewEventFragment extends Fragment {
                             int capacity = Integer.parseInt(event.getCapacity());
 
                             waitlist.getAll(eventID, all -> {
-                                if (!all.contains(deviceID) & (currentEntrants.size() < capacity)) {
+                                Calendar calendar = Calendar.getInstance();
+                                Date currentDate = calendar.getTime();
+                                if (!all.contains(deviceID) & (currentEntrants.size() < capacity) & !(event.getRegistrationDate().after(currentDate))) {
                                     joinButton.setVisibility(View.VISIBLE);
                                     joinButton.setOnClickListener(view -> {
                                         new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
@@ -337,6 +352,9 @@ public class ViewEventFragment extends Fragment {
                                             }
                                         });
                                     });
+                                } else if (!all.contains(deviceID) & event.getRegistrationDate().after(currentDate)) {
+                                    registrationPassedFullTextView.setVisibility(View.VISIBLE);
+
                                 } else if (!all.contains(deviceID) & (currentEntrants.size() >= capacity)) {
                                     waitinglistFullTextView.setVisibility(View.VISIBLE);
 
@@ -400,7 +418,7 @@ public class ViewEventFragment extends Fragment {
             waitlist.getWait(eventID, wait -> {
                 if (wait.isEmpty()) {
                     Toast.makeText(context, "Waiting list is empty.", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     ArrayList<Map<String, String>> fullWaitingListEntrants = new ArrayList<>();
 
                     if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
@@ -413,7 +431,7 @@ public class ViewEventFragment extends Fragment {
                     WaitlistFragment waitlistFragment = new WaitlistFragment();
 
                     Bundle newBundle = new Bundle();
-                    newBundle.putSerializable("waitingListData",fullWaitingListEntrants);
+                    newBundle.putSerializable("waitingListData", fullWaitingListEntrants);
                     newBundle.putString("eventCapacity", event.getCapacity());
                     newBundle.putString("eventID", event.getEventID());
                     newBundle.putSerializable("fragment_waitlist", waitlist);
@@ -430,7 +448,7 @@ public class ViewEventFragment extends Fragment {
 
 
                 if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
-                    for (Map<String, String> user :  event.getWaitinglist()) {
+                    for (Map<String, String> user : event.getWaitinglist()) {
                         if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
                             fullChosenEntrants.add(user);
                         }
@@ -446,7 +464,7 @@ public class ViewEventFragment extends Fragment {
                 chosenEntrants.setArguments(newBundle);
 
                 // Launch the ChosenEntrantsFragment fragment with the filtered data
-               Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_chosenEntrantsFragment);
+                Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_chosenEntrantsFragment);
             });
         });
 
@@ -454,12 +472,12 @@ public class ViewEventFragment extends Fragment {
             waitlist.getCancel(eventID, cancel -> {
                 if (cancel.isEmpty()) {
                     Toast.makeText(context, "Cancelled entrants list is empty.", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     ArrayList<Map<String, String>> fullCancelledEntrants = new ArrayList<>();
 
 
                     if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
-                        for (Map<String, String> user :  event.getWaitinglist()) {
+                        for (Map<String, String> user : event.getWaitinglist()) {
                             if (cancel.contains(user.get("did")) && "cancel".equals(user.get("status"))) {
                                 fullCancelledEntrants.add(user);
                             }
@@ -471,7 +489,7 @@ public class ViewEventFragment extends Fragment {
                     Bundle newBundle = new Bundle();
                     newBundle.putSerializable("cancelledEntrantsData", fullCancelledEntrants);
                     newBundle.putString("eventID", event.getEventID());
-                    newBundle.putSerializable("fragment_waitlist",  waitlist);
+                    newBundle.putSerializable("fragment_waitlist", waitlist);
                     cancelledEntrantsFragment.setArguments(newBundle);
 
                     Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_cancelledEntrantsFragment);
@@ -488,7 +506,6 @@ public class ViewEventFragment extends Fragment {
             startDateButton.setVisibility(View.VISIBLE);
             endDateButton.setVisibility(View.VISIBLE);
             registrationDateButton.setVisibility(View.VISIBLE);
-
 
 
             editEventName();
@@ -517,7 +534,7 @@ public class ViewEventFragment extends Fragment {
             }
         });
 
-        cancelButton.setOnClickListener(v ->{
+        cancelButton.setOnClickListener(v -> {
             editButton.setVisibility(View.VISIBLE);
             deleteButton.setVisibility(View.VISIBLE);
             cancelButton.setVisibility(View.GONE);
@@ -545,7 +562,7 @@ public class ViewEventFragment extends Fragment {
 
         });
 
-        saveButton.setOnClickListener(v ->{
+        saveButton.setOnClickListener(v -> {
             String newEventName = eventNameEditText.getText().toString();
             String newDescription = eventDescriptionEditText.getText().toString();
 
@@ -568,6 +585,69 @@ public class ViewEventFragment extends Fragment {
             event.setDescription(newDescription);
             event.setCapacity(newEventCapacity);
             event.setLotteryCapacity(newEventLotteryCapacity);
+            if (newFacility != null) {
+                EventFirebase.addFacility(newFacility);
+                ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
+                facilitiesList.add(newFacility);
+                organizer.setFacilities(facilitiesList);
+                EventFirebase.editOrganizer(organizer);
+            }
+
+            if (!event.getFacilityID().equals(facilityID)) {
+                EventFirebase.findFacility(event.getFacilityID(), new EventFirebase.FacilityCallback() {
+                    @Override
+                    public void onSuccess(FacilitiesInfo facilitiesInfo) {
+                        if (facilitiesInfo != null) {
+                            ArrayList<String> facilityEvents = facilitiesInfo.getEvents();
+                            Log.e(TAG, " old facility: " + facilityEvents);
+
+                            facilityEvents.remove(event.getEventID());
+                            Log.e(TAG, " old facility updated: " + facilityEvents);
+
+                            facilitiesInfo.setEvents(facilityEvents);
+
+                            String facilityID = facilitiesInfo.getFacilityID();
+                            Log.e(TAG, "Facility ID: " + facilityID);
+
+                            if (facilityID != null && !facilityID.isEmpty()) {
+                                EventFirebase.editFacility(facilitiesInfo);
+                            } else {
+                                Log.e(TAG, "Invalid facility ID, cannot update facility.");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        Log.e(TAG, "Error fetching old facility: " + error);
+                    }
+                });
+
+                EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
+                    @Override
+                    public void onSuccess(FacilitiesInfo newFacility) {
+                        if (newFacility != null) {
+                            ArrayList<String> newFacilityEvents = newFacility.getEvents();
+                            Log.e(TAG, " new facility: " + newFacilityEvents);
+
+                            newFacilityEvents.add(event.getEventID());
+                            Log.e(TAG, " new facility updated: " + newFacilityEvents);
+
+                            newFacility.setEvents(newFacilityEvents);
+
+                            EventFirebase.editFacility(newFacility);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        Log.e(TAG, "Error fetching new facility: " + error);
+                    }
+                });
+
+                event.setFacilityID(facilityID);
+            }
+
             event.setFacilityName(facility);
             event.setAddress(address);
             event.setLatitude(newLatitude);
@@ -592,7 +672,8 @@ public class ViewEventFragment extends Fragment {
 
             registrationDateTextView.setVisibility(View.VISIBLE);
             eventStartDateTextView.setVisibility(View.VISIBLE);
-            eventEndDateTextView.setVisibility(View.VISIBLE);;
+            eventEndDateTextView.setVisibility(View.VISIBLE);
+            ;
             eventStartTimeTextView.setVisibility(View.VISIBLE);
             eventEndTimeTextView.setVisibility(View.VISIBLE);
 
@@ -617,7 +698,7 @@ public class ViewEventFragment extends Fragment {
             eventFacilityTextView.setVisibility(View.VISIBLE);
             eventFacility.setVisibility(View.GONE);
 
-            if (newFacility != null){
+            if (newFacility != null) {
                 EventFirebase.addFacility(newFacility);
                 ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
                 facilitiesList.add(newFacility);
@@ -781,26 +862,26 @@ public class ViewEventFragment extends Fragment {
                     registrationDateCalendar = Calendar.getInstance();
                     registrationDateCalendar.set(selectedYear, selectedMonth, selectedDay);
                     Calendar currentDate = Calendar.getInstance();
-                    if (startDate != null){
+                    if (startDate != null) {
                         if (registrationDateCalendar.before(currentDate)) {
                             registrationDateRequirementsTextView.setText("Deadline Cannot Be Before Today.");
                             registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
                             registrationDateTextView.setVisibility(View.GONE);
                             registrationDateCalendar = null;
-                        }else if (startDate.before(registrationDateCalendar.getTime())) {
+                        } else if (startDate.before(registrationDateCalendar.getTime())) {
                             registrationDateRequirementsTextView.setText("RegistrationFragment deadline must be before the event start date.");
                             registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
                             registrationDateTextView.setVisibility(View.GONE);
                             registrationDateButton.setVisibility(View.VISIBLE);
                             registrationDateCalendar = null;
-                        }else {
+                        } else {
                             String selectedDate = String.format(Locale.US, "%d/%d/%d", selectedMonth + 1, selectedDay, selectedYear);
                             registrationDateTextView.setText(selectedDate);
                             registrationDateTextView.setVisibility(View.VISIBLE);
                             registrationDateRequirementsTextView.setVisibility(View.GONE);
                             registrationDate = registrationDateCalendar.getTime();
                         }
-                    }else{
+                    } else {
                         registrationDateRequirementsTextView.setText("Please Select Start Date.");
                         registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
                         registrationDateTextView.setVisibility(View.GONE);
@@ -814,10 +895,9 @@ public class ViewEventFragment extends Fragment {
     }
 
     /**
+     * @param geoLocation Geolocation object of the user
      * @author Derin Karas
      * Proceed with join after user's location is validated
-     *
-     * @param geoLocation Geolocation object of the user
      */
     private void proceedWithJoin(GeoLocation geoLocation, View view, Context context) {
         userLocation = geoLocation.getLocation();
@@ -831,16 +911,15 @@ public class ViewEventFragment extends Fragment {
     }
 
     /**
+     * @param geoLocation Geolocation object of the user
      * @author Derin Karas
      * Validate the user's location
-     * @param geoLocation Geolocation object of the user
      */
     private void validateDistanceAndJoin(GeoLocation geoLocation, View view, Context context) {
         //geoLocation.setUserLocation(userLocation.getLatitude(), userLocation.getLongitude());
         if (geoLocation.canRegister()) {
             addUserToWaitingList(view, context);
-        }
-        else {
+        } else {
             geoLocation.showMapDialog(); //Optionally show the user a map with the event location and radius
             Toast.makeText(context, "You are outside the acceptable radius to join this event.", Toast.LENGTH_SHORT).show();
         }
@@ -857,7 +936,7 @@ public class ViewEventFragment extends Fragment {
 
         ArrayList<Map<String, String>> currentEntrants = event.getWaitinglist();
 
-        if (event.getGeolocation()){
+        if (event.getGeolocation()) {
             Map<String, String> newEntrant = new HashMap<>();
             newEntrant.put("did", deviceID);
             newEntrant.put("latitude", String.valueOf(userLocation.getLatitude()));
@@ -888,7 +967,7 @@ public class ViewEventFragment extends Fragment {
      * event name text view and showing the corresponding EditText.
      * Sets the EditText's content to the current event name.
      */
-    private void editEventName(){
+    private void editEventName() {
         eventNameTextView.setVisibility(View.GONE);
         eventNameEditText.setVisibility(View.VISIBLE);
         eventNameEditText.setText(event.getEventName());
@@ -900,7 +979,7 @@ public class ViewEventFragment extends Fragment {
      * description text view and showing the corresponding EditText.
      * Sets the EditText's content to the current description.
      */
-    private void editDescription(){
+    private void editDescription() {
         eventDescriptionTextView.setVisibility(View.GONE);
         eventDescriptionEditText.setVisibility(View.VISIBLE);
         eventDescriptionEditText.setText(event.getDescription());
@@ -913,28 +992,27 @@ public class ViewEventFragment extends Fragment {
      * capacity text view and showing the corresponding EditText.
      * Sets the EditText's content to the current capacity.
      */
-    private void editCapacity(){
+    private void editCapacity() {
         eventCapacityTextView.setVisibility(View.GONE);
         eventCapacityEditText.setVisibility(View.VISIBLE);
         eventCapacityEditText.setText(event.getCapacity());
     }
 
-    private void editLotteryCapacity(){
+    private void editLotteryCapacity() {
         eventLotteryCapacityTextView.setVisibility(View.GONE);
         eventLotteryCapacityEditText.setVisibility(View.VISIBLE);
         eventLotteryCapacityEditText.setText(event.getLotteryCapacity());
     }
 
     /**
+     * @param organizer The organizer's information used to retrieve their facilities.
      * @author Simon Haile
      * Displays a spinner to allow the event organizer to choose or add a facility for the event.
      * The spinner is populated with existing facilities, and the "Add Facility" option is added at the end.
      * If a facility is selected, its details are fetched from Firebase. If "Add Facility" is selected,
      * the user can add a new facility using a place autocomplete fragment.
-     *
-     * @param organizer The organizer's information used to retrieve their facilities.
      */
-    private void editFacility(OrganizerInfo organizer, Context context){
+    private void editFacility(OrganizerInfo organizer, Context context) {
         eventFacility.setVisibility(View.VISIBLE);
         eventFacilityTextView.setVisibility(View.GONE);
 
@@ -976,7 +1054,7 @@ public class ViewEventFragment extends Fragment {
                     addFacility(facilityNames, adapter, context); // Pass the adapter so we can update it
                 } else {
                     // If the selected facility exists, proceed with fetching it
-                    String facilityID = organizer.getFacilityIdByName(selectedFacility);
+                    facilityID = organizer.getFacilityIdByName(selectedFacility);
                     EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
                         @Override
                         public void onSuccess(FacilitiesInfo existingFacility) {
@@ -1003,14 +1081,13 @@ public class ViewEventFragment extends Fragment {
 
 
     /**
+     * @param facilityNames The list of existing facility names.
+     * @param adapter       The adapter used for the facility spinner to update the displayed options.
      * @author Simon Haile
      * Allows the user to add a new facility to the list by using a place autocomplete fragment.
      * The fragment allows the user to select a place, which is then added as a new facility.
      * The facility details (address, name, and coordinates) are captured and added to the facility list.
      * If the facility already exists in the list, a message is displayed to the user.
-     *
-     * @param facilityNames The list of existing facility names.
-     * @param adapter The adapter used for the facility spinner to update the displayed options.
      */
     private void addFacility(ArrayList<String> facilityNames, ArrayAdapter<String> adapter, Context context) {
         autocompletePlaceFragment.setVisibility(View.VISIBLE);
@@ -1019,6 +1096,8 @@ public class ViewEventFragment extends Fragment {
         if (!Places.isInitialized()) {
             Places.initialize(context.getApplicationContext(), BuildConfig.API_KEY);
         }
+
+        PlacesClient placesClient = Places.createClient(context);
 
         // Initialize the AutocompleteSupportFragment
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
@@ -1040,21 +1119,51 @@ public class ViewEventFragment extends Fragment {
                     newLongitude = latLng.longitude;
                 }
 
-                // Check if the facility name already exists in the list of facility names
-                if (facilityNames.contains(facility)) {
-                    Log.i(TAG, "Facility already exists: " + facility);
-                    // Optionally show a message to the user
-                    Toast.makeText(context.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Create new facility and proceed
-                    newFacility = new FacilitiesInfo(address, facility, deviceID, newLatitude, newLongitude, newEventPoster);
+                final List<Place.Field> fields = Collections.singletonList(Place.Field.PHOTO_METADATAS);
 
-                    // Add the new facility name to the facilityNames list
-                    facilityNames.add(facility);
+                final FetchPlaceRequest placeRequest = FetchPlaceRequest.newInstance(place.getId(), fields);
+                placesClient.fetchPlace(placeRequest).addOnSuccessListener((response) -> {
+                    Place placeDetails = response.getPlace();
 
-                    // Notify the adapter that the data has changed
-                    adapter.notifyDataSetChanged();
-                }
+                    // Get photo metadata
+                    List<PhotoMetadata> metadata = placeDetails.getPhotoMetadatas();
+                    if (metadata == null || metadata.isEmpty()) {
+                        Log.w(TAG, "No photo metadata available for this place.");
+                        return;
+                    }
+
+                    // Fetch photo URI
+                    PhotoMetadata photoMetadata = metadata.get(0);
+                    String attributions = photoMetadata.getAttributions();
+                    AuthorAttributions authorAttributions = photoMetadata.getAuthorAttributions();
+
+                    // Create and send photo request
+                    FetchResolvedPhotoUriRequest photoRequest =
+                            FetchResolvedPhotoUriRequest.builder(photoMetadata)
+                                    .setMaxWidth(500)
+                                    .setMaxHeight(300)
+                                    .build();
+
+                    placesClient.fetchResolvedPhotoUri(photoRequest)
+                            .addOnSuccessListener((photoUriResponse) -> {
+                                Uri photoUri = photoUriResponse.getUri();
+                                if (photoUri != null) {
+                                    Log.d(TAG, "Fetched photo URI: " + photoUri.toString());
+                                    String facilityImage = photoUri.toString();
+
+                                    if (facilityNames.contains(facility)) {
+                                        Toast.makeText(context.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        newFacility = new FacilitiesInfo(address, facility, deviceID, newLatitude, newLongitude, facilityImage);
+                                        facilityID = newFacility.getFacilityID();
+                                        facilityNames.add(facility);
+
+                                        // Notify the adapter that the data has changed
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                }
+                            });
+                });
             }
 
             @Override
@@ -1076,7 +1185,7 @@ public class ViewEventFragment extends Fragment {
      * the download URL for the uploaded image
      * is stored for later use.
      */
-    private void uploadNewPoster(View view, Context context){
+    private void uploadNewPoster(View view, Context context) {
         Button uploadImageButton = view.findViewById(R.id.upload_image_button);
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -1101,14 +1210,17 @@ public class ViewEventFragment extends Fragment {
             intent.setType("image/*");
             imagePickerLauncher.launch(intent);
         });
-    };
+    }
+
+    ;
 
     /**
      * Checks results after coming back from another activity
-     * @author Simon Haile
+     *
      * @param requestCode see if the activity we came back from was correct
-     * @param resultCode whether the activity finished correctly
-     * @param data the data obtained from the activity
+     * @param resultCode  whether the activity finished correctly
+     * @param data        the data obtained from the activity
+     * @author Simon Haile
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

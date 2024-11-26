@@ -196,7 +196,7 @@ public class FavouriteFragment extends Fragment {
 
                 Bundle bundle = new Bundle();
                 bundle.putString("eventID", eventID);
-                Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_viewEventFragment);
+                Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_viewEventFragment, bundle);
             });
         });
 
