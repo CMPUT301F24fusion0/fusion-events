@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.fusion0.helpers.EventFirebase;
+import com.example.fusion0.helpers.ProfileManagement;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.FacilitiesInfo;
@@ -47,6 +48,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
     private ImageButton backButton;
     private Button editButton, saveButton, deleteButton, cancelButton;
     private ListView facilitiesEventsList;
+    private ProfileManagement profileManager;
 
 
 
@@ -84,6 +86,8 @@ public class ViewFacilityActivity extends AppCompatActivity {
         saveButton = findViewById(R.id.save_button);
         deleteButton = findViewById(R.id.delete_button);
         cancelButton = findViewById(R.id.cancel_button);
+
+        profileManager = new ProfileManagement();
 
 
 
