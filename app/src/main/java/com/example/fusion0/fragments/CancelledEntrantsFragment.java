@@ -15,7 +15,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.fusion0.activities.ViewEventActivity;
 import com.example.fusion0.adapters.ProfileListAdapter;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
@@ -140,7 +139,7 @@ public class CancelledEntrantsFragment extends Fragment {
 
         backButton.setOnClickListener(v -> {
             if (bundle != null) {
-                Intent intent = new Intent(getActivity(), ViewEventActivity.class);
+                Intent intent = new Intent(getActivity(), ViewEventFragment.class);
                 intent.putExtra("eventID", bundle.getString("eventID"));
                 startActivity(intent);
             }

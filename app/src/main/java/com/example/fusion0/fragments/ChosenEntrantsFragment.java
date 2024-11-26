@@ -17,7 +17,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.fusion0.activities.ViewEventActivity;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.R;
 import com.example.fusion0.adapters.ProfileListAdapter;
@@ -162,7 +161,7 @@ public class ChosenEntrantsFragment extends Fragment {
 
         backButton.setOnClickListener(v -> {
             if (bundle != null) {
-                Intent intent = new Intent(getActivity(), ViewEventActivity.class);
+                Intent intent = new Intent(getActivity(), ViewEventFragment.class);
                 intent.putExtra("eventID", bundle.getString("eventID"));
                 startActivity(intent);
             }
@@ -236,7 +235,7 @@ public class ChosenEntrantsFragment extends Fragment {
             if (users.size() == Integer.parseInt(bundle.getString("lotteryCapacity"))) {
                 fullCapacityTextView.setVisibility(View.VISIBLE);
                 fillLotteryButton.setVisibility(View.GONE);
-            }else{
+            } else{
                 fullCapacityTextView.setVisibility(View.GONE);
                 fillLotteryButton.setVisibility(View.VISIBLE);
             }
@@ -256,7 +255,7 @@ public class ChosenEntrantsFragment extends Fragment {
             if (users.size() == Integer.parseInt(bundle.getString("lotteryCapacity"))){
                 fullCapacityTextView.setVisibility(View.VISIBLE);
                 fillLotteryButton.setVisibility(View.GONE);
-            }else{
+            } else{
                 fullCapacityTextView.setVisibility(View.GONE);
                 fillLotteryButton.setVisibility(View.VISIBLE);
             }

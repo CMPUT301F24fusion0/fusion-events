@@ -1,11 +1,8 @@
 package com.example.fusion0.fragments;
 
-import static android.app.Activity.RESULT_OK;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,7 +20,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.fusion0.R;
-import com.example.fusion0.activities.ViewEventActivity;
 import com.example.fusion0.helpers.QRCode;
 import com.google.zxing.Result;
 

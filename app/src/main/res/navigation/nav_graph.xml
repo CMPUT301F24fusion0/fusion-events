@@ -163,7 +163,9 @@
         android:name="com.example.fusion0.fragments.WaitlistFragment"
         android:label="Waitlist Fragment"
         tools:layout="@layout/fragment_waitlist">
-
+        <action
+            android:id="@+id/action_cancelledEntrantsFragment_to_viewEventFragment"
+            app:destination="@id/viewEventFragment"/>
     </fragment>
 
     <fragment
@@ -171,7 +173,9 @@
         android:name="com.example.fusion0.fragments.ChosenEntrantsFragment"
         android:label="Chosen Entrants Fragment"
         tools:layout="@layout/fragment_chosen_entrants">
-
+        <action
+            android:id="@+id/action_cancelledEntrantsFragment_to_viewEventFragment"
+            app:destination="@id/viewEventFragment"/>
     </fragment>
 
     <fragment
@@ -179,6 +183,8 @@
         android:name="com.example.fusion0.fragments.CancelledEntrantsFragment"
         android:label="Cancelled Entrants Fragment"
         tools:layout="@layout/fragment_cancelled_entrants">
-
+        <action
+            android:id="@+id/action_cancelledEntrantsFragment_to_viewEventFragment"
+            app:destination="@id/viewEventFragment"/>
     </fragment>
 </navigation>

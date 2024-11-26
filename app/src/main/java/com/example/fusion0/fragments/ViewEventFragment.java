@@ -46,7 +46,6 @@ import com.bumptech.glide.request.transition.Transition;
 import com.example.fusion0.BuildConfig;
 import com.example.fusion0.R;
 import com.example.fusion0.activities.MainActivity;
-import com.example.fusion0.activities.ViewEventActivity;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.GeoLocation;
 import com.example.fusion0.helpers.UserFirestore;
@@ -102,6 +101,7 @@ public class ViewEventFragment extends Fragment {
     private Button facilityButton, startDateButton, endDateButton, registrationDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton, waitinglistButton, cancelledEntrantsButton, chosenEntrantsButton, uploadImageButton, lotteryButton;
     private ImageButton backButton;
     private EventInfo event;
+    private EventFirebase eventFirebase;
     private UserInfo user;
     private OrganizerInfo organizer;
     private LinearLayout toolbar;
@@ -325,7 +325,7 @@ public class ViewEventFragment extends Fragment {
                                                     Log.d("Checkpoint", "the user is not null");
                                                     if (event.getGeolocation()) {
                                                         GeoLocation geoLocation = new GeoLocation(getActivity(), context, event.getLatitude(), event.getLongitude(), event.getRadius());
-                                                        Log.d("ViewEventActivity", "Radius: " + event.getRadius());
+                                                        Log.d("ViewEventFragment", "Radius: " + event.getRadius());
                                                         if (!geoLocation.isLocationPermissionGranted()) {
                                                             geoLocation.requestLocationPermission();
                                                         } else {
@@ -335,7 +335,7 @@ public class ViewEventFragment extends Fragment {
                                                         addUserToWaitingList(view, context);
                                                     }
                                                 } else {
-                                                    String activity = "ViewEventActivity";
+                                                    String activity = "ViewEventFragment";
                                                     Log.d("Checkpoint", "the user is null, we're going to registrationFragment");
                                                     RegistrationFragment registrationFragment = new RegistrationFragment();
                                                     Bundle bundle = new Bundle();
@@ -405,7 +405,7 @@ public class ViewEventFragment extends Fragment {
 
                 @Override
                 public void onFailure(String error) {
-                    Log.e("ViewEventActivity", "Error fetching event: " + error);
+                    Log.e("ViewEventFragment", "Error fetching event: " + error);
                     Toast.makeText(context, "Failed to load event details.", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -521,8 +521,22 @@ public class ViewEventFragment extends Fragment {
                         .setTitle("Confirm Deletion")
                         .setMessage("Are you sure you want to delete this event?")
                         .setPositiveButton("Yes", (dialog, which) -> {
-                            EventFirebase.deleteEvent(event.getEventID());
-                            Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_mainFragment);
+                            ArrayList<String> eventNames = organizer.getEventsNames();
+                            eventNames.remove(event.getFacilityName());
+                            organizer.setEventsNames(eventNames);
+
+                            ArrayList<EventInfo> events = organizer.getEvents();
+                            for (int i = 0; i < events.size(); i++) {
+                                EventInfo currentEvent = events.get(i);
+                                if (currentEvent.getEventID().equals(event.getEventID())) {
+                                    events.remove(i);
+                                    break;
+                                }
+                            }
+                            organizer.setEvents(events);
+                            eventFirebase.deleteEvent(event.getEventID());
+                            eventFirebase.editOrganizer(organizer);
+                            Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_favouriteFragment);
                         })
                         .setNegativeButton("Cancel", (dialog, which) -> {
                             dialog.dismiss();
@@ -648,7 +662,11 @@ public class ViewEventFragment extends Fragment {
                 event.setFacilityID(facilityID);
             }
 
+            ArrayList<String> eventNames = organizer.getEventsNames();
+            eventNames.remove(event.getFacilityName());
             event.setFacilityName(facility);
+            eventNames.add(facility);
+            organizer.setEventsNames(eventNames);
             event.setAddress(address);
             event.setLatitude(newLatitude);
             event.setLongitude(newLongitude);
@@ -715,7 +733,19 @@ public class ViewEventFragment extends Fragment {
             endDateButton.setVisibility(View.GONE);
             registrationDateButton.setVisibility(View.GONE);
 
-            EventFirebase.editEvent(event);
+            ArrayList<EventInfo> events = organizer.getEvents();
+            for (int i = 0; i < events.size(); i++) {
+                EventInfo currentEvent = events.get(i);
+                // Check if the event ID matches the edited event's ID
+                if (currentEvent.getEventID().equals(event.getEventID())) {
+                    events.set(i, event);
+                    break;
+                }
+            }
+            organizer.setEvents(events);
+            eventFirebase.editOrganizer(organizer);
+            eventFirebase.editEvent(event);
+
             Toast.makeText(context, "Event updated successfully!", Toast.LENGTH_SHORT).show();
         });
 
