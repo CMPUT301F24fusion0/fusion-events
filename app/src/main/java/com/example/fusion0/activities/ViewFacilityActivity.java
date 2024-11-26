@@ -133,11 +133,9 @@ public class ViewFacilityActivity extends AppCompatActivity {
                     }
 
 
+
                     // Check if the user is an owner of the facility or an admin
-                    if (deviceID.equals(facility.getOwner()) || EventFirebase.isDeviceIDAdmin(deviceID)) {
-                        if(EventFirebase.isDeviceIDAdmin(deviceID)){
-                            Toast.makeText(ViewFacilityActivity.this, "You are an admin.", Toast.LENGTH_SHORT).show();
-                        }
+                    if (deviceID.equals(facility.getOwner())) {
                         isOwner = true;
                         toolbar.setVisibility(View.VISIBLE);
                     }
