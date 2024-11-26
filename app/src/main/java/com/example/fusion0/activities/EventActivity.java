@@ -769,6 +769,7 @@ public class EventActivity extends AppCompatActivity {
                         deviceID,
                         eventName.getText().toString(),
                         address,
+                        facility.getFacilityID(),
                         facilityName,
                         capacity.getText().toString(),
                         lotteryCapacity.getText().toString(),

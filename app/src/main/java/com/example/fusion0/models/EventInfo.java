@@ -28,6 +28,7 @@ public class EventInfo {
     private String description;
     private String address;
     private String facilityName;
+    private String facilityID;
     private String capacity;
     private String lotteryCapacity;
     private Date startDate;
@@ -39,11 +40,12 @@ public class EventInfo {
     private String eventPoster;
     private String qrCode;
     EventFirebase firebase;
-    private Integer acceptedCount;
+    private String acceptedCount;
     private Boolean geolocation;
     private Double latitude;
     private Double longitude;
     private Integer radius;
+    private Boolean lotteryConducted = false;
 
     /**
      * Default constructor that initializes an empty event with default values.
@@ -56,6 +58,7 @@ public class EventInfo {
         this.organizer = "";
         this.eventName = "";
         this.address = "";
+        this.facilityID ="";
         this.facilityName = "";
         this.capacity = "0";
         this.description = "";
@@ -66,7 +69,7 @@ public class EventInfo {
         this.qrCode = (new QRCode(eventID)).getQrCode();
         this.waitinglist = new ArrayList<Map<String, String>>();
         this.firebase = new EventFirebase();
-        this.acceptedCount = 0;
+        this.acceptedCount = "0";
         this.eventPoster = null;
         this.geolocation = false;
         this.latitude = 0.0;
@@ -74,6 +77,7 @@ public class EventInfo {
         this.radius = 0;
         this.lotteryCapacity ="0";
         this.registrationDate = new Date();
+        this.lotteryConducted = false;
     }
 
     /**
@@ -97,7 +101,49 @@ public class EventInfo {
      * @param radius         The radius within which the event is valid (if geolocation is enabled).
      * @throws WriterException If an error occurs while generating the QR code.
      */
-    public EventInfo(String organizer, String eventName, String address, String facilityName, String capacity, String lotteryCapacity, String description, Date startDate, Date endDate, Date registrationDate, String startTime, String endTime, String eventPoster, Boolean geolocation, Double longitude, Double latitude, Integer radius) throws WriterException {
+    public EventInfo(String organizer, String eventName, String address, String facilityID, String facilityName, String capacity, String lotteryCapacity, String description, Date startDate, Date endDate, Date registrationDate, String startTime, String endTime, String eventPoster, Boolean geolocation, Double longitude, Double latitude, Integer radius) throws WriterException {
+        this.eventID = UUID.randomUUID().toString();
+        this.organizer = organizer;
+        this.eventName = eventName;
+        this.address = address;
+        this.facilityID = facilityID;
+        this.facilityName = facilityName;
+        this.capacity = capacity;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.qrCode =(new QRCode(eventID)).getQrCode();
+        this.waitinglist = new ArrayList<>();
+        this.firebase = new EventFirebase();
+        this.acceptedCount = "0";
+        this.eventPoster = eventPoster;
+        this.geolocation = geolocation;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.radius = radius;
+        this.lotteryCapacity = lotteryCapacity;
+        this.registrationDate = registrationDate;
+        this.lotteryConducted = false;
+    }
+
+    /**
+     * This constructor is used for testing only.
+     *
+     * @param organizer      The organizer of the event.
+     * @param eventName      The name of the event.
+     * @param address        The address where the event is held.
+     * @param facilityName   The name of the facility hosting the event.
+     * @param capacity       The maximum number of participants allowed for the event.
+     * @param description    A description of the event.
+     * @param startDate      The starting date of the event.
+     * @param endDate        The ending date of the event.
+     * @param startTime      The starting time of the event.
+     * @param endTime        The ending time of the event.
+     * @param eventPoster    The URL or path of the event poster image.
+     */
+    public EventInfo(String organizer, String eventName, String address, String facilityName, String capacity, String lotteryCapacity, String description, Date startDate, Date endDate, Date registrationDate, String startTime, String endTime, String eventPoster) {
         this.eventID = UUID.randomUUID().toString();
         this.organizer = organizer;
         this.eventName = eventName;
@@ -109,10 +155,8 @@ public class EventInfo {
         this.endDate = endDate;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.qrCode =(new QRCode(eventID)).getQrCode();
         this.waitinglist = new ArrayList<>();
-        this.firebase = new EventFirebase();
-        this.acceptedCount = 0;
+        this.acceptedCount = "0";
         this.eventPoster = eventPoster;
         this.geolocation = geolocation;
         this.latitude = latitude;
@@ -120,6 +164,7 @@ public class EventInfo {
         this.radius = radius;
         this.lotteryCapacity = lotteryCapacity;
         this.registrationDate = registrationDate;
+        this.lotteryConducted = false;
     }
 
     /**
@@ -134,6 +179,7 @@ public class EventInfo {
         event.put("eventName", this.eventName);
         event.put("address", this.address);
         event.put("facilityName", this.facilityName);
+        event.put("facilityID", this.facilityID);
         event.put("capacity", this.capacity);
         event.put("startDate", this.startDate);
         event.put("endDate", this.endDate);
@@ -164,6 +210,15 @@ public class EventInfo {
 
     public void setOrganizer(String organizer) {
         this.organizer = organizer;
+    }
+
+    public String getFacilityID(){
+        return facilityID;
+    }
+
+
+    public void setFacilityID(String facilityID) {
+        this.facilityID = facilityID;
     }
 
 
@@ -219,15 +274,15 @@ public class EventInfo {
         return lotteryCapacity;
     }
 
-    public void setLotteryCapacity(String capacity) {
+    public void setLotteryCapacity(String lotteryCapacity) {
         this.lotteryCapacity = lotteryCapacity;
     }
 
-    public Integer getAcceptedCount() {
+    public String getAcceptedCount() {
         return acceptedCount;
     }
 
-    public void setAcceptedCount(Integer acceptedCount) {
+    public void setAcceptedCount(String acceptedCount) {
         this.acceptedCount = acceptedCount;
     }
 
@@ -313,6 +368,14 @@ public class EventInfo {
 
     public void setGeolocation(Boolean geolocation) {
         this.geolocation = geolocation;
+    }
+
+    public Boolean getLotteryConducted() {
+        return lotteryConducted;
+    }
+
+    public void setLotteryConducted(Boolean lotteryConducted) {
+        this.lotteryConducted = lotteryConducted;
     }
 
     public Double getLongitude() {

@@ -13,6 +13,9 @@ import java.util.HashMap;
  * This class serves as the connection to the Firebase. It includes common CRUD operations.
  */
 public class UserFirestore {
+
+    private FirebaseFirestore db;
+
     /**
      * @author Sehej Brar
      * This interface is needed due to the asynchronous nature of Firestore.
@@ -23,10 +26,24 @@ public class UserFirestore {
         void onFailure(String error);
     }
 
-    private static final CollectionReference usersRef;
+    private final CollectionReference usersRef;
 
-    static {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+    /**
+     * Normal constructor
+     * @author Sehej Brar
+     */
+    public UserFirestore() {
+        db = FirebaseFirestore.getInstance();
+        usersRef = db.collection("users");
+    }
+
+    /**
+     * This allows for the database to be mocked
+     * @author Sehej Brar
+     * @param db the mocked database
+     */
+    public UserFirestore(FirebaseFirestore db) {
+        this.db = db;
         usersRef = db.collection("users");
     }
 
@@ -56,7 +73,7 @@ public class UserFirestore {
      * @param dID is the primary key for each user and each user has a unique device ID
      * @param callback is the interface needed due to the asynchronous nature of Firebase
      */
-    public static void findUser(String dID, Callback callback) {
+    public void findUser(String dID, Callback callback) {
         usersRef.document(dID).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -80,7 +97,7 @@ public class UserFirestore {
      * @param field is the field that is to be changed (i.e. first name, last name, etc.)
      * @param newFields is a list of new attributes for the user
      */
-    public static void editUser(UserInfo user, String field, ArrayList<String> newFields) {
+    public void editUser(UserInfo user, String field, ArrayList<String> newFields) {
         String newField;
         field = field.toLowerCase();
 
@@ -120,7 +137,7 @@ public class UserFirestore {
      * Finds the user and then edit the events list.
      * @param user is the user instance
      */
-    public static void editUserEvents(UserInfo user) {
+    public void editUserEvents(UserInfo user) {
         String userID = user.getDeviceID();
         usersRef.document(userID).set(user, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> System.out.println("User data updated successfully."))

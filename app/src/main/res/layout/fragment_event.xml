@@ -123,7 +123,7 @@
                 android:layout_marginBottom="2dp"
                 android:visibility="gone">
             </TextView>
-            <fragment
+            <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/autocomplete_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -170,7 +170,7 @@
                 android:layout_marginEnd="100dp"
                 android:hint="Enter Radius In Km"
                 android:fontFamily="sans-serif"
-                android:textColor="@color/figmaBlue"
+                android:textColor="@color/textColor"
                 android:textFontWeight="600"
                 android:textSize="20sp"
                 android:layout_marginBottom="2dp"

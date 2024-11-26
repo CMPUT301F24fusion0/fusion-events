@@ -123,14 +123,15 @@
                 android:textSize="20sp"
                 android:layout_marginBottom="2dp"
                 android:visibility="gone">
+
             </TextView>
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/autocomplete_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-                android:visibility="gone"
-                />
+                android:visibility="gone" />
+
 
             <TextView
                 android:id="@+id/geolocation_text"
@@ -156,7 +157,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Acceptable Sign Up Radius (Km):"
-                android:textColor="@color/figmaBlue"
+                android:textColor="@color/textColor"
                 android:textFontWeight="600"
                 android:textSize="20sp"
                 android:layout_marginBottom="2dp"
@@ -171,7 +172,7 @@
                 android:layout_marginEnd="100dp"
                 android:hint="Enter Radius In Km"
                 android:fontFamily="sans-serif"
-                android:textColor="@color/figmaBlue"
+                android:textColor="@color/textColor"
                 android:textFontWeight="600"
                 android:textSize="20sp"
                 android:layout_marginBottom="2dp"

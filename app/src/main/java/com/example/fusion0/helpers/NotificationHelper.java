@@ -24,7 +24,7 @@ public class NotificationHelper {
      * @param callback callback as firebase is asynchronous
      */
     public static void updateNotifications(String deviceId, Callback callback) {
-        UserFirestore.findUser(deviceId, new UserFirestore.Callback() {
+        new UserFirestore().findUser(deviceId, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
                 ArrayList<String> notifications = user.getNotifications();
@@ -59,7 +59,7 @@ public class NotificationHelper {
      * @param callback callback for updated notification list
      */
     public static void deleteNotification(String deviceId, NotificationItem notificationItem, Callback callback) {
-        UserFirestore.findUser(deviceId, new UserFirestore.Callback() {
+        new UserFirestore().findUser(deviceId, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
                 user.editMode(true);
