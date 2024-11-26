@@ -91,9 +91,13 @@ public class ViewFacilityActivity extends AppCompatActivity {
         profileManager = new ProfileManagement();
 
         backButton.setOnClickListener(view -> {
+            finish();
+            /*
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.facility_view, new FavouriteFragment())
                     .commit();
+
+             */
         });
 
         Intent intentReceived = getIntent();
