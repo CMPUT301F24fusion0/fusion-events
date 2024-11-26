@@ -20,7 +20,6 @@ import com.example.fusion0.adapters.ProfileListAdapter;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.helpers.Waitlist;
-import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.UserInfo;
 import com.example.fusion0.R;
 
@@ -28,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class CancelledEntrants extends Fragment {
+public class CancelledEntrantsFragment extends Fragment {
     ImageButton backButton;
     ListView cancelledEntrantsListView;
     TextView emptyTextView;
@@ -53,7 +52,7 @@ public class CancelledEntrants extends Fragment {
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.cancelled_entrants, container, false);
+        View view = inflater.inflate(R.layout.fragment_cancelled_entrants, container, false);
 
         backButton = view.findViewById(R.id.backButton);
         cancelledEntrantsListView = view.findViewById(R.id.cancelledEntrantsListView);
@@ -64,7 +63,7 @@ public class CancelledEntrants extends Fragment {
         Bundle bundle = getArguments();
 
         if (bundle != null) {
-            waitlist = (Waitlist) bundle.getSerializable("waitlist");
+            waitlist = (Waitlist) bundle.getSerializable("fragment_waitlist");
 
             ArrayList<Map<String, String>> cancelledList = (ArrayList<Map<String, String>>) bundle.getSerializable("cancelledEntrantsData");
 

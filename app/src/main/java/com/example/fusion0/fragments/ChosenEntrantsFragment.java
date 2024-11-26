@@ -17,7 +17,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.fusion0.activities.MainActivity;
 import com.example.fusion0.activities.ViewEventActivity;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.R;
@@ -33,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ChosenEntrants extends Fragment {
+public class ChosenEntrantsFragment extends Fragment {
     ImageButton backButton;
     TextView chosenEntrantsCapacityRatio, fullCapacityTextView, emptyTextView;
     ListView chosenEntrantsListView;
@@ -67,7 +66,7 @@ public class ChosenEntrants extends Fragment {
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.chosen_entrants, container, false);
+        View view = inflater.inflate(R.layout.fragment_chosen_entrants, container, false);
 
         backButton = view.findViewById(R.id.backButton);
         chosenEntrantsCapacityRatio = view.findViewById(R.id.ratio);
@@ -83,7 +82,7 @@ public class ChosenEntrants extends Fragment {
         Bundle bundle = getArguments();
 
         if (bundle != null) {
-            waitlist = (Waitlist) bundle.getSerializable("waitlist");
+            waitlist = (Waitlist) bundle.getSerializable("fragment_waitlist");
 
             chosenList = (ArrayList<Map<String, String>>) bundle.getSerializable("chosenEntrantsData");
 

@@ -18,7 +18,7 @@
             app:destination="@id/qrFragment" />
         <action
             android:id="@+id/action_mainFragment_to_eventFragment"
-            app:destination="@id/eventFragment"/>
+            app:destination="@id/addEventFragment"/>
         <action
             android:id="@+id/action_mainFragment_to_favouriteFragment"
             app:destination="@id/favouriteFragment"/>
@@ -40,7 +40,7 @@
             app:destination="@id/qrFragment" />
         <action
             android:id="@+id/action_profileFragment_to_eventFragment"
-            app:destination="@id/eventFragment"/>
+            app:destination="@id/addEventFragment"/>
         <action
             android:id="@+id/action_profileFragment_to_favouriteFragment"
             app:destination="@id/favouriteFragment" />
@@ -57,11 +57,14 @@
         <action
             android:id="@+id/action_qrFragment_to_mainFragment"
             app:destination="@id/mainFragment"/>
+        <action
+            android:id="@+id/action_qrFragment_to_viewEventFragment"
+            app:destination="@id/viewEventFragment"/>
     </fragment>
 
     <fragment
-        android:id="@+id/eventFragment"
-        android:name="com.example.fusion0.fragments.EventFragment"
+        android:id="@+id/addEventFragment"
+        android:name="com.example.fusion0.fragments.AddEventFragment"
         android:label="Event Fragment"
         tools:layout="@layout/fragment_event">
         <action
@@ -82,10 +85,13 @@
             app:destination="@id/qrFragment" />
         <action
             android:id="@+id/action_favouriteFragment_to_eventFragment"
-            app:destination="@id/eventFragment"/>
+            app:destination="@id/addEventFragment"/>
         <action
             android:id="@+id/action_favouriteFragment_to_profileFragment"
             app:destination="@id/profileFragment"/>
+        <action
+            android:id="@+id/action_favouriteFragment_to_viewEventFragment"
+            app:destination="@id/viewEventFragment"/>>
     </fragment>
 
     <fragment
@@ -113,7 +119,7 @@
 
     <fragment
         android:id="@+id/registrationFragment"
-        android:name="com.example.fusion0.fragments.Registration"
+        android:name="com.example.fusion0.fragments.RegistrationFragment"
         android:label="Registration Fragment"
         tools:layout="@layout/fragment_registration">
         <action
@@ -121,9 +127,58 @@
             app:destination="@id/profileFragment"/>
         <action
             android:id="@+id/action_registrationFragment_to_eventFragment"
-            app:destination="@id/eventFragment"/>
+            app:destination="@id/addEventFragment"/>
         <action
             android:id="@+id/action_registrationFragment_to_favFragment"
             app:destination="@id/favouriteFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/viewEventFragment"
+        android:name="com.example.fusion0.fragments.ViewEventFragment"
+        android:label="View Event Fragment"
+        tools:layout="@layout/fragment_view_event">
+        <action
+            android:id="@+id/action_viewEventFragment_to_mainFragment"
+            app:destination="@id/mainFragment"/>
+        <action
+            android:id="@+id/action_viewEventFragment_to_waitlistFragment"
+            app:destination="@id/waitlistFragment" />
+        <action
+            android:id="@+id/action_viewEventFragment_to_chosenEntrantsFragment"
+            app:destination="@id/chosenEntrantsFragment"/>
+        <action
+            android:id="@+id/action_viewEventFragment_to_cancelledEntrantsFragment"
+            app:destination="@id/cancelledEntrantsFragment"/>
+        <action
+            android:id="@+id/action_viewEventFragment_to_favouriteFragment"
+            app:destination="@+id/favouriteFragment"/>
+        <action
+            android:id="@+id/action_viewEventFragment_to_registrationFragment"
+            app:destination="@+id/registrationFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/waitlistFragment"
+        android:name="com.example.fusion0.fragments.WaitlistFragment"
+        android:label="Waitlist Fragment"
+        tools:layout="@layout/fragment_waitlist">
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/chosenEntrantsFragment"
+        android:name="com.example.fusion0.fragments.ChosenEntrantsFragment"
+        android:label="Chosen Entrants Fragment"
+        tools:layout="@layout/fragment_chosen_entrants">
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/cancelledEntrantsFragment"
+        android:name="com.example.fusion0.fragments.CancelledEntrantsFragment"
+        android:label="Cancelled Entrants Fragment"
+        tools:layout="@layout/fragment_cancelled_entrants">
+
     </fragment>
 </navigation>

@@ -82,7 +82,7 @@ public class UserInfo {
 
     /**
      * @author Sehej Brar
-     * Gets the events for a user (on waitlist)
+     * Gets the events for a user (on fragment_waitlist)
      * @return an arraylist of events
      */
     @PropertyName("events")
@@ -92,7 +92,7 @@ public class UserInfo {
 
     /**
      * @author Sehej Brar
-     * Sets the events for a user (on waitlist)
+     * Sets the events for a user (on fragment_waitlist)
      * @param events list of events
      */
     @PropertyName("events")

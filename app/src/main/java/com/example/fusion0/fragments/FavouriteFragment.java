@@ -171,9 +171,9 @@ public class FavouriteFragment extends Fragment {
                 EventInfo event = organizer.getEvents().get(position);
                 String eventID = event.getEventID();
 
-                Intent intent = new Intent(requireActivity(), ViewEventActivity.class);
-                intent.putExtra("eventID", eventID);
-                startActivity(intent);
+                Bundle bundle = new Bundle();
+                bundle.putString("eventID", eventID);
+                Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_viewEventFragment);
             });
         });
 

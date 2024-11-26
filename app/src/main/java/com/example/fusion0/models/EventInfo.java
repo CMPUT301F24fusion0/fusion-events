@@ -418,8 +418,8 @@ public class EventInfo {
      * Removes a user from the waiting list
      * @author Sehej Brar
      * @param deviceID device id
-     * @param waitingList an arraylist of maps containing waitlist information
-     * @return an arraylist of maps containing waitlist information
+     * @param waitingList an arraylist of maps containing fragment_waitlist information
+     * @return an arraylist of maps containing fragment_waitlist information
      */
     public ArrayList<Map<String, String>> removeUserFromWaitingList(String deviceID, ArrayList<Map<String, String>> waitingList) {
         waitingList.removeIf(next -> next.containsKey("did") && Objects.equals(next.get("did"), deviceID));

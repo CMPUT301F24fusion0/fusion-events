@@ -75,7 +75,7 @@ public class EventInfoTest {
     }
 
     /**
-     * See if we get an error when the remove user off waitlist does not hold
+     * See if we get an error when the remove user off fragment_waitlist does not hold
      * @author Sehej Brar
      */
     @Test

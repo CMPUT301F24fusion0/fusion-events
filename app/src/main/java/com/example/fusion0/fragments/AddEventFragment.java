@@ -43,9 +43,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.fusion0.BuildConfig;
-import com.example.fusion0.activities.MainActivity;
 import com.example.fusion0.helpers.EventFirebase;
-import com.example.fusion0.helpers.LoginManagement;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.FacilitiesInfo;
 import com.example.fusion0.models.OrganizerInfo;
@@ -74,18 +72,17 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
  * @author Simon Haile
  * This activity allows users to create events
  */
-public class EventFragment extends Fragment {
+public class AddEventFragment extends Fragment {
     private FirebaseStorage storage;
     private StorageReference storageRef;
 
-    private static final String TAG = "EventFragment";
+    private static final String TAG = "AddEventFragment";
     private EditText eventName,description, capacity, radius, lotteryCapacity;
     private androidx.fragment.app.FragmentContainerView autocompletePlaceFragment;
     private Calendar startDateCalendar , registrationDateCalendar;
@@ -119,7 +116,7 @@ public class EventFragment extends Fragment {
      * Required empty public constructor for firebase
      * @author Simon Haile
      */
-    public EventFragment() {
+    public AddEventFragment() {
         // Required empty public constructor
     }
 
@@ -289,10 +286,8 @@ public class EventFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Uri resultUri = UCrop.getOutput(data);
-
-        Log.d(TAG, "Result URI: " + resultUri.toString());
         if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+            Uri resultUri = UCrop.getOutput(data);
             if (resultUri != null) {
                 uploadedImageView.setVisibility(View.VISIBLE);
                 uploadedImageView.setImageURI(resultUri);
@@ -752,7 +747,7 @@ public class EventFragment extends Fragment {
                             registrationDateTextView.setVisibility(View.GONE);
                             registrationDateCalendar = null;
                         }else if (startDateCalendar.before(registrationDateCalendar)) {
-                            registrationDateRequirementsTextView.setText("Registration deadline must be before the event start date.");
+                            registrationDateRequirementsTextView.setText("RegistrationFragment deadline must be before the event start date.");
                             registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
                             registrationDateTextView.setVisibility(View.GONE);
                             registrationDateCalendar = null;
@@ -822,7 +817,7 @@ public class EventFragment extends Fragment {
                 return;
             }
             if (registrationDate == null) {
-                Toast.makeText(context, "Registration deadline is missing", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "RegistrationFragment deadline is missing", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (eventPoster == null) {
