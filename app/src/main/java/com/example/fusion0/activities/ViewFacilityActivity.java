@@ -265,6 +265,19 @@ public class ViewFacilityActivity extends AppCompatActivity {
             }
         });
 
+        facilityImageView.setOnClickListener(view -> {
+            if (isOwner) {
+                new AlertDialog.Builder(ViewFacilityActivity.this)
+                        .setTitle("Delete Image")
+                        .setMessage("Are you sure you want to delete this image?")
+                        .setPositiveButton(android.R.string.yes, (dialog, which) -> {facility.setFacilityImage(null);
+                            EventFirebase.editFacility(facility);
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .show();
+            }
+        });
+
         cancelButton.setOnClickListener(view ->{
             facilityNameTextView.setVisibility(View.VISIBLE);
             addressTextView.setVisibility(View.VISIBLE);
