@@ -105,7 +105,9 @@ public class ViewFacilityActivity extends AppCompatActivity {
                     facility = facilitiesInfo;
                     facilityNameTextView.setText(facility.getFacilityName());
                     addressTextView.setText(facility.getAddress());
+                    ownerTextView.setVisibility(View.GONE);
 
+                    /*
                     new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
                         @Override
                         public void onSuccess(UserInfo user) {
@@ -119,6 +121,8 @@ public class ViewFacilityActivity extends AppCompatActivity {
 
                         }
                     });
+
+                     */
                     if (facility.getFacilityImage() != null && !facility.getFacilityImage().isEmpty()) {
                         Glide.with(ViewFacilityActivity.this)
                                 .load(facility.getFacilityImage())
