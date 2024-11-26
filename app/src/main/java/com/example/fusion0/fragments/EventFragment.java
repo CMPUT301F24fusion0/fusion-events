@@ -105,6 +105,7 @@ public class EventFragment extends Fragment {
 
     private String deviceID;
     private String address;
+    private String facilityID;
     private String facilityName;
     private String facilityImage;
     private Date startDate;
@@ -519,11 +520,8 @@ public class EventFragment extends Fragment {
 
                                     // Check if the facility name already exists in the list of facility names
                                     if (facilityNames.contains(facilityName)) {
-                                        Log.i(TAG, "Facility already exists: " + facilityName);
-                                        // Optionally show a message to the user
                                         Toast.makeText(activity.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Log.d(TAG, " fetching photo URI: " + facilityImage);
                                         newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude, facilityImage);
                                         facility = newFacility;
 
@@ -843,6 +841,7 @@ public class EventFragment extends Fragment {
                         deviceID,
                         eventName.getText().toString(),
                         address,
+                        facility.getFacilityID(),
                         facilityName,
                         capacity.getText().toString(),
                         lotteryCapacity.getText().toString(),

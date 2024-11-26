@@ -60,12 +60,14 @@ public class FacilitiesInfo {
      */
     public HashMap<String, Object> facility() {
         HashMap<String, Object> facility = new HashMap<>();
-
         facility.put("address", this.address);
         facility.put("facilityName", this.facilityName);
         facility.put("owner", this.owner);
         facility.put("events", this.events);
-
+        facility.put("facilityID", this.facilityID);
+        facility.put("facilityImage", this.facilityImage);
+        facility.put("latitude", this.latitude);
+        facility.put("longitude", this.longitude);
         return facility;
     }
 

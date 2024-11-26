@@ -41,6 +41,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.example.fusion0.BuildConfig;
 import com.example.fusion0.fragments.CancelledEntrants;
 import com.example.fusion0.fragments.ChosenEntrants;
+import com.example.fusion0.fragments.FavouriteFragment;
 import com.example.fusion0.fragments.Registration;
 import com.example.fusion0.fragments.WaitlistFragment;
 import com.example.fusion0.helpers.EventFirebase;
@@ -56,7 +57,12 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AuthorAttributions;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchResolvedPhotoUriRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -71,8 +77,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -88,10 +96,10 @@ public class ViewEventActivity extends AppCompatActivity {
     private String deviceID;
     private Boolean isOwner = false;
     private Spinner eventFacility;
-    private TextView eventNameTextView, eventFacilityTextView,addFacilityText, eventDescriptionTextView,registrationDateRequirementsTextView, registrationDateTextView, dateRequirementsTextView,  eventStartDateTextView, eventEndDateTextView,eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, eventLotteryCapacityTextView,  waitinglistFullTextView;
+    private TextView eventNameTextView, eventFacilityTextView,addFacilityText, eventDescriptionTextView,registrationDateRequirementsTextView, registrationDateTextView, dateRequirementsTextView,  eventStartDateTextView, eventEndDateTextView,eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, eventLotteryCapacityTextView,  waitinglistFullTextView, registrationPassedFullTextView;
     private EditText eventNameEditText, eventDescriptionEditText, eventCapacityEditText, eventLotteryCapacityEditText;
     private ImageView eventPosterImageView, qrImageView;
-    private Button startDateButton, endDateButton, registrationDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton, waitinglistButton, cancelledEntrantsButton, chosenEntrantsButton, uploadImageButton, lotteryButton;
+    private Button facilityButton, startDateButton, endDateButton, registrationDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton, waitinglistButton, cancelledEntrantsButton, chosenEntrantsButton, uploadImageButton, lotteryButton;
     private ImageButton backButton;
     private EventInfo event;
     private UserInfo user;
@@ -108,7 +116,7 @@ public class ViewEventActivity extends AppCompatActivity {
 
     private Double newLongitude = null;
     private Double newLatitude = null;
-    private String newEventPoster, facility, address;
+    private String newEventPoster, facility, address, facilityID;
     private Date endDate, startDate, registrationDate;
     private FacilitiesInfo newFacility;
 
@@ -147,6 +155,7 @@ public class ViewEventActivity extends AppCompatActivity {
         eventFacility = findViewById(R.id.spinner_facilities);
         eventFacilityTextView = findViewById(R.id.facilityName);
         addFacilityText = findViewById(R.id.add_facility_text);
+        facilityButton = findViewById(R.id.facility_view_button);
         autocompletePlaceFragment = findViewById(R.id.autocomplete_fragment);
         eventStartDateTextView = findViewById(R.id.start_date_text);
         eventEndDateTextView = findViewById(R.id.end_date_text);
@@ -181,11 +190,21 @@ public class ViewEventActivity extends AppCompatActivity {
         cancelButton = findViewById(R.id.cancel_button);
         saveButton = findViewById(R.id.save_button);
         waitinglistFullTextView = findViewById(R.id.waitinglist_full_text_view);
+        registrationPassedFullTextView = findViewById(R.id.registration_passed_text_view);
         lists = findViewById(R.id.lists);
         toolbar = findViewById(R.id.toolbar);
 
         backButton.setOnClickListener(view -> {
-            finish();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.event_view, new FavouriteFragment())
+                    .commit();
+        });
+
+        facilityButton.setOnClickListener(view -> {
+            Intent intent = new Intent(ViewEventActivity.this, ViewFacilityActivity.class);
+            intent.putExtra("facilityID", event.getFacilityID());
+            intent.putExtra("deviceID", deviceID);
+            startActivity(intent);
         });
 
         Intent intentReceived = getIntent();
@@ -303,7 +322,9 @@ public class ViewEventActivity extends AppCompatActivity {
                             int capacity = Integer.parseInt(event.getCapacity());
 
                             waitlist.getAll(eventID, all -> {
-                                if (!all.contains(deviceID) & (currentEntrants.size() < capacity)) {
+                                Calendar calendar = Calendar.getInstance();
+                                Date currentDate = calendar.getTime();
+                                if (!all.contains(deviceID) & (currentEntrants.size() < capacity) & !(event.getRegistrationDate().after(currentDate))) {
                                     joinButton.setVisibility(View.VISIBLE);
                                     joinButton.setOnClickListener(view -> {
                                         new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
@@ -345,6 +366,9 @@ public class ViewEventActivity extends AppCompatActivity {
                                             }
                                         });
                                     });
+                                } else if(!all.contains(deviceID) & event.getRegistrationDate().after(currentDate)){
+                                    registrationPassedFullTextView.setVisibility(View.VISIBLE);
+
                                 } else if (!all.contains(deviceID) & (currentEntrants.size() >= capacity)) {
                                     waitinglistFullTextView.setVisibility(View.VISIBLE);
 
@@ -505,6 +529,8 @@ public class ViewEventActivity extends AppCompatActivity {
             startDateButton.setVisibility(View.VISIBLE);
             endDateButton.setVisibility(View.VISIBLE);
             registrationDateButton.setVisibility(View.VISIBLE);
+            facilityButton.setVisibility(View.GONE);
+
 
 
 
@@ -546,6 +572,8 @@ public class ViewEventActivity extends AppCompatActivity {
             autocompletePlaceFragment.setVisibility(View.GONE);
             eventFacilityTextView.setVisibility(View.VISIBLE);
             eventFacility.setVisibility(View.GONE);
+            facilityButton.setVisibility(View.VISIBLE);
+
 
             eventNameTextView.setVisibility(View.VISIBLE);
             eventNameEditText.setVisibility(View.GONE);
@@ -584,6 +612,69 @@ public class ViewEventActivity extends AppCompatActivity {
             event.setDescription(newDescription);
             event.setCapacity(newEventCapacity);
             event.setLotteryCapacity(newEventLotteryCapacity);
+            if (newFacility != null){
+                EventFirebase.addFacility(newFacility);
+                ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
+                facilitiesList.add(newFacility);
+                organizer.setFacilities(facilitiesList);
+                EventFirebase.editOrganizer(organizer);
+            }
+
+            if (!event.getFacilityID().equals(facilityID)) {
+                EventFirebase.findFacility(event.getFacilityID(), new EventFirebase.FacilityCallback() {
+                    @Override
+                    public void onSuccess(FacilitiesInfo facilitiesInfo) {
+                        if (facilitiesInfo != null) {
+                            ArrayList<String> facilityEvents = facilitiesInfo.getEvents();
+                            Log.e(TAG, " old facility: " + facilityEvents);
+
+                            facilityEvents.remove(event.getEventID());
+                            Log.e(TAG, " old facility updated: " + facilityEvents);
+
+                            facilitiesInfo.setEvents(facilityEvents);
+
+                            String facilityID = facilitiesInfo.getFacilityID();
+                            Log.e(TAG, "Facility ID: " + facilityID);
+
+                            if (facilityID != null && !facilityID.isEmpty()) {
+                                EventFirebase.editFacility(facilitiesInfo);
+                            } else {
+                                Log.e(TAG, "Invalid facility ID, cannot update facility.");
+                            }                        }
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        Log.e(TAG, "Error fetching old facility: " + error);
+                    }
+                });
+
+                EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
+                    @Override
+                    public void onSuccess(FacilitiesInfo newFacility) {
+                        if (newFacility != null) {
+                            ArrayList<String> newFacilityEvents = newFacility.getEvents();
+                            Log.e(TAG, " new facility: " + newFacilityEvents);
+
+                            newFacilityEvents.add(event.getEventID());
+                            Log.e(TAG, " new facility updated: " + newFacilityEvents);
+
+                            newFacility.setEvents(newFacilityEvents);
+
+                            EventFirebase.editFacility(newFacility);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        Log.e(TAG, "Error fetching new facility: " + error);
+                    }
+                });
+
+                event.setFacilityID(facilityID);
+
+            }
+
             event.setFacilityName(facility);
             event.setAddress(address);
             event.setLatitude(newLatitude);
@@ -632,14 +723,8 @@ public class ViewEventActivity extends AppCompatActivity {
             autocompletePlaceFragment.setVisibility(View.GONE);
             eventFacilityTextView.setVisibility(View.VISIBLE);
             eventFacility.setVisibility(View.GONE);
+            facilityButton.setVisibility(View.VISIBLE);
 
-            if (newFacility != null){
-                EventFirebase.addFacility(newFacility);
-                ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
-                facilitiesList.add(newFacility);
-                organizer.setFacilities(facilitiesList);
-                EventFirebase.editOrganizer(organizer);
-            }
 
             editButton.setVisibility(View.VISIBLE);
             deleteButton.setVisibility(View.VISIBLE);
@@ -954,6 +1039,7 @@ public class ViewEventActivity extends AppCompatActivity {
     private void editFacility(OrganizerInfo organizer){
         eventFacility.setVisibility(View.VISIBLE);
         eventFacilityTextView.setVisibility(View.GONE);
+        facilityButton.setVisibility(View.GONE);
 
         ArrayList<String> facilityNames = new ArrayList<>();
 
@@ -993,7 +1079,7 @@ public class ViewEventActivity extends AppCompatActivity {
                     addFacility(facilityNames, adapter); // Pass the adapter so we can update it
                 } else {
                     // If the selected facility exists, proceed with fetching it
-                    String facilityID = organizer.getFacilityIdByName(selectedFacility);
+                    facilityID = organizer.getFacilityIdByName(selectedFacility);
                     EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
                         @Override
                         public void onSuccess(FacilitiesInfo existingFacility) {
@@ -1034,15 +1120,18 @@ public class ViewEventActivity extends AppCompatActivity {
         addFacilityText.setVisibility(View.VISIBLE);
 
         if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
+            Places.initializeWithNewPlacesApiEnabled(this, BuildConfig.API_KEY);
         }
+
+        PlacesClient placesClient = Places.createClient(this);
+
 
         // Initialize the AutocompleteSupportFragment
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         // Specify the types of place data to return
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.FORMATTED_ADDRESS, Place.Field.LAT_LNG));
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.FORMATTED_ADDRESS, Place.Field.LAT_LNG, Place.Field.PHOTO_METADATAS));
 
         // Set up the PlaceSelectionListener
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
@@ -1056,22 +1145,51 @@ public class ViewEventActivity extends AppCompatActivity {
                     newLatitude = latLng.latitude;
                     newLongitude = latLng.longitude;
                 }
+                final List<Place.Field> fields = Collections.singletonList(Place.Field.PHOTO_METADATAS);
 
-                // Check if the facility name already exists in the list of facility names
-                if (facilityNames.contains(facility)) {
-                    Log.i(TAG, "Facility already exists: " + facility);
-                    // Optionally show a message to the user
-                    Toast.makeText(getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Create new facility and proceed
-                    newFacility = new FacilitiesInfo(address, facility, deviceID, newLatitude, newLongitude, newEventPoster);
+                final FetchPlaceRequest placeRequest = FetchPlaceRequest.newInstance(place.getId(), fields);
+                placesClient.fetchPlace(placeRequest).addOnSuccessListener((response) -> {
+                            Place placeDetails = response.getPlace();
 
-                    // Add the new facility name to the facilityNames list
-                    facilityNames.add(facility);
+                            // Get photo metadata
+                            List<PhotoMetadata> metadata = placeDetails.getPhotoMetadatas();
+                            if (metadata == null || metadata.isEmpty()) {
+                                Log.w(TAG, "No photo metadata available for this place.");
+                                return;
+                            }
 
-                    // Notify the adapter that the data has changed
-                    adapter.notifyDataSetChanged();
-                }
+                            // Fetch photo URI
+                            PhotoMetadata photoMetadata = metadata.get(0);
+                            String attributions = photoMetadata.getAttributions();
+                            AuthorAttributions authorAttributions = photoMetadata.getAuthorAttributions();
+
+                            // Create and send photo request
+                            FetchResolvedPhotoUriRequest photoRequest =
+                                    FetchResolvedPhotoUriRequest.builder(photoMetadata)
+                                            .setMaxWidth(500)
+                                            .setMaxHeight(300)
+                                            .build();
+
+                            placesClient.fetchResolvedPhotoUri(photoRequest)
+                                    .addOnSuccessListener((photoUriResponse) -> {
+                                        Uri photoUri = photoUriResponse.getUri();
+                                        if (photoUri != null) {
+                                            Log.d(TAG, "Fetched photo URI: " + photoUri.toString());
+                                            String facilityImage = photoUri.toString();
+
+                                            if (facilityNames.contains(facility)) {
+                                                Toast.makeText(getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                newFacility = new FacilitiesInfo(address, facility, deviceID, newLatitude, newLongitude, facilityImage);
+                                                facilityID = newFacility.getFacilityID();
+                                                facilityNames.add(facility);
+
+                                                // Notify the adapter that the data has changed
+                                                adapter.notifyDataSetChanged();
+                                            }
+                                        }
+                                    });
+                });
             }
 
             @Override
