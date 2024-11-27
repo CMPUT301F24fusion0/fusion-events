@@ -65,7 +65,7 @@ import java.util.UUID;
 
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.models.EventInfo;
-import com.example.fusion0.fragments.Registration;
+import com.example.fusion0.fragments.RegistrationFragment;
 
 /**
  * @author Simon Haile
@@ -107,6 +107,7 @@ public class EventActivity extends AppCompatActivity {
      * Initializes the activity when it is first created. This method sets up the user interface
      * and prepares the necessary components for the event creation process. It handles view initialization,
      * Firebase setup, and event handling methods for the user to create an event.
+     * @author Simon Haile
      * @param savedInstanceState A Bundle object containing the activity's previously saved state,
      * or null if the activity is being created for the first time.
      */
@@ -160,7 +161,10 @@ public class EventActivity extends AppCompatActivity {
         exitButton.setOnClickListener(v -> finish());
     }
 
-
+    /**
+     * Validates user to see if they're logged in.
+     * @author Simon Haile
+     */
     private void validateUser() {
         LoginManagement login = new LoginManagement(this);
         login.isUserLoggedIn(isLoggedIn -> {
@@ -168,9 +172,9 @@ public class EventActivity extends AppCompatActivity {
                 String activity = "EventActivity";
                 Bundle bundle = new Bundle();
                 bundle.putString("activity", activity);
-                Registration registration = new Registration();
+                RegistrationFragment registrationFragment = new RegistrationFragment();
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.activity_add_event, registration)
+                        .replace(R.id.activity_add_event, registrationFragment)
                         .addToBackStack(null)
                         .commit();
             }
@@ -242,6 +246,13 @@ public class EventActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * We get the result from the camera method for scanning QR code
+     * @author Simon Haile
+     * @param requestCode request code to see if we came back from the correct activity
+     * @param resultCode whether the activity was as a success
+     * @param data the information obtained from the data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -644,6 +655,10 @@ public class EventActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Lets the organizer choose a start and end date for their event.
+     * @author Simon Haile
+     */
     private void registrationDateButtonHandling(){
         Button registrationDateButton = findViewById(R.id.registration_date_button);
         registrationDateTextView = findViewById(R.id.registration_date_text);
@@ -665,7 +680,7 @@ public class EventActivity extends AppCompatActivity {
                             registrationDateTextView.setVisibility(View.GONE);
                             registrationDateCalendar = null;
                         }else if (startDateCalendar.before(registrationDateCalendar)) {
-                            registrationDateRequirementsTextView.setText("Registration deadline must be before the event start date.");
+                            registrationDateRequirementsTextView.setText("RegistrationFragment deadline must be before the event start date.");
                             registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
                             registrationDateTextView.setVisibility(View.GONE);
                             registrationDateCalendar = null;
@@ -734,7 +749,7 @@ public class EventActivity extends AppCompatActivity {
                 return;
             }
             if (registrationDate == null) {
-                Toast.makeText(EventActivity.this, "Registration deadline is missing", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EventActivity.this, "RegistrationFragment deadline is missing", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (eventPoster == null) {
@@ -754,6 +769,7 @@ public class EventActivity extends AppCompatActivity {
                         deviceID,
                         eventName.getText().toString(),
                         address,
+                        facility.getFacilityID(),
                         facilityName,
                         capacity.getText().toString(),
                         lotteryCapacity.getText().toString(),

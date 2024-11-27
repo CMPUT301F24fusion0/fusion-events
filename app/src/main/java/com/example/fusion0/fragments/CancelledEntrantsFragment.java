@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -16,29 +15,43 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.fusion0.activities.ViewEventActivity;
+import com.example.fusion0.adapters.ProfileListAdapter;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
+import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.UserInfo;
 import com.example.fusion0.R;
-import com.example.fusion0.adapters.ProfileListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class CancelledEntrants extends Fragment {
+public class CancelledEntrantsFragment extends Fragment {
     ImageButton backButton;
     ListView cancelledEntrantsListView;
     TextView emptyTextView;
     EventFirebase firebase;
     List<UserInfo> users = new ArrayList<>();
+    Waitlist waitlist;
 
     private int pendingRequests = 0;
 
+    /**
+     * Creates the list for cancelled entrants
+     * @author Simon Haile
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return the View
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.cancelled_entrants, container, false);
+        View view = inflater.inflate(R.layout.fragment_cancelled_entrants, container, false);
 
         backButton = view.findViewById(R.id.backButton);
         cancelledEntrantsListView = view.findViewById(R.id.cancelledEntrantsListView);
@@ -49,17 +62,19 @@ public class CancelledEntrants extends Fragment {
         Bundle bundle = getArguments();
 
         if (bundle != null) {
-            ArrayList<Map<String, String>> waitingList = (ArrayList<Map<String, String>>) bundle.getSerializable("waitingListData");
+            waitlist = (Waitlist) bundle.getSerializable("fragment_waitlist");
 
-            if (waitingList != null && !waitingList.isEmpty()) {
-                pendingRequests = waitingList.size();
+            ArrayList<Map<String, String>> cancelledList = (ArrayList<Map<String, String>>) bundle.getSerializable("cancelledEntrantsData");
 
-                for (Map<String, String> entry : waitingList) {
+            if (cancelledList != null && !cancelledList.isEmpty()) {
+                pendingRequests = cancelledList.size();
+
+                for (Map<String, String> entry : cancelledList) {
                     String deviceId = entry.get("did");
                     if (deviceId != null) {
                         Log.e(TAG, "did " + deviceId);
 
-                        UserFirestore.findUser(deviceId, new UserFirestore.Callback() {
+                        new UserFirestore().findUser(deviceId, new UserFirestore.Callback() {
                             @Override
                             public void onSuccess(UserInfo user) {
                                 users.add(user);
@@ -92,6 +107,11 @@ public class CancelledEntrants extends Fragment {
 
         return view;
     }
+
+    /**
+     * Updates the UI to allow organizers to see the cancelled entrants
+     * @param bundle contains information
+     */
     private void updateUI(Bundle bundle) {
         ProfileListAdapter adapter = new ProfileListAdapter(getContext(), users);
         cancelledEntrantsListView.setAdapter(adapter);
@@ -105,9 +125,13 @@ public class CancelledEntrants extends Fragment {
         }
     }
 
-
-
-
+    /**
+     * Establish the back button
+     * @author Simon Haile
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -115,7 +139,7 @@ public class CancelledEntrants extends Fragment {
 
         backButton.setOnClickListener(v -> {
             if (bundle != null) {
-                Intent intent = new Intent(getActivity(), ViewEventActivity.class);
+                Intent intent = new Intent(getActivity(), ViewEventFragment.class);
                 intent.putExtra("eventID", bundle.getString("eventID"));
                 startActivity(intent);
             }

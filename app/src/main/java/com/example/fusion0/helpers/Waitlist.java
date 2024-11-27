@@ -1,5 +1,7 @@
 package com.example.fusion0.helpers;
 
+import static android.content.ContentValues.TAG;
+
 import android.util.Log;
 
 import com.example.fusion0.models.UserInfo;
@@ -13,6 +15,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -24,9 +27,9 @@ import java.util.Objects;
  */
 
 public class Waitlist implements Serializable {
-    private final FirebaseFirestore db;
-    CollectionReference eventsRef;
-    UserFirestore userFirestore;
+    private transient final FirebaseFirestore db;
+    private transient CollectionReference eventsRef;
+    private transient UserFirestore userFirestore;
 
 
     /**
@@ -52,17 +55,16 @@ public class Waitlist implements Serializable {
         // Fetch event details to get capacity and current acceptedCount
         eventsRef.document(eventId).get().addOnSuccessListener(eventDoc -> {
             if (eventDoc.exists()) {
-                int capacity;
                 int acceptedCount;
-
+                int capacity;
                 // Check if capacity is stored as a number or a string, then convert
                 Object capacityField = eventDoc.get("capacity");
                 Object acceptedCountField = eventDoc.get("acceptedCount");
+                Object waitField  = eventDoc.get("waitinglist");
 
-                // Handle capacity conversion
-                if (capacityField instanceof Number && acceptedCountField instanceof String) {
+                if (capacityField instanceof String && acceptedCountField instanceof String) {
                     try {
-                        capacity = (int) capacityField;
+                        capacity = Integer.parseInt((String) capacityField);
                         acceptedCount = Integer.parseInt((String) acceptedCountField);
                     } catch (NumberFormatException e) {
                         throw new IllegalArgumentException("Accepted Count or Capacity is not a number.");
@@ -76,27 +78,38 @@ public class Waitlist implements Serializable {
                 int spotsRemaining = capacity - acceptedCount;
                 int finalNumToSelect = Math.min(numToSelect, spotsRemaining);
 
-                getWait(eventId, wait -> {
-                    Collections.shuffle(wait);
+                if (waitField instanceof ArrayList<?>) {
+                    ArrayList<Map<String, String>> waitList = (ArrayList<Map<String, String>>) waitField;
 
-                    // Hashset allows for faster lookup
-                    ArrayList<String> winners_set = new ArrayList<>(wait.subList(0, finalNumToSelect));
+                    // Check if the wait list is empty
+                    if (waitList.isEmpty()) {
+                        Log.w("Lottery", "Wait list is empty. No entrants to select.");
+                        return;
+                    }
+
+                    Collections.shuffle(waitList);
+
+                    // Select the winners
+                    List<String> winners_set = new ArrayList<>();
+                    for (int i = 0; i < finalNumToSelect; i++) {
+                        Map<String, String> winner = waitList.get(i);
+                        winners_set.add(winner.get("did"));
+                    }
 
                     DocumentReference documentReference = eventsRef.document(eventId);
-
                     documentReference.get()
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
                                     DocumentSnapshot doc = task.getResult();
                                     if (doc.exists()) {
-                                        ArrayList<Map<String, String>> waitList = (ArrayList<Map<String, String>>) doc.get("waitinglist");
-
                                         if (waitList != null) {
+                                            Log.d("Shuffled", "winners set"+winners_set);
                                             // If the winners are in the waiting list then their new status is chosen
                                             for (Map<String, String> user : waitList) {
                                                 // Can't select chosen entrants nor cancelled entrants
                                                 if (winners_set.contains(user.get("did")) && !Objects.equals(user.get("status"), "chosen") && !Objects.equals(user.get("status"), "cancel")) {
                                                     user.put("status", "chosen");
+                                                    Log.d("Shuffled", "Updated status for user: " + user.get("did"));
                                                 }
                                             }
                                             // Update the waiting list
@@ -104,8 +117,8 @@ public class Waitlist implements Serializable {
                                         }
                                     }
                                 }
-                            });
-                });
+                    });
+                }
             }
         });
     }
@@ -117,13 +130,7 @@ public class Waitlist implements Serializable {
      * @param userID user's unique id
      */
     public void organizerCancel(String eventID, String userID) {
-        getChosen(eventID, chosen -> {
-            if (!chosen.isEmpty()) {
-                for (String did: chosen) {
-                    changeStatus(eventID, did, "cancel");
-                }
-            }
-        });
+        changeStatus(eventID, userID, "cancel");
     }
 
     /**
@@ -166,7 +173,7 @@ public class Waitlist implements Serializable {
 
     /**
      * @author Sehej Brar
-     * Add user to their waitlist
+     * Add user to their fragment_waitlist
      * @param entrantId entrant id
      * @param eventId event id
      */
@@ -186,7 +193,7 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Remove event from user's waitlist
+     * Remove event from user's fragment_waitlist
      * @author Sehej Brar
      * @param entrantId entrant id
      * @param eventId event id
@@ -207,7 +214,7 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Interface for all waitlist entrants
+     * Interface for all fragment_waitlist entrants
      * @author Sehej Brar
      */
     public interface AllCB {
@@ -215,10 +222,10 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Gets all those on waitlist
+     * Gets all those on fragment_waitlist
      * @author Sehej Brar
      * @param eventId event id
-     * @param allCB a callback for all entrants on waitlist
+     * @param allCB a callback for all entrants on fragment_waitlist
      */
     public void getAll(String eventId, AllCB allCB) {
         ArrayList<String> all = new ArrayList<>();
@@ -246,7 +253,7 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Interface for all waitlist entrants
+     * Interface for all fragment_waitlist entrants
      * @author Sehej Brar
      */
     public interface WaitingCB {
@@ -254,10 +261,10 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Gets all those on waitlist
+     * Gets all those on fragment_waitlist
      * @author Sehej Brar
      * @param eventId event id
-     * @param waitingCB a callback for entrants on waitlist that are waiting
+     * @param waitingCB a callback for entrants on fragment_waitlist that are waiting
      */
     public void getWait(String eventId, WaitingCB waitingCB) {
         ArrayList<String> wait = new ArrayList<>();
@@ -273,7 +280,7 @@ public class Waitlist implements Serializable {
                     if (all_waitingList != null) {
                         for (Map<String, String> user: all_waitingList) {
                             if (Objects.equals(user.get("status"), "waiting")) {
-                                wait.add(user.get("status"));
+                                wait.add(user.get("did"));
                             }
                         }
                     }
@@ -313,7 +320,7 @@ public class Waitlist implements Serializable {
                     if (all_waitingList != null) {
                         for (Map<String, String> user: all_waitingList) {
                             if (Objects.equals(user.get("status"), "cancel")) {
-                                cancel.add(user.get("status"));
+                                cancel.add(user.get("did"));
                             }
                         }
                     }
@@ -353,7 +360,7 @@ public class Waitlist implements Serializable {
                     if (all_waitingList != null) {
                         for (Map<String, String> user: all_waitingList) {
                             if (Objects.equals(user.get("status"), "chosen")) {
-                                chosen.add(user.get("status"));
+                                chosen.add(user.get("did"));
                             }
                         }
                     }
@@ -366,7 +373,7 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Sends a notification to everyone on the waitlist
+     * Sends a notification to everyone on the fragment_waitlist
      * @author Sehej Brar
      * @param eventId event id
      * @param title title of notification

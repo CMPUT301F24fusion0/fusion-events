@@ -21,7 +21,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.fusion0.fragments.FavouriteFragment;
+import com.example.fusion0.fragments.ViewEventFragment;
 import com.example.fusion0.helpers.EventFirebase;
+import com.example.fusion0.helpers.ProfileManagement;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.FacilitiesInfo;
@@ -47,6 +50,8 @@ public class ViewFacilityActivity extends AppCompatActivity {
     private ImageButton backButton;
     private Button editButton, saveButton, deleteButton, cancelButton;
     private ListView facilitiesEventsList;
+    private ProfileManagement profileManager;
+
 
 
     /**
@@ -54,6 +59,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
      * and handles the logic for displaying, editing, and deleting facility details.
      * It initializes UI components, retrieves facility data from Firebase, and manages
      * user interaction for viewing and modifying the facility information.
+     * @author Simon Haile
      *
      * @param savedInstanceState This Bundle contains the data it most recently supplied in
      * onSaveInstanceState(Bundle), otherwise null.
@@ -83,11 +89,15 @@ public class ViewFacilityActivity extends AppCompatActivity {
         deleteButton = findViewById(R.id.delete_button);
         cancelButton = findViewById(R.id.cancel_button);
 
+        profileManager = new ProfileManagement();
 
-        // Back button logic
+
+
+
         backButton.setOnClickListener(view -> {
-            Intent intent = new Intent(ViewFacilityActivity.this, FavouriteActivity.class);
-            startActivity(intent);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.facility_view, new FavouriteFragment())
+                    .commit();
         });
 
         Intent intentReceived = getIntent();
@@ -103,8 +113,10 @@ public class ViewFacilityActivity extends AppCompatActivity {
                     facility = facilitiesInfo;
                     facilityNameTextView.setText(facility.getFacilityName());
                     addressTextView.setText(facility.getAddress());
+                    ownerTextView.setVisibility(View.GONE);
 
-                    UserFirestore.findUser(deviceID, new UserFirestore.Callback() {
+                    /*
+                    new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
                         @Override
                         public void onSuccess(UserInfo user) {
                             String fullName = user.getFirstName() + ' ' + user.getLastName();
@@ -117,6 +129,8 @@ public class ViewFacilityActivity extends AppCompatActivity {
 
                         }
                     });
+
+                     */
                     if (facility.getFacilityImage() != null && !facility.getFacilityImage().isEmpty()) {
                         Glide.with(ViewFacilityActivity.this)
                                 .load(facility.getFacilityImage())
@@ -124,7 +138,10 @@ public class ViewFacilityActivity extends AppCompatActivity {
                         facilityImageView.setVisibility(View.VISIBLE);
                     }
 
-                    if (deviceID.equals(facility.getOwner())) {
+                    if (deviceID.equals(facility.getOwner()) || EventFirebase.isDeviceIDAdmin(deviceID)) {
+                        if(EventFirebase.isDeviceIDAdmin(deviceID)){
+                            Toast.makeText(ViewFacilityActivity.this, "You are an admin.", Toast.LENGTH_SHORT).show();
+                        }
                         isOwner = true;
                         toolbar.setVisibility(View.VISIBLE);
                     }
@@ -132,7 +149,9 @@ public class ViewFacilityActivity extends AppCompatActivity {
                     ArrayList<String> eventNames = new ArrayList<>();
                     ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(ViewFacilityActivity.this, android.R.layout.simple_list_item_1, eventNames);
                     facilitiesEventsList.setAdapter(eventsAdapter);
-                    if (facility.getEvents() != null) {
+
+
+                    if ((facility.getEvents() != null) && !(facility.getEvents().isEmpty())) {
                         ArrayList<String> filteredEvents = new ArrayList<>();
                         for (String event : facility.getEvents()) {
                             EventFirebase.findEvent(event, new EventFirebase.EventCallback() {
@@ -156,7 +175,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
                         facilitiesEventsList.setOnItemClickListener((parent, view1, position, id) -> {
                             String eventID = facility.getEvents().get(position);
 
-                            Intent intent = new Intent(ViewFacilityActivity.this, ViewEventActivity.class);
+                            Intent intent = new Intent(ViewFacilityActivity.this, ViewEventFragment.class);
                             intent.putExtra("eventID", eventID);
                             intent.putExtra("deviceID", deviceID);
                             startActivity(intent);

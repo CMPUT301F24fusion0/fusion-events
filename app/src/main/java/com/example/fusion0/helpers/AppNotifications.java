@@ -47,6 +47,7 @@ public class AppNotifications {
 
     /**
      * Changes permission if need be
+     * @author Sehej Brar
      * Adapted from: <a href="https://stackoverflow.com/questions/58047177/how-to-turn-off-app-notification-from-inside-the-app">...</a>
      * @param context context
      * @param perm true for notifications can be sent, false otherwise
@@ -58,6 +59,7 @@ public class AppNotifications {
 
     /**
      * Returns true if permission has been given or if nothing explicit has been given.
+     * @author Sehej Brar
      * @param context context
      * @return a boolean
      */
@@ -95,7 +97,7 @@ public class AppNotifications {
      * @param body body of notification
      */
     public static void sendNotification(String dID, String title, String body, String flag) {
-        UserFirestore.findUser(dID, new UserFirestore.Callback() {
+        new UserFirestore().findUser(dID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
                 if (user != null) {
@@ -149,7 +151,7 @@ public class AppNotifications {
      * @param context context of activity or fragment
      */
     public static void getNotification(String dID, Context context) {
-        UserFirestore.findUser(dID, new UserFirestore.Callback() {
+        new UserFirestore().findUser(dID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
                 if (AppNotifications.checkNotificationPermission(context)) {

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_add_event">.
 
     <ScrollView
         android:id="@+id/scroll_container"
@@ -76,12 +75,11 @@
 
             <ImageView
                 android:id="@+id/uploaded_image_view"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:contentDescription="TODO"
-                android:visibility="gone"
-                android:scaleType="centerCrop" />
+                android:contentDescription="Event Poster"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/upload_image_button"
@@ -125,8 +123,7 @@
                 android:layout_marginBottom="2dp"
                 android:visibility="gone">
             </TextView>
-
-            <fragment
+            <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/autocomplete_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -173,7 +170,7 @@
                 android:layout_marginEnd="100dp"
                 android:hint="Enter Radius In Km"
                 android:fontFamily="sans-serif"
-                android:textColor="@color/figmaBlue"
+                android:textColor="@color/textColor"
                 android:textFontWeight="600"
                 android:textSize="20sp"
                 android:layout_marginBottom="2dp"
@@ -324,15 +321,64 @@
                         app:cornerRadius="5dp"
                         android:textSize="13sp" />
                 </LinearLayout>
-
-
             </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:text="Capacity"
+                android:text="Registeration Deadline:"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp"
+                android:layout_marginBottom="2dp">
+            </TextView>
+
+            <TextView
+                android:id="@+id/registrationDateRequirementsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"
+                android:visibility="gone">
+            </TextView>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="5dp">
+
+                <TextView
+                    android:id="@+id/registration_date_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Registration Date"
+                    android:fontFamily="sans-serif"
+                    android:textColor="@color/figmaBlue"
+                    android:textFontWeight="600"
+                    android:textSize="15sp"
+                    android:layout_marginBottom="2dp"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/registration_date_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Registration Date"
+                    android:backgroundTint="@color/figmaBlue"
+                    app:cornerRadius="5dp"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Waitlist Capacity"
                 android:fontFamily="sans-serif"
                 android:textColor="@color/figmaBlue"
                 android:textFontWeight="600"
@@ -346,7 +392,7 @@
                 android:layout_height="60dp"
                 android:layout_width="match_parent"
                 android:layout_marginEnd="100dp"
-                android:hint="Enter Capacity"
+                android:hint="Enter Waitlist Capacity"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/custom_input"
                 android:drawablePadding="12dp"
@@ -354,8 +400,31 @@
                 android:inputType="number">
             </EditText>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Lottery Capacity"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/figmaBlue"
+                android:textFontWeight="600"
+                android:textSize="20sp"
+                android:layout_marginBottom="2dp">
+            </TextView>
 
 
+            <EditText
+                android:id="@+id/lotteryCapacity"
+                android:layout_height="60dp"
+                android:layout_width="match_parent"
+                android:layout_marginEnd="100dp"
+                android:hint="Enter Lottery Capacity"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/custom_input"
+                android:drawablePadding="12dp"
+                android:padding="12dp"
+                android:inputType="number">
+            </EditText>
 
         </LinearLayout>
     </ScrollView>

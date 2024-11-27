@@ -4,31 +4,24 @@ import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-import com.example.fusion0.activities.ViewEventActivity;
+import com.example.fusion0.adapters.ProfileListAdapter;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.UserInfo;
 import com.example.fusion0.R;
-import com.example.fusion0.adapters.ProfileListAdapter;
-import com.google.zxing.WriterException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +31,6 @@ public class WaitlistFragment extends Fragment {
     ImageButton backButton;
     TextView waitlistCapacityRatio, emptyTextView;
     ListView waitlistListView;
-    Button lotteryButton;
     EventFirebase firebase;
     EventInfo event;
     List<UserInfo> users = new ArrayList<>();
@@ -47,15 +39,26 @@ public class WaitlistFragment extends Fragment {
 
     private Waitlist waitlist;
 
-
+    /**
+     * Find the user on the waiting list
+     * @author Simon Haile
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.waitlist, container, false);
+        View view = inflater.inflate(R.layout.fragment_waitlist, container, false);
 
         backButton = view.findViewById(R.id.backButton);
         waitlistCapacityRatio = view.findViewById(R.id.ratio);
         waitlistListView = view.findViewById(R.id.waitinglistListView);
-        lotteryButton = view.findViewById(R.id.generate_lottery_button);
         emptyTextView = view.findViewById(R.id.emptyText);
         firebase = new EventFirebase();
 
@@ -63,6 +66,7 @@ public class WaitlistFragment extends Fragment {
 
         if (bundle != null) {
             ArrayList<Map<String, String>> waitingList = (ArrayList<Map<String, String>>) bundle.getSerializable("waitingListData");
+            Log.e(TAG, "user " + waitingList);
 
             if (waitingList != null && !waitingList.isEmpty()) {
                 pendingRequests = waitingList.size();
@@ -70,9 +74,8 @@ public class WaitlistFragment extends Fragment {
                 for (Map<String, String> entry : waitingList) {
                     String deviceId = entry.get("did");
                     if (deviceId != null) {
-                        Log.e(TAG, "did " + deviceId);
 
-                        UserFirestore.findUser(deviceId, new UserFirestore.Callback() {
+                        new UserFirestore().findUser(deviceId, new UserFirestore.Callback() {
                             @Override
                             public void onSuccess(UserInfo user) {
                                 users.add(user);
@@ -106,6 +109,10 @@ public class WaitlistFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Update the waiting list fragment for organizers
+     * @param bundle contains the updated information
+     */
     private void updateUI(Bundle bundle) {
         String eventCapacity = bundle != null ? bundle.getString("eventCapacity", "0") : "0";
         String ratio = users.size() + "/" + eventCapacity;
@@ -117,29 +124,33 @@ public class WaitlistFragment extends Fragment {
         if (users.isEmpty()) {
             emptyTextView.setVisibility(View.VISIBLE);
             waitlistListView.setVisibility(View.GONE);
-            lotteryButton.setVisibility(View.GONE);
         } else {
             emptyTextView.setVisibility(View.GONE);
             waitlistListView.setVisibility(View.VISIBLE);
-            lotteryButton.setVisibility(View.VISIBLE);
         }
     }
 
+    /**
+     * Establish the back and lottery button
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle = getArguments();
-        waitlist = (Waitlist) bundle.getSerializable("waitlist");
+        waitlist = (Waitlist) bundle.getSerializable("fragment_waitlist");
 
 
         backButton.setOnClickListener(v -> {
             if (bundle != null) {
-                Intent intent = new Intent(getActivity(), ViewEventActivity.class);
+                Intent intent = new Intent(getActivity(), ViewEventFragment.class);
                 intent.putExtra("eventID", bundle.getString("eventID"));
                 startActivity(intent);
             }
         });
-
+/*
         lotteryButton.setOnClickListener(v -> {
             EventFirebase.findEvent(bundle.getString("eventID"), new EventFirebase.EventCallback() {
                 @Override
@@ -171,27 +182,27 @@ public class WaitlistFragment extends Fragment {
 
 
                     if (!(event.getLotteryCapacity().equals("0"))) {
-                        waitlist.conductLottery(event.getEventID(), Integer.parseInt(event.getLotteryCapacity()));
+                        fragment_waitlist.conductLottery(event.getEventID(), Integer.parseInt(event.getLotteryCapacity()));
 
-                        waitlist.getChosen(event.getEventID(), chosen -> {
+                        fragment_waitlist.getChosen(event.getEventID(), chosen -> {
                             if (chosen.isEmpty()) {
                                 Toast.makeText(WaitlistFragment.this.getContext(), "Chosen entrants list is empty.", Toast.LENGTH_SHORT).show();
                             }else{
-                                ChosenEntrants chosenEntrants = new ChosenEntrants();
+                                ChosenEntrantsFragment chosenEntrants = new ChosenEntrantsFragment();
 
                                 Bundle bundle = new Bundle();
                                 bundle.putSerializable("chosenEntrantsData", chosen);
                                 bundle.putString("eventID", event.getEventID());
-                                bundle.putSerializable("waitlist", waitlist);
+                                bundle.putSerializable("fragment_waitlist", fragment_waitlist);
                                 chosenEntrants.setArguments(bundle);
 
-                                getActivity().getSupportFragmentManager().beginTransaction()
+                                requireActivity().getSupportFragmentManager().beginTransaction()
                                         .replace(R.id.event_view, chosenEntrants)
                                         .addToBackStack(null)
                                         .commit();
                             }
                         });
-                    }else {
+                    } else {
                         Toast.makeText(WaitlistFragment.this.getContext(), "Please enter a valid lottery capacity greater than 0", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -203,5 +214,6 @@ public class WaitlistFragment extends Fragment {
             });
 
         });
+        */
     }
 }

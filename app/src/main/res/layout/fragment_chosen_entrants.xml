@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#FFFFFF"
-    android:id="@+id/waitlist">
+    android:id="@+id/chosen_entrants">
 
     <ImageButton
         android:id="@+id/backButton"
@@ -19,9 +19,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
     <LinearLayout
-        android:id="@+id/waitlist_text"
+        android:id="@+id/chosen_entrants_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -34,7 +33,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Waitlist"
+            android:text="Chosen Entrants"
             android:textSize="23sp"
             android:textColor="@color/textColor"
             android:textStyle="bold"
@@ -55,7 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/textColor"
-        app:layout_constraintTop_toBottomOf="@id/waitlist_text"
+        app:layout_constraintTop_toBottomOf="@id/chosen_entrants_text"
         android:layout_marginBottom="16dp" />
 
     <ScrollView
@@ -64,10 +63,10 @@
         android:layout_height="0dp"
         android:fillViewport="true"
         android:scrollbars="vertical"
-        app:layout_constraintTop_toBottomOf="@id/waitlist_text"
+        app:layout_constraintTop_toBottomOf="@id/chosen_entrants_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/generate_lottery_button">
+        app:layout_constraintBottom_toTopOf="@id/button_container">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -76,12 +75,13 @@
             android:padding="16dp">
 
             <ListView
-                android:id="@+id/waitinglistListView"
+                android:id="@+id/chosenEntrantsListView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:divider="@android:color/darker_gray"
                 android:dividerHeight="0.5dp"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp"
+                android:choiceMode="multipleChoice"/>
 
             <TextView
                 android:id="@+id/emptyText"
@@ -90,23 +90,84 @@
                 android:textSize="20sp"
                 android:textColor="@color/textColor"
                 android:fontFamily="@font/raleway_medium"
-                android:text="The waitinglist is empty!"
+                android:text="No entrants have been chosen!"
                 android:layout_gravity="center"
                 android:visibility="gone">
             </TextView>
         </LinearLayout>
     </ScrollView>
 
-    <Button
-        android:id="@+id/generate_lottery_button"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/button_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Generate Lottery"
-        android:gravity="center_vertical"
-        android:backgroundTint="@color/figmaBlue"
-        app:cornerRadius="5dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/fill_lottery_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Fill Chosen Entrants"
+            android:gravity="center"
+            android:backgroundTint="@color/figmaBlue"
+            app:cornerRadius="5dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1" />
+        <TextView
+            android:id="@+id/full_capacity_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Full Capacity"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:background="@color/figmaBlue"
+            app:cornerRadius="5dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:visibility="gone"
+            >
+        </TextView>
+
+        <Button
+            android:id="@+id/remove_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Select Entrants"
+            android:gravity="center"
+            android:textColor="@color/red"
+            android:backgroundTint="@color/white"
+            app:cornerRadius="5dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/remove_second_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Remove"
+            android:gravity="center"
+            android:backgroundTint="@color/figmaBlue"
+            app:cornerRadius="5dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:gravity="center"
+            android:textColor="@color/red"
+            android:backgroundTint="@color/white"
+            app:cornerRadius="5dp"
+            android:layout_weight="1"
+            android:visibility="gone"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

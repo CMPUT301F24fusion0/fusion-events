@@ -1,11 +1,8 @@
 package com.example.fusion0.fragments;
 
-import static android.app.Activity.RESULT_OK;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -120,12 +117,11 @@ public class QRFragment extends Fragment implements ZXingScannerView.ResultHandl
      * @param qrCodeHash  The hashed QR code data.
      */
     private void finishWithResult(String eventId, String qrCodeHash) {
-        Activity activity = requireActivity();
-        Intent intent = new Intent();
-        intent.putExtra("EVENT_ID", eventId);
-        intent.putExtra("QR_CODE_HASH", qrCodeHash);
-        activity.setResult(RESULT_OK, intent);
-        activity.finish();
+        Bundle bundle = new Bundle();
+        bundle.putString("eventID", eventId);
+        bundle.putString("QR_CODE_HASH", qrCodeHash);
+
+        Navigation.findNavController(getView()).navigate(R.id.action_qrFragment_to_viewEventFragment, bundle);
     }
 
     /**

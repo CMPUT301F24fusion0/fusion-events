@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#FFFFFF"
-    android:id="@+id/chosen_entrants">
+    android:id="@+id/cancelled_entrants">
 
     <ImageButton
         android:id="@+id/backButton"
@@ -19,42 +19,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/chosen_entrants_text"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/waitlist_text"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:text="Cancelled Entrants"
+        android:textSize="23sp"
+        android:textColor="@color/textColor"
+        android:textStyle="bold"
+        android:fontFamily="@font/raleway_medium"
         app:layout_constraintTop_toBottomOf="@id/backButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:padding="16dp"
-        android:gravity="center">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Chosen Entrants"
-            android:textSize="23sp"
-            android:textColor="@color/textColor"
-            android:textStyle="bold"
-            android:fontFamily="@font/raleway_medium"
-            android:layout_marginEnd="16dp"/>
-
-        <TextView
-            android:id="@+id/ratio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="30/45"
-            android:textSize="20sp"
-            android:textColor="@color/textColor"
-            android:fontFamily="@font/raleway_medium" />
-    </LinearLayout>
+        android:layout_marginBottom="16dp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/textColor"
-        app:layout_constraintTop_toBottomOf="@id/chosen_entrants_text"
+        app:layout_constraintTop_toBottomOf="@id/waitlist_text"
         android:layout_marginBottom="16dp" />
 
     <ScrollView
@@ -63,10 +46,10 @@
         android:layout_height="0dp"
         android:fillViewport="true"
         android:scrollbars="vertical"
-        app:layout_constraintTop_toBottomOf="@id/chosen_entrants_text"
+        app:layout_constraintTop_toBottomOf="@id/waitlist_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/fill_lottery_button">
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -75,7 +58,7 @@
             android:padding="16dp">
 
             <ListView
-                android:id="@+id/chosenEntrantsListView"
+                android:id="@+id/cancelledEntrantsListView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:divider="@android:color/darker_gray"
@@ -89,23 +72,11 @@
                 android:textSize="20sp"
                 android:textColor="@color/textColor"
                 android:fontFamily="@font/raleway_medium"
-                android:text="No entrants have been chosen!"
+                android:text="No entrants have cancelled"
                 android:layout_gravity="center"
                 android:visibility="gone">
             </TextView>
         </LinearLayout>
     </ScrollView>
-
-    <Button
-        android:id="@+id/fill_lottery_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fill Chosen Entrants"
-        android:gravity="center_vertical"
-        android:backgroundTint="@color/figmaBlue"
-        app:cornerRadius="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

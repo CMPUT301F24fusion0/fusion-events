@@ -9,6 +9,7 @@ import java.util.UUID;
 /**
  * @author Simon Haile
  * This class contains the information for facilities.
+ * Note getters/setters are not provided JavaDocs as their function is trivial.
  */
 public class FacilitiesInfo {
     public String facilityID;
@@ -59,12 +60,14 @@ public class FacilitiesInfo {
      */
     public HashMap<String, Object> facility() {
         HashMap<String, Object> facility = new HashMap<>();
-
         facility.put("address", this.address);
         facility.put("facilityName", this.facilityName);
         facility.put("owner", this.owner);
         facility.put("events", this.events);
-
+        facility.put("facilityID", this.facilityID);
+        facility.put("facilityImage", this.facilityImage);
+        facility.put("latitude", this.latitude);
+        facility.put("longitude", this.longitude);
         return facility;
     }
 

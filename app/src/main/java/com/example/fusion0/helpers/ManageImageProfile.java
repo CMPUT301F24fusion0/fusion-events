@@ -12,7 +12,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Settings;
-import android.util.Log;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -35,6 +34,7 @@ public class ManageImageProfile {
 
     /**
      * Constructor initializes Firebase Authentication and Storage instances.
+     * @author Nimi Akinroye
      */
     @SuppressLint("HardwareIds")
     public ManageImageProfile(Context context) {
@@ -45,6 +45,7 @@ public class ManageImageProfile {
 
     /**
      * Callback interface for handling image upload success or failure.
+     * @author Nimi Akinroye
      */
     public interface ImageUploadCallback {
         void onSuccess();
@@ -54,6 +55,7 @@ public class ManageImageProfile {
 
     /**
      * Callback interface for handling successful image retrieval or failure.
+     * @author Nimi Akinroye
      */
     public interface ImageRetrievedCallback {
         void onImageRetrieved(Uri uri);
@@ -63,6 +65,7 @@ public class ManageImageProfile {
 
     /**
      * Callback interface for checking if an image exists.
+     * @author Nimi Akinroye
      */
     public interface ImageCheckCallback {
         void onImageExists();
@@ -72,6 +75,7 @@ public class ManageImageProfile {
 
     /**
      * Callback interface for checking if an image was successfully deleted
+     * @author Nimi Akinroye
      */
     public interface ImageDeleteCallback {
         void onSuccess();
@@ -81,6 +85,7 @@ public class ManageImageProfile {
 
     /**
      * Uploads an image to Firebase Storage for the current user.
+     * @author Nimi Akinroye
      *
      * @param imageUri the URI of the image to be uploaded
      * @param callback the callback for handling success or failure of the upload
@@ -95,6 +100,7 @@ public class ManageImageProfile {
 
     /**
      * Checks if an image exists in Firebase Storage for the current user.
+     * @author Nimi Akinroye
      *
      * @param callback the callback to handle whether the image exists or not
      */
@@ -122,6 +128,7 @@ public class ManageImageProfile {
 
     /**
      * Retrieves the image URL from Firebase Storage for the current user.
+     * @author Nimi Akinroye
      *
      * @param callback the callback for handling image retrieval success or failure
      */
@@ -133,6 +140,15 @@ public class ManageImageProfile {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    /**
+     * Creates an image based on the individual's name
+     * @author Nimi Akinroye
+     * @param context context of class
+     * @param name name of user
+     * @param width width of picture
+     * @param height height of picture
+     * @return a drawable user profile picture
+     */
     public static Drawable generateArtFromName(Context context, String name, int width, int height) {
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
@@ -170,7 +186,12 @@ public class ManageImageProfile {
         return new BitmapDrawable(context.getResources(), bitmap);
     }
 
-
+    /**
+     * Generates deterministic hash for the picture creation
+     * @author Nimi Akinroye
+     * @param name user's name
+     * @return hashed name
+     */
     private static String hashName(String name) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -187,6 +208,12 @@ public class ManageImageProfile {
         }
     }
 
+    /**
+     * Gets the colour from hash for the profile picture
+     * @author Nimi Akinroye
+     * @param hex colour
+     * @return colour integer
+     */
     private static int getColorFromHash(String hex) {
         return Color.rgb(
                 Integer.parseInt(hex.substring(0, 2), 16),
@@ -195,6 +222,14 @@ public class ManageImageProfile {
         );
     }
 
+    /**
+     * Prevents a basic image by adding noise
+     * @author Nimi Akinroye
+     * @param canvas canvas to add the drawing onto
+     * @param hash the hashed name
+     * @param width picture width
+     * @param height picture height
+     */
     private static void addNoiseToCanvas(Canvas canvas, String hash, int width, int height) {
         Paint noisePaint = new Paint();
         Random random = new Random(hash.hashCode());

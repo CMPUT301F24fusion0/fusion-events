@@ -8,13 +8,23 @@ import java.util.List;
 
 public class NotificationHelper {
 
+    /**
+     * Callback for firebase results
+     * @author Nimi Akinroye
+     */
     public interface Callback {
         void onNotificationsUpdated(List<NotificationItem> updatedNotificationList);
         void onError(String error);
     }
 
+    /**
+     * Gets the notifications in the format they were stored: title, body, flag
+     * @author Nimi Akinroye
+     * @param deviceId device id
+     * @param callback callback as firebase is asynchronous
+     */
     public static void updateNotifications(String deviceId, Callback callback) {
-        UserFirestore.findUser(deviceId, new UserFirestore.Callback() {
+        new UserFirestore().findUser(deviceId, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
                 ArrayList<String> notifications = user.getNotifications();
@@ -41,8 +51,15 @@ public class NotificationHelper {
         });
     }
 
+    /**
+     * Delete notifications once user swipes it away
+     * @author Nimi Akinroye
+     * @param deviceId device id
+     * @param notificationItem notification item to delete
+     * @param callback callback for updated notification list
+     */
     public static void deleteNotification(String deviceId, NotificationItem notificationItem, Callback callback) {
-        UserFirestore.findUser(deviceId, new UserFirestore.Callback() {
+        new UserFirestore().findUser(deviceId, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
                 user.editMode(true);

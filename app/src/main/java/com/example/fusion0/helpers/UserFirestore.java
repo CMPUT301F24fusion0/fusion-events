@@ -3,6 +3,7 @@ package com.example.fusion0.helpers;
 import com.example.fusion0.models.UserInfo;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
@@ -13,6 +14,9 @@ import java.util.HashMap;
  * This class serves as the connection to the Firebase. It includes common CRUD operations.
  */
 public class UserFirestore {
+
+    private FirebaseFirestore db;
+
     /**
      * @author Sehej Brar
      * This interface is needed due to the asynchronous nature of Firestore.
@@ -23,10 +27,24 @@ public class UserFirestore {
         void onFailure(String error);
     }
 
-    private static final CollectionReference usersRef;
+    private final CollectionReference usersRef;
 
-    static {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+    /**
+     * Normal constructor
+     * @author Sehej Brar
+     */
+    public UserFirestore() {
+        db = FirebaseFirestore.getInstance();
+        usersRef = db.collection("users");
+    }
+
+    /**
+     * This allows for the database to be mocked
+     * @author Sehej Brar
+     * @param db the mocked database
+     */
+    public UserFirestore(FirebaseFirestore db) {
+        this.db = db;
         usersRef = db.collection("users");
     }
 
@@ -56,7 +74,7 @@ public class UserFirestore {
      * @param dID is the primary key for each user and each user has a unique device ID
      * @param callback is the interface needed due to the asynchronous nature of Firebase
      */
-    public static void findUser(String dID, Callback callback) {
+    public void findUser(String dID, Callback callback) {
         usersRef.document(dID).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -80,7 +98,7 @@ public class UserFirestore {
      * @param field is the field that is to be changed (i.e. first name, last name, etc.)
      * @param newFields is a list of new attributes for the user
      */
-    public static void editUser(UserInfo user, String field, ArrayList<String> newFields) {
+    public void editUser(UserInfo user, String field, ArrayList<String> newFields) {
         String newField;
         field = field.toLowerCase();
 
@@ -120,10 +138,101 @@ public class UserFirestore {
      * Finds the user and then edit the events list.
      * @param user is the user instance
      */
-    public static void editUserEvents(UserInfo user) {
+    public void editUserEvents(UserInfo user) {
         String userID = user.getDeviceID();
         usersRef.document(userID).set(user, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> System.out.println("User data updated successfully."))
                 .addOnFailureListener(error -> System.err.println("Error updating user data: " + error.getMessage()));
     }
+
+    /**
+     * Callback interface for retrieving a list of users.
+     * @author Ali Abouei
+     */
+    public interface UserListCallback {
+        void onSuccess(ArrayList<UserInfo> users);
+        void onFailure(String error);
+    }
+
+    /**
+     * Callback interface for delete operations (user and profile picture).
+     * @author Ali Abouei
+     */
+    public interface DeleteCallback {
+        void onSuccess(); // Called when both user and profile picture are successfully deleted.
+        void onFailure(Exception e); // Called when deletion fails.
+    }
+
+    /**
+     * Retrieves all users from Firebase Firestore.
+     *
+     * @author Ali Abouei
+     * @param callback The callback to handle the result of the retrieval.
+     */
+    public void getAllUsers(UserListCallback callback) {
+        usersRef.get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    ArrayList<UserInfo> users = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        try {
+                            if (document.exists()) {
+                                UserInfo user = document.toObject(UserInfo.class);
+                                users.add(user);
+                            } else {
+                                System.err.println("Document does not exist: " + document.getId());
+                            }
+                        } catch (Exception e) {
+                            System.err.println("Error deserializing document: " + e.getMessage());
+                        }
+                    }
+                    callback.onSuccess(users);
+                })
+                .addOnFailureListener(error -> {
+                    System.err.println("Error fetching users: " + error.getMessage());
+                    callback.onFailure(error.getMessage());
+                });
+    }
+
+    /**
+     * Deletes a user from Firestore and their profile picture from Firebase Storage.
+     *
+     * @author Ali Abouei
+     * @param dID The device ID of the user to delete.
+     * @param callback The callback to handle the result of the deletion.
+     */
+    public void deleteUserAndImage(String dID, DeleteCallback callback) {
+        usersRef.document(dID).delete()
+                .addOnSuccessListener(aVoid -> {
+                    ManageImageProfile manageImage = new ManageImageProfile(FirebaseFirestore.getInstance().getApp().getApplicationContext());
+
+                    // Check if the image exists before attempting deletion
+                    manageImage.checkImageExists(new ManageImageProfile.ImageCheckCallback() {
+                        @Override
+                        public void onImageExists() {
+                            manageImage.deleteImage(new ManageImageProfile.ImageDeleteCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    if (callback != null) callback.onSuccess();
+                                }
+
+                                @Override
+                                public void onFailure(Exception e) {
+                                    System.err.println("Error deleting profile image: " + e.getMessage());
+                                    if (callback != null) callback.onFailure(e);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onImageDoesNotExist() {
+                            if (callback != null) callback.onSuccess(); // No image, still a success
+                        }
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    System.err.println("Error deleting user: " + e.getMessage());
+                    if (callback != null) callback.onFailure(e);
+                });
+    }
+
 }

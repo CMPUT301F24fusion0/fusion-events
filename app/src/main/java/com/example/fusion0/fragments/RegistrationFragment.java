@@ -1,5 +1,6 @@
 package com.example.fusion0.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -16,7 +17,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.fusion0.activities.MainActivity;
-import com.example.fusion0.activities.ViewEventActivity;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.UserInfo;
 import com.example.fusion0.activities.EventActivity;
@@ -29,7 +29,7 @@ import java.util.Objects;
  * This is the registration fragment that will be displayed when a user signs up for an waiting
  * for the first time. It will only be used once per user.
  */
-public class Registration extends Fragment {
+public class RegistrationFragment extends Fragment {
     EditText firstName, lastName, email, phoneNumber;
     UserFirestore firebase;
     Button register;
@@ -83,29 +83,32 @@ public class Registration extends Fragment {
             String emails = email.getText().toString().trim();
             String phone = phoneNumber.getText().toString().trim();
 
-            String dID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+            @SuppressLint("HardwareIds") String dID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
             registration(dID, first, last, emails, phone);
             Bundle bundle = getArguments();
+
             if (bundle != null) {
-                String eventID = bundle.getString("eventID");
-                Intent intent = new Intent(getActivity(), ViewEventActivity.class);
-                intent.putExtra("eventID", eventID);
-                Log.d("Checkpoint", "bundle was good - going back to vea");
-                Log.d("Checkpoint", "bundle was good - going back to vea");
-                startActivity(intent);
-            } else if(Objects.equals(bundle.getString("activity"), "ViewEventActivity")) {
-                Log.d("Checkpoint", "the bundle was null - going back to vea");
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                startActivity(intent);
-            } else if (Objects.equals(bundle.getString("destination"), "addEvent")) {
-                Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_eventFragment);
-            } else if (Objects.equals(bundle.getString("destination"), "profile")) {
-                Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_profileFragment);
-            } else if (Objects.equals(bundle.getString("destination"), "favourite")) {
-                Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_favFragment);
-            }else {
-                Intent intent = new Intent(getActivity(), EventActivity.class);
-                startActivity(intent);
+                if (bundle.containsKey("eventID")) {
+                    Log.d("event", "id");
+                    String eventID = bundle.getString("eventID");
+                    Intent intent = new Intent(getActivity(), ViewEventFragment.class);
+                    intent.putExtra("eventID", eventID);
+                    Log.d("Checkpoint", "bundle was good - going back to vea");
+                    startActivity(intent);
+                } else if (Objects.equals(bundle.getString("activity"), "ViewEventFragment")) {
+                    Log.d("Checkpoint", "the bundle was null - going back to vea");
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    startActivity(intent);
+                } else if (Objects.equals(bundle.getString("destination"), "addEvent")) {
+                    Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_eventFragment);
+                } else if (Objects.equals(bundle.getString("destination"), "profile")) {
+                    Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_profileFragment);
+                } else if (Objects.equals(bundle.getString("destination"), "favourite")) {
+                    Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_favFragment);
+                } else {
+                    Intent intent = new Intent(getActivity(), EventActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -125,7 +128,7 @@ public class Registration extends Fragment {
      * @param phone phone number
      */
     private void registration(String dID, String first, String last, String emails, String phone) {
-        UserFirestore.findUser(dID, new UserFirestore.Callback() {
+        new UserFirestore().findUser(dID, new UserFirestore.Callback() {
             /**
              * @author Sehej Brar
              * This method checks to see if the same user already exists, if it doesn't then the new

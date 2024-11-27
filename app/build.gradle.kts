@@ -2,9 +2,7 @@ plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.0"
-
 }
-
 
 val apiKey: String? = project.findProperty("API_KEY") as String?
 
@@ -48,6 +46,12 @@ android {
 
 dependencies {
     testImplementation ("androidx.test:core:1.4.0")
+    testImplementation("org.mockito:mockito-core:4.11.0")
+    testImplementation("org.objenesis:objenesis:3.2")
+    androidTestImplementation("org.mockito:mockito-android:5.5.0")
+    testImplementation("org.robolectric:robolectric:4.10.3")
+    testImplementation("org.conscrypt:conscrypt-android:2.5.2")
+    testImplementation(libs.junit.junit)
     implementation("de.hdodenhof:circleimageview:3.1.0")
     androidTestImplementation("org.mockito:mockito-core:5.3.1")
     androidTestImplementation("org.mockito:mockito-android:5.3.1")
@@ -72,7 +76,6 @@ dependencies {
 
 
     annotationProcessor("com.github.bumptech.glide:compiler:4.14.2")
-    testImplementation(libs.junit)
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -87,6 +90,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation ("com.google.code.gson:gson:2.11.0")
 
-    implementation ("com.github.yalantis:ucrop:2.2.6")
+    implementation("com.github.yalantis:ucrop:2.2.6")
+    implementation("com.github.ybq:Android-SpinKit:1.4.0")
 
+    implementation("com.airbnb.android:lottie-compose:6.6.0")
 }
