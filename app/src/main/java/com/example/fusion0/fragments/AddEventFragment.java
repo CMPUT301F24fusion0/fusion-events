@@ -88,7 +88,7 @@ public class AddEventFragment extends Fragment {
     private EditText eventName,description, capacity, radius, lotteryCapacity;
     private androidx.fragment.app.FragmentContainerView autocompletePlaceFragment;
     private Calendar startDateCalendar , registrationDateCalendar;
-    private TextView addFacilityText,dateRequirementsTextView,registrationDateRequirementsTextView, startDateTextView, startTimeTextView, endDateTextView, endTimeTextView, geolocationTextView, radiusText, registrationDateTextView;
+    private TextView addFacilityText, dateRequirementsTextView,registrationDateRequirementsTextView, startDateTextView, startTimeTextView, endDateTextView, endTimeTextView, geolocationTextView, radiusText, registrationDateTextView;
     private Button addEventButton;
     private ImageView uploadedImageView;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
