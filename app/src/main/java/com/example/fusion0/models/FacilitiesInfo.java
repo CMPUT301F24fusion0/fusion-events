@@ -53,6 +53,22 @@ public class FacilitiesInfo {
     }
 
     /**
+     * Constructs a new FacilitiesInfo object for test purposes
+     *
+     * @param address The address of the facility.
+     * @param facilityName The name of the facility.
+     * @param owner The owner of the facility.
+     */
+    public FacilitiesInfo(String address, String facilityName, String owner, String facilityImage) {
+        this.address = address;
+        this.facilityName = facilityName;
+        this.owner = owner;
+        this.events = new ArrayList<>();
+        this.facilityID = UUID.randomUUID().toString();
+        this.facilityImage = facilityImage;
+    }
+
+    /**
      * Returns a map representation of the facility's information. The map contains
      * the facility's address, name, owner, and events.
      *

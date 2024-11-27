@@ -41,8 +41,14 @@ public class OrganizerInfo {
         this.firebase = new EventFirebase();
     }
 
-
-
+    /**
+     * Constructor for testing purposes only
+     */
+    public OrganizerInfo(String did, ArrayList<String> facilitiesNames) {
+        this.events = new ArrayList<>();
+        this.deviceId = did;
+        this.facilitiesNames = facilitiesNames;
+    }
     /**
      * Creates a hashmap of the information needed for Firebase for the organizer
      * @author Simon Haile
