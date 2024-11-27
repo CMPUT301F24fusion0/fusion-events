@@ -1,5 +1,7 @@
 package com.example.fusion0.helpers;
 
+import android.util.Log;
+
 import com.example.fusion0.models.NotificationItem;
 import com.example.fusion0.models.UserInfo;
 
@@ -35,7 +37,7 @@ public class NotificationHelper {
                         String title = notifications.get(i);
                         String body = notifications.get(i + 1);
                         String flag = notifications.get(i + 2);
-                        String eventId = notifications.get(i+3);
+                        String eventId = notifications.get(i + 3);
 
                         notificationList.add(new NotificationItem(title, body, flag, eventId));
                     }
@@ -66,9 +68,10 @@ public class NotificationHelper {
                 user.editMode(true);
 
                 ArrayList<String> notifications = user.getHomePageNotifications();
+                Log.d("current hpn", "hpn: " + notifications);
                 int indexToRemove = -1;
 
-                for (int i = 0; i < notifications.size(); i += 3) {
+                for (int i = 0; i + 3 < notifications.size(); i += 4) {
                     String title = notifications.get(i);
                     String body = notifications.get(i + 1);
                     if (title.equals(notificationItem.getTitle()) && body.equals(notificationItem.getBody())) {
@@ -81,11 +84,12 @@ public class NotificationHelper {
                     notifications.remove(indexToRemove);
                     notifications.remove(indexToRemove);
                     notifications.remove(indexToRemove);
+                    notifications.remove(indexToRemove);
                     user.setHomePageNotifications(notifications);
                     user.editMode(false);
 
                     List<NotificationItem> updatedNotificationList = new ArrayList<>();
-                    for (int i = 0; i < notifications.size(); i += 3) {
+                    for (int i = 0; i + 3 < notifications.size(); i += 4) {
                         String title = notifications.get(i);
                         String body = notifications.get(i + 1);
                         String flag = notifications.get(i + 2);

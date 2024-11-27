@@ -143,7 +143,7 @@ public class Waitlist implements Serializable {
     public void changeStatus(String eventID, String userID, String newStatus) {
         ArrayList<String> allStatus = new ArrayList<>(Arrays.asList("chosen", "waiting", "cancel", "chosen"));
 
-        if (userID == null || !allStatus.contains(newStatus.toLowerCase())) {
+        if (userID == null || eventID == null|| !allStatus.contains(newStatus.toLowerCase())) {
             throw new IllegalArgumentException("The argument provided is not valid");
         }
 

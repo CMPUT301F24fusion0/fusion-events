@@ -74,7 +74,7 @@ public class UserInfo {
     public HashMap<String,Object> user() {
         HashMap<String, Object> user = new HashMap<>();
         user.put("notifications", this.notifications);
-        user.put("homePageNotifications", this.notifications);
+        user.put("homepagenotifications", this.notifications);
         user.put("dID", this.deviceID);
         user.put("email", this.email);
         user.put("first name", this.firstName);
@@ -90,7 +90,7 @@ public class UserInfo {
      * @author Sehej Brar
      * @return array list of strings of notifications
      */
-    @PropertyName("homePageNotifications")
+    @PropertyName("homepagenotifications")
     public ArrayList<String> getHomePageNotifications() {
         return homePageNotifications;
     }
@@ -100,7 +100,7 @@ public class UserInfo {
      * @author Sehej Brar
      * @param homePageNotifications an array list of strings of notifications
      */
-    @PropertyName("homePageNotifications")
+    @PropertyName("homepagenotifications")
     public void setHomePageNotifications(ArrayList<String> homePageNotifications) {
         this.homePageNotifications = homePageNotifications;
         updateUser("homePageNotifications", this.homePageNotifications);

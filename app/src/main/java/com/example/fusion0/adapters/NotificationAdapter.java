@@ -1,6 +1,7 @@
 package com.example.fusion0.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.fusion0.helpers.AppNotifications;
+import com.example.fusion0.helpers.NotificationHelper;
 import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.NotificationItem;
 import com.example.fusion0.R;
@@ -31,7 +34,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private Context context;
     private List<NotificationItem> notificationList;
     private Waitlist waitlist;
-    private String eventId;
     private String userId;
 
     /**
@@ -95,12 +97,25 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             lotteryHolder.acceptButton.setOnClickListener(v -> {
                 Toast.makeText(context, "Event Accepted", Toast.LENGTH_SHORT).show();
-                waitlist.changeStatus(eventId, userId, "accept");
+                waitlist.changeStatus(item.getEventId(), userId, "accept");
             });
 
             lotteryHolder.declineButton.setOnClickListener(v -> {
-                Toast.makeText(context, "Event Declined", Toast.LENGTH_SHORT).show();
-                waitlist.changeStatus(eventId, userId, "cancel");
+                waitlist.changeStatus(item.getEventId(), userId, "cancel");
+                AppNotifications.sendNotification(userId, "Lottery Results",
+                        "Unfortunately, you have not been chosen for the lottery. " +
+                                "If someone declines the event, you may be selected for the lottery.",
+                        "0", item.getEventId());
+
+                NotificationHelper.deleteNotification(userId, item, new NotificationHelper.Callback() {
+                    @Override
+                    public void onNotificationsUpdated(List<NotificationItem> updatedNotificationList) {}
+
+                    @Override
+                    public void onError(String error) {
+                        Log.e("Error with deleting notification item", error);
+                    }
+                });
             });
 
         } else if (holder instanceof StandardNotificationViewHolder) {
