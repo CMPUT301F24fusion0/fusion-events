@@ -9,11 +9,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
 public class OrganizerInfoTest {
     OrganizerInfo organizerInfo;
+    ArrayList<String> facility;
 
     /**
      * Before each run, initialize the organizer
@@ -21,7 +23,8 @@ public class OrganizerInfoTest {
      */
     @Before
     public void initialize() {
-        organizerInfo = new OrganizerInfo("Device ID");
+        facility = new ArrayList<>(Arrays.asList("Facility 1", "Facility 2"));
+        organizerInfo = new OrganizerInfo("Device ID", facility);
     }
 
     /**
