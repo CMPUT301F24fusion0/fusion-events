@@ -9,10 +9,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class NotificationItemTest {
-    NotificationItem notificationItem;
+    private NotificationItem notificationItem;
 
     /**
-     * Before each run, initialize the user
+     * Before each run, initialize the notification
      * @author Sehej Brar
      */
     @Before
