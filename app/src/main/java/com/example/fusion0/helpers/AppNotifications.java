@@ -96,13 +96,13 @@ public class AppNotifications {
      * @param title title of notification
      * @param body body of notification
      */
-    public static void sendNotification(String dID, String title, String body, String flag) {
+    public static void sendNotification(String dID, String title, String body, String flag, String eventId) {
         new UserFirestore().findUser(dID, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
                 if (user != null) {
                     user.editMode(true);
-                    user.addNotifications(title, body, flag);
+                    user.addNotifications(title, body, flag, eventId);
                     user.editMode(false);
                 }
             }
@@ -128,7 +128,7 @@ public class AppNotifications {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "lottery");
         if (notifications != null) {
-            for (int i = 0; i < notifications.size(); i += 3) {
+            for (int i = 0; i < notifications.size(); i += 4) {
                 Intent intent = new Intent(context, MainActivity.class);
                 PendingIntent pendingIntent = PendingIntent.getActivity(context, i, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
                 builder.setContentTitle(notifications.get(i))

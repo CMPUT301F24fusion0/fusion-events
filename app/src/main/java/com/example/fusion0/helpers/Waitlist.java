@@ -143,7 +143,7 @@ public class Waitlist implements Serializable {
     public void changeStatus(String eventID, String userID, String newStatus) {
         ArrayList<String> allStatus = new ArrayList<>(Arrays.asList("chosen", "waiting", "cancel", "chosen"));
 
-        if (userID == null || !allStatus.contains(newStatus.toLowerCase())) {
+        if (userID == null || eventID == null|| !allStatus.contains(newStatus.toLowerCase())) {
             throw new IllegalArgumentException("The argument provided is not valid");
         }
 
@@ -382,7 +382,7 @@ public class Waitlist implements Serializable {
     public void allNotification(String eventId, String title, String message, String flag) {
         getAll(eventId, all -> {
             for (String dID: all) {
-                AppNotifications.sendNotification(dID, title, message, flag);
+                AppNotifications.sendNotification(dID, title, message, flag, eventId);
             }
         });
     }
@@ -397,7 +397,7 @@ public class Waitlist implements Serializable {
     public void chosenNotification(String eventId, String title, String message, String flag) {
         getChosen(eventId, chosen -> {
             for (String dID: chosen) {
-                AppNotifications.sendNotification(dID, title, message, flag);
+                AppNotifications.sendNotification(dID, title, message, flag, eventId);
             }
         });
     }
@@ -413,7 +413,7 @@ public class Waitlist implements Serializable {
         getAll(eventId, all -> getChosen(eventId, chosen -> {
             all.removeAll(chosen);
             for (String dID: all) {
-                AppNotifications.sendNotification(dID, title, message, flag);
+                AppNotifications.sendNotification(dID, title, message, flag, eventId);
             }
         }));
     }
@@ -428,7 +428,7 @@ public class Waitlist implements Serializable {
     public void cancelNotifications(String eventId, String title, String message, String flag) {
         getCancel(eventId, cancel -> {
             for (String dID: cancel) {
-                AppNotifications.sendNotification(dID, title, message, flag);
+                AppNotifications.sendNotification(dID, title, message, flag, eventId);
             }
         });
     }

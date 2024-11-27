@@ -1,6 +1,7 @@
 package com.example.fusion0.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.fusion0.helpers.AppNotifications;
+import com.example.fusion0.helpers.NotificationHelper;
+import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.NotificationItem;
 import com.example.fusion0.R;
 
@@ -29,6 +33,8 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private Context context;
     private List<NotificationItem> notificationList;
+    private Waitlist waitlist;
+    private String userId;
 
     /**
      * Constructor for the NotificationAdapter.
@@ -36,9 +42,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      * @param context       The context of the activity where the adapter is used.
      * @param notifications The list of NotificationItem objects to display.
      */
-    public NotificationAdapter(@NonNull Context context, @NonNull List<NotificationItem> notifications) {
+    public NotificationAdapter(@NonNull Context context, @NonNull List<NotificationItem> notifications, String userId) {
         this.context = context;
         this.notificationList = notifications;
+        this.waitlist = new Waitlist();
+        this.userId = userId;
     }
 
     /**
@@ -74,7 +82,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     /**
      * Binds data to the ViewHolder based on the item type.
-     *
+     * @author Nimi Akinroye, Sehej Brar
      * @param holder   The ViewHolder to bind data to.
      * @param position The position of the item in the list.
      */
@@ -89,12 +97,28 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             lotteryHolder.acceptButton.setOnClickListener(v -> {
                 Toast.makeText(context, "Event Accepted", Toast.LENGTH_SHORT).show();
-                // Handle accept action here
+                waitlist.changeStatus(item.getEventId(), userId, "accept");
             });
 
             lotteryHolder.declineButton.setOnClickListener(v -> {
-                Toast.makeText(context, "Event Declined", Toast.LENGTH_SHORT).show();
-                // Handle decline action here
+                waitlist.changeStatus(item.getEventId(), userId, "cancel");
+                AppNotifications.sendNotification(userId, "Lottery Results",
+                        "Unfortunately, you have not been chosen for the lottery. " +
+                                "If someone declines the event, you may be selected for the lottery.",
+                        "0", item.getEventId());
+
+                NotificationHelper.deleteNotification(userId, item, new NotificationHelper.Callback() {
+                    @Override
+                    public void onNotificationsUpdated(List<NotificationItem> updatedNotificationList) {}
+
+                    @Override
+                    public void onError(String error) {
+                        Log.e("Error with deleting notification item", error);
+                    }
+                });
+
+                notificationList.remove(position);
+                notifyItemRemoved(position);
             });
 
         } else if (holder instanceof StandardNotificationViewHolder) {
