@@ -18,7 +18,7 @@ public class UserFirebaseTest {
     private CollectionReference mockedCollectionRef;
     private DocumentReference mockedDocRef;
     private UserFirestore userFirestore;
-    UserInfo userInfo;
+    private UserInfo userInfo;
 
     /**
      * Setup the required mocks
