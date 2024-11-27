@@ -27,16 +27,17 @@ public class NotificationHelper {
         new UserFirestore().findUser(deviceId, new UserFirestore.Callback() {
             @Override
             public void onSuccess(UserInfo user) {
-                ArrayList<String> notifications = user.getNotifications();
+                ArrayList<String> notifications = user.getHomePageNotifications();
                 List<NotificationItem> notificationList = new ArrayList<>();
 
-                if (notifications != null && notifications.size() % 3 == 0) {
-                    for (int i = 0; i < notifications.size(); i += 3) {
+                if (notifications != null && notifications.size() % 4 == 0) {
+                    for (int i = 0; i < notifications.size(); i += 4) {
                         String title = notifications.get(i);
                         String body = notifications.get(i + 1);
                         String flag = notifications.get(i + 2);
+                        String eventId = notifications.get(i+3);
 
-                        notificationList.add(new NotificationItem(title, body, flag));
+                        notificationList.add(new NotificationItem(title, body, flag, eventId));
                     }
                     callback.onNotificationsUpdated(notificationList);
                 } else {
@@ -64,7 +65,7 @@ public class NotificationHelper {
             public void onSuccess(UserInfo user) {
                 user.editMode(true);
 
-                ArrayList<String> notifications = user.getNotifications();
+                ArrayList<String> notifications = user.getHomePageNotifications();
                 int indexToRemove = -1;
 
                 for (int i = 0; i < notifications.size(); i += 3) {
@@ -80,14 +81,16 @@ public class NotificationHelper {
                     notifications.remove(indexToRemove);
                     notifications.remove(indexToRemove);
                     notifications.remove(indexToRemove);
-                    user.setNotifications(notifications);
+                    user.setHomePageNotifications(notifications);
+                    user.editMode(false);
 
                     List<NotificationItem> updatedNotificationList = new ArrayList<>();
                     for (int i = 0; i < notifications.size(); i += 3) {
                         String title = notifications.get(i);
                         String body = notifications.get(i + 1);
                         String flag = notifications.get(i + 2);
-                        updatedNotificationList.add(new NotificationItem(title, body, flag));
+                        String eventId = notifications.get(i + 3);
+                        updatedNotificationList.add(new NotificationItem(title, body, flag, eventId));
                     }
                     callback.onNotificationsUpdated(updatedNotificationList);
                 } else {
