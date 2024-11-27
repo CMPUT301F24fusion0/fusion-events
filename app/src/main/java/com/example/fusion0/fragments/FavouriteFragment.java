@@ -1,5 +1,6 @@
 package com.example.fusion0.fragments;
 
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -15,14 +16,16 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+
 import com.example.fusion0.R;
 import com.example.fusion0.activities.JoinedEventActivity;
-import com.example.fusion0.activities.ViewEventActivity;
+import com.example.fusion0.fragments.ViewEventFragment;
 import com.example.fusion0.activities.ViewFacilityActivity;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
@@ -32,9 +35,12 @@ import com.example.fusion0.models.OrganizerInfo;
 import com.example.fusion0.models.UserInfo;
 import com.google.zxing.WriterException;
 
+
 import java.util.ArrayList;
 
+
 public class FavouriteFragment extends Fragment {
+
 
     private static final String TAG = "FavouriteActivity";
     private Button joinedEventsButton;
@@ -50,22 +56,32 @@ public class FavouriteFragment extends Fragment {
     private boolean isCreatedEventsListVisible = false;
     private boolean isJoinedEventsListVisible = false;
 
+
     private ImageButton profileButton;
     private ImageButton addButton;
     private ImageButton scannerButton;
     private ImageButton homeButton;
 
+
+    EventFirebase eventFirebase = new EventFirebase();
+
+
+
+
     public FavouriteFragment() {
         // Required empty public constructor
     }
+
 
     @SuppressLint("HardwareIds")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         deviceID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -73,8 +89,10 @@ public class FavouriteFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_favourite, container, false);
     }
 
+
     @Override public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Context context = requireContext();
+
 
         joinedEventsButton = view.findViewById(R.id.joined_events_view_button);
         createdEventsButton = view.findViewById(R.id.created_events_view_button);
@@ -83,6 +101,7 @@ public class FavouriteFragment extends Fragment {
         createdEventsList = view.findViewById(R.id.created_events_list);
         facilitiesList = view.findViewById(R.id.facilities_list);
         createdEventsList = view.findViewById(R.id.created_events_list);
+
 
         joinedEventsButton.setOnClickListener(v -> {
             new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
@@ -93,20 +112,24 @@ public class FavouriteFragment extends Fragment {
                         return;
                     }
 
-                    if (userInfo.getEvents() == null) {
+
+                    if (userInfo.getEvents() == null || userInfo.getEvents().isEmpty()) {
                         Toast.makeText(context, "No Joined Events Available.", Toast.LENGTH_SHORT).show();
                         joinedEventsList.setVisibility(View.GONE);
                         joinedEventsButton.setText("View");
+                        isJoinedEventsListVisible = false;
                     } else {
                         user = userInfo;
                         ArrayList<String> events = user.getEvents();
                         ArrayList<String> eventNames = new ArrayList<>();
 
+
                         final int totalEvents = events.size();
                         final int[] eventsFetchedCount = {0};
 
+
                         for (String eventId : events) {
-                            EventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
+                            eventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
                                 @Override
                                 public void onSuccess(EventInfo eventInfo) throws WriterException {
                                     if (eventInfo != null) {
@@ -114,11 +137,13 @@ public class FavouriteFragment extends Fragment {
                                     }
                                     eventsFetchedCount[0]++;
 
+
                                     if (eventsFetchedCount[0] == totalEvents) {
                                         ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, eventNames);
                                         joinedEventsList.setAdapter(eventsAdapter);
                                     }
                                 }
+
 
                                 @Override
                                 public void onFailure(String error) {
@@ -127,9 +152,6 @@ public class FavouriteFragment extends Fragment {
                             });
                         }
 
-                        ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, eventNames);
-                            joinedEventsList.setAdapter(eventsAdapter);
-                        }
 
                         if (isJoinedEventsListVisible) {
                             joinedEventsList.setVisibility(View.GONE);
@@ -140,6 +162,8 @@ public class FavouriteFragment extends Fragment {
                         }
                         isJoinedEventsListVisible = !isJoinedEventsListVisible;
                     }
+                }
+
 
                 @Override
                 public void onFailure(String error) {
@@ -147,8 +171,10 @@ public class FavouriteFragment extends Fragment {
                 }
             });
 
+
             joinedEventsList.setOnItemClickListener((parent, view1, position, id) -> {
                 String event = user.getEvents().get(position);
+
 
                 Intent intent = new Intent(requireActivity(), JoinedEventActivity.class);
                 intent.putExtra("eventID", event);
@@ -157,58 +183,98 @@ public class FavouriteFragment extends Fragment {
             });
         });
 
+
         createdEventsButton.setOnClickListener(v -> {
-            EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
+            eventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
                 @Override
                 public void onSuccess(OrganizerInfo organizerInfo) {
-                    if (organizerInfo == null) {
-                        Toast.makeText(context, "No Created Events Available.", Toast.LENGTH_SHORT).show();
-                        createdEventsList.setVisibility(View.GONE);
-                        createdEventsButton.setText("View");
-                    } else {
-                        organizer = organizerInfo;
+                    // Null check for organizerInfo
+                    if (organizerInfo != null) {
+                        // Proceed only if the organizerInfo is valid
+                        if (organizerInfo.getEvents() != null) {
+                            // Handle empty events list
+                            if (organizerInfo.getEvents().isEmpty()) {
+                                Toast.makeText(context, "No Created Events Available.", Toast.LENGTH_SHORT).show();
+                                createdEventsList.setVisibility(View.GONE);
+                                createdEventsButton.setText("View");
+                                isCreatedEventsListVisible = false;
+                            } else {
+                                organizer = organizerInfo;
 
-                        if (createdEventsList.getAdapter() == null) {
-                            ArrayAdapter<String> facilitiesAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, organizer.getEventsNames());
-                            createdEventsList.setAdapter(facilitiesAdapter);
-                        }
 
-                        if (isCreatedEventsListVisible) {
+                                ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, organizer.getEventsNames());
+                                createdEventsList.setAdapter(eventsAdapter);
+
+
+
+
+                                // Toggle visibility of the created events list
+                                if (isCreatedEventsListVisible) {
+                                    createdEventsList.setVisibility(View.GONE);
+                                    createdEventsButton.setText("View");
+                                } else {
+                                    createdEventsList.setVisibility(View.VISIBLE);
+                                    createdEventsButton.setText("Hide");
+                                }
+                                isCreatedEventsListVisible = !isCreatedEventsListVisible;
+                            }
+                        } else {
+                            // If no events list is found
+                            Toast.makeText(context, "No Created Events Available.", Toast.LENGTH_SHORT).show();
                             createdEventsList.setVisibility(View.GONE);
                             createdEventsButton.setText("View");
-                        } else {
-                            createdEventsList.setVisibility(View.VISIBLE);
-                            createdEventsButton.setText("Hide");
+                            isCreatedEventsListVisible = false;
                         }
-                        isCreatedEventsListVisible = !isCreatedEventsListVisible;
-
+                    } else {
+                        // If organizerInfo itself is null
+                        Toast.makeText(context, "You have created no events.", Toast.LENGTH_SHORT).show();
+                        createdEventsList.setVisibility(View.GONE);
+                        createdEventsButton.setText("View");
+                        isCreatedEventsListVisible = false;
                     }
                 }
+
 
                 @Override
                 public void onFailure(String error) {
                     Log.e(TAG, "Error fetching organizer: " + error);
+                    // Handle failure case here (e.g., show a Toast or other fallback UI)
                 }
             });
-            createdEventsList.setOnItemClickListener((parent, view1, position, id) -> {
-                EventInfo event = organizer.getEvents().get(position);
-                String eventID = event.getEventID();
 
-                Intent intent = new Intent(requireActivity(), ViewEventActivity.class);
-                intent.putExtra("eventID", eventID);
-                startActivity(intent);
+
+            // Set up the item click listener for the created events list
+            createdEventsList.setOnItemClickListener((parent, view1, position, id) -> {
+                if (organizer != null && organizer.getEvents() != null && position >= 0 && position < organizer.getEvents().size()) {
+                    EventInfo event = organizer.getEvents().get(position);
+                    String eventID = event.getEventID();
+
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("eventID", eventID);
+
+                    Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_viewEventFragment, bundle);
+                } else {
+                    Toast.makeText(context, "Invalid event selected.", Toast.LENGTH_SHORT).show();
+                }
             });
         });
 
+
+
+
         facilitiesButton.setOnClickListener(v -> {
-            EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
+            eventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
                 @Override
                 public void onSuccess(OrganizerInfo organizerInfo) {
-                    if (organizerInfo == null) {
+                    if (organizerInfo.getFacilities() == null || organizerInfo.getFacilities().isEmpty()) {
                         Toast.makeText(context, "No facilities available.", Toast.LENGTH_SHORT).show();
                         facilitiesList.setVisibility(View.GONE);
+                        facilitiesButton.setText("View");
+                        isFacilitiesListVisible = false;
                     } else {
                         organizer = organizerInfo;
+
 
                         if (facilitiesList.getAdapter() == null) {
                             if (organizer.getFacilitiesNames() != null) {
@@ -229,9 +295,11 @@ public class FavouriteFragment extends Fragment {
                             facilitiesButton.setText("Hide");
                         }
 
+
                         isFacilitiesListVisible = !isFacilitiesListVisible; // Toggle the state
                     }
                 }
+
 
                 @Override
                 public void onFailure(String error) {
@@ -248,9 +316,78 @@ public class FavouriteFragment extends Fragment {
             });
         });
 
+
         initializeToolbarButtons(view);
 
+
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateJoinedEventsList();
+        updateCreatedEventsList();
+        updateFacilitiesList();
+    }
+
+
+    private void updateJoinedEventsList() {
+        joinedEventsList.setVisibility(View.GONE);
+        joinedEventsButton.setText("View");
+        if (user != null && user.getEvents() != null && !user.getEvents().isEmpty()) {
+            ArrayList<String> eventNames = new ArrayList<>();
+            int totalEvents = user.getEvents().size();
+            int[] eventsFetchedCount = {0};
+
+
+            for (String eventId : user.getEvents()) {
+                eventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
+                    @Override
+                    public void onSuccess(EventInfo eventInfo) throws WriterException {
+                        if (eventInfo != null) {
+                            eventNames.add(eventInfo.getEventName());
+                        }
+                        eventsFetchedCount[0]++;
+                        // Once all events are fetched, update the adapter
+                        if (eventsFetchedCount[0] == totalEvents) {
+                            ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, eventNames);
+                            joinedEventsList.setAdapter(eventsAdapter);
+                        }
+                    }
+
+
+                    @Override
+                    public void onFailure(String error) {
+                        Log.e(TAG, "Error fetching event: " + error);
+                    }
+                });
+            }
+        }
+    }
+
+
+    private void updateCreatedEventsList() {
+        createdEventsList.setVisibility(View.GONE);
+        createdEventsButton.setText("View");
+        if (organizer != null && organizer.getEvents() != null && !organizer.getEvents().isEmpty()) {
+            ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, organizer.getEventsNames());
+            createdEventsList.setAdapter(eventsAdapter);
+        }
+    }
+
+
+    private void updateFacilitiesList() {
+        facilitiesList.setVisibility(View.GONE);
+        facilitiesButton.setText("View");
+        if (organizer != null && organizer.getFacilities() != null && !organizer.getFacilities().isEmpty()) {
+            ArrayAdapter<String> facilitiesAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, organizer.getFacilitiesNames());
+            facilitiesList.setAdapter(facilitiesAdapter);
+        }
+    }
+
+
+
+
+
 
     private void initializeToolbarButtons(View view) {
         homeButton = view.findViewById(R.id.toolbar_home);
@@ -258,20 +395,26 @@ public class FavouriteFragment extends Fragment {
         addButton = view.findViewById(R.id.toolbar_add);
         profileButton = view.findViewById(R.id.toolbar_person);
 
+
         homeButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_mainFragment);
         });
+
 
         scannerButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_qrFragment);
         });
 
+
         addButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_eventFragment);
         });
+
 
         profileButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_profileFragment);
         });
     }
 }
+
+

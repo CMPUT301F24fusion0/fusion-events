@@ -173,7 +173,7 @@ public class Waitlist implements Serializable {
 
     /**
      * @author Sehej Brar
-     * Add user to their waitlist
+     * Add user to their fragment_waitlist
      * @param entrantId entrant id
      * @param eventId event id
      */
@@ -193,7 +193,7 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Remove event from user's waitlist
+     * Remove event from user's fragment_waitlist
      * @author Sehej Brar
      * @param entrantId entrant id
      * @param eventId event id
@@ -214,7 +214,7 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Interface for all waitlist entrants
+     * Interface for all fragment_waitlist entrants
      * @author Sehej Brar
      */
     public interface AllCB {
@@ -222,10 +222,10 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Gets all those on waitlist
+     * Gets all those on fragment_waitlist
      * @author Sehej Brar
      * @param eventId event id
-     * @param allCB a callback for all entrants on waitlist
+     * @param allCB a callback for all entrants on fragment_waitlist
      */
     public void getAll(String eventId, AllCB allCB) {
         ArrayList<String> all = new ArrayList<>();
@@ -253,7 +253,7 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Interface for all waitlist entrants
+     * Interface for all fragment_waitlist entrants
      * @author Sehej Brar
      */
     public interface WaitingCB {
@@ -261,10 +261,10 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Gets all those on waitlist
+     * Gets all those on fragment_waitlist
      * @author Sehej Brar
      * @param eventId event id
-     * @param waitingCB a callback for entrants on waitlist that are waiting
+     * @param waitingCB a callback for entrants on fragment_waitlist that are waiting
      */
     public void getWait(String eventId, WaitingCB waitingCB) {
         ArrayList<String> wait = new ArrayList<>();
@@ -373,7 +373,7 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Sends a notification to everyone on the waitlist
+     * Sends a notification to everyone on the fragment_waitlist
      * @author Sehej Brar
      * @param eventId event id
      * @param title title of notification

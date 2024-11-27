@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,7 +46,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public class MainFragment extends Fragment {
 
@@ -153,7 +151,7 @@ public class MainFragment extends Fragment {
                                         document.getReference().update("lotteryConducted", true);
                                     }
                                 } else {
-                                    Log.e("FirestoreError", "Registration deadline not found for event: " + document.getId());
+                                    Log.e("FirestoreError", "RegistrationFragment deadline not found for event: " + document.getId());
                                 }
                             }
                         } else {
@@ -425,11 +423,11 @@ public class MainFragment extends Fragment {
 
                 waitlist.getChosen(eventId, chosen -> {
                     if (!chosen.isEmpty()) {
-                        ChosenEntrants chosenEntrants = new ChosenEntrants();
+                        ChosenEntrantsFragment chosenEntrants = new ChosenEntrantsFragment();
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("chosenEntrantsData", chosen);
                         bundle.putString("eventID", eventId);
-                        bundle.putSerializable("waitlist", waitlist);
+                        bundle.putSerializable("fragment_waitlist", waitlist);
                         chosenEntrants.setArguments(bundle);
 
                         // Replace fragment to show chosen entrants

@@ -136,6 +136,13 @@ public class OrganizerInfo {
     }
 
     /**
+     * Sets Events
+     */
+    public void setEventsNames(ArrayList<String> eventsNames) {
+        this.eventsNames = eventsNames;
+    }
+
+    /**
      * Returns an array of facilities name
      * @author Simon Haile
      * @return facilitiesName an array of facilities name

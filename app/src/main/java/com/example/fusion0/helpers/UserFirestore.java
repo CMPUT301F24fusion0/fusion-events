@@ -3,6 +3,7 @@ package com.example.fusion0.helpers;
 import com.example.fusion0.models.UserInfo;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
@@ -143,4 +144,95 @@ public class UserFirestore {
                 .addOnSuccessListener(documentReference -> System.out.println("User data updated successfully."))
                 .addOnFailureListener(error -> System.err.println("Error updating user data: " + error.getMessage()));
     }
+
+    /**
+     * Callback interface for retrieving a list of users.
+     * @author Ali Abouei
+     */
+    public interface UserListCallback {
+        void onSuccess(ArrayList<UserInfo> users);
+        void onFailure(String error);
+    }
+
+    /**
+     * Callback interface for delete operations (user and profile picture).
+     * @author Ali Abouei
+     */
+    public interface DeleteCallback {
+        void onSuccess(); // Called when both user and profile picture are successfully deleted.
+        void onFailure(Exception e); // Called when deletion fails.
+    }
+
+    /**
+     * Retrieves all users from Firebase Firestore.
+     *
+     * @author Ali Abouei
+     * @param callback The callback to handle the result of the retrieval.
+     */
+    public void getAllUsers(UserListCallback callback) {
+        usersRef.get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    ArrayList<UserInfo> users = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        try {
+                            if (document.exists()) {
+                                UserInfo user = document.toObject(UserInfo.class);
+                                users.add(user);
+                            } else {
+                                System.err.println("Document does not exist: " + document.getId());
+                            }
+                        } catch (Exception e) {
+                            System.err.println("Error deserializing document: " + e.getMessage());
+                        }
+                    }
+                    callback.onSuccess(users);
+                })
+                .addOnFailureListener(error -> {
+                    System.err.println("Error fetching users: " + error.getMessage());
+                    callback.onFailure(error.getMessage());
+                });
+    }
+
+    /**
+     * Deletes a user from Firestore and their profile picture from Firebase Storage.
+     *
+     * @author Ali Abouei
+     * @param dID The device ID of the user to delete.
+     * @param callback The callback to handle the result of the deletion.
+     */
+    public void deleteUserAndImage(String dID, DeleteCallback callback) {
+        usersRef.document(dID).delete()
+                .addOnSuccessListener(aVoid -> {
+                    ManageImageProfile manageImage = new ManageImageProfile(FirebaseFirestore.getInstance().getApp().getApplicationContext());
+
+                    // Check if the image exists before attempting deletion
+                    manageImage.checkImageExists(new ManageImageProfile.ImageCheckCallback() {
+                        @Override
+                        public void onImageExists() {
+                            manageImage.deleteImage(new ManageImageProfile.ImageDeleteCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    if (callback != null) callback.onSuccess();
+                                }
+
+                                @Override
+                                public void onFailure(Exception e) {
+                                    System.err.println("Error deleting profile image: " + e.getMessage());
+                                    if (callback != null) callback.onFailure(e);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onImageDoesNotExist() {
+                            if (callback != null) callback.onSuccess(); // No image, still a success
+                        }
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    System.err.println("Error deleting user: " + e.getMessage());
+                    if (callback != null) callback.onFailure(e);
+                });
+    }
+
 }

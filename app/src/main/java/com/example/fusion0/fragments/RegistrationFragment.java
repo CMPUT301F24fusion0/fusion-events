@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.fusion0.activities.MainActivity;
-import com.example.fusion0.activities.ViewEventActivity;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.UserInfo;
 import com.example.fusion0.activities.EventActivity;
@@ -30,7 +29,7 @@ import java.util.Objects;
  * This is the registration fragment that will be displayed when a user signs up for an waiting
  * for the first time. It will only be used once per user.
  */
-public class Registration extends Fragment {
+public class RegistrationFragment extends Fragment {
     EditText firstName, lastName, email, phoneNumber;
     UserFirestore firebase;
     Button register;
@@ -92,11 +91,11 @@ public class Registration extends Fragment {
                 if (bundle.containsKey("eventID")) {
                     Log.d("event", "id");
                     String eventID = bundle.getString("eventID");
-                    Intent intent = new Intent(getActivity(), ViewEventActivity.class);
+                    Intent intent = new Intent(getActivity(), ViewEventFragment.class);
                     intent.putExtra("eventID", eventID);
                     Log.d("Checkpoint", "bundle was good - going back to vea");
                     startActivity(intent);
-                } else if (Objects.equals(bundle.getString("activity"), "ViewEventActivity")) {
+                } else if (Objects.equals(bundle.getString("activity"), "ViewEventFragment")) {
                     Log.d("Checkpoint", "the bundle was null - going back to vea");
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     startActivity(intent);

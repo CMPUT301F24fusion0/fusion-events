@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.fusion0.fragments.ViewEventFragment;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.EventInfo;
@@ -124,7 +125,7 @@ public class FavouriteActivity extends AppCompatActivity {
                         joinedEventsList.setOnItemClickListener((parent, view1, position, id) -> {
                             String eventID = user.getEvents().get(position);
 
-                            Intent intent = new Intent(FavouriteActivity.this, ViewEventActivity.class);
+                            Intent intent = new Intent(FavouriteActivity.this, ViewEventFragment.class);
                             intent.putExtra("eventID", eventID);
                             intent.putExtra("deviceID", deviceID);
                             startActivity(intent);
@@ -195,7 +196,7 @@ public class FavouriteActivity extends AppCompatActivity {
                 EventInfo event = organizer.getEvents().get(position);
                 String eventID = event.getEventID();
 
-                Intent intent = new Intent(FavouriteActivity.this, ViewEventActivity.class);
+                Intent intent = new Intent(FavouriteActivity.this, ViewEventFragment.class);
                 intent.putExtra("eventID", eventID);
                 startActivity(intent);
             });

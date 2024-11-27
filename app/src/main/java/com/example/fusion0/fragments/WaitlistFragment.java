@@ -4,23 +4,17 @@ import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-import com.example.fusion0.activities.ViewEventActivity;
 import com.example.fusion0.adapters.ProfileListAdapter;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
@@ -28,7 +22,6 @@ import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.UserInfo;
 import com.example.fusion0.R;
-import com.google.zxing.WriterException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +54,7 @@ public class WaitlistFragment extends Fragment {
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.waitlist, container, false);
+        View view = inflater.inflate(R.layout.fragment_waitlist, container, false);
 
         backButton = view.findViewById(R.id.backButton);
         waitlistCapacityRatio = view.findViewById(R.id.ratio);
@@ -147,12 +140,12 @@ public class WaitlistFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle = getArguments();
-        waitlist = (Waitlist) bundle.getSerializable("waitlist");
+        waitlist = (Waitlist) bundle.getSerializable("fragment_waitlist");
 
 
         backButton.setOnClickListener(v -> {
             if (bundle != null) {
-                Intent intent = new Intent(getActivity(), ViewEventActivity.class);
+                Intent intent = new Intent(getActivity(), ViewEventFragment.class);
                 intent.putExtra("eventID", bundle.getString("eventID"));
                 startActivity(intent);
             }
@@ -189,18 +182,18 @@ public class WaitlistFragment extends Fragment {
 
 
                     if (!(event.getLotteryCapacity().equals("0"))) {
-                        waitlist.conductLottery(event.getEventID(), Integer.parseInt(event.getLotteryCapacity()));
+                        fragment_waitlist.conductLottery(event.getEventID(), Integer.parseInt(event.getLotteryCapacity()));
 
-                        waitlist.getChosen(event.getEventID(), chosen -> {
+                        fragment_waitlist.getChosen(event.getEventID(), chosen -> {
                             if (chosen.isEmpty()) {
                                 Toast.makeText(WaitlistFragment.this.getContext(), "Chosen entrants list is empty.", Toast.LENGTH_SHORT).show();
                             }else{
-                                ChosenEntrants chosenEntrants = new ChosenEntrants();
+                                ChosenEntrantsFragment chosenEntrants = new ChosenEntrantsFragment();
 
                                 Bundle bundle = new Bundle();
                                 bundle.putSerializable("chosenEntrantsData", chosen);
                                 bundle.putString("eventID", event.getEventID());
-                                bundle.putSerializable("waitlist", waitlist);
+                                bundle.putSerializable("fragment_waitlist", fragment_waitlist);
                                 chosenEntrants.setArguments(bundle);
 
                                 requireActivity().getSupportFragmentManager().beginTransaction()
