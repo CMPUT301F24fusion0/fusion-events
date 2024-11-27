@@ -16,14 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EventInfoTest {
-    EventInfo event;
+    private EventInfo event;
 
     /**
-     * Before each run, initialize the organizer
+     * Before each run, initialize the event
      * @author Sehej Brar
      */
     @Before
-    public void initialize() throws WriterException {
+    public void initialize() {
         Date startDate = new Date(1732936646);
         Date endDate = new Date(1735183046);
 

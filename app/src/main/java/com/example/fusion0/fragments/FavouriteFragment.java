@@ -27,6 +27,7 @@ import androidx.navigation.Navigation;
 
 import com.example.fusion0.R;
 import com.example.fusion0.activities.JoinedEventActivity;
+import com.example.fusion0.fragments.ViewEventFragment;
 import com.example.fusion0.activities.ViewFacilityActivity;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
@@ -38,7 +39,6 @@ import com.google.zxing.WriterException;
 
 
 import java.util.ArrayList;
-
 
 public class FavouriteFragment extends Fragment {
 
@@ -74,8 +74,6 @@ public class FavouriteFragment extends Fragment {
     EventFirebase eventFirebase = new EventFirebase();
 
 
-
-
     public FavouriteFragment() {
         // Required empty public constructor
     }
@@ -86,17 +84,14 @@ public class FavouriteFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         deviceID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_favourite, container, false);
     }
-
 
     @Override public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Context context = requireContext();
@@ -111,7 +106,6 @@ public class FavouriteFragment extends Fragment {
         createdEventsList = view.findViewById(R.id.created_events_list);
         facilitiesList = view.findViewById(R.id.facilities_list);
         createdEventsList = view.findViewById(R.id.created_events_list);
-
 
         joinedEventsButton.setOnClickListener(v -> {
             new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
@@ -133,7 +127,6 @@ public class FavouriteFragment extends Fragment {
                         ArrayList<String> events = user.getEvents();
                         ArrayList<String> eventNames = new ArrayList<>();
 
-
                         final int totalEvents = events.size();
                         final int[] eventsFetchedCount = {0};
 
@@ -147,13 +140,11 @@ public class FavouriteFragment extends Fragment {
                                     }
                                     eventsFetchedCount[0]++;
 
-
                                     if (eventsFetchedCount[0] == totalEvents) {
                                         ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, eventNames);
                                         joinedEventsList.setAdapter(eventsAdapter);
                                     }
                                 }
-
 
                                 @Override
                                 public void onFailure(String error) {
@@ -335,6 +326,8 @@ public class FavouriteFragment extends Fragment {
     }
 
 
+
+
     private void updateJoinedEventsList() {
         joinedEventsList.setVisibility(View.GONE);
         joinedEventsButton.setText("View");
@@ -368,6 +361,9 @@ public class FavouriteFragment extends Fragment {
             }
         }
     }
+
+
+
 
 
     private void updateCreatedEventsList() {
@@ -405,6 +401,7 @@ public class FavouriteFragment extends Fragment {
         // Set all buttons
         setAllButtonsInactive(context);
         setActiveButton(context, favouriteButton, searchTextView);
+
 
         homeButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_mainFragment);
