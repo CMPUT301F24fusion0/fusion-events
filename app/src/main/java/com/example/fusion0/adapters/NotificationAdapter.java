@@ -82,7 +82,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     /**
      * Binds data to the ViewHolder based on the item type.
-     *
+     * @author Nimi Akinroye, Sehej Brar
      * @param holder   The ViewHolder to bind data to.
      * @param position The position of the item in the list.
      */
@@ -116,6 +116,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         Log.e("Error with deleting notification item", error);
                     }
                 });
+
+                notificationList.remove(position);
+                notifyItemRemoved(position);
             });
 
         } else if (holder instanceof StandardNotificationViewHolder) {
