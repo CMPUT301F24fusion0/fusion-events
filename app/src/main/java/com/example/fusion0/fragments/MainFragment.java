@@ -280,6 +280,7 @@ public class MainFragment extends Fragment {
 
                 itemTouchHelper.attachToRecyclerView(notificationsListView);
                 initializeToolbarButtons(view);
+
             } else {
                 profileButton = view.findViewById(R.id.toolbar_person);
                 scannerButton = view.findViewById(R.id.toolbar_qrscanner);
@@ -412,6 +413,12 @@ public class MainFragment extends Fragment {
             notificationsListView.setVisibility(View.VISIBLE);
         }
     }
+
+    /**
+     * Starting the lottery function and send notifications
+     * @param eventId event id
+     * @param eventDoc the document for the event
+     */
     private void runLottery(String eventId, DocumentSnapshot eventDoc) {
         if (eventDoc != null) {
             if (!eventDoc.getString("lotteryCapacity").equals("0")) {
@@ -419,7 +426,8 @@ public class MainFragment extends Fragment {
                         "The lottery is not starting. Be on the look out for the results!", "0");
                 waitlist.conductLottery(eventId, Integer.parseInt(eventDoc.getString("lotteryCapacity")));
                 waitlist.chosenNotification(eventId, "Winner!",
-                        "Congratulations, you have won the lottery! Please accept the invitation in the app.", "1");
+                        "Congratulations, you have won the lottery! Please accept the invitation to confirm your spot.", "1");
+                waitlist.loseNotification(eventId, "Lottery Results", "Unfortunately, you have lost the lottery. You may still receive an invite if someone declines their invitation.", "0");
 
                 waitlist.getChosen(eventId, chosen -> {
                     if (!chosen.isEmpty()) {
@@ -437,6 +445,7 @@ public class MainFragment extends Fragment {
                                 .commit();
                     }
                 });
+
             } else {
                 Log.d("Lottery", "Lottery capacity is 0, skipping lottery.");
             }

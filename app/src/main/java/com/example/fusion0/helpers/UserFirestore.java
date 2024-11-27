@@ -1,5 +1,7 @@
 package com.example.fusion0.helpers;
 
+import android.util.Log;
+
 import com.example.fusion0.models.UserInfo;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -101,19 +103,18 @@ public class UserFirestore {
     public void editUser(UserInfo user, String field, ArrayList<String> newFields) {
         String newField;
         field = field.toLowerCase();
-
+        Log.d("Field to change", field);
         ArrayList<String> fields = new ArrayList<>(
-                Arrays.asList("first name", "last name", "phone number", "email", "did", "notifications", "events"));
+                Arrays.asList("first name", "last name", "phone number", "email", "did", "notifications", "events", "homepagenotifications"));
 
-        if (!fields.contains(field.toLowerCase())) {
+        if (!fields.contains(field)) {
             throw new IllegalArgumentException("The field you've tried to change is not valid");
-        } else if (!(field.equalsIgnoreCase("notifications")) && !((field.equalsIgnoreCase("events")))) {
+        } else if (!(field.equals("notifications")) && !(field.equals("events")) && !(field.equals("homepagenotifications"))) {
             newField = newFields.get(0);
             usersRef.document(user.getDeviceID()).update(field, newField)
                     .addOnSuccessListener(ref -> System.out.println("Update Successful"))
                     .addOnFailureListener(e -> System.out.println("Failure" + e.getMessage()));
-        } else if (field.equalsIgnoreCase("notifications")) {
-            System.out.println(user.getDeviceID());
+        } else if (field.equals("notifications") || (field.equals("homepagenotifications"))) {
             usersRef.document(user.getDeviceID()).update(field, newFields)
                     .addOnSuccessListener(ref -> System.out.println("Array value added successfully"))
                     .addOnFailureListener(e -> System.out.println("Failure" + e.getMessage()));
