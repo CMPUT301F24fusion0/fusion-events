@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EventInfoTest {
-    EventInfo event;
+    private EventInfo event;
 
     /**
      * Before each run, initialize the organizer

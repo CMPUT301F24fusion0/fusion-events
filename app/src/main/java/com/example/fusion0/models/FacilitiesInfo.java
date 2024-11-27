@@ -126,6 +126,7 @@ public class FacilitiesInfo {
     public String getFacilityImage(){
         return facilityImage;
     }
+
     public void setFacilityImage(String facilityImage){
         this.facilityImage = facilityImage;
     }
