@@ -40,11 +40,10 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      * @param context       The context of the activity where the adapter is used.
      * @param notifications The list of NotificationItem objects to display.
      */
-    public NotificationAdapter(@NonNull Context context, @NonNull List<NotificationItem> notifications, String eventId, String userId) {
+    public NotificationAdapter(@NonNull Context context, @NonNull List<NotificationItem> notifications, String userId) {
         this.context = context;
         this.notificationList = notifications;
         this.waitlist = new Waitlist();
-        this.eventId = eventId;
         this.userId = userId;
     }
 

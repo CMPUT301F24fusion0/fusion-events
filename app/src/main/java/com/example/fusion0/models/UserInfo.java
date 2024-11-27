@@ -13,8 +13,7 @@ import java.util.Objects;
  */
 public class UserInfo {
     String firstName, lastName, email, phoneNumber, deviceID;
-    ArrayList<String> notifications;
-    ArrayList<String> events;
+    ArrayList<String> notifications, events, homePageNotifications;
     Boolean edit;
 
 
@@ -29,13 +28,17 @@ public class UserInfo {
     /**
      * @author Sehej Brar
      * Default constructor if phone number is provided
+     * @param notifications notifications
      * @param first first name
      * @param last last name
-     * @param email email address
+     * @param email email
      * @param phoneNumber phone number
+     * @param dID device id
+     * @param events list of events
      */
     public UserInfo(ArrayList<String> notifications, String first, String last, String email, String phoneNumber, String dID, ArrayList<String> events) {
         this.notifications = notifications;
+        this.homePageNotifications = new ArrayList<>();
         this.firstName = first;
         this.lastName = last;
         this.email = email;
@@ -54,6 +57,7 @@ public class UserInfo {
      */
     public UserInfo(ArrayList<String> notifications, String first, String last, String email, String dID, ArrayList<String> events) {
         this.notifications = notifications;
+        this.homePageNotifications = new ArrayList<>();
         this.firstName = first;
         this.lastName = last;
         this.email = email;
@@ -70,6 +74,7 @@ public class UserInfo {
     public HashMap<String,Object> user() {
         HashMap<String, Object> user = new HashMap<>();
         user.put("notifications", this.notifications);
+        user.put("homePageNotifications", this.notifications);
         user.put("dID", this.deviceID);
         user.put("email", this.email);
         user.put("first name", this.firstName);
@@ -78,6 +83,27 @@ public class UserInfo {
         user.put("events", this.events);
 
         return user;
+    }
+
+    /**
+     * Gets notifications for home page
+     * @author Sehej Brar
+     * @return array list of strings of notifications
+     */
+    @PropertyName("homePageNotifications")
+    public ArrayList<String> getHomePageNotifications() {
+        return homePageNotifications;
+    }
+
+    /**
+     * Sets notifications for home page
+     * @author Sehej Brar
+     * @param homePageNotifications an array list of strings of notifications
+     */
+    @PropertyName("homePageNotifications")
+    public void setHomePageNotifications(ArrayList<String> homePageNotifications) {
+        this.homePageNotifications = homePageNotifications;
+        updateUser("homePageNotifications", this.homePageNotifications);
     }
 
     /**
@@ -127,10 +153,11 @@ public class UserInfo {
      * @param title title
      * @param body body
      */
-    public void addNotifications(String title, String body, String flag) {
+    public void addNotifications(String title, String body, String flag, String eventId) {
         this.notifications.add(title);
         this.notifications.add(body);
         this.notifications.add(flag);
+        this.notifications.add(eventId);
         updateUser("notifications", this.notifications);
     }
 

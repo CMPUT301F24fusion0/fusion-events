@@ -2,7 +2,10 @@ package com.example.fusion0.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -16,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -207,7 +211,7 @@ public class MainFragment extends Fragment {
                     }
                 });
 
-                notificationAdapter = new NotificationAdapter(context, notificationList);
+                notificationAdapter = new NotificationAdapter(context, notificationList, deviceId);
                 notificationsListView.setAdapter(notificationAdapter);
 
                 NotificationHelper.updateNotifications(deviceId, new NotificationHelper.Callback() {
@@ -271,7 +275,7 @@ public class MainFragment extends Fragment {
                                     notificationList.add(position, removedItem);
                                     notificationAdapter.notifyItemInserted(position);
 
-                                    AppNotifications.sendNotification(deviceId, removedItem.getTitle(), removedItem.getBody(), removedItem.getFlag());
+                                    AppNotifications.sendNotification(deviceId, removedItem.getTitle(), removedItem.getBody(), removedItem.getFlag(), removedItem.getEventId());
                                 }).show();
                     }
                 });
@@ -310,7 +314,9 @@ public class MainFragment extends Fragment {
 
     /**
      * @author Sehej Brar
-     * Decides whether the permission is granted and then sends them the notification
+     * Decides whether the permission is granted and then sends them the notification.
+     * If they refuse notifications, it will give them an alert dialog which takes them to the app's
+     * notification settings in their phone's settings to change it should they choose to.
      * @param requestCode The request code passed in
      * @param permissions The requested permissions. Never null.
      * @param grantResults The grant results for the corresponding permissions
@@ -327,7 +333,23 @@ public class MainFragment extends Fragment {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 AppNotifications.getNotification(deviceId, requireContext());
             } else {
-                // go to phone settings
+                new AlertDialog.Builder(requireContext())
+                        .setTitle("Permission Denied")
+                        .setMessage("Notifications is a permission needed for the app to function properly.")
+                        .setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+                            @RequiresApi(api = Build.VERSION_CODES.O)
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra(Settings.EXTRA_APP_PACKAGE, requireActivity().getPackageName());
+                                requireActivity().startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        });
             }
         } else {
             Log.d("Wrong", "Code");

@@ -10,6 +10,7 @@ public class NotificationItem {
     private String title;
     private String body;
     private String flag;
+    private String eventId;
 
     /**
      * Constructs a new NotificationItem.
@@ -18,10 +19,11 @@ public class NotificationItem {
      * @param body  The body/content of the notification.
      * @param flag  The flag indicating the type of notification (e.g., "0" for standard, "1" for accept/decline type).
      */
-    public NotificationItem(String title, String body, String flag) {
+    public NotificationItem(String title, String body, String flag, String eventId) {
         this.title = title;
         this.body = body;
         this.flag = flag;
+        this.eventId = eventId;
     }
 
     /**
@@ -50,4 +52,11 @@ public class NotificationItem {
     public String getFlag() {
         return flag;
     }
+
+    /**
+     * Returns the event id
+     * @author Sehej Brar
+     * @return the event id
+     */
+    public String getEventId() {return eventId;}
 }
