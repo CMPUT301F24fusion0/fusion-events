@@ -17,7 +17,7 @@ public class FacilitiesInfoTest {
      */
     @Before
     public void initialize() {
-        facilitiesInfo = new FacilitiesInfo("Address", "Name", "Owner", 10.05, 12.05, "image");
+        facilitiesInfo = new FacilitiesInfo("Address", "Name", "Owner", "image");
     }
 
     /**
