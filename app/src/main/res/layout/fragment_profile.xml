@@ -7,6 +7,65 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white">
 
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/profileSkeletonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:foregroundGravity="center"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintBottom_toTopOf="@id/toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayoutOne"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/placeholderOne"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/placeholder_profile"
+                app:civ_border_color="@color/textColor"
+                app:civ_border_width="3dp"
+                app:layout_constraintCircleRadius="50dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/placeholderTwo"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="32dp"
+                android:background="#abaeab"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/placeholderOne" />
+
+            <LinearLayout
+                android:id="@+id/placeholderThree"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="32dp"
+                android:background="#abaeab"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/placeholderTwo" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
@@ -20,13 +79,14 @@
 
         <ImageButton
             android:id="@+id/settingsButton"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:background="@null"
-            android:src="@drawable/ic_settings_drawable"
+            android:src="@drawable/ic_settings"
+            android:layout_marginTop="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/textColor" />
+            app:tint="@color/black" />
 
         <FrameLayout
             android:id="@+id/frameLayout"
@@ -44,7 +104,7 @@
                 android:layout_centerInParent="true"
                 android:src="@drawable/default_profile_image"
                 app:civ_border_width="3dp"
-                app:civ_border_color="@color/textColor"
+                app:civ_border_color="#777d77"
                 app:layout_constraintCircleRadius="50dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -56,7 +116,7 @@
                 android:layout_height="32dp"
                 android:contentDescription="Edit image"
                 android:layout_gravity="bottom|end"
-                android:src="@drawable/camera_drawable"
+                android:src="@drawable/ic_change_image"
                 android:visibility="gone"/>
 
         </FrameLayout>
@@ -74,10 +134,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/personalInfo"
-                android:textSize="23sp"
+                android:textSize="25sp"
                 android:textColor="@color/textColor"
-                android:textStyle="bold"
-                android:fontFamily="@font/raleway_medium"/>
+                android:fontFamily="@font/dmsans_medium"/>
 
             <View
                 android:layout_width="match_parent"
@@ -86,25 +145,28 @@
                 android:layout_marginBottom="5dp" />
 
             <LinearLayout
+                android:id="@+id/linearLayoutOne"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rect_background"
-                android:orientation="vertical"
-                android:padding="10dp">
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingVertical="6dp"
+                    android:paddingHorizontal="8dp"
+                    android:gravity="center_vertical">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/person_drawable"
-                        app:tint="@color/textColor" />
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_profile_filled"
+                        app:tint="@color/black" />
 
                     <Space
-                        android:layout_width="8dp"
+                        android:layout_width="10dp"
                         android:layout_height="0dp" />
 
                     <TextView
@@ -112,19 +174,20 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="bottom"
-                        android:fontFamily="@font/raleway_semibold"
+                        android:fontFamily="@font/dmsans_regular"
                         android:text="Alice Smith"
-                        android:textColor="@color/textColor"
-                        android:textSize="17sp" />
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
 
                     <EditText
                         android:id="@+id/editFullName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Enter Full Name"
-                        android:fontFamily="@font/raleway_semibold"
-                        android:textSize="17sp"
-                        android:textColor="@color/textColor"
+                        android:background="@null"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textSize="20sp"
+                        android:textColor="@color/black"
                         android:visibility="gone" />
 
                 </LinearLayout>
@@ -132,22 +195,24 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/textColor"
-                    android:layout_marginVertical="5dp" />
+                    android:background="#CCCCCC" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingVertical="6dp"
+                    android:paddingHorizontal="8dp"
+                    android:gravity="center_vertical">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
                         android:src="@drawable/email_drawable"
-                        app:tint="@color/textColor" />
+                        app:tint="@color/black" />
 
                     <Space
-                        android:layout_width="8dp"
+                        android:layout_width="10dp"
                         android:layout_height="0dp" />
 
                     <TextView
@@ -155,19 +220,20 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="alicesmith@gmail.com"
-                        android:fontFamily="@font/raleway_semibold"
+                        android:fontFamily="@font/dmsans_regular"
                         android:gravity="bottom"
-                        android:textSize="17sp"
-                        android:textColor="@color/textColor"/>
+                        android:textSize="20sp"
+                        android:textColor="@color/black"/>
 
                     <EditText
                         android:id="@+id/editEmailAddress"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Enter Email"
-                        android:fontFamily="@font/raleway_semibold"
-                        android:textSize="17sp"
-                        android:textColor="@color/textColor"
+                        android:background="@null"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textSize="20sp"
+                        android:textColor="@color/black"
                         android:visibility="gone" />
 
                 </LinearLayout>
@@ -175,22 +241,24 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/textColor"
-                    android:layout_marginVertical="5dp" />
+                    android:background="#CCCCCC"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingVertical="6dp"
+                    android:paddingHorizontal="8dp"
+                    android:gravity="center_vertical">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
                         android:src="@drawable/phone_drawable"
-                        app:tint="@color/textColor" />
+                        app:tint="@color/black" />
 
                     <Space
-                        android:layout_width="8dp"
+                        android:layout_width="10dp"
                         android:layout_height="0dp" />
 
                     <TextView
@@ -198,19 +266,20 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="123-456-789"
-                        android:fontFamily="@font/raleway_semibold"
+                        android:fontFamily="@font/dmsans_regular"
                         android:gravity="bottom"
-                        android:textSize="17sp"
-                        android:textColor="@color/textColor"/>
+                        android:textSize="20sp"
+                        android:textColor="@color/black"/>
 
                     <EditText
                         android:id="@+id/editPhoneNumber"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Enter Phone Number"
-                        android:fontFamily="@font/raleway_semibold"
-                        android:textSize="17sp"
-                        android:textColor="@color/textColor"
+                        android:background="@null"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textSize="20sp"
+                        android:textColor="@color/black"
                         android:visibility="gone" />
 
                 </LinearLayout>
@@ -220,7 +289,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/textColor"
-                    android:layout_marginVertical="5dp" />
+                    android:layout_marginVertical="5dp"
+                    android:visibility="gone"/>
 
                 <!-- Admin Features Section -->
                 <LinearLayout
@@ -254,6 +324,178 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/linearLayoutTwo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/linearLayoutOne">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Event Participation Stats"
+                    android:textSize="25sp"
+                    android:textColor="@color/textColor"
+                    android:fontFamily="@font/dmsans_medium"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/textColor"
+                    android:layout_marginBottom="5dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rect_background"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:paddingVertical="6dp"
+                        android:paddingHorizontal="8dp"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:src="@drawable/ic_checklist"
+                            app:tint="@color/black" />
+
+                        <Space
+                            android:layout_width="10dp"
+                            android:layout_height="0dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="bottom"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:text="Applied Events"
+                            android:layout_weight="1"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:id="@+id/appliedEvents"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="bottom"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:text="0"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#CCCCCC" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:paddingVertical="6dp"
+                        android:paddingHorizontal="8dp"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:src="@drawable/ic_trophy"
+                            app:tint="@color/black" />
+
+                        <Space
+                            android:layout_width="10dp"
+                            android:layout_height="0dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Accepted Events"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:gravity="bottom"
+                            android:textSize="20sp"
+                            android:textColor="@color/black"/>
+
+                        <TextView
+                            android:id="@+id/acceptedEvents"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:gravity="bottom"
+                            android:textSize="20sp"
+                            android:textColor="@color/black"/>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#CCCCCC"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:paddingVertical="6dp"
+                        android:paddingHorizontal="8dp"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:src="@drawable/ic_cancel"
+                            app:tint="@color/black" />
+
+                        <Space
+                            android:layout_width="10dp"
+                            android:layout_height="0dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Declined Events"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:gravity="bottom"
+                            android:textSize="20sp"
+                            android:textColor="@color/black"/>
+
+                        <TextView
+                            android:id="@+id/declinedEvents"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:gravity="bottom"
+                            android:textSize="20sp"
+                            android:textColor="@color/black"/>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/textColor"
+                        android:layout_marginVertical="5dp"
+                        android:visibility="gone"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
@@ -267,11 +509,12 @@
             <Button
                 android:id="@+id/saveButton"
                 android:layout_width="100dp"
-                android:layout_height="50dp"
+                android:layout_height="52dp"
                 android:text="Save"
                 android:gravity="center"
                 android:padding="10dp"
-                android:fontFamily="@font/raleway_semibold"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_regular"
                 android:backgroundTint="@color/textColor"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="8dp"
@@ -284,10 +527,11 @@
             <Button
                 android:id="@+id/cancelButton"
                 android:layout_width="100dp"
-                android:layout_height="50dp"
+                android:layout_height="52dp"
                 android:text="Cancel"
                 android:gravity="center"
-                android:fontFamily="@font/raleway_semibold"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_regular"
                 android:backgroundTint="@color/red"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="8dp"
@@ -295,13 +539,15 @@
 
         </LinearLayout>
 
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/editButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/edit_drawable"
+        android:src="@drawable/ic_pencil"
         android:contentDescription="Edit"
         android:layout_margin="16dp"
         app:layout_constraintBottom_toTopOf="@id/toolbar"
