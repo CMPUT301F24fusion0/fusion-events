@@ -4,13 +4,11 @@ import static org.junit.Assert.assertEquals;
 
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.OrganizerInfo;
-import com.google.zxing.WriterException;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
