@@ -43,6 +43,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Activity for editing an event's details such as name, description, capacity, geolocation,
+ * start/end dates, event poster, and QR code. Users can upload/delete posters,
+ * generate/delete QR codes, and save changes.
+ * @author Derin Karas
+ */
 public class EditEventActivity extends AppCompatActivity {
 
     private EditText eventName, description, capacity, radiusInput;
@@ -65,6 +71,13 @@ public class EditEventActivity extends AppCompatActivity {
     private StorageReference storageRef;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
+    /**
+     * Called when the activity is created. Initializes UI components, sets up event handlers,
+     * and loads event details.
+     *
+     * @param savedInstanceState The saved instance state of the activity.
+     * @author Derin Karas
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,6 +124,10 @@ public class EditEventActivity extends AppCompatActivity {
         geolocationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> toggleGeolocation(isChecked));
     }
 
+    /**
+     * Loads event details from Firebase and populates the UI.
+     * @author Derin Karas
+     */
     private void loadEventDetails() {
         EventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
             @Override
@@ -132,6 +149,12 @@ public class EditEventActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Populates the UI fields with the event's details.
+     *
+     * @param event The event object containing the details to populate.
+     * @author Derin Karas
+     */
     private void populateFields(EventInfo event) {
         eventName.setText(event.getEventName());
         description.setText(event.getDescription());
@@ -175,47 +198,29 @@ public class EditEventActivity extends AppCompatActivity {
         endDate = event.getEndDate();
     }
 
+    /**
+     * Toggles visibility of geolocation-related inputs based on the geolocation switch state.
+     *
+     * @param isEnabled True if geolocation is enabled, false otherwise.
+     * @author Derin Karas
+     */
     private void toggleGeolocation(boolean isEnabled) {
         geolocationEnabled = isEnabled;
         radiusInput.setVisibility(isEnabled ? View.VISIBLE : View.GONE);
         radiusLabel.setVisibility(isEnabled ? View.VISIBLE : View.GONE);
     }
 
+    /**
+     * Updates visibility of poster-related UI elements.
+     *
+     * @param hasPoster True if a poster is present, false otherwise.
+     * @author Derin Karas
+     */
     private void updatePosterVisibility(boolean hasPoster) {
         uploadedPosterView.setVisibility(hasPoster ? View.VISIBLE : View.GONE);
         addPosterText.setVisibility(hasPoster ? View.GONE : View.VISIBLE);
         deletePosterButton.setVisibility(hasPoster ? View.VISIBLE : View.GONE);
     }
-
-    /**
-     * Initializes Google Places autocomplete fragment for location selection.
-     */
-    private void initializeGooglePlaces() {
-        if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
-        }
-
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.FORMATTED_ADDRESS, Place.Field.LAT_LNG));
-
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(@NonNull Place place) {
-                eventAddress = place.getFormattedAddress();
-                eventLatLng = place.getLatLng();
-                locationTextView.setText(eventAddress);
-                Toast.makeText(EditEventActivity.this, "Location updated to: " + eventAddress, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(@NonNull Status status) {
-                Toast.makeText(EditEventActivity.this, "Error selecting place: " + status.getStatusMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
 
     private void initializePosterEdit() {
         imagePickerLauncher = registerForActivityResult(
@@ -243,10 +248,18 @@ public class EditEventActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Initializes functionality for marking a poster for deletion.
+     * @author Derin Karas
+     */
     private void initializePosterDelete() {
         deletePosterButton.setOnClickListener(v -> removePoster());
     }
 
+    /**
+     * Marks the poster for deletion. The deletion is finalized when the event is saved.
+     * @author Derin Karas
+     */
     private void removePoster() {
         if (eventPosterUrl != null && !eventPosterUrl.isEmpty()) {
             posterMarkedForDeletion = true;
@@ -256,6 +269,10 @@ public class EditEventActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Initializes functionality for generating and deleting QR codes.
+     * @author Derin Karas
+     */
     private void initializeQrCodeSection() {
         generateQrCodeButton.setOnClickListener(v -> {
             try {
@@ -265,7 +282,6 @@ public class EditEventActivity extends AppCompatActivity {
                 qrCodeImageView.setImageBitmap(qrBitmap);
                 qrCodeImageView.setVisibility(View.VISIBLE);
                 deleteQrCodeButton.setVisibility(View.VISIBLE);
-                //Toast.makeText(this, "QR Code generated successfully.", Toast.LENGTH_SHORT).show();
             } catch (WriterException e) {
                 Toast.makeText(this, "Error generating QR Code: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
@@ -275,10 +291,43 @@ public class EditEventActivity extends AppCompatActivity {
             event.setQrCode(null);
             qrCodeImageView.setVisibility(View.GONE);
             deleteQrCodeButton.setVisibility(View.GONE);
-            //Toast.makeText(this, "QR Code deleted.", Toast.LENGTH_SHORT).show();
         });
     }
 
+    /**
+     * Initializes Google Places autocomplete fragment for location selection.
+     * @author Derin Karas
+     */
+    private void initializeGooglePlaces() {
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
+        }
+
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.FORMATTED_ADDRESS, Place.Field.LAT_LNG));
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+                eventAddress = place.getFormattedAddress();
+                eventLatLng = place.getLatLng();
+                locationTextView.setText(eventAddress);
+                Toast.makeText(EditEventActivity.this, "Location updated to: " + eventAddress, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(@NonNull Status status) {
+                Toast.makeText(EditEventActivity.this, "Error selecting place: " + status.getStatusMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
+     * Saves updated event details, including handling of poster deletion.
+     * @author Derin Karas
+     */
     private void saveEventDetails() {
         String updatedName = eventName.getText().toString().trim();
         String updatedDescription = description.getText().toString().trim();
@@ -328,6 +377,13 @@ public class EditEventActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Formats a Date object into a readable string.
+     *
+     * @param date The date to format.
+     * @return A formatted date string.
+     * @author Derin Karas
+     */
     private String formatDateTime(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
