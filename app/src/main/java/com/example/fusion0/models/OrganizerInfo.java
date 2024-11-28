@@ -141,6 +141,10 @@ public class OrganizerInfo {
         return eventsName;
     }
 
+    public void setEventsNames(ArrayList<String> eventsNames) {
+        this.eventsNames = eventsNames;
+    }
+
     /**
      * Sets Events
      */

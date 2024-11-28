@@ -19,7 +19,6 @@ import androidx.navigation.Navigation;
 import com.example.fusion0.activities.MainActivity;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.UserInfo;
-import com.example.fusion0.activities.EventActivity;
 import com.example.fusion0.R;
 
 import java.util.ArrayList;
@@ -105,9 +104,6 @@ public class RegistrationFragment extends Fragment {
                     Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_profileFragment);
                 } else if (Objects.equals(bundle.getString("destination"), "favourite")) {
                     Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_favFragment);
-                } else {
-                    Intent intent = new Intent(getActivity(), EventActivity.class);
-                    startActivity(intent);
                 }
             }
         });

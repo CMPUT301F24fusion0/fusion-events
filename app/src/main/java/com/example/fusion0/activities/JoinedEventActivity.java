@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,12 +20,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
-import com.example.fusion0.activities.FavouriteActivity;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.UserInfo;
-import com.google.firebase.firestore.auth.User;
 import com.google.zxing.WriterException;
 import com.example.fusion0.R;
 
@@ -41,6 +38,7 @@ import java.util.Map;
  */
 public class JoinedEventActivity extends AppCompatActivity {
 
+    public UserFirestore userFirestore;
     private ImageButton backButton;
     private TextView eventName, facility, description, registrationDate;
     private ImageView uploadedImageView;
@@ -52,6 +50,7 @@ public class JoinedEventActivity extends AppCompatActivity {
 
     private UserInfo user;
     private EventInfo event;
+    public EventFirebase eventFirebase = new EventFirebase();
 
     /**
      * @author Simon Haile
@@ -80,8 +79,7 @@ public class JoinedEventActivity extends AppCompatActivity {
         facilityButton = findViewById(R.id.facility_view_button);
 
         backButton.setOnClickListener(view -> {
-            Intent intent = new Intent(JoinedEventActivity.this, FavouriteActivity.class);
-            startActivity(intent);
+            onBackPressed();
         });
 
 
@@ -110,7 +108,7 @@ public class JoinedEventActivity extends AppCompatActivity {
 
 
         if (eventID != null) {
-            EventFirebase.findEvent(eventID, new EventFirebase.EventCallback() {
+            eventFirebase.findEvent(eventID, new EventFirebase.EventCallback() {
                 /**
                  * Called when the event details are successfully retrieved from Firestore.
                  *
@@ -193,7 +191,7 @@ public class JoinedEventActivity extends AppCompatActivity {
             ArrayList<Map<String, String>> newWaitingList = event.removeUserFromWaitingList(deviceID, event.getWaitinglist());
             event.setWaitinglist(newWaitingList);
 
-            EventFirebase.editEvent(event);
+            eventFirebase.editEvent(event);
 
 
             ArrayList<String> userEvents =  user.getEvents();
@@ -201,9 +199,8 @@ public class JoinedEventActivity extends AppCompatActivity {
             user.setEvents(newEventsList);
             new UserFirestore().editUserEvents(user);
 
-            EventFirebase.editEvent(event);
-            Intent intent = new Intent(JoinedEventActivity.this, FavouriteActivity.class);
-            startActivity(intent);
+            eventFirebase.editEvent(event);
+            finish();
         });
 
     }

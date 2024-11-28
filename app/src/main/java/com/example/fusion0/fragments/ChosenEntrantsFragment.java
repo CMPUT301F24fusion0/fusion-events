@@ -49,6 +49,9 @@ public class ChosenEntrantsFragment extends Fragment {
 
     private boolean isSelectionMode = false;
 
+    EventFirebase eventFirebase = new EventFirebase();
+
+
 
 
     /**
@@ -76,7 +79,6 @@ public class ChosenEntrantsFragment extends Fragment {
         cancelButton = view.findViewById(R.id.cancel_button);
         fullCapacityTextView = view.findViewById(R.id.full_capacity_text_view);
         emptyTextView = view.findViewById(R.id.emptyText);
-        firebase = new EventFirebase();
 
         Bundle bundle = getArguments();
 
@@ -175,7 +177,7 @@ public class ChosenEntrantsFragment extends Fragment {
                 ArrayList<Map<String, String>> fullChosenEntrants = new ArrayList<>();
 
                 if(event == null){
-                    EventFirebase.findEvent(bundle.getString("eventID"), new EventFirebase.EventCallback() {
+                    eventFirebase.findEvent(bundle.getString("eventID"), new EventFirebase.EventCallback() {
                         @Override
                         public void onSuccess(EventInfo eventInfo) throws WriterException {
                             event = eventInfo;

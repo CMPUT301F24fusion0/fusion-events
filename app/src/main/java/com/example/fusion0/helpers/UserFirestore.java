@@ -77,6 +77,11 @@ public class UserFirestore {
      * @param callback is the interface needed due to the asynchronous nature of Firebase
      */
     public void findUser(String dID, Callback callback) {
+        if (dID == null || dID.isEmpty()) {
+            callback.onFailure("Device ID is null or empty");
+            return;
+        }
+
         usersRef.document(dID).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
