@@ -3,14 +3,15 @@ package com.example.fusion0.activities;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ import com.bumptech.glide.Glide;
 import com.example.fusion0.BuildConfig;
 import com.example.fusion0.R;
 import com.example.fusion0.helpers.EventFirebase;
+import com.example.fusion0.helpers.QRCode;
 import com.example.fusion0.models.EventInfo;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
@@ -34,18 +36,26 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.zxing.WriterException;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Activity for editing an event's details such as name, description, capacity, geolocation,
+ * start/end dates, event poster, and QR code. Users can upload/delete posters,
+ * generate/delete QR codes, and save changes.
+ * @author Derin Karas
+ */
 public class EditEventActivity extends AppCompatActivity {
 
     private EditText eventName, description, capacity, radiusInput;
-    private TextView startDateTextView, endDateTextView, locationTextView, radiusLabel;
-    private ImageView uploadedPosterView;
-    private Button editPosterButton, startDateButton, endDateButton, saveButton, cancelButton;
+    private TextView startDateTextView, endDateTextView, locationTextView, radiusLabel, addPosterText;
+    private ImageView uploadedPosterView, qrCodeImageView;
+    private ImageButton editPosterButton, deletePosterButton;
+    private Button saveButton, cancelButton, generateQrCodeButton, deleteQrCodeButton;
     private SwitchCompat geolocationSwitch;
 
     private EventInfo event;
@@ -55,11 +65,19 @@ public class EditEventActivity extends AppCompatActivity {
     private String eventPosterUrl;
     private Integer eventRadius;
     private boolean geolocationEnabled = false;
+    private boolean posterMarkedForDeletion = false;
 
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
+    /**
+     * Called when the activity is created. Initializes UI components, sets up event handlers,
+     * and loads event details.
+     *
+     * @param savedInstanceState The saved instance state of the activity.
+     * @author Derin Karas
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,9 +96,12 @@ public class EditEventActivity extends AppCompatActivity {
         endDateTextView = findViewById(R.id.end_date_text);
         locationTextView = findViewById(R.id.location_text_view);
         uploadedPosterView = findViewById(R.id.uploaded_image_view);
+        qrCodeImageView = findViewById(R.id.event_qr_code_image);
+        addPosterText = findViewById(R.id.add_poster_text);
         editPosterButton = findViewById(R.id.upload_image_button);
-        startDateButton = findViewById(R.id.start_date_button);
-        endDateButton = findViewById(R.id.end_date_button);
+        deletePosterButton = findViewById(R.id.delete_image_button);
+        generateQrCodeButton = findViewById(R.id.generate_qr_code_button);
+        deleteQrCodeButton = findViewById(R.id.delete_qr_code_button);
         saveButton = findViewById(R.id.add_button);
         cancelButton = findViewById(R.id.exit_button);
 
@@ -95,15 +116,18 @@ public class EditEventActivity extends AppCompatActivity {
 
         saveButton.setOnClickListener(v -> saveEventDetails());
         cancelButton.setOnClickListener(v -> finish());
-        startDateButton.setOnClickListener(v -> selectDateTime(true));
-        endDateButton.setOnClickListener(v -> selectDateTime(false));
         initializePosterEdit();
-
+        initializePosterDelete();
+        initializeQrCodeSection();
         initializeGooglePlaces();
 
         geolocationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> toggleGeolocation(isChecked));
     }
 
+    /**
+     * Loads event details from Firebase and populates the UI.
+     * @author Derin Karas
+     */
     private void loadEventDetails() {
         EventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
             @Override
@@ -125,6 +149,12 @@ public class EditEventActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Populates the UI fields with the event's details.
+     *
+     * @param event The event object containing the details to populate.
+     * @author Derin Karas
+     */
     private void populateFields(EventInfo event) {
         eventName.setText(event.getEventName());
         description.setText(event.getDescription());
@@ -140,7 +170,7 @@ public class EditEventActivity extends AppCompatActivity {
         geolocationSwitch.setChecked(geolocationEnabled);
         eventRadius = event.getRadius();
         if (eventRadius != null) {
-            radiusInput.setText(String.valueOf(eventRadius / 1000)); // Convert meters to kilometers
+            radiusInput.setText(String.valueOf(eventRadius / 1000));
         }
 
         toggleGeolocation(geolocationEnabled);
@@ -148,24 +178,126 @@ public class EditEventActivity extends AppCompatActivity {
         eventPosterUrl = event.getEventPoster();
         if (eventPosterUrl != null) {
             Glide.with(this).load(eventPosterUrl).into(uploadedPosterView);
-            uploadedPosterView.setVisibility(ImageView.VISIBLE);
+            updatePosterVisibility(true);
+        } else {
+            updatePosterVisibility(false);
+        }
+
+        if (event.getQrCode() != null) {
+            try {
+                Bitmap qrBitmap = new QRCode(event.getQrCode()).getQrImage();
+                qrCodeImageView.setImageBitmap(qrBitmap);
+                qrCodeImageView.setVisibility(View.VISIBLE);
+                deleteQrCodeButton.setVisibility(View.VISIBLE);
+            } catch (WriterException e) {
+                Toast.makeText(this, "Failed to load QR Code.", Toast.LENGTH_SHORT).show();
+            }
         }
 
         startDate = event.getStartDate();
         endDate = event.getEndDate();
     }
 
+    /**
+     * Toggles visibility of geolocation-related inputs based on the geolocation switch state.
+     *
+     * @param isEnabled True if geolocation is enabled, false otherwise.
+     * @author Derin Karas
+     */
     private void toggleGeolocation(boolean isEnabled) {
         geolocationEnabled = isEnabled;
-        if (isEnabled) {
-            radiusInput.setVisibility(View.VISIBLE);
-            radiusLabel.setVisibility(View.VISIBLE);
+        radiusInput.setVisibility(isEnabled ? View.VISIBLE : View.GONE);
+        radiusLabel.setVisibility(isEnabled ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * Updates visibility of poster-related UI elements.
+     *
+     * @param hasPoster True if a poster is present, false otherwise.
+     * @author Derin Karas
+     */
+    private void updatePosterVisibility(boolean hasPoster) {
+        uploadedPosterView.setVisibility(hasPoster ? View.VISIBLE : View.GONE);
+        addPosterText.setVisibility(hasPoster ? View.GONE : View.VISIBLE);
+        deletePosterButton.setVisibility(hasPoster ? View.VISIBLE : View.GONE);
+    }
+
+    private void initializePosterEdit() {
+        imagePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri imageUri = result.getData().getData();
+                        uploadedPosterView.setImageURI(imageUri);
+
+                        StorageReference imageRef = storageRef.child("event_posters/" + eventId + ".jpg");
+                        imageRef.putFile(imageUri)
+                                .addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                    eventPosterUrl = uri.toString();
+                                    updatePosterVisibility(true);
+                                }))
+                                .addOnFailureListener(e -> Toast.makeText(EditEventActivity.this, "Failed to upload poster.", Toast.LENGTH_SHORT).show());
+                    }
+                }
+        );
+
+        editPosterButton.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setType("image/*");
+            imagePickerLauncher.launch(intent);
+        });
+    }
+
+    /**
+     * Initializes functionality for marking a poster for deletion.
+     * @author Derin Karas
+     */
+    private void initializePosterDelete() {
+        deletePosterButton.setOnClickListener(v -> removePoster());
+    }
+
+    /**
+     * Marks the poster for deletion. The deletion is finalized when the event is saved.
+     * @author Derin Karas
+     */
+    private void removePoster() {
+        if (eventPosterUrl != null && !eventPosterUrl.isEmpty()) {
+            posterMarkedForDeletion = true;
+            updatePosterVisibility(false);
         } else {
-            radiusInput.setVisibility(View.GONE);
-            radiusLabel.setVisibility(View.GONE);
+            Toast.makeText(this, "No poster to remove.", Toast.LENGTH_SHORT).show();
         }
     }
 
+    /**
+     * Initializes functionality for generating and deleting QR codes.
+     * @author Derin Karas
+     */
+    private void initializeQrCodeSection() {
+        generateQrCodeButton.setOnClickListener(v -> {
+            try {
+                QRCode newQrCode = new QRCode(event.getEventID());
+                event.setQrCode(newQrCode.getQrCode());
+                Bitmap qrBitmap = newQrCode.getQrImage();
+                qrCodeImageView.setImageBitmap(qrBitmap);
+                qrCodeImageView.setVisibility(View.VISIBLE);
+                deleteQrCodeButton.setVisibility(View.VISIBLE);
+            } catch (WriterException e) {
+                Toast.makeText(this, "Error generating QR Code: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        deleteQrCodeButton.setOnClickListener(v -> {
+            event.setQrCode(null);
+            qrCodeImageView.setVisibility(View.GONE);
+            deleteQrCodeButton.setVisibility(View.GONE);
+        });
+    }
+
+    /**
+     * Initializes Google Places autocomplete fragment for location selection.
+     * @author Derin Karas
+     */
     private void initializeGooglePlaces() {
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
@@ -192,63 +324,10 @@ public class EditEventActivity extends AppCompatActivity {
         });
     }
 
-    private void initializePosterEdit() {
-        imagePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                        Uri imageUri = result.getData().getData();
-                        uploadedPosterView.setVisibility(ImageView.VISIBLE);
-                        uploadedPosterView.setImageURI(imageUri);
-
-                        StorageReference imageRef = storageRef.child("event_posters/" + eventId + ".jpg");
-                        imageRef.putFile(imageUri)
-                                .addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                                    eventPosterUrl = uri.toString();
-                                    Toast.makeText(EditEventActivity.this, "Poster updated successfully.", Toast.LENGTH_SHORT).show();
-                                }))
-                                .addOnFailureListener(e -> Toast.makeText(EditEventActivity.this, "Failed to upload poster.", Toast.LENGTH_SHORT).show());
-                    }
-                }
-        );
-
-        editPosterButton.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_PICK);
-            intent.setType("image/*");
-            imagePickerLauncher.launch(intent);
-        });
-    }
-
-    private void selectDateTime(boolean isStartDate) {
-        Calendar calendar = Calendar.getInstance();
-        DatePickerDialog datePickerDialog = new DatePickerDialog(EditEventActivity.this,
-                (view, year, month, dayOfMonth) -> {
-                    calendar.set(year, month, dayOfMonth);
-                    TimePickerDialog timePickerDialog = new TimePickerDialog(EditEventActivity.this,
-                            (timeView, hourOfDay, minute) -> {
-                                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                                calendar.set(Calendar.MINUTE, minute);
-
-                                String formattedDateTime = String.format(Locale.US, "%d/%d/%d %02d:%02d",
-                                        month + 1, dayOfMonth, year, hourOfDay, minute);
-
-                                if (isStartDate) {
-                                    startDate = calendar.getTime();
-                                    startDateTextView.setText(formattedDateTime);
-                                } else {
-                                    if (startDate != null && calendar.getTime().before(startDate)) {
-                                        Toast.makeText(EditEventActivity.this, "End date/time must be after start date/time.", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        endDate = calendar.getTime();
-                                        endDateTextView.setText(formattedDateTime);
-                                    }
-                                }
-                            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
-                    timePickerDialog.show();
-                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-        datePickerDialog.show();
-    }
-
+    /**
+     * Saves updated event details, including handling of poster deletion.
+     * @author Derin Karas
+     */
     private void saveEventDetails() {
         String updatedName = eventName.getText().toString().trim();
         String updatedDescription = description.getText().toString().trim();
@@ -270,7 +349,16 @@ public class EditEventActivity extends AppCompatActivity {
             return;
         }
 
-        eventRadius = geolocationEnabled ? Integer.parseInt(radiusStr) * 1000 : 0; // Convert kilometers to meters or set to 0
+        eventRadius = geolocationEnabled ? Integer.parseInt(radiusStr) * 1000 : 0;
+
+        if (posterMarkedForDeletion) {
+            StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(eventPosterUrl);
+            imageRef.delete().addOnSuccessListener(unused -> {
+            }).addOnFailureListener(e -> {
+                Toast.makeText(this, "Failed to delete poster: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
+            eventPosterUrl = null;
+        }
 
         event.setEventName(updatedName);
         event.setDescription(updatedDescription);
@@ -278,8 +366,8 @@ public class EditEventActivity extends AppCompatActivity {
         event.setStartDate(startDate);
         event.setEndDate(endDate);
         event.setAddress(eventAddress);
-        event.setLatitude(eventLatLng.latitude);
-        event.setLongitude(eventLatLng.longitude);
+        event.setLatitude(eventLatLng != null ? eventLatLng.latitude : null);
+        event.setLongitude(eventLatLng != null ? eventLatLng.longitude : null);
         event.setEventPoster(eventPosterUrl);
         event.setRadius(eventRadius);
         event.setGeolocation(geolocationEnabled);
@@ -289,6 +377,13 @@ public class EditEventActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Formats a Date object into a readable string.
+     *
+     * @param date The date to format.
+     * @return A formatted date string.
+     * @author Derin Karas
+     */
     private String formatDateTime(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);

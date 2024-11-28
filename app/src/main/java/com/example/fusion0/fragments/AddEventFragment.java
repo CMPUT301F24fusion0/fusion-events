@@ -23,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -34,6 +35,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -86,8 +88,8 @@ public class AddEventFragment extends Fragment {
     private EditText eventName,description, capacity, radius, lotteryCapacity;
     private androidx.fragment.app.FragmentContainerView autocompletePlaceFragment;
     private Calendar startDateCalendar , registrationDateCalendar;
-    private TextView addFacilityText,dateRequirementsTextView,registrationDateRequirementsTextView, startDateTextView, startTimeTextView, endDateTextView, endTimeTextView, geolocationTextView, radiusText, registrationDateTextView;
-    private Button addButton, exitButton;
+    private TextView addFacilityText, dateRequirementsTextView,registrationDateRequirementsTextView, startDateTextView, startTimeTextView, endDateTextView, endTimeTextView, geolocationTextView, radiusText, registrationDateTextView;
+    private Button addEventButton;
     private ImageView uploadedImageView;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private Spinner spinnerFacilities;
@@ -112,6 +114,18 @@ public class AddEventFragment extends Fragment {
     private Double latitude;
     private Double longitude;
     private Boolean geolocation = false;
+
+    private ImageButton profileButton;
+    private ImageButton addButton;
+    private ImageButton homeButton;
+    private ImageButton scannerButton;
+    private ImageButton favouriteButton;
+
+    private TextView homeTextView;
+    private TextView scannerTextView;
+    private TextView addTextView;
+    private TextView searchTextView;
+    private TextView profileTextView;
 
     /**
      * Required empty public constructor for firebase
@@ -167,6 +181,8 @@ public class AddEventFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Context context = requireContext();
 
+        initializeToolbarButtons(view, context);
+
         eventName = view.findViewById(R.id.EventName);
         uploadedImageView = view.findViewById(R.id.uploaded_image_view);
         spinnerFacilities = view.findViewById(R.id.spinner_facilities);
@@ -181,8 +197,7 @@ public class AddEventFragment extends Fragment {
         endTimeTextView = view.findViewById(R.id.end_time_text);
         capacity = view.findViewById(R.id.Capacity);
         lotteryCapacity =view.findViewById(R.id.lotteryCapacity);
-        addButton = view.findViewById(R.id.add_button);
-        exitButton = view.findViewById(R.id.exit_button);
+        addEventButton = view.findViewById(R.id.add_button);
         geolocationTextView = view.findViewById(R.id.geolocation_text);
         geolocationSwitchCompact = view.findViewById(R.id.geolocation_switchcompat);
         radius = view.findViewById(R.id.radius);
@@ -204,11 +219,6 @@ public class AddEventFragment extends Fragment {
         registrationDateButtonHandling(view, context);
 
         AddEvent(context, view);
-
-
-        exitButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_eventFragment_to_mainFragment);
-        });
     }
 
     /**
@@ -778,7 +788,7 @@ public class AddEventFragment extends Fragment {
      */
     private void AddEvent(Context context, View view){
 
-        addButton.setOnClickListener(v -> {
+        addEventButton.setOnClickListener(v -> {
             if (TextUtils.isEmpty(eventName.getText().toString())) {
                 eventName.setError("Event name is required");
                 Toast.makeText(context, "Event name is required", Toast.LENGTH_SHORT).show();
@@ -881,5 +891,51 @@ public class AddEventFragment extends Fragment {
 
             Navigation.findNavController(view).navigate(R.id.action_eventFragment_to_mainFragment);
         });
+    }
+
+    /**
+     * Initializes the toolbar and sends them to the correct page if the button is clicked.
+     */
+    private void initializeToolbarButtons(View view, Context context) {
+        homeButton = view.findViewById(R.id.toolbar_home);
+        scannerButton = view.findViewById(R.id.toolbar_qrscanner);
+        addButton = view.findViewById(R.id.toolbar_add);
+        favouriteButton = view.findViewById(R.id.toolbar_favourite);
+        profileButton = view.findViewById(R.id.toolbar_person);
+
+        homeTextView = view.findViewById(R.id.homeTextView);
+        scannerTextView = view.findViewById(R.id.qrTextView);
+        addTextView = view.findViewById(R.id.addTextView);
+        searchTextView = view.findViewById(R.id.searchTextView);
+        profileTextView = view.findViewById(R.id.profileTextView);
+
+        // Set all buttons
+        setAllButtonsInactive(context);
+        setActiveButton(context, addButton, addTextView);
+        
+        homeButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_eventFragment_to_mainFragment));
+
+        profileButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_eventFragment_to_profileFragment));
+
+        scannerButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_eventFragment_to_qrFragment));
+
+        favouriteButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_eventFragment_to_favouriteFragment));
+    }
+
+    private void setAllButtonsInactive(Context context) {
+        profileButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        scannerButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        homeButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        favouriteButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+
+        scannerTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+        homeTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+        searchTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+        profileTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+    }
+
+    private void setActiveButton(Context context, ImageButton activeButton, TextView activeTextView) {
+        activeButton.setColorFilter(ContextCompat.getColor(context, R.color.royalBlue));
+        activeTextView.setTextColor(ContextCompat.getColor(context, R.color.royalBlue));
     }
 }

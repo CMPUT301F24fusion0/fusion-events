@@ -53,7 +53,7 @@
                 android:text="Welcome Back"
                 android:textSize="24sp"
                 android:textColor="@color/white"
-                android:fontFamily="@font/raleway_semibold"/>
+                android:fontFamily="@font/dmsans_medium"/>
 
             <TextView
                 android:id="@+id/userName"
@@ -94,57 +94,166 @@
     <LinearLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="80dp"
         android:orientation="horizontal"
         android:background="@android:color/white"
+        android:fitsSystemWindows="false"
+        android:clipToPadding="false"
+        android:paddingBottom="17dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageButton
-            android:id="@+id/toolbar_home"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             android:layout_weight="1"
-            android:background="@android:color/white"
-            android:contentDescription="blue_home"
-            android:src="@drawable/ic_blue_home" />
+            android:gravity="center">
 
-        <ImageButton
-            android:id="@+id/toolbar_qrscanner"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@android:color/white"
-            android:contentDescription="search"
-            android:src="@drawable/ic_grey_qrscanner" />
+            <ImageButton
+                android:id="@+id/toolbar_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:contentDescription="blue_home"
+                android:src="@drawable/ic_home_filled" />
 
-        <ImageButton
-            android:id="@+id/toolbar_add"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@android:color/white"
-            android:contentDescription="search"
-            android:src="@drawable/ic_grey_add" />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="2dp"/>
 
-        <ImageButton
-            android:id="@+id/toolbar_favourite"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@android:color/white"
-            android:contentDescription="person"
-            android:src="@drawable/ic_grey_favourite" />
+            <TextView
+                android:id="@+id/homeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Home"
+                android:fontFamily="@font/dmsans_regular"
+                android:textSize="11.5sp"
+                android:gravity="center_horizontal"/>
 
-        <ImageButton
-            android:id="@+id/toolbar_person"
-            android:layout_width="wrap_content"
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             android:layout_weight="1"
-            android:background="@android:color/white"
-            android:contentDescription="person"
-            android:src="@drawable/ic_grey_person" />
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/toolbar_qrscanner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:contentDescription="blue_home"
+                android:src="@drawable/ic_qr_code" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="2dp"/>
+
+            <TextView
+                android:id="@+id/qrTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scan QR"
+                android:fontFamily="@font/dmsans_regular"
+                android:textSize="11.5sp"
+                android:gravity="center_horizontal"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/toolbar_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:contentDescription="blue_home"
+                android:src="@drawable/ic_add" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="2dp"/>
+
+            <TextView
+                android:id="@+id/addTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add Event"
+                android:fontFamily="@font/dmsans_regular"
+                android:textSize="11.5sp"
+                android:gravity="center_horizontal"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/toolbar_favourite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:contentDescription="blue_home"
+                android:src="@drawable/ic_search" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="2dp"/>
+
+            <TextView
+                android:id="@+id/searchTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Browse"
+                android:fontFamily="@font/dmsans_regular"
+                android:textSize="11.5sp"
+                android:gravity="center_horizontal"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/toolbar_person"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:contentDescription="blue_home"
+                android:src="@drawable/ic_profile_outline" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="2dp"/>
+
+            <TextView
+                android:id="@+id/profileTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Profile"
+                android:fontFamily="@font/dmsans_regular"
+                android:textSize="11.5sp"
+                android:gravity="center_horizontal"/>
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,10 +16,15 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -46,6 +51,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public class MainFragment extends Fragment {
 
@@ -59,6 +65,13 @@ public class MainFragment extends Fragment {
     private ImageButton homeButton;
     private ImageButton scannerButton;
     private ImageButton favouriteButton;
+
+    private TextView homeTextView;
+    private TextView scannerTextView;
+    private TextView addTextView;
+    private TextView searchTextView;
+    private TextView profileTextView;
+
 
     // Message related fields
     private TextView userName;
@@ -130,6 +143,8 @@ public class MainFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Context context = requireContext();
+
+        initializeToolbarButtons(view, context);
 
         FirebaseApp.initializeApp(context);
 
@@ -279,7 +294,6 @@ public class MainFragment extends Fragment {
                 });
 
                 itemTouchHelper.attachToRecyclerView(notificationsListView);
-                initializeToolbarButtons(view);
 
             } else {
                 profileButton = view.findViewById(R.id.toolbar_person);
@@ -358,11 +372,22 @@ public class MainFragment extends Fragment {
     /**
      * Initializes the toolbar and sends them to the correct page if the button is clicked.
      */
-    private void initializeToolbarButtons(View view) {
-        profileButton = view.findViewById(R.id.toolbar_person);
+    private void initializeToolbarButtons(View view, Context context) {
+        homeButton = view.findViewById(R.id.toolbar_home);
         scannerButton = view.findViewById(R.id.toolbar_qrscanner);
         addButton = view.findViewById(R.id.toolbar_add);
         favouriteButton = view.findViewById(R.id.toolbar_favourite);
+        profileButton = view.findViewById(R.id.toolbar_person);
+
+        homeTextView = view.findViewById(R.id.homeTextView);
+        scannerTextView = view.findViewById(R.id.qrTextView);
+        addTextView = view.findViewById(R.id.addTextView);
+        searchTextView = view.findViewById(R.id.searchTextView);
+        profileTextView = view.findViewById(R.id.profileTextView);
+
+        // Set all buttons
+        setAllButtonsInactive(context);
+        setActiveButton(context, homeButton, homeTextView);
 
         profileButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_profileFragment));
 
@@ -371,7 +396,23 @@ public class MainFragment extends Fragment {
         addButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_eventFragment));
 
         favouriteButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_favouriteFragment));
+    }
 
+    private void setAllButtonsInactive(Context context) {
+        profileButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        scannerButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        addButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        favouriteButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+
+        scannerTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+        addTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+        searchTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+        profileTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+    }
+
+    private void setActiveButton(Context context, ImageButton activeButton, TextView activeTextView) {
+        activeButton.setColorFilter(ContextCompat.getColor(context, R.color.royalBlue));
+        activeTextView.setTextColor(ContextCompat.getColor(context, R.color.royalBlue));
     }
 
     /**
