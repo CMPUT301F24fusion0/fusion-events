@@ -47,6 +47,7 @@ import java.util.Locale;
  * Activity for editing an event's details such as name, description, capacity, geolocation,
  * start/end dates, event poster, and QR code. Users can upload/delete posters,
  * generate/delete QR codes, and save changes.
+ * @author Derin Karas
  */
 public class EditEventActivity extends AppCompatActivity {
 
@@ -75,6 +76,7 @@ public class EditEventActivity extends AppCompatActivity {
      * and loads event details.
      *
      * @param savedInstanceState The saved instance state of the activity.
+     * @author Derin Karas
      */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -124,6 +126,7 @@ public class EditEventActivity extends AppCompatActivity {
 
     /**
      * Loads event details from Firebase and populates the UI.
+     * @author Derin Karas
      */
     private void loadEventDetails() {
         EventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
@@ -150,6 +153,7 @@ public class EditEventActivity extends AppCompatActivity {
      * Populates the UI fields with the event's details.
      *
      * @param event The event object containing the details to populate.
+     * @author Derin Karas
      */
     private void populateFields(EventInfo event) {
         eventName.setText(event.getEventName());
@@ -198,6 +202,7 @@ public class EditEventActivity extends AppCompatActivity {
      * Toggles visibility of geolocation-related inputs based on the geolocation switch state.
      *
      * @param isEnabled True if geolocation is enabled, false otherwise.
+     * @author Derin Karas
      */
     private void toggleGeolocation(boolean isEnabled) {
         geolocationEnabled = isEnabled;
@@ -209,6 +214,7 @@ public class EditEventActivity extends AppCompatActivity {
      * Updates visibility of poster-related UI elements.
      *
      * @param hasPoster True if a poster is present, false otherwise.
+     * @author Derin Karas
      */
     private void updatePosterVisibility(boolean hasPoster) {
         uploadedPosterView.setVisibility(hasPoster ? View.VISIBLE : View.GONE);
@@ -218,6 +224,7 @@ public class EditEventActivity extends AppCompatActivity {
 
     /**
      * Initializes functionality for editing (uploading) the poster.
+     * @author Derin Karas
      */
     private void initializePosterEdit() {
         imagePickerLauncher = registerForActivityResult(
@@ -247,6 +254,7 @@ public class EditEventActivity extends AppCompatActivity {
 
     /**
      * Initializes functionality for marking a poster for deletion.
+     * @author Derin Karas
      */
     private void initializePosterDelete() {
         deletePosterButton.setOnClickListener(v -> removePoster());
@@ -254,6 +262,7 @@ public class EditEventActivity extends AppCompatActivity {
 
     /**
      * Marks the poster for deletion. The deletion is finalized when the event is saved.
+     * @author Derin Karas
      */
     private void removePoster() {
         if (eventPosterUrl != null && !eventPosterUrl.isEmpty()) {
@@ -266,6 +275,7 @@ public class EditEventActivity extends AppCompatActivity {
 
     /**
      * Initializes functionality for generating and deleting QR codes.
+     * @author Derin Karas
      */
     private void initializeQrCodeSection() {
         generateQrCodeButton.setOnClickListener(v -> {
@@ -290,6 +300,7 @@ public class EditEventActivity extends AppCompatActivity {
 
     /**
      * Initializes Google Places autocomplete fragment for location selection.
+     * @author Derin Karas
      */
     private void initializeGooglePlaces() {
         if (!Places.isInitialized()) {
@@ -319,6 +330,7 @@ public class EditEventActivity extends AppCompatActivity {
 
     /**
      * Saves updated event details, including handling of poster deletion.
+     * @author Derin Karas
      */
     private void saveEventDetails() {
         String updatedName = eventName.getText().toString().trim();
@@ -374,6 +386,7 @@ public class EditEventActivity extends AppCompatActivity {
      *
      * @param date The date to format.
      * @return A formatted date string.
+     * @author Derin Karas
      */
     private String formatDateTime(Date date) {
         Calendar calendar = Calendar.getInstance();
