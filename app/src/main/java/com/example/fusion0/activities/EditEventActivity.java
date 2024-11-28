@@ -9,8 +9,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,12 +40,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Activity for editing event details such as name, description, capacity, geolocation,
+ * start/end dates, and poster. Includes functionality for uploading, updating, and
+ * removing the event poster.
+ */
 public class EditEventActivity extends AppCompatActivity {
 
     private EditText eventName, description, capacity, radiusInput;
-    private TextView startDateTextView, endDateTextView, locationTextView, radiusLabel;
+    private TextView startDateTextView, endDateTextView, locationTextView, radiusLabel, addPosterText;
     private ImageView uploadedPosterView;
-    private Button editPosterButton, startDateButton, endDateButton, saveButton, cancelButton;
+    private ImageButton editPosterButton, deletePosterButton;
+    private Button saveButton, cancelButton;
     private SwitchCompat geolocationSwitch;
 
     private EventInfo event;
@@ -55,11 +61,18 @@ public class EditEventActivity extends AppCompatActivity {
     private String eventPosterUrl;
     private Integer eventRadius;
     private boolean geolocationEnabled = false;
+    private boolean posterMarkedForDeletion = false;
 
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
+    /**
+     * Called when the activity is created. Initializes UI components and sets up
+     * event handling for buttons and switches.
+     *
+     * @param savedInstanceState The saved instance state of the activity.
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,9 +91,9 @@ public class EditEventActivity extends AppCompatActivity {
         endDateTextView = findViewById(R.id.end_date_text);
         locationTextView = findViewById(R.id.location_text_view);
         uploadedPosterView = findViewById(R.id.uploaded_image_view);
+        addPosterText = findViewById(R.id.add_poster_text);
         editPosterButton = findViewById(R.id.upload_image_button);
-        startDateButton = findViewById(R.id.start_date_button);
-        endDateButton = findViewById(R.id.end_date_button);
+        deletePosterButton = findViewById(R.id.delete_image_button);
         saveButton = findViewById(R.id.add_button);
         cancelButton = findViewById(R.id.exit_button);
 
@@ -95,15 +108,16 @@ public class EditEventActivity extends AppCompatActivity {
 
         saveButton.setOnClickListener(v -> saveEventDetails());
         cancelButton.setOnClickListener(v -> finish());
-        startDateButton.setOnClickListener(v -> selectDateTime(true));
-        endDateButton.setOnClickListener(v -> selectDateTime(false));
         initializePosterEdit();
-
+        initializePosterDelete();
         initializeGooglePlaces();
 
         geolocationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> toggleGeolocation(isChecked));
     }
 
+    /**
+     * Loads event details from Firebase and populates the UI.
+     */
     private void loadEventDetails() {
         EventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
             @Override
@@ -125,6 +139,11 @@ public class EditEventActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Populates UI fields with event data.
+     *
+     * @param event The event data to populate.
+     */
     private void populateFields(EventInfo event) {
         eventName.setText(event.getEventName());
         description.setText(event.getDescription());
@@ -140,7 +159,7 @@ public class EditEventActivity extends AppCompatActivity {
         geolocationSwitch.setChecked(geolocationEnabled);
         eventRadius = event.getRadius();
         if (eventRadius != null) {
-            radiusInput.setText(String.valueOf(eventRadius / 1000)); // Convert meters to kilometers
+            radiusInput.setText(String.valueOf(eventRadius / 1000));
         }
 
         toggleGeolocation(geolocationEnabled);
@@ -148,24 +167,40 @@ public class EditEventActivity extends AppCompatActivity {
         eventPosterUrl = event.getEventPoster();
         if (eventPosterUrl != null) {
             Glide.with(this).load(eventPosterUrl).into(uploadedPosterView);
-            uploadedPosterView.setVisibility(ImageView.VISIBLE);
+            updatePosterVisibility(true);
+        } else {
+            updatePosterVisibility(false);
         }
 
         startDate = event.getStartDate();
         endDate = event.getEndDate();
     }
 
+    /**
+     * Toggles visibility of geolocation-related inputs based on the geolocation switch state.
+     *
+     * @param isEnabled True if geolocation is enabled, false otherwise.
+     */
     private void toggleGeolocation(boolean isEnabled) {
         geolocationEnabled = isEnabled;
-        if (isEnabled) {
-            radiusInput.setVisibility(View.VISIBLE);
-            radiusLabel.setVisibility(View.VISIBLE);
-        } else {
-            radiusInput.setVisibility(View.GONE);
-            radiusLabel.setVisibility(View.GONE);
-        }
+        radiusInput.setVisibility(isEnabled ? View.VISIBLE : View.GONE);
+        radiusLabel.setVisibility(isEnabled ? View.VISIBLE : View.GONE);
     }
 
+    /**
+     * Updates visibility of poster-related UI elements.
+     *
+     * @param hasPoster True if a poster is present, false otherwise.
+     */
+    private void updatePosterVisibility(boolean hasPoster) {
+        uploadedPosterView.setVisibility(hasPoster ? View.VISIBLE : View.GONE);
+        addPosterText.setVisibility(hasPoster ? View.GONE : View.VISIBLE);
+        deletePosterButton.setVisibility(hasPoster ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * Initializes Google Places autocomplete fragment for location selection.
+     */
     private void initializeGooglePlaces() {
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
@@ -192,20 +227,22 @@ public class EditEventActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Initializes functionality for editing (uploading) the poster.
+     */
     private void initializePosterEdit() {
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri imageUri = result.getData().getData();
-                        uploadedPosterView.setVisibility(ImageView.VISIBLE);
                         uploadedPosterView.setImageURI(imageUri);
 
                         StorageReference imageRef = storageRef.child("event_posters/" + eventId + ".jpg");
                         imageRef.putFile(imageUri)
                                 .addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                     eventPosterUrl = uri.toString();
-                                    Toast.makeText(EditEventActivity.this, "Poster updated successfully.", Toast.LENGTH_SHORT).show();
+                                    updatePosterVisibility(true);
                                 }))
                                 .addOnFailureListener(e -> Toast.makeText(EditEventActivity.this, "Failed to upload poster.", Toast.LENGTH_SHORT).show());
                     }
@@ -219,36 +256,28 @@ public class EditEventActivity extends AppCompatActivity {
         });
     }
 
-    private void selectDateTime(boolean isStartDate) {
-        Calendar calendar = Calendar.getInstance();
-        DatePickerDialog datePickerDialog = new DatePickerDialog(EditEventActivity.this,
-                (view, year, month, dayOfMonth) -> {
-                    calendar.set(year, month, dayOfMonth);
-                    TimePickerDialog timePickerDialog = new TimePickerDialog(EditEventActivity.this,
-                            (timeView, hourOfDay, minute) -> {
-                                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                                calendar.set(Calendar.MINUTE, minute);
-
-                                String formattedDateTime = String.format(Locale.US, "%d/%d/%d %02d:%02d",
-                                        month + 1, dayOfMonth, year, hourOfDay, minute);
-
-                                if (isStartDate) {
-                                    startDate = calendar.getTime();
-                                    startDateTextView.setText(formattedDateTime);
-                                } else {
-                                    if (startDate != null && calendar.getTime().before(startDate)) {
-                                        Toast.makeText(EditEventActivity.this, "End date/time must be after start date/time.", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        endDate = calendar.getTime();
-                                        endDateTextView.setText(formattedDateTime);
-                                    }
-                                }
-                            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
-                    timePickerDialog.show();
-                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-        datePickerDialog.show();
+    /**
+     * Initializes functionality for marking a poster for deletion.
+     */
+    private void initializePosterDelete() {
+        deletePosterButton.setOnClickListener(v -> removePoster());
     }
 
+    /**
+     * Marks the poster for deletion. The deletion is finalized when the event is saved.
+     */
+    private void removePoster() {
+        if (eventPosterUrl != null && !eventPosterUrl.isEmpty()) {
+            posterMarkedForDeletion = true;
+            updatePosterVisibility(false);
+        } else {
+            Toast.makeText(this, "No poster to remove.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+ * Saves updated event details, including handling of poster deletion.
+     */
     private void saveEventDetails() {
         String updatedName = eventName.getText().toString().trim();
         String updatedDescription = description.getText().toString().trim();
@@ -270,7 +299,16 @@ public class EditEventActivity extends AppCompatActivity {
             return;
         }
 
-        eventRadius = geolocationEnabled ? Integer.parseInt(radiusStr) * 1000 : 0; // Convert kilometers to meters or set to 0
+        eventRadius = geolocationEnabled ? Integer.parseInt(radiusStr) * 1000 : 0;
+
+        if (posterMarkedForDeletion) {
+            StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(eventPosterUrl);
+            imageRef.delete().addOnSuccessListener(unused -> {
+            }).addOnFailureListener(e -> {
+                Toast.makeText(this, "Failed to delete poster: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
+            eventPosterUrl = null;
+        }
 
         event.setEventName(updatedName);
         event.setDescription(updatedDescription);
@@ -278,8 +316,8 @@ public class EditEventActivity extends AppCompatActivity {
         event.setStartDate(startDate);
         event.setEndDate(endDate);
         event.setAddress(eventAddress);
-        event.setLatitude(eventLatLng.latitude);
-        event.setLongitude(eventLatLng.longitude);
+        event.setLatitude(eventLatLng != null ? eventLatLng.latitude : null);
+        event.setLongitude(eventLatLng != null ? eventLatLng.longitude : null);
         event.setEventPoster(eventPosterUrl);
         event.setRadius(eventRadius);
         event.setGeolocation(geolocationEnabled);
@@ -289,6 +327,12 @@ public class EditEventActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Formats a Date object into a readable string.
+     *
+     * @param date The date to format.
+     * @return A formatted date string.
+     */
     private String formatDateTime(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
