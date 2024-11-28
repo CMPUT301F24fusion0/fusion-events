@@ -3,6 +3,7 @@ package com.example.fusion0.activities;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -25,6 +26,7 @@ import com.bumptech.glide.Glide;
 import com.example.fusion0.BuildConfig;
 import com.example.fusion0.R;
 import com.example.fusion0.helpers.EventFirebase;
+import com.example.fusion0.helpers.QRCode;
 import com.example.fusion0.models.EventInfo;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
@@ -34,24 +36,20 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.zxing.WriterException;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- * Activity for editing event details such as name, description, capacity, geolocation,
- * start/end dates, and poster. Includes functionality for uploading, updating, and
- * removing the event poster.
- */
 public class EditEventActivity extends AppCompatActivity {
 
     private EditText eventName, description, capacity, radiusInput;
     private TextView startDateTextView, endDateTextView, locationTextView, radiusLabel, addPosterText;
-    private ImageView uploadedPosterView;
+    private ImageView uploadedPosterView, qrCodeImageView;
     private ImageButton editPosterButton, deletePosterButton;
-    private Button saveButton, cancelButton;
+    private Button saveButton, cancelButton, generateQrCodeButton, deleteQrCodeButton;
     private SwitchCompat geolocationSwitch;
 
     private EventInfo event;
@@ -67,12 +65,6 @@ public class EditEventActivity extends AppCompatActivity {
     private StorageReference storageRef;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
-    /**
-     * Called when the activity is created. Initializes UI components and sets up
-     * event handling for buttons and switches.
-     *
-     * @param savedInstanceState The saved instance state of the activity.
-     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,9 +83,12 @@ public class EditEventActivity extends AppCompatActivity {
         endDateTextView = findViewById(R.id.end_date_text);
         locationTextView = findViewById(R.id.location_text_view);
         uploadedPosterView = findViewById(R.id.uploaded_image_view);
+        qrCodeImageView = findViewById(R.id.event_qr_code_image);
         addPosterText = findViewById(R.id.add_poster_text);
         editPosterButton = findViewById(R.id.upload_image_button);
         deletePosterButton = findViewById(R.id.delete_image_button);
+        generateQrCodeButton = findViewById(R.id.generate_qr_code_button);
+        deleteQrCodeButton = findViewById(R.id.delete_qr_code_button);
         saveButton = findViewById(R.id.add_button);
         cancelButton = findViewById(R.id.exit_button);
 
@@ -110,14 +105,12 @@ public class EditEventActivity extends AppCompatActivity {
         cancelButton.setOnClickListener(v -> finish());
         initializePosterEdit();
         initializePosterDelete();
+        initializeQrCodeSection();
         initializeGooglePlaces();
 
         geolocationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> toggleGeolocation(isChecked));
     }
 
-    /**
-     * Loads event details from Firebase and populates the UI.
-     */
     private void loadEventDetails() {
         EventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
             @Override
@@ -139,11 +132,6 @@ public class EditEventActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Populates UI fields with event data.
-     *
-     * @param event The event data to populate.
-     */
     private void populateFields(EventInfo event) {
         eventName.setText(event.getEventName());
         description.setText(event.getDescription());
@@ -172,26 +160,27 @@ public class EditEventActivity extends AppCompatActivity {
             updatePosterVisibility(false);
         }
 
+        if (event.getQrCode() != null) {
+            try {
+                Bitmap qrBitmap = new QRCode(event.getQrCode()).getQrImage();
+                qrCodeImageView.setImageBitmap(qrBitmap);
+                qrCodeImageView.setVisibility(View.VISIBLE);
+                deleteQrCodeButton.setVisibility(View.VISIBLE);
+            } catch (WriterException e) {
+                Toast.makeText(this, "Failed to load QR Code.", Toast.LENGTH_SHORT).show();
+            }
+        }
+
         startDate = event.getStartDate();
         endDate = event.getEndDate();
     }
 
-    /**
-     * Toggles visibility of geolocation-related inputs based on the geolocation switch state.
-     *
-     * @param isEnabled True if geolocation is enabled, false otherwise.
-     */
     private void toggleGeolocation(boolean isEnabled) {
         geolocationEnabled = isEnabled;
         radiusInput.setVisibility(isEnabled ? View.VISIBLE : View.GONE);
         radiusLabel.setVisibility(isEnabled ? View.VISIBLE : View.GONE);
     }
 
-    /**
-     * Updates visibility of poster-related UI elements.
-     *
-     * @param hasPoster True if a poster is present, false otherwise.
-     */
     private void updatePosterVisibility(boolean hasPoster) {
         uploadedPosterView.setVisibility(hasPoster ? View.VISIBLE : View.GONE);
         addPosterText.setVisibility(hasPoster ? View.GONE : View.VISIBLE);
@@ -227,9 +216,7 @@ public class EditEventActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Initializes functionality for editing (uploading) the poster.
-     */
+
     private void initializePosterEdit() {
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -256,16 +243,10 @@ public class EditEventActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Initializes functionality for marking a poster for deletion.
-     */
     private void initializePosterDelete() {
         deletePosterButton.setOnClickListener(v -> removePoster());
     }
 
-    /**
-     * Marks the poster for deletion. The deletion is finalized when the event is saved.
-     */
     private void removePoster() {
         if (eventPosterUrl != null && !eventPosterUrl.isEmpty()) {
             posterMarkedForDeletion = true;
@@ -275,9 +256,29 @@ public class EditEventActivity extends AppCompatActivity {
         }
     }
 
-    /**
- * Saves updated event details, including handling of poster deletion.
-     */
+    private void initializeQrCodeSection() {
+        generateQrCodeButton.setOnClickListener(v -> {
+            try {
+                QRCode newQrCode = new QRCode(event.getEventID());
+                event.setQrCode(newQrCode.getQrCode());
+                Bitmap qrBitmap = newQrCode.getQrImage();
+                qrCodeImageView.setImageBitmap(qrBitmap);
+                qrCodeImageView.setVisibility(View.VISIBLE);
+                deleteQrCodeButton.setVisibility(View.VISIBLE);
+                //Toast.makeText(this, "QR Code generated successfully.", Toast.LENGTH_SHORT).show();
+            } catch (WriterException e) {
+                Toast.makeText(this, "Error generating QR Code: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        deleteQrCodeButton.setOnClickListener(v -> {
+            event.setQrCode(null);
+            qrCodeImageView.setVisibility(View.GONE);
+            deleteQrCodeButton.setVisibility(View.GONE);
+            //Toast.makeText(this, "QR Code deleted.", Toast.LENGTH_SHORT).show();
+        });
+    }
+
     private void saveEventDetails() {
         String updatedName = eventName.getText().toString().trim();
         String updatedDescription = description.getText().toString().trim();
@@ -327,12 +328,6 @@ public class EditEventActivity extends AppCompatActivity {
         finish();
     }
 
-    /**
-     * Formats a Date object into a readable string.
-     *
-     * @param date The date to format.
-     * @return A formatted date string.
-     */
     private String formatDateTime(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
