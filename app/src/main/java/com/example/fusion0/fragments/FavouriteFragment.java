@@ -14,11 +14,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -38,11 +40,10 @@ import com.google.zxing.WriterException;
 
 import java.util.ArrayList;
 
-
 public class FavouriteFragment extends Fragment {
 
 
-    private static final String TAG = "FavouriteActivity";
+    private static final String TAG = "FavouriteFragment";
     private Button joinedEventsButton;
     private Button createdEventsButton;
     private Button facilitiesButton;
@@ -59,13 +60,18 @@ public class FavouriteFragment extends Fragment {
 
     private ImageButton profileButton;
     private ImageButton addButton;
-    private ImageButton scannerButton;
     private ImageButton homeButton;
+    private ImageButton scannerButton;
+    private ImageButton favouriteButton;
+
+    private TextView homeTextView;
+    private TextView scannerTextView;
+    private TextView addTextView;
+    private TextView searchTextView;
+    private TextView profileTextView;
 
 
     EventFirebase eventFirebase = new EventFirebase();
-
-
 
 
     public FavouriteFragment() {
@@ -78,10 +84,8 @@ public class FavouriteFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         deviceID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -89,9 +93,10 @@ public class FavouriteFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_favourite, container, false);
     }
 
-
     @Override public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Context context = requireContext();
+
+        initializeToolbarButtons(view, context);
 
 
         joinedEventsButton = view.findViewById(R.id.joined_events_view_button);
@@ -101,7 +106,6 @@ public class FavouriteFragment extends Fragment {
         createdEventsList = view.findViewById(R.id.created_events_list);
         facilitiesList = view.findViewById(R.id.facilities_list);
         createdEventsList = view.findViewById(R.id.created_events_list);
-
 
         joinedEventsButton.setOnClickListener(v -> {
             new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
@@ -123,7 +127,6 @@ public class FavouriteFragment extends Fragment {
                         ArrayList<String> events = user.getEvents();
                         ArrayList<String> eventNames = new ArrayList<>();
 
-
                         final int totalEvents = events.size();
                         final int[] eventsFetchedCount = {0};
 
@@ -137,13 +140,11 @@ public class FavouriteFragment extends Fragment {
                                     }
                                     eventsFetchedCount[0]++;
 
-
                                     if (eventsFetchedCount[0] == totalEvents) {
                                         ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, eventNames);
                                         joinedEventsList.setAdapter(eventsAdapter);
                                     }
                                 }
-
 
                                 @Override
                                 public void onFailure(String error) {
@@ -234,7 +235,6 @@ public class FavouriteFragment extends Fragment {
                     }
                 }
 
-
                 @Override
                 public void onFailure(String error) {
                     Log.e(TAG, "Error fetching organizer: " + error);
@@ -315,12 +315,8 @@ public class FavouriteFragment extends Fragment {
                 startActivity(intent);
             });
         });
-
-
-        initializeToolbarButtons(view);
-
-
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -328,6 +324,8 @@ public class FavouriteFragment extends Fragment {
         updateCreatedEventsList();
         updateFacilitiesList();
     }
+
+
 
 
     private void updateJoinedEventsList() {
@@ -365,6 +363,9 @@ public class FavouriteFragment extends Fragment {
     }
 
 
+
+
+
     private void updateCreatedEventsList() {
         createdEventsList.setVisibility(View.GONE);
         createdEventsButton.setText("View");
@@ -384,16 +385,22 @@ public class FavouriteFragment extends Fragment {
         }
     }
 
-
-
-
-
-
-    private void initializeToolbarButtons(View view) {
+    private void initializeToolbarButtons(View view, Context context) {
         homeButton = view.findViewById(R.id.toolbar_home);
         scannerButton = view.findViewById(R.id.toolbar_qrscanner);
         addButton = view.findViewById(R.id.toolbar_add);
+        favouriteButton = view.findViewById(R.id.toolbar_favourite);
         profileButton = view.findViewById(R.id.toolbar_person);
+
+        homeTextView = view.findViewById(R.id.homeTextView);
+        scannerTextView = view.findViewById(R.id.qrTextView);
+        addTextView = view.findViewById(R.id.addTextView);
+        searchTextView = view.findViewById(R.id.searchTextView);
+        profileTextView = view.findViewById(R.id.profileTextView);
+
+        // Set all buttons
+        setAllButtonsInactive(context);
+        setActiveButton(context, favouriteButton, searchTextView);
 
 
         homeButton.setOnClickListener(v -> {
@@ -414,6 +421,23 @@ public class FavouriteFragment extends Fragment {
         profileButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_profileFragment);
         });
+    }
+
+    private void setAllButtonsInactive(Context context) {
+        profileButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        scannerButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        homeButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        addButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+
+        scannerTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+        homeTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+        addTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+        profileTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+    }
+
+    private void setActiveButton(Context context, ImageButton activeButton, TextView activeTextView) {
+        activeButton.setColorFilter(ContextCompat.getColor(context, R.color.royalBlue));
+        activeTextView.setTextColor(ContextCompat.getColor(context, R.color.royalBlue));
     }
 }
 
