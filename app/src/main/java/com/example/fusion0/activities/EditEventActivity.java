@@ -222,10 +222,6 @@ public class EditEventActivity extends AppCompatActivity {
         deletePosterButton.setVisibility(hasPoster ? View.VISIBLE : View.GONE);
     }
 
-    /**
-     * Initializes functionality for editing (uploading) the poster.
-     * @author Derin Karas
-     */
     private void initializePosterEdit() {
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),

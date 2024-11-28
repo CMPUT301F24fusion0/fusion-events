@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_add_event">.
+    android:id="@+id/activity_add_event"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">.
 
     <ScrollView
         android:id="@+id/scroll_container"
@@ -12,9 +12,10 @@
         android:background="#FFFFFF"
         android:fillViewport="true"
         android:scrollbars="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/toolbar"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        android:layout_marginTop="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/toolbarExtra"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
 
         <LinearLayout
@@ -24,54 +25,50 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp">
 
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Create Event"
-                android:fontFamily="sans-serif"
-                android:textColor="@color/figmaBlue"
                 android:layout_gravity="center_horizontal"
-                android:textFontWeight="800"
-                android:textSize="30sp"
-                android:layout_margin="5dp">
-            </TextView>
+                android:layout_margin="5dp"
+                android:fontFamily="@font/dmsans_semibold"
+                android:text="Create Event"
+                android:textColor="@color/royalBlue"
+                android:textSize="26sp"/>
 
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:text="Event Name"
                 android:fontFamily="sans-serif"
+                android:text="Event Name"
                 android:textColor="@color/figmaBlue"
                 android:textFontWeight="600"
-                android:textSize="20sp">
-            </TextView>
+                android:textSize="20sp"/>
 
 
             <EditText
                 android:id="@+id/EventName"
-                android:layout_height="50dp"
                 android:layout_width="match_parent"
+                android:layout_height="50dp"
                 android:layout_marginEnd="100dp"
-                android:hint="Enter Event Name"
-                android:inputType="text"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/custom_input"
                 android:drawablePadding="12dp"
-                android:padding="12dp">
-            </EditText>
+                android:hint="Enter Event Name"
+                android:inputType="text"
+                android:padding="12dp"></EditText>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:text="Upload Poster"
+                android:layout_marginBottom="2dp"
                 android:fontFamily="sans-serif"
+                android:text="Upload Poster"
                 android:textColor="@color/figmaBlue"
                 android:textFontWeight="600"
-                android:textSize="20sp"
-                android:layout_marginBottom="2dp" />
+                android:textSize="20sp" />
 
             <ImageView
                 android:id="@+id/uploaded_image_view"
@@ -85,21 +82,20 @@
                 android:id="@+id/upload_image_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Choose Image"
                 android:backgroundTint="@color/figmaBlue"
+                android:text="Choose Image"
                 app:cornerRadius="5dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:text="Facility"
+                android:layout_marginBottom="2dp"
                 android:fontFamily="sans-serif"
+                android:text="Facility"
                 android:textColor="@color/figmaBlue"
                 android:textFontWeight="600"
-                android:textSize="20sp"
-                android:layout_marginBottom="2dp">
-            </TextView>
+                android:textSize="20sp"></TextView>
 
 
             <Spinner
@@ -115,159 +111,153 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:text="Add Facility"
+                android:layout_marginBottom="2dp"
                 android:fontFamily="sans-serif"
+                android:text="Add Facility"
                 android:textColor="@color/figmaBlue"
                 android:textFontWeight="600"
                 android:textSize="20sp"
-                android:layout_marginBottom="2dp"
-                android:visibility="gone">
-            </TextView>
+                android:visibility="gone"></TextView>
+
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/autocomplete_fragment"
+                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-                android:visibility="gone"
-                />
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/geolocation_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Enable Geolocation"
+                android:layout_marginBottom="2dp"
                 android:fontFamily="sans-serif"
+                android:text="Enable Geolocation"
                 android:textColor="@color/figmaBlue"
                 android:textFontWeight="600"
-                android:textSize="20sp"
-                android:layout_marginBottom="2dp"/>
+                android:textSize="20sp" />
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/geolocation_switchcompat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textOn="Geolocation Enabled"
+                android:checked="false"
                 android:textOff="Geolocation Disabled"
-                android:checked="false" />
+                android:textOn="Geolocation Enabled" />
 
             <TextView
                 android:id="@+id/radius_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="sans-serif"
                 android:text="Acceptable Sign Up Radius (Km):"
                 android:textColor="@color/figmaBlue"
                 android:textFontWeight="600"
                 android:textSize="20sp"
-                android:layout_marginBottom="2dp"
-                android:fontFamily="sans-serif"
-                android:visibility="gone"
-                />
+                android:visibility="gone" />
 
             <EditText
                 android:id="@+id/radius"
-                android:layout_height="60dp"
                 android:layout_width="match_parent"
+                android:layout_height="60dp"
                 android:layout_marginEnd="100dp"
-                android:hint="Enter Radius In Km"
-                android:fontFamily="sans-serif"
-                android:textColor="@color/textColor"
-                android:textFontWeight="600"
-                android:textSize="20sp"
                 android:layout_marginBottom="2dp"
                 android:background="@drawable/custom_input"
                 android:drawablePadding="12dp"
-                android:padding="12dp"
+                android:fontFamily="sans-serif"
+                android:hint="Enter Radius In Km"
                 android:inputType="number"
-                android:visibility="gone">
-            </EditText>
-
+                android:padding="12dp"
+                android:textColor="@color/textColor"
+                android:textFontWeight="600"
+                android:textSize="20sp"
+                android:visibility="gone"></EditText>
 
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:text="Description"
+                android:layout_marginBottom="2dp"
                 android:fontFamily="sans-serif"
+                android:text="Description"
                 android:textColor="@color/figmaBlue"
                 android:textFontWeight="600"
-                android:textSize="20sp"
-                android:layout_marginBottom="2dp">
-            </TextView>
+                android:textSize="20sp"></TextView>
 
 
             <EditText
                 android:id="@+id/Description"
-                android:layout_height="60dp"
                 android:layout_width="match_parent"
+                android:layout_height="60dp"
                 android:layout_marginEnd="100dp"
-                android:hint="Enter Event Description"
-                android:inputType="textMultiLine"
                 android:layout_marginBottom="4dp"
-                android:maxLines="5"
                 android:background="@drawable/custom_input"
                 android:drawablePadding="12dp"
-                android:padding="12dp"
-                android:gravity="top|start">
-            </EditText>
+                android:gravity="top|start"
+                android:hint="Enter Event Description"
+                android:inputType="textMultiLine"
+                android:maxLines="5"
+                android:padding="12dp"></EditText>
 
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:text="Select Date"
+                android:layout_marginBottom="2dp"
                 android:fontFamily="sans-serif"
+                android:text="Select Date"
                 android:textColor="@color/figmaBlue"
                 android:textFontWeight="600"
-                android:textSize="20sp"
-                android:layout_marginBottom="2dp">
-            </TextView>
+                android:textSize="20sp"></TextView>
+
             <TextView
                 android:id="@+id/date_requirements_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
                 android:textColor="@android:color/darker_gray"
-                android:visibility="gone">
-            </TextView>
+                android:textSize="14sp"
+                android:visibility="gone"></TextView>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_marginBottom="16dp"
                 android:gravity="start"
-                android:layout_marginBottom="16dp">
+                android:orientation="horizontal">
 
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginEnd="16dp">
+                    android:layout_marginEnd="16dp"
+                    android:orientation="vertical">
 
 
                     <TextView
                         android:id="@+id/start_date_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Start Date"
+                        android:layout_marginBottom="2dp"
                         android:fontFamily="sans-serif"
+                        android:text="Start Date"
                         android:textColor="@color/figmaBlue"
                         android:textFontWeight="600"
                         android:textSize="15sp"
-                        android:layout_marginBottom="2dp"
                         android:visibility="gone" />
+
                     <TextView
                         android:id="@+id/start_time_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Start Time"
+                        android:layout_marginTop="8dp"
                         android:fontFamily="sans-serif"
+                        android:text="Start Time"
                         android:textColor="@color/figmaBlue"
                         android:textFontWeight="600"
                         android:textSize="15sp"
-                        android:layout_marginTop="8dp"
                         android:visibility="gone" />
 
 
@@ -275,10 +265,10 @@
                         android:id="@+id/start_date_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Start Date"
                         android:backgroundTint="@color/figmaBlue"
-                        app:cornerRadius="5dp"
-                        android:textSize="13sp" />
+                        android:text="Start Date"
+                        android:textSize="13sp"
+                        app:cornerRadius="5dp" />
                 </LinearLayout>
 
 
@@ -292,23 +282,24 @@
                         android:id="@+id/end_date_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="End Date"
+                        android:layout_marginBottom="2dp"
                         android:fontFamily="sans-serif"
+                        android:text="End Date"
                         android:textColor="@color/figmaBlue"
                         android:textFontWeight="600"
                         android:textSize="15sp"
-                        android:layout_marginBottom="2dp"
                         android:visibility="gone" />
+
                     <TextView
                         android:id="@+id/end_time_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="End Time"
+                        android:layout_marginTop="8dp"
                         android:fontFamily="sans-serif"
+                        android:text="End Time"
                         android:textColor="@color/figmaBlue"
                         android:textFontWeight="600"
                         android:textSize="15sp"
-                        android:layout_marginTop="8dp"
                         android:visibility="gone" />
 
 
@@ -316,10 +307,10 @@
                         android:id="@+id/end_date_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="End Date"
                         android:backgroundTint="@color/figmaBlue"
-                        app:cornerRadius="5dp"
-                        android:textSize="13sp" />
+                        android:text="End Date"
+                        android:textSize="13sp"
+                        app:cornerRadius="5dp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -327,50 +318,48 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:text="Registeration Deadline:"
+                android:layout_marginBottom="2dp"
                 android:fontFamily="sans-serif"
+                android:text="Registeration Deadline:"
                 android:textColor="@color/figmaBlue"
                 android:textFontWeight="600"
-                android:textSize="20sp"
-                android:layout_marginBottom="2dp">
-            </TextView>
+                android:textSize="20sp"></TextView>
 
             <TextView
                 android:id="@+id/registrationDateRequirementsTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
                 android:textColor="@android:color/darker_gray"
-                android:visibility="gone">
-            </TextView>
+                android:textSize="14sp"
+                android:visibility="gone"></TextView>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:layout_marginEnd="16dp"
-                android:layout_marginBottom="5dp">
+                android:layout_marginBottom="5dp"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/registration_date_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Registration Date"
+                    android:layout_marginBottom="2dp"
                     android:fontFamily="sans-serif"
+                    android:text="Registration Date"
                     android:textColor="@color/figmaBlue"
                     android:textFontWeight="600"
                     android:textSize="15sp"
-                    android:layout_marginBottom="2dp"
                     android:visibility="gone" />
 
                 <Button
                     android:id="@+id/registration_date_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Registration Date"
                     android:backgroundTint="@color/figmaBlue"
-                    app:cornerRadius="5dp"
-                    android:textSize="13sp" />
+                    android:text="Registration Date"
+                    android:textSize="13sp"
+                    app:cornerRadius="5dp" />
             </LinearLayout>
 
 
@@ -378,89 +367,237 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:text="Waitlist Capacity"
+                android:layout_marginBottom="2dp"
                 android:fontFamily="sans-serif"
+                android:text="Waitlist Capacity"
                 android:textColor="@color/figmaBlue"
                 android:textFontWeight="600"
-                android:textSize="20sp"
-                android:layout_marginBottom="2dp">
-            </TextView>
+                android:textSize="20sp"></TextView>
 
 
             <EditText
                 android:id="@+id/Capacity"
-                android:layout_height="60dp"
                 android:layout_width="match_parent"
+                android:layout_height="60dp"
                 android:layout_marginEnd="100dp"
-                android:hint="Enter Waitlist Capacity"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/custom_input"
                 android:drawablePadding="12dp"
-                android:padding="12dp"
-                android:inputType="number">
-            </EditText>
+                android:hint="Enter Waitlist Capacity"
+                android:inputType="number"
+                android:padding="12dp"></EditText>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:text="Lottery Capacity"
+                android:layout_marginBottom="2dp"
                 android:fontFamily="sans-serif"
+                android:text="Lottery Capacity"
                 android:textColor="@color/figmaBlue"
                 android:textFontWeight="600"
-                android:textSize="20sp"
-                android:layout_marginBottom="2dp">
-            </TextView>
+                android:textSize="20sp"></TextView>
 
 
             <EditText
                 android:id="@+id/lotteryCapacity"
-                android:layout_height="60dp"
                 android:layout_width="match_parent"
+                android:layout_height="60dp"
                 android:layout_marginEnd="100dp"
-                android:hint="Enter Lottery Capacity"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/custom_input"
                 android:drawablePadding="12dp"
-                android:padding="12dp"
-                android:inputType="number">
-            </EditText>
+                android:hint="Enter Lottery Capacity"
+                android:inputType="number"
+                android:padding="12dp"></EditText>
+
+            <LinearLayout
+                android:id="@+id/toolbar"
+                style="?android:attr/buttonBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <Button
+                    android:id="@+id/add_button"
+                    android:layout_width="150dp"
+                    android:layout_height="50dp"
+                    android:backgroundTint="@color/figmaBlue"
+                    android:text="Add"
+                    android:textColor="@color/white"
+                    app:cornerRadius="5dp"></Button>
+
+
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
 
-
     <LinearLayout
-        android:id="@+id/toolbar"
-        style="?android:attr/buttonBarStyle"
+        android:id="@+id/toolbarExtra"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:gravity="center"
+        android:layout_height="80dp"
+        android:background="@android:color/white"
+        android:clipToPadding="false"
+        android:fitsSystemWindows="false"
         android:orientation="horizontal"
-        android:background="@color/white">
+        android:paddingBottom="17dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/exit_button"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:text="Exit"
-            android:textColor="@color/figmaBlue"
-            android:backgroundTint="@android:color/white">
-        </Button>
+            <ImageButton
+                android:id="@+id/toolbar_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:contentDescription="blue_home"
+                android:src="@drawable/ic_home_outline" />
 
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="2dp" />
 
-        <Button
-            android:id="@+id/add_button"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:text="Add"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/figmaBlue"
-            app:cornerRadius="5dp">
-        </Button>
+            <TextView
+                android:id="@+id/homeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="center_horizontal"
+                android:text="Home"
+                android:textSize="11.5sp" />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/toolbar_qrscanner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:contentDescription="blue_home"
+                android:src="@drawable/ic_qr_code" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="2dp" />
+
+            <TextView
+                android:id="@+id/qrTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="center_horizontal"
+                android:text="Scan QR"
+                android:textSize="11.5sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/toolbar_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:contentDescription="blue_home"
+                android:src="@drawable/ic_add" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="2dp" />
+
+            <TextView
+                android:id="@+id/addTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="center_horizontal"
+                android:text="Add Event"
+                android:textSize="11.5sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/toolbar_favourite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:contentDescription="blue_home"
+                android:src="@drawable/ic_search" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="2dp" />
+
+            <TextView
+                android:id="@+id/searchTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="center_horizontal"
+                android:text="Browse"
+                android:textSize="11.5sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/toolbar_person"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:contentDescription="blue_home"
+                android:src="@drawable/ic_profile_outline" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="2dp" />
+
+            <TextView
+                android:id="@+id/profileTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="center_horizontal"
+                android:text="Profile"
+                android:textSize="11.5sp" />
+
+        </LinearLayout>
 
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
