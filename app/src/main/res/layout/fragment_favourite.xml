@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -16,6 +17,9 @@
             android:fillViewport="true"
             android:scrollbars="vertical"
             android:layout_marginTop="20dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
             android:background="@color/white">
 
             <LinearLayout
@@ -29,26 +33,35 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:background="@drawable/customborder"
                     android:layout_marginBottom="8dp">
+
+                    <ImageButton
+                        android:id="@+id/joined_events_view_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_plus_filled"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@null" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:background="#FFFFFF"
                         android:scrollbars="vertical"
                         android:text="Joined Events"
-                        android:textSize="25sp" />
+                        android:fontFamily="@font/dmsans_regular"
+                        android:layout_gravity="center_horizontal|bottom"
+                        android:textSize="24sp" />
 
-                    <Button
-                        android:id="@+id/joined_events_view_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:backgroundTint="@color/figmaBlue"
-                        android:text="View" />
                 </LinearLayout>
+
+                <View
+                    android:id="@+id/joined_events_list_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/royalBlue"
+                    android:visibility="gone" />
 
                 <ListView
                     android:id="@+id/joined_events_list"
@@ -88,6 +101,7 @@
                     android:layout_height="wrap_content"
                     android:visibility="gone">
                 </ListView>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -113,12 +127,14 @@
                         android:backgroundTint="@color/figmaBlue"
                         android:text="View" />
                 </LinearLayout>
+
                 <ListView
                     android:id="@+id/facilities_list"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone">
                 </ListView>
+
             </LinearLayout>
         </ScrollView>
 
@@ -127,6 +143,8 @@
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
             android:fitsSystemWindows="false"
             android:clipToPadding="false"
             android:paddingBottom="17dp"
@@ -260,7 +278,7 @@
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
                     android:contentDescription="blue_home"
-                    android:src="@drawable/ic_search"
+                    android:src="@drawable/ic_activity_filled"
                     android:clickable="false"
                     android:focusable="false"/>
 
@@ -274,7 +292,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/dmsans_regular"
                     android:gravity="center_horizontal"
-                    android:text="Browse"
+                    android:text="Activities"
                     android:textSize="11.5sp"
                     android:clickable="false"
                     android:focusable="false"/>

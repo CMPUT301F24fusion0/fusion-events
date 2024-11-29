@@ -22,14 +22,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.fusion0.R;
 import com.example.fusion0.activities.JoinedEventActivity;
 import com.example.fusion0.fragments.ViewEventFragment;
 import com.example.fusion0.activities.ViewFacilityActivity;
+import com.example.fusion0.helpers.AnimationHelper;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.EventInfo;
@@ -45,7 +48,7 @@ public class FavouriteFragment extends Fragment {
 
 
     private static final String TAG = "FavouriteFragment";
-    private Button joinedEventsButton;
+    private ImageButton joinedEventsButton;
     private Button createdEventsButton;
     private Button facilitiesButton;
     private String deviceID;
@@ -77,6 +80,9 @@ public class FavouriteFragment extends Fragment {
     private TextView searchTextView;
     private TextView profileTextView;
 
+    private View joinedEventsListDivider;
+    private View createdEventsListDivider;
+    private View facilitiesListDivider;
 
     EventFirebase eventFirebase = new EventFirebase();
 
@@ -114,7 +120,12 @@ public class FavouriteFragment extends Fragment {
         facilitiesList = view.findViewById(R.id.facilities_list);
         createdEventsList = view.findViewById(R.id.created_events_list);
 
+        joinedEventsListDivider = view.findViewById(R.id.joined_events_list_divider);
+        //
+        //
+
         joinedEventsButton.setOnClickListener(v -> {
+            AnimationHelper.rotateView(joinedEventsButton, 45f, 150);
             new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
                 @Override
                 public void onSuccess(UserInfo userInfo) {
@@ -123,11 +134,9 @@ public class FavouriteFragment extends Fragment {
                         return;
                     }
 
-
                     if (userInfo.getEvents() == null || userInfo.getEvents().isEmpty()) {
                         Toast.makeText(context, "No Joined Events Available.", Toast.LENGTH_SHORT).show();
                         joinedEventsList.setVisibility(View.GONE);
-                        joinedEventsButton.setText("View");
                         isJoinedEventsListVisible = false;
                     } else {
                         user = userInfo;
@@ -136,7 +145,6 @@ public class FavouriteFragment extends Fragment {
 
                         final int totalEvents = events.size();
                         final int[] eventsFetchedCount = {0};
-
 
                         for (String eventId : events) {
                             eventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
@@ -148,7 +156,7 @@ public class FavouriteFragment extends Fragment {
                                     eventsFetchedCount[0]++;
 
                                     if (eventsFetchedCount[0] == totalEvents) {
-                                        ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, eventNames);
+                                        ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, R.layout.spinner_dropdown_item, eventNames);
                                         joinedEventsList.setAdapter(eventsAdapter);
                                     }
                                 }
@@ -162,11 +170,11 @@ public class FavouriteFragment extends Fragment {
 
 
                         if (isJoinedEventsListVisible) {
-                            joinedEventsList.setVisibility(View.GONE);
-                            joinedEventsButton.setText("View");
+                            AnimationHelper.fadeOutView(joinedEventsListDivider, 75);
+                            AnimationHelper.fadeOutView(joinedEventsList, 250);
                         } else {
-                            joinedEventsList.setVisibility(View.VISIBLE);
-                            joinedEventsButton.setText("Hide");
+                            AnimationHelper.fadeInView(joinedEventsListDivider, 75);
+                            AnimationHelper.fadeInView(joinedEventsList, 250);
                         }
                         isJoinedEventsListVisible = !isJoinedEventsListVisible;
                     }
@@ -212,8 +220,6 @@ public class FavouriteFragment extends Fragment {
 
                                 ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, organizer.getEventsNames());
                                 createdEventsList.setAdapter(eventsAdapter);
-
-
 
 
                                 // Toggle visibility of the created events list
@@ -337,7 +343,6 @@ public class FavouriteFragment extends Fragment {
 
     private void updateJoinedEventsList() {
         joinedEventsList.setVisibility(View.GONE);
-        joinedEventsButton.setText("View");
         if (user != null && user.getEvents() != null && !user.getEvents().isEmpty()) {
             ArrayList<String> eventNames = new ArrayList<>();
             int totalEvents = user.getEvents().size();
@@ -451,6 +456,15 @@ public class FavouriteFragment extends Fragment {
     private void setActiveButton(Context context, ImageButton activeButton, TextView activeTextView) {
         activeButton.setColorFilter(ContextCompat.getColor(context, R.color.royalBlue));
         activeTextView.setTextColor(ContextCompat.getColor(context, R.color.royalBlue));
+    }
+
+    private void fadeInView(View view) {
+        view.setAlpha(0f);
+        view.setVisibility(View.VISIBLE);
+        view.animate()
+                .alpha(1f)
+                .setDuration(300) // Set duration for smoothness
+                .setListener(null);
     }
 }
 
