@@ -8,11 +8,14 @@
     <color name="figmaBlue">#2D51AA</color>
 
     <!-- Colours used for the Profile page -->
-    <color name="royalBlue">#2A72D5</color>
+    <color name="royalBlue">#003366</color>
     <color name="textFieldColor">#F2F8FD</color>
     <color name="textColor">#243B55</color>
 
 
     <color name="light_red">#fce2e2</color>
+
+    <color name="selectedTabColor">#003366</color> <!-- Example selected color -->
+    <color name="unselectedTabColor">#888888</color> <!-- Example unselected color -->
 
 </resources>
