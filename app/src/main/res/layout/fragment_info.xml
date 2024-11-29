@@ -1,14 +1,606 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.InfoFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:id="@+id/info_fragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ScrollView
+        android:id="@+id/scroll_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_marginTop="16dp"
+        android:fillViewport="true"
+        android:scrollbars="vertical">
 
-</FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp" >
+
+            <!-- Event Name -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Event Title"
+                android:fontFamily="@font/dmsans_medium"
+                android:textColor="@color/royalBlue"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/EventName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="6dp"
+                android:hint="Burna Boy's Concert"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_gravity="start"
+                android:inputType="text"
+                android:background="@null" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/royalBlue"/>
+
+            <!-- Description -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Description"
+                android:fontFamily="@font/dmsans_medium"
+                android:textColor="@color/royalBlue"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/Description"
+                android:layout_width="match_parent"
+                android:hint="Exciting activities and great fun!"
+                android:paddingVertical="6dp"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:maxLines="5"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_gravity="start"
+                android:background="@null" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/royalBlue"/>
+
+
+            <!-- Upload Poster -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Upload Poster"
+                android:fontFamily="@font/dmsans_medium"
+                android:textColor="@color/royalBlue"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp" >
+
+                <ImageButton
+                    android:id="@+id/upload_image_button"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:background="@drawable/rectangular_background"
+                    android:src="@drawable/ic_upload_image"
+                    android:backgroundTint="@color/royalBlue"
+                    android:scaleType="centerInside"
+                    android:padding="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:tint="@color/white" />
+
+                <Space
+                    android:layout_width="5dp"
+                    android:layout_height="0dp"/>
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/loadingSpinner"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:elevation="5dp"
+                    app:lottie_rawRes="@raw/loading"
+                    app:lottie_autoPlay="true"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/uploaded_image_view"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/date_requirements_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_regular"
+                android:textColor="@android:color/darker_gray"
+                android:visibility="gone" />
+
+
+            <!-- Date Requirements -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/start_date_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:clickable="false"
+                    android:focusable="false">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Start Date"
+                        android:textColor="@color/royalBlue"
+                        android:fontFamily="@font/dmsans_medium"
+                        android:textSize="20sp"
+                        android:clickable="false"
+                        android:focusable="false"/>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="4dp"/>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:clickable="false"
+                        android:focusable="false">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:clickable="false"
+                            android:focusable="false">
+
+                            <ImageButton
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:background="@drawable/ic_calendar"
+                                android:backgroundTint="@color/royalBlue"
+                                android:clickable="false"
+                                android:focusable="false"/>
+
+                            <Space
+                                android:layout_width="4dp"
+                                android:layout_height="0dp"
+                                android:clickable="false"
+                                android:focusable="false"/>
+
+                            <TextView
+                                android:id="@+id/start_date_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="MM / DD / YYYY"
+                                android:textSize="16sp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textColor="@android:color/darker_gray"
+                                android:clickable="false"
+                                android:focusable="false"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="32dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:clickable="false"
+                    android:focusable="false">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_medium"
+                        android:text="Start Time"
+                        android:textColor="@color/royalBlue"
+                        android:textSize="20sp"
+                        android:clickable="false"
+                        android:focusable="false"/>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="4dp"/>
+
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:clickable="false"
+                        android:focusable="false">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:clickable="false"
+                            android:focusable="false">
+
+                            <TextView
+                                android:id="@+id/start_time_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:text="HH / MM"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="16sp"
+                                android:clickable="false"
+                                android:focusable="false"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/royalBlue"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="6dp"/>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/end_date_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:clickable="false"
+                    android:focusable="false">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="End Date"
+                        android:textColor="@color/royalBlue"
+                        android:fontFamily="@font/dmsans_medium"
+                        android:textSize="20sp"
+                        android:clickable="false"
+                        android:focusable="false"/>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="4dp"/>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:clickable="false"
+                        android:focusable="false">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:clickable="false"
+                            android:focusable="false">
+
+                            <ImageButton
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:background="@drawable/ic_calendar"
+                                android:backgroundTint="@color/royalBlue"
+                                android:clickable="false"
+                                android:focusable="false"/>
+
+                            <Space
+                                android:layout_width="4dp"
+                                android:layout_height="0dp"
+                                android:clickable="false"
+                                android:focusable="false"/>
+
+                            <TextView
+                                android:id="@+id/end_date_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="MM / DD / YYYY"
+                                android:textSize="16sp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textColor="@android:color/darker_gray"
+                                android:clickable="false"
+                                android:focusable="false"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="32dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:clickable="false"
+                    android:focusable="false">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_medium"
+                        android:text="End Time"
+                        android:textColor="@color/royalBlue"
+                        android:textSize="20sp"
+                        android:clickable="false"
+                        android:focusable="false"/>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="4dp"/>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:clickable="false"
+                        android:focusable="false">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:clickable="false"
+                            android:focusable="false">
+
+                            <TextView
+                                android:id="@+id/end_time_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:text="HH / MM"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="16sp"
+                                android:clickable="false"
+                                android:focusable="false"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/royalBlue"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="6dp"/>
+
+            <TextView
+                android:id="@+id/registrationDateRequirementsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_regular"
+                android:textColor="@android:color/darker_gray"
+                android:visibility="gone"/>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/registration_date_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:clickable="false"
+                    android:focusable="false">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="RSVP Deadline"
+                        android:textColor="@color/royalBlue"
+                        android:fontFamily="@font/dmsans_medium"
+                        android:textSize="20sp"
+                        android:clickable="false"
+                        android:focusable="false"/>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="4dp"/>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:clickable="false"
+                        android:focusable="false">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:clickable="false"
+                            android:focusable="false">
+
+                            <ImageButton
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:background="@drawable/ic_calendar"
+                                android:backgroundTint="@color/royalBlue"
+                                android:clickable="false"
+                                android:focusable="false"/>
+
+                            <Space
+                                android:layout_width="4dp"
+                                android:layout_height="0dp"
+                                android:clickable="false"
+                                android:focusable="false"/>
+
+                            <TextView
+                                android:id="@+id/registration_date_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="MM / DD / YYYY"
+                                android:textSize="16sp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textColor="@android:color/darker_gray"
+                                android:clickable="false"
+                                android:focusable="false"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/royalBlue"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="6dp"/>
+
+            <!-- Waitlist Capacity -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Waitlist Capacity"
+                android:fontFamily="@font/dmsans_medium"
+                android:textColor="@color/royalBlue"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/Capacity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="6dp"
+                android:hint="e.g  100"
+                android:background="@null"
+                android:inputType="number"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_gravity="start" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/royalBlue"/>
+
+            <!-- Lottery Capacity -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Lottery Capacity"
+                android:fontFamily="@font/dmsans_medium"
+                android:textColor="@color/royalBlue"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/lotteryCapacity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="6dp"
+                android:hint="e.g  10"
+                android:background="@null"
+                android:inputType="number"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_gravity="start"  />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/royalBlue"/>
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

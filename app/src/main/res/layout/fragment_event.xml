@@ -1,439 +1,72 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_add_event"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">.
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:layout_marginTop="24dp">
 
-    <ScrollView
-        android:id="@+id/scroll_container"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:background="#FFFFFF"
-        android:fillViewport="true"
-        android:scrollbars="vertical"
-        android:layout_marginTop="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/toolbarExtra"
+    <!-- Header Section -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:background="@color/royalBlue"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent">
 
-
-        <LinearLayout
-            android:layout_width="fill_parent"
+        <TextView
+            android:id="@+id/header_text"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:text="Add Event"
+            android:textSize="24sp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/dmsans_medium"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="5dp"
-                android:fontFamily="@font/dmsans_semibold"
-                android:text="Create Event"
-                android:textColor="@color/royalBlue"
-                android:textSize="26sp"/>
+        <ImageButton
+            android:id="@+id/save_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_add"
+            android:contentDescription="Save"
+            android:backgroundTint="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- TabLayout for switching between Info and Map tabs -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/royalBlue"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
+        app:layout_constraintBottom_toTopOf="@id/view_pager"
+        app:tabIndicatorColor="#6495ED"
+        app:tabIndicatorHeight="4dp"
+        app:tabSelectedTextColor="@android:color/white"
+        app:tabTextColor="@android:color/darker_gray"
+        />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:fontFamily="sans-serif"
-                android:text="Event Name"
-                android:textColor="@color/figmaBlue"
-                android:textFontWeight="600"
-                android:textSize="20sp"/>
-
-
-            <EditText
-                android:id="@+id/EventName"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginEnd="100dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/custom_input"
-                android:drawablePadding="12dp"
-                android:hint="Enter Event Name"
-                android:inputType="text"
-                android:padding="12dp"></EditText>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginBottom="2dp"
-                android:fontFamily="sans-serif"
-                android:text="Upload Poster"
-                android:textColor="@color/figmaBlue"
-                android:textFontWeight="600"
-                android:textSize="20sp" />
-
-            <ImageView
-                android:id="@+id/uploaded_image_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:contentDescription="Event Poster"
-                android:visibility="gone" />
-
-            <Button
-                android:id="@+id/upload_image_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/figmaBlue"
-                android:text="Choose Image"
-                app:cornerRadius="5dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginBottom="2dp"
-                android:fontFamily="sans-serif"
-                android:text="Facility"
-                android:textColor="@color/figmaBlue"
-                android:textFontWeight="600"
-                android:textSize="20sp"></TextView>
-
-
-            <Spinner
-                android:id="@+id/spinner_facilities"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="200dp"
-                android:layout_marginBottom="4dp" />
-
-
-            <TextView
-                android:id="@+id/add_facility_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginBottom="2dp"
-                android:fontFamily="sans-serif"
-                android:text="Add Facility"
-                android:textColor="@color/figmaBlue"
-                android:textFontWeight="600"
-                android:textSize="20sp"
-                android:visibility="gone"></TextView>
-
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/autocomplete_fragment"
-                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/geolocation_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
-                android:fontFamily="sans-serif"
-                android:text="Enable Geolocation"
-                android:textColor="@color/figmaBlue"
-                android:textFontWeight="600"
-                android:textSize="20sp" />
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/geolocation_switchcompat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="false"
-                android:textOff="Geolocation Disabled"
-                android:textOn="Geolocation Enabled" />
-
-            <TextView
-                android:id="@+id/radius_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
-                android:fontFamily="sans-serif"
-                android:text="Acceptable Sign Up Radius (Km):"
-                android:textColor="@color/figmaBlue"
-                android:textFontWeight="600"
-                android:textSize="20sp"
-                android:visibility="gone" />
-
-            <EditText
-                android:id="@+id/radius"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginEnd="100dp"
-                android:layout_marginBottom="2dp"
-                android:background="@drawable/custom_input"
-                android:drawablePadding="12dp"
-                android:fontFamily="sans-serif"
-                android:hint="Enter Radius In Km"
-                android:inputType="number"
-                android:padding="12dp"
-                android:textColor="@color/textColor"
-                android:textFontWeight="600"
-                android:textSize="20sp"
-                android:visibility="gone"></EditText>
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginBottom="2dp"
-                android:fontFamily="sans-serif"
-                android:text="Description"
-                android:textColor="@color/figmaBlue"
-                android:textFontWeight="600"
-                android:textSize="20sp"></TextView>
-
-
-            <EditText
-                android:id="@+id/Description"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginEnd="100dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/custom_input"
-                android:drawablePadding="12dp"
-                android:gravity="top|start"
-                android:hint="Enter Event Description"
-                android:inputType="textMultiLine"
-                android:maxLines="5"
-                android:padding="12dp"></EditText>
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginBottom="2dp"
-                android:fontFamily="sans-serif"
-                android:text="Select Date"
-                android:textColor="@color/figmaBlue"
-                android:textFontWeight="600"
-                android:textSize="20sp"></TextView>
-
-            <TextView
-                android:id="@+id/date_requirements_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="14sp"
-                android:visibility="gone"></TextView>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:gravity="start"
-                android:orientation="horizontal">
-
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:orientation="vertical">
-
-
-                    <TextView
-                        android:id="@+id/start_date_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="2dp"
-                        android:fontFamily="sans-serif"
-                        android:text="Start Date"
-                        android:textColor="@color/figmaBlue"
-                        android:textFontWeight="600"
-                        android:textSize="15sp"
-                        android:visibility="gone" />
-
-                    <TextView
-                        android:id="@+id/start_time_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:fontFamily="sans-serif"
-                        android:text="Start Time"
-                        android:textColor="@color/figmaBlue"
-                        android:textFontWeight="600"
-                        android:textSize="15sp"
-                        android:visibility="gone" />
-
-
-                    <Button
-                        android:id="@+id/start_date_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:backgroundTint="@color/figmaBlue"
-                        android:text="Start Date"
-                        android:textSize="13sp"
-                        app:cornerRadius="5dp" />
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-
-                    <TextView
-                        android:id="@+id/end_date_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="2dp"
-                        android:fontFamily="sans-serif"
-                        android:text="End Date"
-                        android:textColor="@color/figmaBlue"
-                        android:textFontWeight="600"
-                        android:textSize="15sp"
-                        android:visibility="gone" />
-
-                    <TextView
-                        android:id="@+id/end_time_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:fontFamily="sans-serif"
-                        android:text="End Time"
-                        android:textColor="@color/figmaBlue"
-                        android:textFontWeight="600"
-                        android:textSize="15sp"
-                        android:visibility="gone" />
-
-
-                    <Button
-                        android:id="@+id/end_date_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:backgroundTint="@color/figmaBlue"
-                        android:text="End Date"
-                        android:textSize="13sp"
-                        app:cornerRadius="5dp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginBottom="2dp"
-                android:fontFamily="sans-serif"
-                android:text="Registeration Deadline:"
-                android:textColor="@color/figmaBlue"
-                android:textFontWeight="600"
-                android:textSize="20sp"></TextView>
-
-            <TextView
-                android:id="@+id/registrationDateRequirementsTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="14sp"
-                android:visibility="gone"></TextView>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="5dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/registration_date_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="2dp"
-                    android:fontFamily="sans-serif"
-                    android:text="Registration Date"
-                    android:textColor="@color/figmaBlue"
-                    android:textFontWeight="600"
-                    android:textSize="15sp"
-                    android:visibility="gone" />
-
-                <Button
-                    android:id="@+id/registration_date_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/figmaBlue"
-                    android:text="Registration Date"
-                    android:textSize="13sp"
-                    app:cornerRadius="5dp" />
-            </LinearLayout>
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginBottom="2dp"
-                android:fontFamily="sans-serif"
-                android:text="Waitlist Capacity"
-                android:textColor="@color/figmaBlue"
-                android:textFontWeight="600"
-                android:textSize="20sp"></TextView>
-
-
-            <EditText
-                android:id="@+id/Capacity"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginEnd="100dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/custom_input"
-                android:drawablePadding="12dp"
-                android:hint="Enter Waitlist Capacity"
-                android:inputType="number"
-                android:padding="12dp"></EditText>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginBottom="2dp"
-                android:fontFamily="sans-serif"
-                android:text="Lottery Capacity"
-                android:textColor="@color/figmaBlue"
-                android:textFontWeight="600"
-                android:textSize="20sp"></TextView>
-
-
-            <EditText
-                android:id="@+id/lotteryCapacity"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginEnd="100dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/custom_input"
-                android:drawablePadding="12dp"
-                android:hint="Enter Lottery Capacity"
-                android:inputType="number"
-                android:padding="12dp"></EditText>
-
-            <LinearLayout
-                android:id="@+id/toolbar"
-                style="?android:attr/buttonBarStyle"
-                android:layout_width="match_parent"
-                android:layout_height="70dp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent">
-
-                <Button
-                    android:id="@+id/add_button"
-                    android:layout_width="150dp"
-                    android:layout_height="50dp"
-                    android:backgroundTint="@color/figmaBlue"
-                    android:text="Add"
-                    android:textColor="@color/white"
-                    app:cornerRadius="5dp"></Button>
-
-
-            </LinearLayout>
-
-        </LinearLayout>
-    </ScrollView>
+    <!-- ViewPager2 for hosting Info and Map fragments -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/tab_layout"
+        app:layout_constraintBottom_toTopOf="@id/toolbarExtra"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <LinearLayout
         android:id="@+id/toolbarExtra"
@@ -449,19 +82,24 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
+            android:id="@+id/toolbar_home"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true" >
 
             <ImageButton
-                android:id="@+id/toolbar_home"
+                android:id="@+id/toolbar_home_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
                 android:contentDescription="blue_home"
-                android:src="@drawable/ic_home_outline" />
+                android:src="@drawable/ic_home_outline"
+                android:clickable="false"
+                android:focusable="false"/>
 
             <Space
                 android:layout_width="0dp"
@@ -474,24 +112,31 @@
                 android:fontFamily="@font/dmsans_regular"
                 android:gravity="center_horizontal"
                 android:text="Home"
-                android:textSize="11.5sp" />
+                android:textSize="11.5sp"
+                android:clickable="false"
+                android:focusable="false"/>
 
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/toolbar_qrscanner"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
 
             <ImageButton
-                android:id="@+id/toolbar_qrscanner"
+                android:id="@+id/toolbar_qrscanner_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
                 android:contentDescription="blue_home"
-                android:src="@drawable/ic_qr_code" />
+                android:src="@drawable/ic_qr_code"
+                android:clickable="false"
+                android:focusable="false"/>
 
             <Space
                 android:layout_width="0dp"
@@ -504,24 +149,31 @@
                 android:fontFamily="@font/dmsans_regular"
                 android:gravity="center_horizontal"
                 android:text="Scan QR"
-                android:textSize="11.5sp" />
+                android:textSize="11.5sp"
+                android:clickable="false"
+                android:focusable="false"/>
 
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/toolbar_add"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
 
             <ImageButton
-                android:id="@+id/toolbar_add"
+                android:id="@+id/toolbar_add_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
                 android:contentDescription="blue_home"
-                android:src="@drawable/ic_add" />
+                android:src="@drawable/ic_add"
+                android:clickable="false"
+                android:focusable="false"/>
 
             <Space
                 android:layout_width="0dp"
@@ -534,24 +186,31 @@
                 android:fontFamily="@font/dmsans_regular"
                 android:gravity="center_horizontal"
                 android:text="Add Event"
-                android:textSize="11.5sp" />
+                android:textSize="11.5sp"
+                android:clickable="false"
+                android:focusable="false"/>
 
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/toolbar_favourite"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
 
             <ImageButton
-                android:id="@+id/toolbar_favourite"
+                android:id="@+id/toolbar_favourite_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
                 android:contentDescription="blue_home"
-                android:src="@drawable/ic_search" />
+                android:src="@drawable/ic_search"
+                android:clickable="false"
+                android:focusable="false"/>
 
             <Space
                 android:layout_width="0dp"
@@ -564,24 +223,31 @@
                 android:fontFamily="@font/dmsans_regular"
                 android:gravity="center_horizontal"
                 android:text="Browse"
-                android:textSize="11.5sp" />
+                android:textSize="11.5sp"
+                android:clickable="false"
+                android:focusable="false"/>
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:id="@+id/toolbar_person"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
 
             <ImageButton
-                android:id="@+id/toolbar_person"
+                android:id="@+id/toolbar_person_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
                 android:contentDescription="blue_home"
-                android:src="@drawable/ic_profile_outline" />
+                android:src="@drawable/ic_profile_outline"
+                android:clickable="false"
+                android:focusable="false" />
 
             <Space
                 android:layout_width="0dp"
@@ -594,7 +260,9 @@
                 android:fontFamily="@font/dmsans_regular"
                 android:gravity="center_horizontal"
                 android:text="Profile"
-                android:textSize="11.5sp" />
+                android:textSize="11.5sp"
+                android:clickable="false"
+                android:focusable="false" />
 
         </LinearLayout>
 

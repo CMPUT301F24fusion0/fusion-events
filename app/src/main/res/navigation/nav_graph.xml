@@ -18,7 +18,7 @@
             app:destination="@id/qrFragment" />
         <action
             android:id="@+id/action_mainFragment_to_eventFragment"
-            app:destination="@id/addEventFragment"/>
+            app:destination="@id/eventFragment"/>
         <action
             android:id="@+id/action_mainFragment_to_favouriteFragment"
             app:destination="@id/favouriteFragment"/>
@@ -40,7 +40,7 @@
             app:destination="@id/qrFragment" />
         <action
             android:id="@+id/action_profileFragment_to_eventFragment"
-            app:destination="@id/addEventFragment"/>
+            app:destination="@id/eventFragment"/>
         <action
             android:id="@+id/action_profileFragment_to_favouriteFragment"
             app:destination="@id/favouriteFragment" />
@@ -63,7 +63,7 @@
     </fragment>
 
     <fragment
-        android:id="@+id/addEventFragment"
+        android:id="@+id/eventFragment"
         android:name="com.example.fusion0.fragments.AddEventFragment"
         android:label="Event Fragment"
         tools:layout="@layout/fragment_event">
@@ -94,13 +94,13 @@
             app:destination="@id/qrFragment" />
         <action
             android:id="@+id/action_favouriteFragment_to_eventFragment"
-            app:destination="@id/addEventFragment"/>
+            app:destination="@id/eventFragment"/>
         <action
             android:id="@+id/action_favouriteFragment_to_profileFragment"
             app:destination="@id/profileFragment"/>
         <action
             android:id="@+id/action_favouriteFragment_to_viewEventFragment"
-            app:destination="@id/viewEventFragment"/>>
+            app:destination="@id/viewEventFragment"/>
     </fragment>
 
     <fragment
@@ -136,7 +136,7 @@
             app:destination="@id/profileFragment"/>
         <action
             android:id="@+id/action_registrationFragment_to_eventFragment"
-            app:destination="@id/addEventFragment"/>
+            app:destination="@id/eventFragment"/>
         <action
             android:id="@+id/action_registrationFragment_to_favFragment"
             app:destination="@id/favouriteFragment"/>
