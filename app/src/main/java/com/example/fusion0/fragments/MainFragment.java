@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -60,11 +62,18 @@ public class MainFragment extends Fragment {
     private String deviceId;
 
 
-    private ImageButton profileButton;
-    private ImageButton addButton;
-    private ImageButton homeButton;
-    private ImageButton scannerButton;
-    private ImageButton favouriteButton;
+    private LinearLayout profileButton;
+    private LinearLayout addButton;
+    private LinearLayout homeButton;
+    private LinearLayout scannerButton;
+    private LinearLayout favouriteButton;
+
+    private ImageButton profileImageButton;
+    private ImageButton addImageButton;
+    private ImageButton homeImageButton;
+    private ImageButton scannerImageButton;
+    private ImageButton favouriteImageButton;
+
 
     private TextView homeTextView;
     private TextView scannerTextView;
@@ -379,6 +388,12 @@ public class MainFragment extends Fragment {
         favouriteButton = view.findViewById(R.id.toolbar_favourite);
         profileButton = view.findViewById(R.id.toolbar_person);
 
+        homeImageButton = view.findViewById(R.id.toolbar_home_image);
+        scannerImageButton = view.findViewById(R.id.toolbar_qrscanner_image);
+        addImageButton = view.findViewById(R.id.toolbar_add_image);
+        favouriteImageButton = view.findViewById(R.id.toolbar_favourite_image);
+        profileImageButton = view.findViewById(R.id.toolbar_person_image);
+
         homeTextView = view.findViewById(R.id.homeTextView);
         scannerTextView = view.findViewById(R.id.qrTextView);
         addTextView = view.findViewById(R.id.addTextView);
@@ -387,7 +402,7 @@ public class MainFragment extends Fragment {
 
         // Set all buttons
         setAllButtonsInactive(context);
-        setActiveButton(context, homeButton, homeTextView);
+        setActiveButton(context, homeImageButton, homeTextView);
 
         profileButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_profileFragment));
 
@@ -399,10 +414,10 @@ public class MainFragment extends Fragment {
     }
 
     private void setAllButtonsInactive(Context context) {
-        profileButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
-        scannerButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
-        addButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
-        favouriteButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        profileImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        scannerImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        addImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        favouriteImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
 
         scannerTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
         addTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));

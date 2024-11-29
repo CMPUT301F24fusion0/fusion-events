@@ -134,154 +134,190 @@
             android:orientation="horizontal">
 
             <LinearLayout
+                android:id="@+id/toolbar_home"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
                 android:layout_weight="1"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true" >
 
                 <ImageButton
-                    android:id="@+id/toolbar_home"
+                    android:id="@+id/toolbar_home_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
                     android:contentDescription="blue_home"
-                    android:src="@drawable/ic_home_outline" />
+                    android:src="@drawable/ic_home_outline"
+                    android:clickable="false"
+                    android:focusable="false"/>
 
                 <Space
                     android:layout_width="0dp"
-                    android:layout_height="2dp"/>
+                    android:layout_height="2dp" />
 
                 <TextView
                     android:id="@+id/homeTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Home"
                     android:fontFamily="@font/dmsans_regular"
+                    android:gravity="center_horizontal"
+                    android:text="Home"
                     android:textSize="11.5sp"
-                    android:gravity="center_horizontal"/>
+                    android:clickable="false"
+                    android:focusable="false"/>
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/toolbar_qrscanner"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
                 android:layout_weight="1"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageButton
-                    android:id="@+id/toolbar_qrscanner"
+                    android:id="@+id/toolbar_qrscanner_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
                     android:contentDescription="blue_home"
-                    android:src="@drawable/ic_qr_code" />
+                    android:src="@drawable/ic_qr_code"
+                    android:clickable="false"
+                    android:focusable="false"/>
 
                 <Space
                     android:layout_width="0dp"
-                    android:layout_height="2dp"/>
+                    android:layout_height="2dp" />
 
                 <TextView
                     android:id="@+id/qrTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Scan QR"
                     android:fontFamily="@font/dmsans_regular"
+                    android:gravity="center_horizontal"
+                    android:text="Scan QR"
                     android:textSize="11.5sp"
-                    android:gravity="center_horizontal"/>
+                    android:clickable="false"
+                    android:focusable="false"/>
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/toolbar_add"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
                 android:layout_weight="1"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageButton
-                    android:id="@+id/toolbar_add"
+                    android:id="@+id/toolbar_add_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
                     android:contentDescription="blue_home"
-                    android:src="@drawable/ic_add" />
+                    android:src="@drawable/ic_add"
+                    android:clickable="false"
+                    android:focusable="false"/>
 
                 <Space
                     android:layout_width="0dp"
-                    android:layout_height="2dp"/>
+                    android:layout_height="2dp" />
 
                 <TextView
                     android:id="@+id/addTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Add Event"
                     android:fontFamily="@font/dmsans_regular"
+                    android:gravity="center_horizontal"
+                    android:text="Add Event"
                     android:textSize="11.5sp"
-                    android:gravity="center_horizontal"/>
+                    android:clickable="false"
+                    android:focusable="false"/>
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/toolbar_favourite"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
                 android:layout_weight="1"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageButton
-                    android:id="@+id/toolbar_favourite"
+                    android:id="@+id/toolbar_favourite_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
                     android:contentDescription="blue_home"
-                    android:src="@drawable/ic_search" />
+                    android:src="@drawable/ic_search"
+                    android:clickable="false"
+                    android:focusable="false"/>
 
                 <Space
                     android:layout_width="0dp"
-                    android:layout_height="2dp"/>
+                    android:layout_height="2dp" />
 
                 <TextView
                     android:id="@+id/searchTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Browse"
                     android:fontFamily="@font/dmsans_regular"
+                    android:gravity="center_horizontal"
+                    android:text="Browse"
                     android:textSize="11.5sp"
-                    android:gravity="center_horizontal"/>
+                    android:clickable="false"
+                    android:focusable="false"/>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
+                android:id="@+id/toolbar_person"
                 android:layout_weight="1"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageButton
-                    android:id="@+id/toolbar_person"
+                    android:id="@+id/toolbar_person_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
                     android:contentDescription="blue_home"
-                    android:src="@drawable/ic_profile_outline" />
+                    android:src="@drawable/ic_profile_outline"
+                    android:clickable="false"
+                    android:focusable="false" />
 
                 <Space
                     android:layout_width="0dp"
-                    android:layout_height="2dp"/>
+                    android:layout_height="2dp" />
 
                 <TextView
                     android:id="@+id/profileTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Profile"
                     android:fontFamily="@font/dmsans_regular"
+                    android:gravity="center_horizontal"
+                    android:text="Profile"
                     android:textSize="11.5sp"
-                    android:gravity="center_horizontal"/>
+                    android:clickable="false"
+                    android:focusable="false" />
 
             </LinearLayout>
+
         </LinearLayout>
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,11 +59,17 @@ public class FavouriteFragment extends Fragment {
     private boolean isJoinedEventsListVisible = false;
 
 
-    private ImageButton profileButton;
-    private ImageButton addButton;
-    private ImageButton homeButton;
-    private ImageButton scannerButton;
-    private ImageButton favouriteButton;
+    private LinearLayout profileButton;
+    private LinearLayout addButton;
+    private LinearLayout homeButton;
+    private LinearLayout scannerButton;
+    private LinearLayout favouriteButton;
+
+    private ImageButton profileImageButton;
+    private ImageButton addImageButton;
+    private ImageButton homeImageButton;
+    private ImageButton scannerImageButton;
+    private ImageButton favouriteImageButton;
 
     private TextView homeTextView;
     private TextView scannerTextView;
@@ -392,6 +399,12 @@ public class FavouriteFragment extends Fragment {
         favouriteButton = view.findViewById(R.id.toolbar_favourite);
         profileButton = view.findViewById(R.id.toolbar_person);
 
+        homeImageButton = view.findViewById(R.id.toolbar_home_image);
+        scannerImageButton = view.findViewById(R.id.toolbar_qrscanner_image);
+        addImageButton = view.findViewById(R.id.toolbar_add_image);
+        favouriteImageButton = view.findViewById(R.id.toolbar_favourite_image);
+        profileImageButton = view.findViewById(R.id.toolbar_person_image);
+
         homeTextView = view.findViewById(R.id.homeTextView);
         scannerTextView = view.findViewById(R.id.qrTextView);
         addTextView = view.findViewById(R.id.addTextView);
@@ -400,7 +413,7 @@ public class FavouriteFragment extends Fragment {
 
         // Set all buttons
         setAllButtonsInactive(context);
-        setActiveButton(context, favouriteButton, searchTextView);
+        setActiveButton(context, favouriteImageButton, searchTextView);
 
 
         homeButton.setOnClickListener(v -> {
@@ -424,10 +437,10 @@ public class FavouriteFragment extends Fragment {
     }
 
     private void setAllButtonsInactive(Context context) {
-        profileButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
-        scannerButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
-        homeButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
-        addButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        profileImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        scannerImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        homeImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        addImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
 
         scannerTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
         homeTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
