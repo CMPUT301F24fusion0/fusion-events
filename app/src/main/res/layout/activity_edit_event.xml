@@ -57,23 +57,106 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp" />
 
-            <ImageView
-                android:id="@+id/uploaded_image_view"
+            <!-- Poster Layout -->
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                android:layout_marginBottom="16dp">
+
+                <!-- Poster Image -->
+                <ImageView
+                    android:id="@+id/uploaded_image_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Event Poster"
+                    android:visibility="gone" />
+
+                <!-- Add Poster Text -->
+                <TextView
+                    android:id="@+id/add_poster_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Add Poster"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="16sp"
+                    android:visibility="visible" />
+
+                <!-- Edit and Delete Icons -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="8dp">
+
+                    <ImageButton
+                        android:id="@+id/upload_image_button"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Edit Poster"
+                        android:src="@drawable/ic_edit"
+                        android:tooltipText="Edit Poster" />
+
+                    <ImageButton
+                        android:id="@+id/delete_image_button"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="16dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Remove Poster"
+                        android:src="@drawable/ic_delete"
+                        android:tooltipText="Remove Poster"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <!-- QR Code Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Event QR Code"
+                android:textSize="16sp"
+                android:textColor="@color/figmaBlue"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <ImageView
+                android:id="@+id/event_qr_code_image"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                android:contentDescription="Event QR Code"
                 android:scaleType="centerCrop"
                 android:visibility="gone"
-                android:layout_marginBottom="8dp"
-                android:contentDescription="Event Poster" />
+                android:layout_marginBottom="8dp" />
 
-            <Button
-                android:id="@+id/upload_image_button"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Edit Poster"
-                android:backgroundTint="@color/figmaBlue"
-                android:textColor="@android:color/white"
-                android:layout_marginBottom="16dp" />
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/generate_qr_code_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Generate QR Code"
+                    android:layout_marginEnd="8dp"
+                    android:backgroundTint="@color/figmaBlue"
+                    android:textColor="@color/white" />
+
+                <Button
+                    android:id="@+id/delete_qr_code_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Delete QR Code"
+                    android:backgroundTint="@color/red"
+                    android:textColor="@color/white"
+                    android:visibility="gone" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
