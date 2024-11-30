@@ -11,7 +11,6 @@ public class AddEventHelper {
     public FacilitiesInfo facility;
     public FacilitiesInfo newFacility;
 
-
     // Device-specific
     public String deviceID;
 
@@ -29,6 +28,7 @@ public class AddEventHelper {
     public Date startDate;
     public Date endDate;
 
+    // Times
     public String endTime;
     public String startTime;
 
@@ -43,10 +43,38 @@ public class AddEventHelper {
     // Optional: Radius for geolocation-based signup (in meters)
     public Integer geolocationRadius;
 
-    // Default Constructor
+    /**
+     * Default constructor for Firebase
+     * @author Simon Haile
+     */
     public AddEventHelper() {}
 
-    // Parameterized Constructor
+    /**
+     * Default constructor
+     * Note the getters/setters do not have JavaDocs due to their trivial nature
+     * @author Simon Haile
+     * @param organizer organizer
+     * @param facility facility
+     * @param newFacility facility to change to
+     * @param deviceID device id
+     * @param eventName event name
+     * @param eventPoster event poster
+     * @param description description
+     * @param waitlistCapacity capacity for waitlist
+     * @param lotteryCapacity capacity for lottery
+     * @param registrationDate registration deadline
+     * @param startDate event start date
+     * @param startTime time of event starting
+     * @param endDate end date of event
+     * @param endTime end time of event
+     * @param address address of event
+     * @param facilityID id of facility
+     * @param facilityName name of facility
+     * @param geolocation whether geolocation is to be used
+     * @param longitude longitude of event
+     * @param latitude latitude of event
+     * @param geolocationRadius how far away the user can be from the event
+     */
     public AddEventHelper(OrganizerInfo organizer, FacilitiesInfo facility, FacilitiesInfo newFacility, String deviceID, String eventName, String eventPoster, String description,
                           String waitlistCapacity, String lotteryCapacity, Date registrationDate,
                           Date startDate, String startTime, Date endDate, String endTime,
@@ -74,9 +102,6 @@ public class AddEventHelper {
         this.latitude = latitude;
         this.geolocationRadius = geolocationRadius;
     }
-
-    // Getters and Setters for each field
-
 
     public OrganizerInfo getOrganizer() {
         return organizer;
@@ -246,6 +271,11 @@ public class AddEventHelper {
         this.geolocationRadius = geolocationRadius;
     }
 
+    /**
+     * Converts the class to a string
+     * @author Simon Haile
+     * @return the string
+     */
     @Override
     public String toString() {
         return "AddEventHelper{" +
