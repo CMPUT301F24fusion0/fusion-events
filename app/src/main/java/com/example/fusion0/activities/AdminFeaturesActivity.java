@@ -14,13 +14,13 @@ import com.example.fusion0.fragments.ProfileFragment;
 import com.example.fusion0.fragments.QRFragment;
 
 /**
- * @author Malshaan Kodithuwakku
+ * @author
  * This activity allows admins to browse events, profiles, and facilities.
  */
 public class AdminFeaturesActivity extends AppCompatActivity {
     // Declare UI components
     private TextView browseEventsButton, browseProfilesButton, browseFacilitiesButton;
-    private ImageButton toolbarHome, toolbarAdd, toolbarQRScanner, toolbarFavourite, toolbarPerson;
+    private ImageButton toolbarHome, toolbarAdd, toolbarQRScanner, toolbarFavourite, toolbarPerson, goBackButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +31,13 @@ public class AdminFeaturesActivity extends AppCompatActivity {
         browseEventsButton = findViewById(R.id.browseEventsButton);
         browseProfilesButton = findViewById(R.id.browseProfilesButton);
         browseFacilitiesButton = findViewById(R.id.browseFacilitiesButton);
+
+        // Initialize back button
+        goBackButton = findViewById(R.id.goBackButton);
+        goBackButton.setOnClickListener(view -> {
+            // Handle back navigation
+            finish(); // Close the current activity and return to the previous one
+        });
 
         // Set click listeners for TextView buttons
         browseEventsButton.setOnClickListener(v -> {
