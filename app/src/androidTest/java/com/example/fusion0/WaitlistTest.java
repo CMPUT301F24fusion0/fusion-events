@@ -97,6 +97,4 @@ public class WaitlistTest {
             assertEquals(chosen.get(0), "did");
         });
     }
-
-
 }
