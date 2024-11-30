@@ -230,7 +230,7 @@ public class TestViewEventFragment extends Fragment {
         });
 
         if (eventID != null) {
-            EventFirebase.findEvent(eventID, new EventFirebase.EventCallback() {
+            eventFirebase.findEvent(eventID, new EventFirebase.EventCallback() {
                 @Override
                 public void onSuccess(EventInfo eventInfo) throws WriterException {
                     if (eventInfo == null) {
@@ -291,7 +291,7 @@ public class TestViewEventFragment extends Fragment {
                         }
 
                         if (deviceID.equals(event.getOrganizer())) {
-                            EventFirebase.findOrganizer(event.getOrganizer(), new EventFirebase.OrganizerCallback() {
+                            eventFirebase.findOrganizer(event.getOrganizer(), new EventFirebase.OrganizerCallback() {
                                 @Override
                                 public void onSuccess(OrganizerInfo organizerInfo) {
                                     organizer = organizerInfo;
@@ -523,19 +523,19 @@ public class TestViewEventFragment extends Fragment {
             event.setCapacity(newEventCapacity);
             event.setLotteryCapacity(newEventLotteryCapacity);
             if (newFacility != null) {
-                EventFirebase.addFacility(newFacility);
+                eventFirebase.addFacility(newFacility);
                 Log.d("AddEventFragment", newFacility.getFacilityName());
                 ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
                 facilitiesList.add(newFacility);
                 organizer.setFacilities(facilitiesList);
-                EventFirebase.editOrganizer(organizer);
+                eventFirebase.editOrganizer(organizer);
             }
 
             Log.d("Current FacilityID", event.getFacilityID());
             Log.d("Logged FacilityID", facilityID);
 
             if (!event.getFacilityID().equals(facilityID)) {
-                EventFirebase.findFacility(event.getFacilityID(), new EventFirebase.FacilityCallback() {
+                eventFirebase.findFacility(event.getFacilityID(), new EventFirebase.FacilityCallback() {
                     @Override
                     public void onSuccess(FacilitiesInfo facilitiesInfo) {
                         if (facilitiesInfo != null) {
@@ -551,7 +551,7 @@ public class TestViewEventFragment extends Fragment {
                             Log.e(TAG, "Facility ID: " + facilityID);
 
                             if (facilityID != null && !facilityID.isEmpty()) {
-                                EventFirebase.editFacility(facilitiesInfo);
+                                eventFirebase.editFacility(facilitiesInfo);
                             } else {
                                 Log.e(TAG, "Invalid facility ID, cannot update facility.");
                             }
@@ -564,7 +564,7 @@ public class TestViewEventFragment extends Fragment {
                     }
                 });
 
-                EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
+                eventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
                     @Override
                     public void onSuccess(FacilitiesInfo newFacility) {
                         if (newFacility != null) {
@@ -576,7 +576,7 @@ public class TestViewEventFragment extends Fragment {
 
                             newFacility.setEvents(newFacilityEvents);
 
-                            EventFirebase.editFacility(newFacility);
+                            eventFirebase.editFacility(newFacility);
                         }
                     }
 
@@ -642,11 +642,11 @@ public class TestViewEventFragment extends Fragment {
             eventFacility.setVisibility(View.GONE);
 
             if (newFacility != null) {
-                EventFirebase.addFacility(newFacility);
+                eventFirebase.addFacility(newFacility);
                 ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
                 facilitiesList.add(newFacility);
                 organizer.setFacilities(facilitiesList);
-                EventFirebase.editOrganizer(organizer);
+                eventFirebase.editOrganizer(organizer);
             }
 
             editButton.setVisibility(View.VISIBLE);
@@ -959,7 +959,7 @@ public class TestViewEventFragment extends Fragment {
                     // If the selected facility exists, proceed with fetching it
                     facilityID = organizer.getFacilityIdByName(selectedFacility);
                     Log.d("Current Facility ID", facilityID);
-                    EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
+                    eventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
                         @Override
                         public void onSuccess(FacilitiesInfo existingFacility) {
                             address = existingFacility.getAddress();
