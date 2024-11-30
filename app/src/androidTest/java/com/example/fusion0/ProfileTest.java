@@ -7,6 +7,7 @@ import androidx.test.espresso.Espresso;
 import androidx.test.espresso.assertion.ViewAssertions;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
 
 import com.example.fusion0.activities.MainActivity;
 
@@ -16,6 +17,10 @@ import org.junit.Test;
 public class ProfileTest {
     @Rule
     public ActivityTestRule<MainActivity> activityTestRule = new ActivityTestRule<>(MainActivity.class);
+
+    @Rule
+    public GrantPermissionRule permissionRule =
+            GrantPermissionRule.grant(android.Manifest.permission.POST_NOTIFICATIONS);
 
     /**
      * Checks if we manage to profile from home screen
