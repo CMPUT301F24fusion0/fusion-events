@@ -45,6 +45,16 @@ public class AdminFeaturesActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        browseFacilitiesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to Browse Images screen or handle action
+                //Toast.makeText(AdminFeaturesActivity.this, "Browse Facilities clicked", Toast.LENGTH_SHORT).show();
+                // Example: Start a new activity
+                Intent intent = new Intent(AdminFeaturesActivity.this, AdminFacilityActivity.class);
+                startActivity(intent);
+            }
+
         browseProfilesButton.setOnClickListener(v -> {
             Intent intent = new Intent(AdminFeaturesActivity.this, BrowseProfilesActivity.class);
             startActivity(intent);
@@ -94,4 +104,5 @@ public class AdminFeaturesActivity extends AppCompatActivity {
                     .commit();
         });
     }
+
 }
