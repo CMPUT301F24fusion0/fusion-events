@@ -158,7 +158,7 @@ public class FavouriteFragment extends Fragment {
                         final int[] eventsFetchedCount = {0};
 
                         for (String eventId : events) {
-                            EventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
+                            eventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
                                 @Override
                                 public void onSuccess(EventInfo eventInfo) throws WriterException {
                                     if (eventInfo != null) {
@@ -168,7 +168,6 @@ public class FavouriteFragment extends Fragment {
                                     eventsFetchedCount[0]++;
 
                                     if (eventsFetchedCount[0] == totalEvents) {
-                                        ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, R.layout.spinner_dropdown_item, eventNames);
                                         user.setEvents(validEvents);
                                         userFirestore.editUserEvents(user);
                                         ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, R.layout.spinner_dropdown_item, eventNames);
