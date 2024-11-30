@@ -157,13 +157,13 @@
                     android:gravity="center_vertical"
                     android:layout_weight="1"/>
 
-                <Button
+                <ImageButton
                     android:id="@+id/facility_view_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:backgroundTint="@color/figmaBlue"
-                    android:text="View" />
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/ic_eye_icon"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
             </LinearLayout>
             <View
                 android:layout_width="match_parent"

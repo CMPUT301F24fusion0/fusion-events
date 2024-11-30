@@ -70,7 +70,7 @@ public class EditEventActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
-
+    private EventFirebase eventFirebase = new EventFirebase();
     /**
      * Called when the activity is created. Initializes UI components, sets up event handlers,
      * and loads event details.
@@ -129,7 +129,7 @@ public class EditEventActivity extends AppCompatActivity {
      * @author Derin Karas
      */
     private void loadEventDetails() {
-        EventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
+        eventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
             @Override
             public void onSuccess(EventInfo eventInfo) {
                 if (eventInfo != null) {
@@ -372,7 +372,7 @@ public class EditEventActivity extends AppCompatActivity {
         event.setRadius(eventRadius);
         event.setGeolocation(geolocationEnabled);
 
-        EventFirebase.editEvent(event);
+        eventFirebase.editEvent(event);
         Toast.makeText(this, "Event updated successfully.", Toast.LENGTH_SHORT).show();
         finish();
     }

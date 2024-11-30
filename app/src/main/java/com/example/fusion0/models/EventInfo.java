@@ -195,6 +195,8 @@ public class EventInfo {
         event.put("radius", this.radius);
         event.put("acceptedCount", this.acceptedCount);
         event.put("lotteryCapacity", this.lotteryCapacity);
+        event.put("registrationDate", this.registrationDate);
+        event.put("lotteryConducted", this.lotteryConducted);
         return event;
     }
 

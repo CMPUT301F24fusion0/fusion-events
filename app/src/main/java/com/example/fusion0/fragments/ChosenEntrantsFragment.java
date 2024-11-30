@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.R;
@@ -49,6 +50,9 @@ public class ChosenEntrantsFragment extends Fragment {
 
     private boolean isSelectionMode = false;
 
+    EventFirebase eventFirebase = new EventFirebase();
+
+
 
 
     /**
@@ -76,7 +80,6 @@ public class ChosenEntrantsFragment extends Fragment {
         cancelButton = view.findViewById(R.id.cancel_button);
         fullCapacityTextView = view.findViewById(R.id.full_capacity_text_view);
         emptyTextView = view.findViewById(R.id.emptyText);
-        firebase = new EventFirebase();
 
         Bundle bundle = getArguments();
 
@@ -160,11 +163,9 @@ public class ChosenEntrantsFragment extends Fragment {
         Bundle bundle = getArguments();
 
         backButton.setOnClickListener(v -> {
-            if (bundle != null) {
-                Intent intent = new Intent(getActivity(), ViewEventFragment.class);
-                intent.putExtra("eventID", bundle.getString("eventID"));
-                startActivity(intent);
-            }
+            Bundle newBundle = new Bundle();
+            newBundle.putString("eventID", bundle.getString("eventID"));
+            Navigation.findNavController(view).navigate(R.id.action_chosenEntrantsFragment_to_viewEventFragment, newBundle);
         });
 
         fillLotteryButton.setOnClickListener(v -> {
@@ -175,7 +176,7 @@ public class ChosenEntrantsFragment extends Fragment {
                 ArrayList<Map<String, String>> fullChosenEntrants = new ArrayList<>();
 
                 if(event == null){
-                    EventFirebase.findEvent(bundle.getString("eventID"), new EventFirebase.EventCallback() {
+                    eventFirebase.findEvent(bundle.getString("eventID"), new EventFirebase.EventCallback() {
                         @Override
                         public void onSuccess(EventInfo eventInfo) throws WriterException {
                             event = eventInfo;

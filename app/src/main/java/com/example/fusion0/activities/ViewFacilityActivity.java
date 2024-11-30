@@ -28,6 +28,7 @@ import com.example.fusion0.helpers.ProfileManagement;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.FacilitiesInfo;
+import com.example.fusion0.models.OrganizerInfo;
 import com.example.fusion0.models.UserInfo;
 import com.google.zxing.WriterException;
 import com.example.fusion0.R;
@@ -51,7 +52,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
     private Button editButton, saveButton, deleteButton, cancelButton;
     private ListView facilitiesEventsList;
     private ProfileManagement profileManager;
-
+    private EventFirebase eventFirebase = new EventFirebase();
 
 
     /**
@@ -95,15 +96,13 @@ public class ViewFacilityActivity extends AppCompatActivity {
 
 
         backButton.setOnClickListener(view -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.facility_view, new FavouriteFragment())
-                    .commit();
+            finish();
         });
 
         Intent intentReceived = getIntent();
         String facilityID = intentReceived.getStringExtra("facilityID");
 
-        EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
+        eventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
             @Override
             public void onSuccess(FacilitiesInfo facilitiesInfo) {
                 if (facilitiesInfo == null) {
@@ -154,7 +153,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
                     if ((facility.getEvents() != null) && !(facility.getEvents().isEmpty())) {
                         ArrayList<String> filteredEvents = new ArrayList<>();
                         for (String event : facility.getEvents()) {
-                            EventFirebase.findEvent(event, new EventFirebase.EventCallback() {
+                            eventFirebase.findEvent(event, new EventFirebase.EventCallback() {
                                 @Override
                                 public void onSuccess(EventInfo eventInfo) throws WriterException {
                                     if (eventInfo != null) {
@@ -173,12 +172,18 @@ public class ViewFacilityActivity extends AppCompatActivity {
 
                         facility.setEvents(filteredEvents);
                         facilitiesEventsList.setOnItemClickListener((parent, view1, position, id) -> {
-                            String eventID = facility.getEvents().get(position);
+                            ViewEventFragment eventFragment = new ViewEventFragment();
 
-                            Intent intent = new Intent(ViewFacilityActivity.this, ViewEventFragment.class);
-                            intent.putExtra("eventID", eventID);
-                            intent.putExtra("deviceID", deviceID);
-                            startActivity(intent);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("eventID", filteredEvents.get(position));
+                            bundle.putString("deviceID", deviceID);
+                            eventFragment.setArguments(bundle);
+
+                            // Launch the ChosenEntrants fragment with the filtered data
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.facility_view, eventFragment)
+                                    .addToBackStack(null)
+                                    .commit();
                         });
 
                     }else{
@@ -238,19 +243,49 @@ public class ViewFacilityActivity extends AppCompatActivity {
                 addressTextView.setText(facility.getAddress());
                 ownerTextView.setText(facility.getOwner());
 
-                EventFirebase.editFacility(facility);
+                eventFirebase.editFacility(facility);
             }
         });
 
         deleteButton.setOnClickListener(view -> {
-            if (isOwner) {
-                new AlertDialog.Builder(ViewFacilityActivity.this)
-                        .setTitle("Delete entry")
-                        .setMessage("Are you sure you want to delete this entry?")
-                        .setPositiveButton(android.R.string.yes, (dialog, which) -> EventFirebase.deleteFacility(facility.getFacilityID()))
-                        .setNegativeButton(android.R.string.no, null)
-                        .show();
+            if(facility.getEvents()==null || facility.getEvents().isEmpty()){
+                if (isOwner) {
+                    new AlertDialog.Builder(ViewFacilityActivity.this)
+                            .setTitle("Delete entry")
+                            .setMessage("Are you sure you want to delete this entry?")
+                            .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                                eventFirebase.findOrganizer(facility.getOwner(), new EventFirebase.OrganizerCallback() {
+                                    @Override
+                                    public void onSuccess(OrganizerInfo organizerInfo) {
+                                        ArrayList<FacilitiesInfo> organizerFacilities = organizerInfo.getFacilities();
+
+                                        for (int i = 0; i < organizerFacilities.size(); i++) {
+                                            FacilitiesInfo currentFacility = organizerFacilities.get(i);
+                                            if (currentFacility.getFacilityID().equals(facilityID)) {
+                                                organizerFacilities.remove(i);
+                                                break;
+                                            }
+                                        }
+                                        organizerInfo.setFacilities(organizerFacilities);
+                                        eventFirebase.editOrganizer(organizerInfo);
+                                    }
+
+                                    @Override
+                                    public void onFailure(String error) {
+
+                                    }
+                                });
+
+                                eventFirebase.deleteFacility(facility.getFacilityID());
+                                finish();
+                            })
+                            .setNegativeButton(android.R.string.no, null)
+                            .show();
+                }
+            }else{
+                Toast.makeText(ViewFacilityActivity.this, "Update the locations of the facility's events.", Toast.LENGTH_SHORT).show();
             }
+
         });
 
         cancelButton.setOnClickListener(view ->{

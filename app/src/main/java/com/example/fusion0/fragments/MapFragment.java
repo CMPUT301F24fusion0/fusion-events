@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.provider.Settings;
+import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,7 @@ import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.models.AddEventViewModel;
 import com.example.fusion0.models.FacilitiesInfo;
 import com.example.fusion0.models.OrganizerInfo;
+import com.example.fusion0.models.SimpleTextWatcher;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
@@ -62,6 +64,7 @@ public class MapFragment extends Fragment {
     private TextView geolocationTextView, radiusText;
     private androidx.fragment.app.FragmentContainerView autocompletePlaceFragment;
 
+    private EventFirebase eventFirebase = new EventFirebase();
     private EditText radius;
 
     private Spinner spinnerFacilities;
@@ -124,9 +127,15 @@ public class MapFragment extends Fragment {
         geolocationTextView = view.findViewById(R.id.geolocation_text);
         geolocationSwitchCompact = view.findViewById(R.id.geolocation_switchcompat);
         radius = view.findViewById(R.id.radius);
-        radius.setText("0");
         radiusText = view.findViewById(R.id.radius_text);
         lineView = view.findViewById(R.id.lineView);
+
+        radius.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                helper.setGeolocationRadius(Integer.parseInt(radius.getText().toString()) * 1000);
+            }
+        });
 
         // Main Processes
         validateOrganizer(mapContext, helper);
@@ -142,12 +151,12 @@ public class MapFragment extends Fragment {
      * If no organizer is found, a new `OrganizerInfo` object is created and added to the database.
      */
     private void validateOrganizer(Context context, AddEventHelper helper) {
-        EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
+        eventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
             @Override
             public void onSuccess(OrganizerInfo organizerInfo) {
                 if (organizerInfo == null) {
                     organizer = new OrganizerInfo(deviceID);
-                    EventFirebase.addOrganizer(organizer);
+                    eventFirebase.addOrganizer(organizer);
                     helper.setOrganizer(organizer);
                 } else {
                     organizer = organizerInfo;
@@ -215,7 +224,7 @@ public class MapFragment extends Fragment {
                     // If the selected facility exists, proceed with fetching it
                     facilityID = organizer.getFacilityIdByName(selectedFacility);
                     helper.setFacilityID(facilityID);
-                    EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
+                    eventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
                         @Override
                         public void onSuccess(FacilitiesInfo existingFacility) {
                             facility = existingFacility;
@@ -376,7 +385,6 @@ public class MapFragment extends Fragment {
                 radiusText.setVisibility(View.VISIBLE);
                 radius.setVisibility(View.VISIBLE);
                 lineView.setVisibility(View.VISIBLE);
-                helper.setGeolocationRadius(Integer.parseInt(radius.getText().toString()) * 1000);
             } else {
                 radiusText.setVisibility(View.GONE);
                 radius.setVisibility(View.GONE);
@@ -411,5 +419,4 @@ public class MapFragment extends Fragment {
                 .load(staticMapUrl)
                 .into(mapView);
     }
-
 }

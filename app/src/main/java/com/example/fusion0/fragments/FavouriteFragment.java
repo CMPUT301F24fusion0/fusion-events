@@ -157,7 +157,7 @@ public class FavouriteFragment extends Fragment {
                         final int[] eventsFetchedCount = {0};
 
                         for (String eventId : events) {
-                            EventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
+                            eventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
                                 @Override
                                 public void onSuccess(EventInfo eventInfo) throws WriterException {
                                     if (eventInfo != null) {
@@ -212,7 +212,7 @@ public class FavouriteFragment extends Fragment {
 
         createdEventsButton.setOnClickListener(v -> {
             AnimationHelper.rotateView(createdEventsButton, 45f, 300);
-            EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
+            eventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
                 @Override
                 public void onSuccess(OrganizerInfo organizerInfo) {
                     // Null check for organizerInfo
@@ -282,7 +282,7 @@ public class FavouriteFragment extends Fragment {
                     Bundle bundle = new Bundle();
                     bundle.putString("eventID", eventID);
 
-                    Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_viewEventFragment, bundle);
+                    Navigation.findNavController(view1).navigate(R.id.action_favouriteFragment_to_viewEventFragment, bundle);
                 } else {
                     Toast.makeText(context, "Invalid event selected.", Toast.LENGTH_SHORT).show();
                 }

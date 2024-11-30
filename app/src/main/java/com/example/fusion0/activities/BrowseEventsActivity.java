@@ -24,7 +24,7 @@ import java.util.List;
  * @author Derin Karas
  */
 public class BrowseEventsActivity extends AppCompatActivity {
-
+    private EventFirebase eventFirebase = new EventFirebase();
     /**
      * ListView to display the list of events.
      */
@@ -81,7 +81,7 @@ public class BrowseEventsActivity extends AppCompatActivity {
      * Fetches the list of events from Firebase and updates the ListView.
      */
     private void fetchEvents() {
-        EventFirebase.getAllEvents(new EventFirebase.EventListCallback() {
+        eventFirebase.getAllEvents(new EventFirebase.EventListCallback() {
             @Override
             public void onSuccess(List<EventInfo> events) {
                 eventArrayAdapter.clear();
@@ -117,7 +117,7 @@ public class BrowseEventsActivity extends AppCompatActivity {
                 .setTitle("Delete Event")
                 .setMessage("Are you sure you want to delete this event?")
                 .setPositiveButton("Yes", (dialog, which) -> {
-                    EventFirebase.deleteEvent(event.getEventID());
+                    eventFirebase.deleteEvent(event.getEventID());
                     fetchEvents();
                     Toast.makeText(BrowseEventsActivity.this, "Event deleted successfully.", Toast.LENGTH_SHORT).show();
                 })
