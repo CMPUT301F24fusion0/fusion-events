@@ -1,5 +1,7 @@
 package com.example.fusion0.fragments;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -96,6 +98,7 @@ public class MainFragment extends Fragment {
 
     private final int REQUEST_CODE = 100;
 
+    private Waitlist waitlist = new Waitlist();
 
 
     /**
@@ -152,6 +155,54 @@ public class MainFragment extends Fragment {
         Context context = requireContext();
 
         initializeToolbarButtons(view, context);
+
+        FirebaseApp.initializeApp(context);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("events").get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot querySnapshot = task.getResult();
+
+                        if (querySnapshot != null) {
+                            for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                                Timestamp registrationDeadline = document.getTimestamp("registrationDate");
+
+                                if (registrationDeadline != null) {
+                                    Date now = new Date();
+                                    Calendar calNow = Calendar.getInstance();
+                                    calNow.setTime(now);
+                                    calNow.set(Calendar.HOUR_OF_DAY, 0);
+                                    calNow.set(Calendar.MINUTE, 0);
+                                    calNow.set(Calendar.SECOND, 0);
+                                    calNow.set(Calendar.MILLISECOND, 0);
+
+                                    Calendar calDeadline = Calendar.getInstance();
+                                    calDeadline.setTime(registrationDeadline.toDate());
+                                    calDeadline.set(Calendar.HOUR_OF_DAY, 0);
+                                    calDeadline.set(Calendar.MINUTE, 0);
+                                    calDeadline.set(Calendar.SECOND, 0);
+                                    calDeadline.set(Calendar.MILLISECOND, 0);
+
+                                    Log.d("DateCheck", "calNow: " + calNow.getTime());
+                                    Log.d("DateCheck", "calDeadline: " + calDeadline.getTime());
+
+                                    if (calNow.after(calDeadline) && !document.getBoolean("lotteryConducted")) {
+                                        String eventId = document.getId();
+                                        runLottery(eventId, document);
+                                        document.getReference().update("lotteryConducted", true);
+                                    }
+                                } else {
+                                    Log.e("FirestoreError", "RegistrationFragment deadline not found for event: " + document.getId());
+                                }
+                            }
+                        } else {
+                            Log.e("FirestoreError", "QuerySnapshot is null.");
+                        }
+                    } else {
+                        Log.e("FirestoreError", "Error getting events", task.getException());
+                    }
+                });
 
 
         AppNotifications.createChannel(context);
@@ -434,6 +485,47 @@ public class MainFragment extends Fragment {
         } else {
             noNotifications.setVisibility(View.GONE);
             notificationsListView.setVisibility(View.VISIBLE);
+        }
+    }
+
+
+    /**
+     * Starting the lottery function and send notifications
+     * @param eventId event id
+     * @param eventDoc the document for the event
+     */
+    private void runLottery(String eventId, DocumentSnapshot eventDoc) {
+        if (eventDoc != null) {
+            if (!eventDoc.getString("lotteryCapacity").equals("0")) {
+                waitlist.allNotification(eventId, "Lottery Starting",
+                        "The lottery is not starting. Be on the look out for the results!", "0");
+                waitlist.conductLottery(eventId, Integer.parseInt(eventDoc.getString("lotteryCapacity")));
+                waitlist.chosenNotification(eventId, "Winner!",
+                        "Congratulations, you have won the lottery! Please accept the invitation to confirm your spot.", "1");
+                waitlist.loseNotification(eventId, "Lottery Results", "Unfortunately, you have lost the lottery. You may still receive an invite if someone declines their invitation.", "0");
+
+                waitlist.getChosen(eventId, chosen -> {
+                    if (!chosen.isEmpty()) {
+                        ChosenEntrantsFragment chosenEntrants = new ChosenEntrantsFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("chosenEntrantsData", chosen);
+                        bundle.putString("eventID", eventId);
+                        bundle.putSerializable("fragment_waitlist", waitlist);
+                        chosenEntrants.setArguments(bundle);
+
+                        // Replace fragment to show chosen entrants
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.event_view, chosenEntrants)
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                });
+
+            } else {
+                Log.d("Lottery", "Lottery capacity is 0, skipping lottery.");
+            }
+        } else {
+            Log.e("Lottery", "Event document is null.");
         }
     }
 
