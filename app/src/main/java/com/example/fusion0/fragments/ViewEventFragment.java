@@ -305,7 +305,7 @@ public class ViewEventFragment extends Fragment {
                             isOwner = true;
 
                         } else {
-                            lists.setVisibility(View.GONE);
+//                            lists.setVisibility(View.GONE);
                             editButton.setVisibility(View.GONE);
                             deleteButton.setVisibility(View.GONE);
                             cancelButton.setVisibility(View.GONE);
