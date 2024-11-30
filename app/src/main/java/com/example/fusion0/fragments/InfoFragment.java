@@ -90,7 +90,7 @@ public class InfoFragment extends Fragment {
     private TextView profileTextView;
 
     private LottieAnimationView loadingSpinner;
-
+    private EventFirebase eventFirebase = new EventFirebase();
     public InfoFragment() {
         // Required empty public constructor
     }
@@ -138,6 +138,7 @@ public class InfoFragment extends Fragment {
         lotteryCapacity =view.findViewById(R.id.lotteryCapacity);
         addEventButton = view.findViewById(R.id.add_button);
 
+
         registrationDateTextView = view.findViewById(R.id.registration_date_text);
         startDateTextView = view.findViewById(R.id.start_date_text);
         startTimeTextView = view.findViewById(R.id.start_time_text);
@@ -164,12 +165,12 @@ public class InfoFragment extends Fragment {
      * If no organizer is found, a new `OrganizerInfo` object is created and added to the database.
      */
     private void validateOrganizer(Context context) {
-        EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
+        eventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
             @Override
             public void onSuccess(OrganizerInfo organizerInfo) {
                 if (organizerInfo == null) {
                     organizer = new OrganizerInfo(deviceID);
-                    EventFirebase.addOrganizer(organizer);
+                    eventFirebase.addOrganizer(organizer);
                     viewModel.getHelper().setOrganizer(organizer);
                 } else {
                     organizer = organizerInfo;
@@ -299,8 +300,9 @@ public class InfoFragment extends Fragment {
                         startDateCalendar = Calendar.getInstance();
                         startDateCalendar.set(selectedYear, selectedMonth, selectedDay);
                         Calendar currentDate = Calendar.getInstance();
+                        currentDate.add(Calendar.DAY_OF_YEAR, 1); // increments current date to tomorrow
                         if (startDateCalendar.before(currentDate)) {
-                            dateRequirementsTextView.setText("Date Must Be Today or Later.");
+                            dateRequirementsTextView.setText("Date Must Be After Today.");
                             showWithTransition(dateRequirementsTextView);
                             startDateTextView.setText("MM / DD / YYYY");
                             startTimeTextView.setText("HH / MM");

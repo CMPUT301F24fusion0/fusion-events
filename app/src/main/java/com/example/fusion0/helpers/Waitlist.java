@@ -1,7 +1,5 @@
 package com.example.fusion0.helpers;
 
-import static android.content.ContentValues.TAG;
-
 import android.util.Log;
 
 import com.example.fusion0.models.UserInfo;
@@ -28,8 +26,7 @@ import java.util.Objects;
 
 public class Waitlist implements Serializable {
     private transient final FirebaseFirestore db;
-    private transient CollectionReference eventsRef;
-    private transient UserFirestore userFirestore;
+    private transient CollectionReference eventsRef, usersRef;
 
 
     /**
@@ -39,7 +36,7 @@ public class Waitlist implements Serializable {
     public Waitlist() {
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
-        userFirestore = new UserFirestore();
+        usersRef = db.collection("users");
     }
 
 
@@ -178,7 +175,7 @@ public class Waitlist implements Serializable {
      * @param eventId event id
      */
     public void addToUserWL(String entrantId, String eventId, UserInfo user) {
-        db.collection("users").document(entrantId)
+        usersRef.document(entrantId)
                 .update("events", FieldValue.arrayUnion(eventId))
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -199,7 +196,7 @@ public class Waitlist implements Serializable {
      * @param eventId event id
      */
     public void removeFromUserWL(String entrantId, String eventId, UserInfo user) {
-        db.collection("users").document(entrantId)
+        usersRef.document(entrantId)
                 .update("events", FieldValue.arrayRemove(eventId))
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -229,8 +226,7 @@ public class Waitlist implements Serializable {
      */
     public void getAll(String eventId, AllCB allCB) {
         ArrayList<String> all = new ArrayList<>();
-        DocumentReference waitingListDoc = db.collection("events")
-                .document(eventId);
+        DocumentReference waitingListDoc = eventsRef.document(eventId);
 
         waitingListDoc.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -244,7 +240,6 @@ public class Waitlist implements Serializable {
                         }
                     }
                 }
-                Log.d("Checkpoint", "lah" + all);
                 allCB.allDid(all);
             } else {
                 Log.e("Error", "Error");
@@ -308,8 +303,7 @@ public class Waitlist implements Serializable {
      */
     public void getCancel(String eventId, CancelCB cancelCB) {
         ArrayList<String> cancel = new ArrayList<>();
-        DocumentReference waitingListDoc = db.collection("events")
-                .document(eventId);
+        DocumentReference waitingListDoc = eventsRef.document(eventId);
 
         waitingListDoc.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -348,8 +342,7 @@ public class Waitlist implements Serializable {
      */
     public void getChosen(String eventId, ChosenCB chosenCB) {
         ArrayList<String> chosen = new ArrayList<>();
-        DocumentReference waitingListDoc = db.collection("events")
-                .document(eventId);
+        DocumentReference waitingListDoc = eventsRef.document(eventId);
 
         waitingListDoc.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {

@@ -64,7 +64,7 @@ public class AddEventFragment extends Fragment {
     private TextView profileTextView;
 
     private ImageButton addEventButton;
-
+    private EventFirebase eventFirebase =new EventFirebase();
 
     public AddEventFragment() {
         // Required empty public constructor
@@ -200,27 +200,27 @@ public class AddEventFragment extends Fragment {
             // Add facility if it's a new one
             OrganizerInfo organizer = helper.getOrganizer();
             if (helper.getNewFacility() != null) {
-                EventFirebase.addFacility(helper.getNewFacility());
+                eventFirebase.addFacility(helper.getNewFacility());
                 ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
                 facilitiesList.add(helper.getNewFacility());
                 organizer.setFacilities(facilitiesList);
-                EventFirebase.editOrganizer(organizer);
+                eventFirebase.editOrganizer(organizer);
             }
 
             // Add the event to Firebase
-            EventFirebase.addEvent(newEvent);
+            eventFirebase.addEvent(newEvent);
 
             // Update organizer's list of events
             ArrayList<EventInfo> eventsList = organizer.getEvents();
             eventsList.add(newEvent);
             organizer.setEvents(eventsList);
-            EventFirebase.editOrganizer(organizer);
+            eventFirebase.editOrganizer(organizer);
 
             // Update facility's list of events
             ArrayList<String> facilityEventsList = helper.getFacility().getEvents();
             facilityEventsList.add(newEvent.eventID);
             helper.getFacility().setEvents(facilityEventsList);
-            EventFirebase.editFacility(helper.getFacility());
+            eventFirebase.editFacility(helper.getFacility());
 
             Toast.makeText(context, "Event Added Successfully!", Toast.LENGTH_SHORT).show();
 

@@ -82,7 +82,7 @@ public class FavouriteFragment extends Fragment {
     private TextView emptyFacilitiesList;
 
     EventFirebase eventFirebase = new EventFirebase();
-
+    UserFirestore userFirestore = new UserFirestore();
 
     public FavouriteFragment() {
         // Required empty public constructor
@@ -152,6 +152,7 @@ public class FavouriteFragment extends Fragment {
                         user = userInfo;
                         ArrayList<String> events = user.getEvents();
                         ArrayList<String> eventNames = new ArrayList<>();
+                        ArrayList<String> validEvents = new ArrayList<>();
 
                         final int totalEvents = events.size();
                         final int[] eventsFetchedCount = {0};
@@ -162,10 +163,14 @@ public class FavouriteFragment extends Fragment {
                                 public void onSuccess(EventInfo eventInfo) throws WriterException {
                                     if (eventInfo != null) {
                                         eventNames.add(eventInfo.getEventName());
+                                        validEvents.add(eventId);
                                     }
                                     eventsFetchedCount[0]++;
 
                                     if (eventsFetchedCount[0] == totalEvents) {
+                                        ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, R.layout.spinner_dropdown_item, eventNames);
+                                        user.setEvents(validEvents);
+                                        userFirestore.editUserEvents(user);
                                         ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, R.layout.spinner_dropdown_item, eventNames);
                                         joinedEventsList.setAdapter(eventsAdapter);
                                     }
@@ -212,7 +217,7 @@ public class FavouriteFragment extends Fragment {
 
         createdEventsButton.setOnClickListener(v -> {
             AnimationHelper.rotateView(createdEventsButton, 45f, 300);
-            EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
+            eventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
                 @Override
                 public void onSuccess(OrganizerInfo organizerInfo) {
                     // Null check for organizerInfo
@@ -299,6 +304,7 @@ public class FavouriteFragment extends Fragment {
                 public void onSuccess(OrganizerInfo organizerInfo) {
                     if (organizerInfo.getFacilities() == null || organizerInfo.getFacilities().isEmpty()) {
                         Toast.makeText(context, "No facilities available.", Toast.LENGTH_SHORT).show();
+                        Log.d("Empty","No facilities available."); // Used for logging, don't remove
                         facilitiesList.setVisibility(View.GONE);
 
                         if (isFacilitiesListVisible) {

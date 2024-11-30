@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/favouriteFragment">
+    app:startDestination="@id/mainFragment">
 
     <fragment
         android:id="@+id/mainFragment"
@@ -140,13 +140,16 @@
         <action
             android:id="@+id/action_registrationFragment_to_favFragment"
             app:destination="@id/favouriteFragment"/>
+        <action
+            android:id="@+id/action_registrationFragment_to_viewEventFragment"
+            app:destination="@id/viewEventFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/viewEventFragment"
-            android:name="com.example.fusion0.fragments.TestViewEventFragment"
+        android:name="com.example.fusion0.fragments.ViewEventFragment"
         android:label="View Event Fragment"
-        tools:layout="@layout/fragment_test_view_event">
+        tools:layout="@layout/fragment_view_event">
         <action
             android:id="@+id/action_viewEventFragment_to_mainFragment"
             app:destination="@id/mainFragment"/>
