@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.fusion0.fragments.ViewEventFragment;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.EventInfo;
@@ -47,7 +48,7 @@ public class FavouriteActivity extends AppCompatActivity {
     private boolean isFacilitiesListVisible = false;
     private boolean isCreatedEventsListVisible = false;
     private boolean isJoinedEventsListVisible = false;
-
+    private EventFirebase eventFirebase = new EventFirebase();
     private ImageButton profileButton;
     private ImageButton addButton;
     private ImageButton scannerButton;
@@ -103,7 +104,7 @@ public class FavouriteActivity extends AppCompatActivity {
                     if (user.getEvents() != null) {
                         ArrayList<String> filteredEvents = new ArrayList<>();
                         for (String event : user.getEvents()) {
-                            EventFirebase.findEvent(event, new EventFirebase.EventCallback() {
+                            eventFirebase.findEvent(event, new EventFirebase.EventCallback() {
                                 @Override
                                 public void onSuccess(EventInfo eventInfo) throws WriterException {
                                     if (eventInfo != null) {
@@ -124,7 +125,7 @@ public class FavouriteActivity extends AppCompatActivity {
                         joinedEventsList.setOnItemClickListener((parent, view1, position, id) -> {
                             String eventID = user.getEvents().get(position);
 
-                            Intent intent = new Intent(FavouriteActivity.this, ViewEventActivity.class);
+                            Intent intent = new Intent(FavouriteActivity.this, ViewEventFragment.class);
                             intent.putExtra("eventID", eventID);
                             intent.putExtra("deviceID", deviceID);
                             startActivity(intent);
@@ -159,7 +160,7 @@ public class FavouriteActivity extends AppCompatActivity {
             });
         });
 
-        createdEventsButton.setOnClickListener(view -> {EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
+        createdEventsButton.setOnClickListener(view -> {eventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
                 @Override
                 public void onSuccess(OrganizerInfo organizerInfo) {
                     if (organizerInfo == null) {
@@ -195,14 +196,14 @@ public class FavouriteActivity extends AppCompatActivity {
                 EventInfo event = organizer.getEvents().get(position);
                 String eventID = event.getEventID();
 
-                Intent intent = new Intent(FavouriteActivity.this, ViewEventActivity.class);
+                Intent intent = new Intent(FavouriteActivity.this, ViewEventFragment.class);
                 intent.putExtra("eventID", eventID);
                 startActivity(intent);
             });
         });
 
         facilitiesButton.setOnClickListener(view -> {
-            EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
+            eventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
                 @Override
                 public void onSuccess(OrganizerInfo organizerInfo) {
                     if (organizerInfo == null) {

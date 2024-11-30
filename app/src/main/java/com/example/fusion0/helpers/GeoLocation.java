@@ -25,6 +25,7 @@ import java.util.List;
  * GeoLocation class manages the user's geolocation, calculates distances
  * to an event location, and determines whether the user can register based
  * on an acceptable radius.
+ * @author Derin Karas
  */
 public class GeoLocation implements LocationListener {
 
@@ -48,6 +49,7 @@ public class GeoLocation implements LocationListener {
      * @param eventLatitude The latitude of the event location.
      * @param eventLongitude The longitude of the event location.
      * @param acceptableRadius The radius within which the user can register.
+     * @author Derin Karas
      */
     public GeoLocation(FragmentActivity fragmentActivity, Context context, double eventLatitude, double eventLongitude, double acceptableRadius) {
         this.fragmentActivity = fragmentActivity;
@@ -66,6 +68,7 @@ public class GeoLocation implements LocationListener {
      *
      * @param fragmentActivity The activity context to display dialogs.
      * @param context The context in which the location service is accessed.
+     * @author Derin Karas
      */
     public GeoLocation(FragmentActivity fragmentActivity, Context context) {
         this.fragmentActivity = fragmentActivity;
@@ -83,17 +86,30 @@ public class GeoLocation implements LocationListener {
 
     /**
      * Initializes the LocationManager and sets the initial user location if permissions are granted.
+     * @author Derin Karas
      */
     private void initializeLocationManager() {
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
         if (isLocationPermissionGranted()) {
-            requestLocationUpdates();
+            // Try to get last known location for quicker result
+            userLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+            if (userLocation == null) {
+                userLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            }
+
+            // If no cached location is available, request location updates
+            if (userLocation == null) {
+                requestLocationUpdates();
+            }
         }
     }
 
 
     /**
      * Sets the last known location for a quicker initial value.
+     * @author Derin Karas
      */
     private void requestLocationUpdates() {
         if (isLocationPermissionGranted()) {
@@ -107,6 +123,7 @@ public class GeoLocation implements LocationListener {
      * Callback method invoked when the user's location changes. Updates userLocation and displays a Toast message.
      *
      * @param location The new location of the user.
+     * @author Derin Karas
      */
     @Override
     public void onLocationChanged(@NonNull Location location) {
@@ -120,6 +137,7 @@ public class GeoLocation implements LocationListener {
      * The actual result (granted or denied) should be handled in onRequestPermissionsResult.
      *
      * @return true if location permission is already granted; false if permission is requested.
+     * @author Derin Karas
      */
     public boolean isLocationPermissionGranted() {
         return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
@@ -128,6 +146,7 @@ public class GeoLocation implements LocationListener {
 
     /**
      * Requests location permission from the user if it isn’t already granted.
+     * @author Derin Karas
      */
     public void requestLocationPermission() {
         if (!isLocationPermissionGranted()) {
@@ -151,16 +170,15 @@ public class GeoLocation implements LocationListener {
      *
      * @return the user's last known location if available, or null if no immediate location
      *         is available or permissions are not granted.
+     * @author Derin Karas
      */
     public Location getLocation() {
-        if (userLocation != null) {
-            return userLocation;
+        if (userLocation == null) {
+            if (isLocationPermissionGranted()) {
+                requestLocationUpdates();
+            }
+            return null;
         }
-
-        if (isLocationPermissionGranted()) {
-            requestLocationUpdates();
-        }
-        // Return the current user location, which will be updated as location changes
         return userLocation;
     }
 
@@ -173,6 +191,7 @@ public class GeoLocation implements LocationListener {
      * Determines if the user can register based on their distance from the event location.
      *
      * @return true if the user is within the acceptable radius from the event location; false otherwise.
+     * @author Derin Karas
      */
     public boolean canRegister() {
         if (userLocation != null && eventLocation != null) {
@@ -188,6 +207,7 @@ public class GeoLocation implements LocationListener {
      *
      * @param latitude The latitude of the event location.
      * @param longitude The longitude of the event location.
+     * @author Derin Karas
      */
     public void setEventLocation(double latitude, double longitude) {
         eventLocation = new Location("eventLocation");
@@ -201,6 +221,7 @@ public class GeoLocation implements LocationListener {
      *
      * @param latitude The latitude of the user location.
      * @param longitude The longitude of the user location.
+     * @author Derin Karas
      */
     public void setUserLocation(double latitude, double longitude) {
         userLocation = new Location("userLocation");
@@ -213,6 +234,7 @@ public class GeoLocation implements LocationListener {
      * Retrieves the user's current latitude.
      *
      * @return The latitude of the user's current location.
+     * @author Derin Karas
      */
     public double getUserLatitude() {
         return userLocation != null ? userLocation.getLatitude() : 0.0;
@@ -223,6 +245,7 @@ public class GeoLocation implements LocationListener {
      * Retrieves the user's current longitude.
      *
      * @return The longitude of the user's current location.
+     * @author Derin Karas
      */
     public double getUserLongitude() {
         return userLocation != null ? userLocation.getLongitude() : 0.0;
@@ -233,6 +256,7 @@ public class GeoLocation implements LocationListener {
      * Retrieves the event's current latitude.
      *
      * @return The latitude of the event location.
+     * @author Derin Karas
      */
     public double getEventLatitude() {
         return eventLocation != null ? eventLocation.getLatitude() : 0.0;
@@ -243,6 +267,7 @@ public class GeoLocation implements LocationListener {
      * Retrieves the event's current longitude.
      *
      * @return The longitude of the event location.
+     * @author Derin Karas
      */
     public double getEventLongitude() {
         return eventLocation != null ? eventLocation.getLongitude() : 0.0;
@@ -253,6 +278,7 @@ public class GeoLocation implements LocationListener {
      * Sets the event acceptable radius.
      *
      * @param radius The acceptable radius of the event.
+     * @author Derin Karas
      */
     public void setEventRadius(int radius){
 
@@ -260,6 +286,7 @@ public class GeoLocation implements LocationListener {
     }
     /**
      * Gets the event acceptable radius.
+     * @author Derin Karas
      */
     public double getEventRadius() {
         return acceptableRadius;
@@ -269,6 +296,7 @@ public class GeoLocation implements LocationListener {
 
     /**
      * Displays a map dialog showing user and event locations with an indicator of the acceptable radius.
+     * @author Derin Karas
      */
     public void showMapDialog() {
         if (eventLocation != null && userLocation != null) {
@@ -286,13 +314,13 @@ public class GeoLocation implements LocationListener {
     }
 
 
-    //The following will be logic in the case of multiple user locations
 
 
     /**
      * Adds a list of user locations.
      *
      * @param userLatLngList A list of latitude-longitude pairs representing user locations.
+     * @author Derin Karas
      */
     public void setUserLocations(List<double[]> userLatLngList) {
         userLocations.clear(); // Clear existing locations
@@ -308,6 +336,7 @@ public class GeoLocation implements LocationListener {
      * Returns the list of user locations.
      *
      * @return A list of user locations.
+     * @author Derin Karas
      */
     public List<Location> getUserLocations() {
         return userLocations;
@@ -318,6 +347,7 @@ public class GeoLocation implements LocationListener {
      * Show the map for multiple users compared to the event location.
      *
      * @param userLatLngList A list of latitude-longitude pairs representing user locations.
+     * @author Derin Karas
      */
     public void showMapDialog(List<double[]> userLatLngList) {
         if (eventLocation != null && userLatLngList != null && !userLatLngList.isEmpty()) {

@@ -195,8 +195,12 @@ public class EventInfo {
         event.put("radius", this.radius);
         event.put("acceptedCount", this.acceptedCount);
         event.put("lotteryCapacity", this.lotteryCapacity);
+        event.put("registrationDate", this.registrationDate);
+        event.put("lotteryConducted", this.lotteryConducted);
         return event;
     }
+
+
 
 
     public String getEventID(){
@@ -431,8 +435,8 @@ public class EventInfo {
      * Removes a user from the waiting list
      * @author Sehej Brar
      * @param deviceID device id
-     * @param waitingList an arraylist of maps containing waitlist information
-     * @return an arraylist of maps containing waitlist information
+     * @param waitingList an arraylist of maps containing fragment_waitlist information
+     * @return an arraylist of maps containing fragment_waitlist information
      */
     public ArrayList<Map<String, String>> removeUserFromWaitingList(String deviceID, ArrayList<Map<String, String>> waitingList) {
         waitingList.removeIf(next -> next.containsKey("did") && Objects.equals(next.get("did"), deviceID));

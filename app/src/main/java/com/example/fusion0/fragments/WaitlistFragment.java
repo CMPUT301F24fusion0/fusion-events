@@ -4,23 +4,18 @@ import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
-import com.example.fusion0.activities.ViewEventActivity;
 import com.example.fusion0.adapters.ProfileListAdapter;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
@@ -28,9 +23,9 @@ import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.UserInfo;
 import com.example.fusion0.R;
-import com.google.zxing.WriterException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,20 +43,20 @@ public class WaitlistFragment extends Fragment {
 
     /**
      * Find the user on the waiting list
-     * @author Simon Haile
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
      *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment,
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to.  The fragment should not add the view itself,
+     *                           but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
      * @return
+     * @author Simon Haile
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.waitlist, container, false);
+        View view = inflater.inflate(R.layout.fragment_waitlist, container, false);
 
         backButton = view.findViewById(R.id.backButton);
         waitlistCapacityRatio = view.findViewById(R.id.ratio);
@@ -70,6 +65,7 @@ public class WaitlistFragment extends Fragment {
         firebase = new EventFirebase();
 
         Bundle bundle = getArguments();
+
 
         if (bundle != null) {
             ArrayList<Map<String, String>> waitingList = (ArrayList<Map<String, String>>) bundle.getSerializable("waitingListData");
@@ -118,6 +114,7 @@ public class WaitlistFragment extends Fragment {
 
     /**
      * Update the waiting list fragment for organizers
+     *
      * @param bundle contains the updated information
      */
     private void updateUI(Bundle bundle) {
@@ -139,88 +136,25 @@ public class WaitlistFragment extends Fragment {
 
     /**
      * Establish the back and lottery button
-     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     *
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
      * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
+     *                           from a previous saved state as given here.
      */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle = getArguments();
-        waitlist = (Waitlist) bundle.getSerializable("waitlist");
+        waitlist = (Waitlist) bundle.getSerializable("fragment_waitlist");
 
 
         backButton.setOnClickListener(v -> {
-            if (bundle != null) {
-                Intent intent = new Intent(getActivity(), ViewEventActivity.class);
-                intent.putExtra("eventID", bundle.getString("eventID"));
-                startActivity(intent);
-            }
-        });
-/*
-        lotteryButton.setOnClickListener(v -> {
-            EventFirebase.findEvent(bundle.getString("eventID"), new EventFirebase.EventCallback() {
-                @Override
-                public void onSuccess(EventInfo eventInfo) throws WriterException {
-                    event = eventInfo;
+            Bundle newBundle = new Bundle();
+            newBundle.putString("eventID", bundle.getString("eventID"));
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(WaitlistFragment.this.getContext());
-                    builder.setTitle("Enter Lottery Capacity");
-
-                    EditText input = new EditText(WaitlistFragment.this.getContext());
-                    input.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    builder.setView(input);
-
-                    builder.setPositiveButton("OK", (dialog, which) -> {
-                        String lotteryCapacity = input.getText().toString().trim();
-
-                        if (!lotteryCapacity.isEmpty()) {
-                            event.setLotteryCapacity(lotteryCapacity);
-                            EventFirebase.editEvent(event);
-                        } else {
-                            Toast.makeText(WaitlistFragment.this.getContext(), "Please enter a valid number", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-                    builder.setNegativeButton("Cancel", (dialog, which) -> {
-                    });
-
-                    builder.show();
-
-
-                    if (!(event.getLotteryCapacity().equals("0"))) {
-                        waitlist.conductLottery(event.getEventID(), Integer.parseInt(event.getLotteryCapacity()));
-
-                        waitlist.getChosen(event.getEventID(), chosen -> {
-                            if (chosen.isEmpty()) {
-                                Toast.makeText(WaitlistFragment.this.getContext(), "Chosen entrants list is empty.", Toast.LENGTH_SHORT).show();
-                            }else{
-                                ChosenEntrants chosenEntrants = new ChosenEntrants();
-
-                                Bundle bundle = new Bundle();
-                                bundle.putSerializable("chosenEntrantsData", chosen);
-                                bundle.putString("eventID", event.getEventID());
-                                bundle.putSerializable("waitlist", waitlist);
-                                chosenEntrants.setArguments(bundle);
-
-                                requireActivity().getSupportFragmentManager().beginTransaction()
-                                        .replace(R.id.event_view, chosenEntrants)
-                                        .addToBackStack(null)
-                                        .commit();
-                            }
-                        });
-                    } else {
-                        Toast.makeText(WaitlistFragment.this.getContext(), "Please enter a valid lottery capacity greater than 0", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(String error) {
-
-                }
-            });
+            Navigation.findNavController(view).navigate(R.id.action_waitlistFragment_to_viewEventFragment,newBundle);
 
         });
-        */
+
     }
 }

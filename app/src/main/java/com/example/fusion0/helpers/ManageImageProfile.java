@@ -12,7 +12,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Settings;
-import android.util.Log;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -112,6 +111,7 @@ public class ManageImageProfile {
                 .addOnSuccessListener(uri -> callback.onImageExists())
                 .addOnFailureListener(e -> callback.onImageDoesNotExist());
     }
+
 
     /**
      * Deletes an image from firebase.

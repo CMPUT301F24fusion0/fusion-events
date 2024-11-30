@@ -1,7 +1,5 @@
 package com.example.fusion0.helpers;
 
-import static android.content.ContentValues.TAG;
-
 import android.util.Log;
 
 import com.example.fusion0.models.UserInfo;
@@ -28,8 +26,7 @@ import java.util.Objects;
 
 public class Waitlist implements Serializable {
     private transient final FirebaseFirestore db;
-    private transient CollectionReference eventsRef;
-    private transient UserFirestore userFirestore;
+    private transient CollectionReference eventsRef, usersRef;
 
 
     /**
@@ -39,7 +36,7 @@ public class Waitlist implements Serializable {
     public Waitlist() {
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
-        userFirestore = new UserFirestore();
+        usersRef = db.collection("users");
     }
 
 
@@ -143,7 +140,7 @@ public class Waitlist implements Serializable {
     public void changeStatus(String eventID, String userID, String newStatus) {
         ArrayList<String> allStatus = new ArrayList<>(Arrays.asList("chosen", "waiting", "cancel", "chosen"));
 
-        if (userID == null || !allStatus.contains(newStatus.toLowerCase())) {
+        if (userID == null || eventID == null|| !allStatus.contains(newStatus.toLowerCase())) {
             throw new IllegalArgumentException("The argument provided is not valid");
         }
 
@@ -173,12 +170,12 @@ public class Waitlist implements Serializable {
 
     /**
      * @author Sehej Brar
-     * Add user to their waitlist
+     * Add user to their fragment_waitlist
      * @param entrantId entrant id
      * @param eventId event id
      */
     public void addToUserWL(String entrantId, String eventId, UserInfo user) {
-        db.collection("users").document(entrantId)
+        usersRef.document(entrantId)
                 .update("events", FieldValue.arrayUnion(eventId))
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -193,13 +190,13 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Remove event from user's waitlist
+     * Remove event from user's fragment_waitlist
      * @author Sehej Brar
      * @param entrantId entrant id
      * @param eventId event id
      */
     public void removeFromUserWL(String entrantId, String eventId, UserInfo user) {
-        db.collection("users").document(entrantId)
+        usersRef.document(entrantId)
                 .update("events", FieldValue.arrayRemove(eventId))
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -214,7 +211,7 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Interface for all waitlist entrants
+     * Interface for all fragment_waitlist entrants
      * @author Sehej Brar
      */
     public interface AllCB {
@@ -222,15 +219,14 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Gets all those on waitlist
+     * Gets all those on fragment_waitlist
      * @author Sehej Brar
      * @param eventId event id
-     * @param allCB a callback for all entrants on waitlist
+     * @param allCB a callback for all entrants on fragment_waitlist
      */
     public void getAll(String eventId, AllCB allCB) {
         ArrayList<String> all = new ArrayList<>();
-        DocumentReference waitingListDoc = db.collection("events")
-                .document(eventId);
+        DocumentReference waitingListDoc = eventsRef.document(eventId);
 
         waitingListDoc.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -244,7 +240,6 @@ public class Waitlist implements Serializable {
                         }
                     }
                 }
-                Log.d("Checkpoint", "lah" + all);
                 allCB.allDid(all);
             } else {
                 Log.e("Error", "Error");
@@ -253,7 +248,7 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Interface for all waitlist entrants
+     * Interface for all fragment_waitlist entrants
      * @author Sehej Brar
      */
     public interface WaitingCB {
@@ -261,10 +256,10 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Gets all those on waitlist
+     * Gets all those on fragment_waitlist
      * @author Sehej Brar
      * @param eventId event id
-     * @param waitingCB a callback for entrants on waitlist that are waiting
+     * @param waitingCB a callback for entrants on fragment_waitlist that are waiting
      */
     public void getWait(String eventId, WaitingCB waitingCB) {
         ArrayList<String> wait = new ArrayList<>();
@@ -308,8 +303,7 @@ public class Waitlist implements Serializable {
      */
     public void getCancel(String eventId, CancelCB cancelCB) {
         ArrayList<String> cancel = new ArrayList<>();
-        DocumentReference waitingListDoc = db.collection("events")
-                .document(eventId);
+        DocumentReference waitingListDoc = eventsRef.document(eventId);
 
         waitingListDoc.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -348,8 +342,7 @@ public class Waitlist implements Serializable {
      */
     public void getChosen(String eventId, ChosenCB chosenCB) {
         ArrayList<String> chosen = new ArrayList<>();
-        DocumentReference waitingListDoc = db.collection("events")
-                .document(eventId);
+        DocumentReference waitingListDoc = eventsRef.document(eventId);
 
         waitingListDoc.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -373,7 +366,7 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Sends a notification to everyone on the waitlist
+     * Sends a notification to everyone on the fragment_waitlist
      * @author Sehej Brar
      * @param eventId event id
      * @param title title of notification
@@ -382,7 +375,7 @@ public class Waitlist implements Serializable {
     public void allNotification(String eventId, String title, String message, String flag) {
         getAll(eventId, all -> {
             for (String dID: all) {
-                AppNotifications.sendNotification(dID, title, message, flag);
+                AppNotifications.sendNotification(dID, title, message, flag, eventId);
             }
         });
     }
@@ -397,7 +390,7 @@ public class Waitlist implements Serializable {
     public void chosenNotification(String eventId, String title, String message, String flag) {
         getChosen(eventId, chosen -> {
             for (String dID: chosen) {
-                AppNotifications.sendNotification(dID, title, message, flag);
+                AppNotifications.sendNotification(dID, title, message, flag, eventId);
             }
         });
     }
@@ -413,7 +406,7 @@ public class Waitlist implements Serializable {
         getAll(eventId, all -> getChosen(eventId, chosen -> {
             all.removeAll(chosen);
             for (String dID: all) {
-                AppNotifications.sendNotification(dID, title, message, flag);
+                AppNotifications.sendNotification(dID, title, message, flag, eventId);
             }
         }));
     }
@@ -428,7 +421,7 @@ public class Waitlist implements Serializable {
     public void cancelNotifications(String eventId, String title, String message, String flag) {
         getCancel(eventId, cancel -> {
             for (String dID: cancel) {
-                AppNotifications.sendNotification(dID, title, message, flag);
+                AppNotifications.sendNotification(dID, title, message, flag, eventId);
             }
         });
     }

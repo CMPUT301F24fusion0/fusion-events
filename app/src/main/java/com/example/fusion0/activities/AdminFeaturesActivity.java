@@ -45,11 +45,9 @@ public class AdminFeaturesActivity extends AppCompatActivity{
         browseProfilesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Navigate to Browse Profiles screen or handle action
-                Toast.makeText(AdminFeaturesActivity.this, "Browse Profiles clicked", Toast.LENGTH_SHORT).show();
-                // Example: Start a new activity
-                //Intent intent = new Intent(AdminActivity.this, BrowseProfilesActivity.class);
-                //startActivity(intent);
+                // Navigate to Browse Profiles screen
+                Intent intent = new Intent(AdminFeaturesActivity.this, BrowseProfilesActivity.class);
+                startActivity(intent);
             }
         });
 

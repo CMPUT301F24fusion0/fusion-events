@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class UserInfoTest {
-    UserInfo user;
+    private UserInfo user;
 
     /**
      * Before each run, initialize the user

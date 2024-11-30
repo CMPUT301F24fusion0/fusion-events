@@ -65,7 +65,7 @@ import java.util.UUID;
 
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.models.EventInfo;
-import com.example.fusion0.fragments.Registration;
+import com.example.fusion0.fragments.RegistrationFragment;
 
 /**
  * @author Simon Haile
@@ -74,7 +74,7 @@ import com.example.fusion0.fragments.Registration;
 public class EventActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private StorageReference storageRef;
-
+    private EventFirebase eventFirebase = new EventFirebase();
     private static final String TAG = "EventActivity";
     private EditText eventName,description, capacity, radius, lotteryCapacity;
     private androidx.fragment.app.FragmentContainerView autocompletePlaceFragment;
@@ -172,9 +172,9 @@ public class EventActivity extends AppCompatActivity {
                 String activity = "EventActivity";
                 Bundle bundle = new Bundle();
                 bundle.putString("activity", activity);
-                Registration registration = new Registration();
+                RegistrationFragment registrationFragment = new RegistrationFragment();
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.activity_add_event, registration)
+                        .replace(R.id.event_view, registrationFragment)
                         .addToBackStack(null)
                         .commit();
             }
@@ -189,12 +189,12 @@ public class EventActivity extends AppCompatActivity {
          * If no organizer is found, a new `OrganizerInfo` object is created and added to the database.
          */
     private void validateOrganizer() {
-        EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
+        eventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
             @Override
             public void onSuccess(OrganizerInfo organizerInfo) {
                 if (organizerInfo == null) {
                     organizer = new OrganizerInfo(deviceID);
-                    EventFirebase.addOrganizer(organizer);
+                    eventFirebase.addOrganizer(organizer);
                 } else {
                     organizer = organizerInfo;
                 }
@@ -349,7 +349,7 @@ public class EventActivity extends AppCompatActivity {
                 } else {
                     // If the selected facility exists, proceed with fetching it
                     String facilityID = organizer.getFacilityIdByName(selectedFacility);
-                    EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
+                    eventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
                         @Override
                         public void onSuccess(FacilitiesInfo existingFacility) {
                             facility = existingFacility;
@@ -680,7 +680,7 @@ public class EventActivity extends AppCompatActivity {
                             registrationDateTextView.setVisibility(View.GONE);
                             registrationDateCalendar = null;
                         }else if (startDateCalendar.before(registrationDateCalendar)) {
-                            registrationDateRequirementsTextView.setText("Registration deadline must be before the event start date.");
+                            registrationDateRequirementsTextView.setText("RegistrationFragment deadline must be before the event start date.");
                             registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
                             registrationDateTextView.setVisibility(View.GONE);
                             registrationDateCalendar = null;
@@ -749,7 +749,7 @@ public class EventActivity extends AppCompatActivity {
                 return;
             }
             if (registrationDate == null) {
-                Toast.makeText(EventActivity.this, "Registration deadline is missing", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EventActivity.this, "RegistrationFragment deadline is missing", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (eventPoster == null) {
@@ -790,26 +790,26 @@ public class EventActivity extends AppCompatActivity {
             }
 
             if (newFacility != null){
-                EventFirebase.addFacility(newFacility);
+                eventFirebase.addFacility(newFacility);
                 ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
                 facilitiesList.add(facility);
                 organizer.setFacilities(facilitiesList);
-                EventFirebase.editOrganizer(organizer);
+                eventFirebase.editOrganizer(organizer);
             }
 
-            EventFirebase.addEvent(newEvent);
+            eventFirebase.addEvent(newEvent);
 
             ArrayList<EventInfo> eventsList = organizer.getEvents();
             eventsList.add(newEvent);
             organizer.setEvents(eventsList);
-            EventFirebase.editOrganizer(organizer);
+            eventFirebase.editOrganizer(organizer);
 
 
 
             ArrayList<String> facilityEventsList = facility.getEvents();
             facilityEventsList.add(newEvent.eventID);
             facility.setEvents(facilityEventsList);
-            EventFirebase.editFacility(facility);
+            eventFirebase.editFacility(facility);
 
             Toast.makeText(EventActivity.this, "Event Added Successfully!", Toast.LENGTH_SHORT).show();
 

@@ -1,8 +1,14 @@
 package com.example.fusion0.fragments;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -11,12 +17,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -41,9 +53,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public class MainFragment extends Fragment {
 
@@ -52,11 +65,25 @@ public class MainFragment extends Fragment {
     private String deviceId;
 
 
-    private ImageButton profileButton;
-    private ImageButton addButton;
-    private ImageButton homeButton;
-    private ImageButton scannerButton;
-    private ImageButton favouriteButton;
+    private LinearLayout profileButton;
+    private LinearLayout addButton;
+    private LinearLayout homeButton;
+    private LinearLayout scannerButton;
+    private LinearLayout favouriteButton;
+
+    private ImageButton profileImageButton;
+    private ImageButton addImageButton;
+    private ImageButton homeImageButton;
+    private ImageButton scannerImageButton;
+    private ImageButton favouriteImageButton;
+
+
+    private TextView homeTextView;
+    private TextView scannerTextView;
+    private TextView addTextView;
+    private TextView searchTextView;
+    private TextView profileTextView;
+
 
     // Message related fields
     private TextView userName;
@@ -71,7 +98,7 @@ public class MainFragment extends Fragment {
 
     private final int REQUEST_CODE = 100;
 
-    private Waitlist waitlist;
+    private Waitlist waitlist = new Waitlist();
 
 
     /**
@@ -95,8 +122,6 @@ public class MainFragment extends Fragment {
 
         loginManagement = new LoginManagement(requireContext());
         notificationList = new ArrayList<>();
-
-        waitlist = new Waitlist();
     }
 
     /**
@@ -129,6 +154,8 @@ public class MainFragment extends Fragment {
 
         Context context = requireContext();
 
+        initializeToolbarButtons(view, context);
+
         FirebaseApp.initializeApp(context);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -141,14 +168,32 @@ public class MainFragment extends Fragment {
                             for (DocumentSnapshot document : querySnapshot.getDocuments()) {
                                 Timestamp registrationDeadline = document.getTimestamp("registrationDate");
 
-                                if (registrationDeadline != null) {
+                                if (registrationDeadline != null && !document.getBoolean("lotteryConducted")) {
                                     Date now = new Date();
-                                    if (now.after(registrationDeadline.toDate()) && !document.getBoolean("lotteryConducted")) {
-                                        runLottery(document.getId(), document);
+                                    Calendar calNow = Calendar.getInstance();
+                                    calNow.setTime(now);
+                                    calNow.set(Calendar.HOUR_OF_DAY, 0);
+                                    calNow.set(Calendar.MINUTE, 0);
+                                    calNow.set(Calendar.SECOND, 0);
+                                    calNow.set(Calendar.MILLISECOND, 0);
+
+                                    Calendar calDeadline = Calendar.getInstance();
+                                    calDeadline.setTime(registrationDeadline.toDate());
+                                    calDeadline.set(Calendar.HOUR_OF_DAY, 0);
+                                    calDeadline.set(Calendar.MINUTE, 0);
+                                    calDeadline.set(Calendar.SECOND, 0);
+                                    calDeadline.set(Calendar.MILLISECOND, 0);
+
+                                    Log.d("DateCheck", "calNow: " + calNow.getTime());
+                                    Log.d("DateCheck", "calDeadline: " + calDeadline.getTime());
+
+                                    if (calNow.after(calDeadline)) {
+                                        String eventId = document.getId();
+                                        runLottery(eventId, document);
                                         document.getReference().update("lotteryConducted", true);
                                     }
                                 } else {
-                                    Log.e("FirestoreError", "Registration deadline not found for event: " + document.getId());
+                                    Log.e("FirestoreError", "RegistrationFragment deadline not found for event: " + document.getId());
                                 }
                             }
                         } else {
@@ -171,7 +216,7 @@ public class MainFragment extends Fragment {
         // Retrieve login state
         loginManagement.isUserLoggedIn(isLoggedIn -> {
             if (isLoggedIn) {
-                AppNotifications.permission(requireActivity(), deviceId);
+                AppNotifications.permission(getActivity(), deviceId);
                 new UserFirestore().findUser(deviceId, new UserFirestore.Callback() {
                     @Override
                     public void onSuccess(UserInfo user) {
@@ -206,7 +251,7 @@ public class MainFragment extends Fragment {
                     }
                 });
 
-                notificationAdapter = new NotificationAdapter(context, notificationList);
+                notificationAdapter = new NotificationAdapter(context, notificationList, deviceId);
                 notificationsListView.setAdapter(notificationAdapter);
 
                 NotificationHelper.updateNotifications(deviceId, new NotificationHelper.Callback() {
@@ -270,13 +315,13 @@ public class MainFragment extends Fragment {
                                     notificationList.add(position, removedItem);
                                     notificationAdapter.notifyItemInserted(position);
 
-                                    AppNotifications.sendNotification(deviceId, removedItem.getTitle(), removedItem.getBody(), removedItem.getFlag());
+                                    AppNotifications.sendNotification(deviceId, removedItem.getTitle(), removedItem.getBody(), removedItem.getFlag(), removedItem.getEventId());
                                 }).show();
                     }
                 });
 
                 itemTouchHelper.attachToRecyclerView(notificationsListView);
-                initializeToolbarButtons(view);
+
             } else {
                 profileButton = view.findViewById(R.id.toolbar_person);
                 scannerButton = view.findViewById(R.id.toolbar_qrscanner);
@@ -309,7 +354,9 @@ public class MainFragment extends Fragment {
 
     /**
      * @author Sehej Brar
-     * Decides whether the permission is granted and then sends them the notification
+     * Decides whether the permission is granted and then sends them the notification.
+     * If they refuse notifications, it will give them an alert dialog which takes them to the app's
+     * notification settings in their phone's settings to change it should they choose to.
      * @param requestCode The request code passed in
      * @param permissions The requested permissions. Never null.
      * @param grantResults The grant results for the corresponding permissions
@@ -326,7 +373,23 @@ public class MainFragment extends Fragment {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 AppNotifications.getNotification(deviceId, requireContext());
             } else {
-                // go to phone settings
+                new AlertDialog.Builder(requireContext())
+                        .setTitle("Permission Denied")
+                        .setMessage("Notifications is a permission needed for the app to function properly.")
+                        .setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+                            @RequiresApi(api = Build.VERSION_CODES.O)
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra(Settings.EXTRA_APP_PACKAGE, requireActivity().getPackageName());
+                                requireActivity().startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        });
             }
         } else {
             Log.d("Wrong", "Code");
@@ -336,11 +399,28 @@ public class MainFragment extends Fragment {
     /**
      * Initializes the toolbar and sends them to the correct page if the button is clicked.
      */
-    private void initializeToolbarButtons(View view) {
-        profileButton = view.findViewById(R.id.toolbar_person);
+    private void initializeToolbarButtons(View view, Context context) {
+        homeButton = view.findViewById(R.id.toolbar_home);
         scannerButton = view.findViewById(R.id.toolbar_qrscanner);
         addButton = view.findViewById(R.id.toolbar_add);
         favouriteButton = view.findViewById(R.id.toolbar_favourite);
+        profileButton = view.findViewById(R.id.toolbar_person);
+
+        homeImageButton = view.findViewById(R.id.toolbar_home_image);
+        scannerImageButton = view.findViewById(R.id.toolbar_qrscanner_image);
+        addImageButton = view.findViewById(R.id.toolbar_add_image);
+        favouriteImageButton = view.findViewById(R.id.toolbar_favourite_image);
+        profileImageButton = view.findViewById(R.id.toolbar_person_image);
+
+        homeTextView = view.findViewById(R.id.homeTextView);
+        scannerTextView = view.findViewById(R.id.qrTextView);
+        addTextView = view.findViewById(R.id.addTextView);
+        searchTextView = view.findViewById(R.id.searchTextView);
+        profileTextView = view.findViewById(R.id.profileTextView);
+
+        // Set all buttons
+        setAllButtonsInactive(context);
+        setActiveButton(context, homeImageButton, homeTextView);
 
         profileButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_profileFragment));
 
@@ -349,7 +429,23 @@ public class MainFragment extends Fragment {
         addButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_eventFragment));
 
         favouriteButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_favouriteFragment));
+    }
 
+    private void setAllButtonsInactive(Context context) {
+        profileImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        scannerImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        addImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        favouriteImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+
+        scannerTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+        addTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+        searchTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+        profileTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+    }
+
+    private void setActiveButton(Context context, ImageButton activeButton, TextView activeTextView) {
+        activeButton.setColorFilter(ContextCompat.getColor(context, R.color.royalBlue));
+        activeTextView.setTextColor(ContextCompat.getColor(context, R.color.royalBlue));
     }
 
     /**
@@ -391,18 +487,30 @@ public class MainFragment extends Fragment {
             notificationsListView.setVisibility(View.VISIBLE);
         }
     }
+
+
+    /**
+     * Starting the lottery function and send notifications
+     * @param eventId event id
+     * @param eventDoc the document for the event
+     */
     private void runLottery(String eventId, DocumentSnapshot eventDoc) {
         if (eventDoc != null) {
             if (!eventDoc.getString("lotteryCapacity").equals("0")) {
+                waitlist.allNotification(eventId, "Lottery Starting",
+                        "The lottery is not starting. Be on the look out for the results!", "0");
                 waitlist.conductLottery(eventId, Integer.parseInt(eventDoc.getString("lotteryCapacity")));
+                waitlist.chosenNotification(eventId, "Winner!",
+                        "Congratulations, you have won the lottery! Please accept the invitation to confirm your spot.", "1");
+                waitlist.loseNotification(eventId, "Lottery Results", "Unfortunately, you have lost the lottery. You may still receive an invite if someone declines their invitation.", "0");
 
                 waitlist.getChosen(eventId, chosen -> {
                     if (!chosen.isEmpty()) {
-                        ChosenEntrants chosenEntrants = new ChosenEntrants();
+                        ChosenEntrantsFragment chosenEntrants = new ChosenEntrantsFragment();
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("chosenEntrantsData", chosen);
                         bundle.putString("eventID", eventId);
-                        bundle.putSerializable("waitlist", waitlist);
+                        bundle.putSerializable("fragment_waitlist", waitlist);
                         chosenEntrants.setArguments(bundle);
 
                         // Replace fragment to show chosen entrants
@@ -412,6 +520,7 @@ public class MainFragment extends Fragment {
                                 .commit();
                     }
                 });
+
             } else {
                 Log.d("Lottery", "Lottery capacity is 0, skipping lottery.");
             }

@@ -1,0 +1,12 @@
+<!-- res/menu/dropdown_menu.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_waiting_list"
+        android:title="Waiting List"/>
+    <item
+        android:id="@+id/menu_chosen_list"
+        android:title="Chosen List"/>
+    <item
+        android:id="@+id/menu_cancelled_list"
+        android:title="Cancelled List"/>
+</menu>
