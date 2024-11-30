@@ -303,6 +303,7 @@ public class FavouriteFragment extends Fragment {
                 public void onSuccess(OrganizerInfo organizerInfo) {
                     if (organizerInfo.getFacilities() == null || organizerInfo.getFacilities().isEmpty()) {
                         Toast.makeText(context, "No facilities available.", Toast.LENGTH_SHORT).show();
+                        Log.d("Empty","No facilities available."); // Used for logging, don't remove
                         facilitiesList.setVisibility(View.GONE);
 
                         if (isFacilitiesListVisible) {

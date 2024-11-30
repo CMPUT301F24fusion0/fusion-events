@@ -305,7 +305,7 @@ public class ViewEventFragment extends Fragment {
                             isOwner = true;
 
                         } else {
-                            lists.setVisibility(View.GONE);
+//                            lists.setVisibility(View.GONE);
                             editButton.setVisibility(View.GONE);
                             deleteButton.setVisibility(View.GONE);
                             cancelButton.setVisibility(View.GONE);
@@ -398,8 +398,7 @@ public class ViewEventFragment extends Fragment {
 
                                         eventFirebase.editEvent(event);
 
-                                        Intent intent = new Intent(context, MainActivity.class);
-                                        startActivity(intent);
+                                        Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_mainFragment);
                                     });
                                 }
                             });
