@@ -38,4 +38,14 @@ public class AddEventHelperTest {
         addEventHelper.setDescription("description");
         assertEquals(addEventHelper.getDescription(), "description");
     }
+
+    /**
+     * Testing whether the class sets the geolocation
+     * @author Sehej Brar
+     */
+    @Test
+    public void testSetGeolocation() {
+        addEventHelper.setGeolocation(false);
+        assertEquals(addEventHelper.getGeolocation(), false);
+    }
 }
