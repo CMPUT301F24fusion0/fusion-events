@@ -168,7 +168,7 @@ public class MainFragment extends Fragment {
                             for (DocumentSnapshot document : querySnapshot.getDocuments()) {
                                 Timestamp registrationDeadline = document.getTimestamp("registrationDate");
 
-                                if (registrationDeadline != null) {
+                                if (registrationDeadline != null && !document.getBoolean("lotteryConducted")) {
                                     Date now = new Date();
                                     Calendar calNow = Calendar.getInstance();
                                     calNow.setTime(now);
@@ -187,7 +187,7 @@ public class MainFragment extends Fragment {
                                     Log.d("DateCheck", "calNow: " + calNow.getTime());
                                     Log.d("DateCheck", "calDeadline: " + calDeadline.getTime());
 
-                                    if (calNow.after(calDeadline) && !document.getBoolean("lotteryConducted")) {
+                                    if (calNow.after(calDeadline)) {
                                         String eventId = document.getId();
                                         runLottery(eventId, document);
                                         document.getReference().update("lotteryConducted", true);

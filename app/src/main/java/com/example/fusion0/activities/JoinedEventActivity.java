@@ -108,6 +108,8 @@ public class JoinedEventActivity extends AppCompatActivity {
 
 
         if (eventID != null) {
+            Log.e("JoinedEventActivity", "Error fetching user: " + eventID);
+
             eventFirebase.findEvent(eventID, new EventFirebase.EventCallback() {
                 /**
                  * Called when the event details are successfully retrieved from Firestore.
