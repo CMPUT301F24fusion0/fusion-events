@@ -394,8 +394,7 @@ public class ViewEventFragment extends Fragment {
 
                                         EventFirebase.editEvent(event);
 
-                                        Intent intent = new Intent(context, MainActivity.class);
-                                        startActivity(intent);
+                                        Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_mainFragment);
                                     });
                                 }
                             });
