@@ -10,7 +10,6 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -85,39 +84,86 @@ import java.util.UUID;
 public class TestViewEventFragment extends Fragment {
     private String deviceID;
     private Boolean isOwner = false;
+
     private Spinner eventFacility;
-    private TextView eventNameTextView, eventFacilityTextView, addFacilityText, eventDescriptionTextView, registrationDateRequirementsTextView, registrationDateTextView, registrationPassedFullTextView, dateRequirementsTextView, eventStartDateTextView, eventEndDateTextView, eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, eventLotteryCapacityTextView, waitinglistFullTextView, startMonth, startDateTextView;
-    private EditText eventNameEditText, eventDescriptionEditText, eventCapacityEditText, eventLotteryCapacityEditText;
-    private ImageView eventPosterImageView, qrImageView, facilityButton;
+
+    // Text related views
+    private TextView eventNameTextView;
+    private TextView eventFacilityTextView;
+    private TextView eventDescriptionTextView;
+    private TextView eventStartDateTextView;
+    private TextView eventEndDateTextView;
+    private TextView eventStartTimeTextView;
+    private TextView eventEndTimeTextView;
+    private TextView registrationDateTextView;
+    private TextView registrationDateRequirementsTextView;
+    private TextView dateRequirementsTextView;
+    private TextView eventWaitlistCapacityTextView;
+    private TextView eventLotteryCapacityTextView;
+    private TextView startMonth;
+    private TextView startDateTextView;
+
+    // Edit related views
+    private EditText eventNameEditText;
+    private EditText eventDescriptionEditText;
+    private EditText eventCapacityEditText;
+    private EditText eventLotteryCapacityEditText;
+
+    // Image related views and buttons
+    private ImageView eventPosterImageView;
+    private ImageView qrImageView;
+    private ImageView facilityButton;
+    private ImageButton backButton;
+    private ImageButton uploadImageButton;
+    private ImageButton editButton;
+    private ImageButton deleteButton;
+
     private Button joinButton, cancelButton, saveButton;
-    private ImageButton backButton, uploadImageButton,editButton, deleteButton, lotteryButton;;
+
+    // Manipulative objects
     private EventInfo event;
     private EventFirebase eventFirebase;
     private UserInfo user;
     private OrganizerInfo organizer;
     private TextView organizerName;
-    private LinearLayout toolbar;
-    private Calendar startDateCalendar, registrationDateCalendar;
-    private androidx.fragment.app.FragmentContainerView autocompletePlaceFragment;
-    private Location userLocation;
-    LinearLayout lists, waitinglistButton, cancelledEntrantsButton, chosenEntrantsButton, editStateButtons;
-    ConstraintLayout startDateButton, endDateButton, registrationDateButton;
+    private Calendar startDateCalendar;
+    private Calendar registrationDateCalendar;
+    private FacilitiesInfo newFacility;
+    public static Waitlist waitlist;
+    private StorageReference storageRef;
 
-    private View eventNameBar, descriptionBar, startDateBar, endDateBar, registrationDateBar, waitlistBar, lotteryBar;
+    private androidx.fragment.app.FragmentContainerView autocompletePlaceFragment;
+
+    LinearLayout waitinglistButton;
+    LinearLayout cancelledEntrantsButton;
+    LinearLayout chosenEntrantsButton;
+    LinearLayout editStateButtons;
+
+    ConstraintLayout startDateButton;
+    ConstraintLayout endDateButton;
+    ConstraintLayout registrationDateButton;
+
+    private View eventNameBar;
+    private View descriptionBar;
+    private View startDateBar;
+    private View endDateBar;
+    private View registrationDateBar;
+    private View waitlistBar;
+    private View lotteryBar;
 
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
-    private FusedLocationProviderClient fusedLocationClient;
-
     private Double newLongitude = null;
     private Double newLatitude = null;
-    private String newEventPoster, facility, address, facilityID;
-    private Date endDate, startDate, registrationDate;
-    private FacilitiesInfo newFacility;
 
-    public static Waitlist waitlist;
+    private String newEventPoster;
+    private String facility;
+    private String address;
+    private String facilityID;
 
-    private StorageReference storageRef;
+    private Date endDate;
+    private Date startDate;
+    private Date registrationDate;
 
     public TestViewEventFragment() {
         // Required empty public constructor
@@ -131,7 +177,6 @@ public class TestViewEventFragment extends Fragment {
         storageRef = FirebaseStorage.getInstance().getReference();
         waitlist = new Waitlist();
         deviceID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
     }
 
     @Override
@@ -145,21 +190,19 @@ public class TestViewEventFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Context context = requireContext();
-        Activity activity = requireActivity();
 
         backButton = view.findViewById(R.id.backButton);
         eventNameTextView = view.findViewById(R.id.EventName);
         eventDescriptionTextView = view.findViewById(R.id.description);
         eventFacility = view.findViewById(R.id.spinner_facilities);
         eventFacilityTextView = view.findViewById(R.id.facilityName);
-        addFacilityText = view.findViewById(R.id.add_facility_text);
         facilityButton = view.findViewById(R.id.facility_view_button);
         autocompletePlaceFragment = view.findViewById(R.id.autocomplete_fragment);
         eventStartDateTextView = view.findViewById(R.id.start_date_text);
         eventEndDateTextView = view.findViewById(R.id.end_date_text);
         eventEndTimeTextView = view.findViewById(R.id.end_time_text);
         eventStartTimeTextView = view.findViewById(R.id.start_time_text);
-        eventCapacityTextView = view.findViewById(R.id.capacity);
+        eventWaitlistCapacityTextView = view.findViewById(R.id.capacity);
         eventLotteryCapacityTextView = view.findViewById(R.id.lotteryCapacity);
         eventNameEditText = view.findViewById(R.id.editEventName);
         eventDescriptionEditText = view.findViewById(R.id.description_edit);
@@ -169,30 +212,19 @@ public class TestViewEventFragment extends Fragment {
         registrationDateRequirementsTextView = view.findViewById(R.id.registrationDateRequirementsTextView);
         registrationDateTextView = view.findViewById(R.id.registration_date_text);
         registrationDateButton = view.findViewById(R.id.registration_date_button);
-
         eventPosterImageView = view.findViewById(R.id.uploaded_image_view);
         uploadImageButton = view.findViewById(R.id.upload_image_button);
-
         qrImageView = view.findViewById(R.id.qrImage);
         waitinglistButton = view.findViewById(R.id.waitinglistButton);
         chosenEntrantsButton = view.findViewById(R.id.chosenEntrantsButton);
         cancelledEntrantsButton = view.findViewById(R.id.cancelledEntrantsButton);
-
         startDateButton = view.findViewById(R.id.start_date_button);
         endDateButton = view.findViewById(R.id.end_date_button);
         editButton = view.findViewById(R.id.edit_button);
         deleteButton = view.findViewById(R.id.delete_button);
-
-//        joinButton = view.findViewById(R.id.join_button);
         cancelButton = view.findViewById(R.id.cancel_button);
         saveButton = view.findViewById(R.id.save_button);
-
         editStateButtons = view.findViewById(R.id.editStateButtons);
-        waitinglistFullTextView = view.findViewById(R.id.waitinglist_full_text_view);
-        registrationPassedFullTextView = view.findViewById(R.id.registration_passed_text_view);
-        lists = view.findViewById(R.id.lists);
-        toolbar = view.findViewById(R.id.toolbar);
-
         eventNameBar = view.findViewById(R.id.eventNameBar);
         descriptionBar = view.findViewById(R.id.descriptionBar);
         startDateBar = view.findViewById(R.id.startDateBar);
@@ -200,7 +232,6 @@ public class TestViewEventFragment extends Fragment {
         waitlistBar = view.findViewById(R.id.waitlistBar);
         lotteryBar = view.findViewById(R.id.lotteryBar);
         registrationDateBar = view.findViewById(R.id.registrationDateBar);
-
         startMonth = view.findViewById(R.id.startMonth);
         startDateTextView = view.findViewById(R.id.startDateTextView);
         organizerName = view.findViewById(R.id.organizerName);
@@ -242,7 +273,7 @@ public class TestViewEventFragment extends Fragment {
 
                         eventNameTextView.setText(event.getEventName());
                         eventDescriptionTextView.setText(event.getDescription());
-                        eventCapacityTextView.setText(event.getCapacity());
+                        eventWaitlistCapacityTextView.setText(event.getCapacity());
                         eventLotteryCapacityTextView.setText(event.getLotteryCapacity());
                         eventFacilityTextView.setText(event.getFacilityName());
 
@@ -492,7 +523,7 @@ public class TestViewEventFragment extends Fragment {
             eventDescriptionEditText.setVisibility(View.GONE);
             descriptionBar.setVisibility(View.GONE);
 
-            eventCapacityTextView.setVisibility(View.VISIBLE);
+            eventWaitlistCapacityTextView.setVisibility(View.VISIBLE);
             eventCapacityEditText.setVisibility(View.GONE);
             waitlistBar.setVisibility(View.GONE);
 
@@ -606,7 +637,7 @@ public class TestViewEventFragment extends Fragment {
 
             eventNameTextView.setText(newEventName);
             eventDescriptionTextView.setText(newDescription);
-            eventCapacityTextView.setText(newEventCapacity);
+            eventWaitlistCapacityTextView.setText(newEventCapacity);
             eventLotteryCapacityTextView.setText(newEventLotteryCapacity);
             eventFacilityTextView.setText(facility);
             eventStartDateTextView.setText(dateFormat.format(startDate));
@@ -631,7 +662,7 @@ public class TestViewEventFragment extends Fragment {
             eventDescriptionTextView.setVisibility(View.VISIBLE);
             eventDescriptionEditText.setVisibility(View.GONE);
 
-            eventCapacityTextView.setVisibility(View.VISIBLE);
+            eventWaitlistCapacityTextView.setVisibility(View.VISIBLE);
             eventCapacityEditText.setVisibility(View.GONE);
 
             eventLotteryCapacityTextView.setVisibility(View.VISIBLE);
@@ -894,7 +925,7 @@ public class TestViewEventFragment extends Fragment {
      * Sets the EditText's content to the current capacity.
      */
     private void editCapacity() {
-        eventCapacityTextView.setVisibility(View.GONE);
+        eventWaitlistCapacityTextView.setVisibility(View.GONE);
         eventCapacityEditText.setVisibility(View.VISIBLE);
         waitlistBar.setVisibility(View.VISIBLE);
         eventCapacityEditText.setText(event.getCapacity());
