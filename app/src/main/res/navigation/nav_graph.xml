@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mainFragment">
+    app:startDestination="@id/favouriteFragment">
 
     <fragment
         android:id="@+id/mainFragment"
@@ -144,9 +144,9 @@
 
     <fragment
         android:id="@+id/viewEventFragment"
-        android:name="com.example.fusion0.fragments.ViewEventFragment"
+            android:name="com.example.fusion0.fragments.TestViewEventFragment"
         android:label="View Event Fragment"
-        tools:layout="@layout/fragment_view_event">
+        tools:layout="@layout/fragment_test_view_event">
         <action
             android:id="@+id/action_viewEventFragment_to_mainFragment"
             app:destination="@id/mainFragment"/>
@@ -173,7 +173,7 @@
         android:label="Waitlist Fragment"
         tools:layout="@layout/fragment_waitlist">
         <action
-            android:id="@+id/action_cancelledEntrantsFragment_to_viewEventFragment"
+            android:id="@+id/action_waitlistFragment_to_viewEventFragment"
             app:destination="@id/viewEventFragment"/>
     </fragment>
 
@@ -183,7 +183,7 @@
         android:label="Chosen Entrants Fragment"
         tools:layout="@layout/fragment_chosen_entrants">
         <action
-            android:id="@+id/action_cancelledEntrantsFragment_to_viewEventFragment"
+            android:id="@+id/action_chosenEntrantsFragment_to_viewEventFragment"
             app:destination="@id/viewEventFragment"/>
     </fragment>
 

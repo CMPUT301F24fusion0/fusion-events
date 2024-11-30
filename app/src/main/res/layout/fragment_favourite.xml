@@ -160,8 +160,7 @@
                 android:id="@+id/created_events_list"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                tools:ignore="NestedScrolling"/>
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="match_parent"
