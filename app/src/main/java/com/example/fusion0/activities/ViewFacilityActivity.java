@@ -92,9 +92,6 @@ public class ViewFacilityActivity extends AppCompatActivity {
 
         profileManager = new ProfileManagement();
 
-
-
-
         backButton.setOnClickListener(view -> {
             finish();
         });
@@ -200,6 +197,25 @@ public class ViewFacilityActivity extends AppCompatActivity {
             }
         });
 
+
+        facilityImageView.setOnClickListener(v -> {
+            if (isOwner) { // Check if the user is the owner
+                new AlertDialog.Builder(ViewFacilityActivity.this)
+                        .setTitle("Delete Image")
+                        .setMessage("Are you sure you want to delete this facility's image?")
+                        .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                            // Set the facility's image to null and refresh
+                            facility.setFacilityImage(null);
+                            eventFirebase.editFacility(facility); // Update the facility in Firebase
+
+                            // Hide the ImageView and refresh the UI
+                            facilityImageView.setVisibility(View.GONE);
+                            //Toast.makeText(ViewFacilityActivity.this, "Image removed successfully.", Toast.LENGTH_SHORT).show();
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .show();
+            }
+        });
 
         editButton.setOnClickListener(v -> {
             if (isOwner) {

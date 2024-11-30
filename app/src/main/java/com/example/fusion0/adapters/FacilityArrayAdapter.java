@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -37,7 +38,7 @@ public class FacilityArrayAdapter extends ArrayAdapter<FacilitiesInfo> {
         FacilitiesInfo facility = getItem(position);
 
         TextView facilityName = view.findViewById(R.id.browseFacilityName);
-        Button editButton = view.findViewById(R.id.editFacilityButton);
+        ImageButton editButton = view.findViewById(R.id.editFacilityButton);
 
         if (facility != null) {
             facilityName.setText(facility.getFacilityName());

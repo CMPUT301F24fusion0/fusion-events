@@ -149,4 +149,171 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <!-- Toolbar -->
+    <LinearLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@android:color/white"
+        android:clipToPadding="false"
+        android:fitsSystemWindows="false"
+        android:orientation="horizontal"
+        android:paddingBottom="17dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- Toolbar Home -->
+        <LinearLayout
+            android:id="@+id/toolbar_home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageButton
+                android:id="@+id/toolbar_home_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:src="@drawable/ic_home_outline"
+                android:contentDescription="Home" />
+
+            <TextView
+                android:id="@+id/homeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="center_horizontal"
+                android:text="Home"
+                android:textSize="11.5sp" />
+
+        </LinearLayout>
+
+        <!-- Toolbar QR Scanner -->
+        <LinearLayout
+            android:id="@+id/toolbar_qrscanner"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageButton
+                android:id="@+id/toolbar_qrscanner_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:src="@drawable/ic_qr_code"
+                android:contentDescription="QR Scanner" />
+
+            <TextView
+                android:id="@+id/qrTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="center_horizontal"
+                android:text="Scan QR"
+                android:textSize="11.5sp" />
+
+        </LinearLayout>
+
+        <!-- Toolbar Add -->
+        <LinearLayout
+            android:id="@+id/toolbar_add"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageButton
+                android:id="@+id/toolbar_add_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:src="@drawable/ic_add"
+                android:contentDescription="Add Event" />
+
+            <TextView
+                android:id="@+id/addTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="center_horizontal"
+                android:text="Add Event"
+                android:textSize="11.5sp" />
+
+        </LinearLayout>
+
+        <!-- Toolbar Favourite -->
+        <LinearLayout
+            android:id="@+id/toolbar_favourite"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageButton
+                android:id="@+id/toolbar_favourite_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:src="@drawable/ic_activity_outline"
+                android:contentDescription="Favourite" />
+
+            <TextView
+                android:id="@+id/searchTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="center_horizontal"
+                android:text="Activities"
+                android:textSize="11.5sp" />
+
+        </LinearLayout>
+
+        <!-- Toolbar Person -->
+        <LinearLayout
+            android:id="@+id/toolbar_person"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageButton
+                android:id="@+id/toolbar_person_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:src="@drawable/ic_profile_filled"
+                android:contentDescription="Profile" />
+
+            <TextView
+                android:id="@+id/profileTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="center_horizontal"
+                android:text="Profile"
+                android:textSize="11.5sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
