@@ -13,15 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,13 +33,20 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.fusion0.BuildConfig;
 import com.example.fusion0.R;
-import com.example.fusion0.activities.MainActivity;
 import com.example.fusion0.activities.ViewFacilityActivity;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.GeoLocation;
@@ -81,13 +79,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -253,6 +248,10 @@ public class ViewEventFragment extends Fragment {
                         facility = event.getFacilityName();
 
                         newEventPoster = event.getEventPoster();
+
+                        if (!event.getGeolocation()) {
+                            mapButton.setVisibility(View.GONE);
+                        }
 
                         if (newEventPoster != null && !newEventPoster.isEmpty()) {
                             Glide.with(context)
@@ -1203,7 +1202,7 @@ public class ViewEventFragment extends Fragment {
         addFacilityText.setVisibility(View.VISIBLE);
 
         if (!Places.isInitialized()) {
-            Places.initializeWithNewPlacesApiEnabled(requireContext(), BuildConfig.API_KEY);
+            Places.initialize(context.getApplicationContext(), BuildConfig.API_KEY);
         }
 
         PlacesClient placesClient = Places.createClient(context);
