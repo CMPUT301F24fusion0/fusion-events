@@ -3,16 +3,8 @@ package com.example.fusion0.fragments;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.provider.Settings;
 import android.text.Editable;
 import android.util.Log;
@@ -22,11 +14,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
@@ -50,7 +47,6 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,6 +125,8 @@ public class MapFragment extends Fragment {
         radius = view.findViewById(R.id.radius);
         radiusText = view.findViewById(R.id.radius_text);
         lineView = view.findViewById(R.id.lineView);
+
+        helper.setGeolocation(false);
 
         radius.addTextChangedListener(new SimpleTextWatcher() {
             @Override

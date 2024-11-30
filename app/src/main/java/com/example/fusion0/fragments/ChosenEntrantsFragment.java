@@ -2,7 +2,6 @@ package com.example.fusion0.fragments;
 
 import static android.content.ContentValues.TAG;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -18,10 +17,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.R;
 import com.example.fusion0.adapters.ProfileListAdapter;
-
+import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.EventInfo;
@@ -163,9 +161,10 @@ public class ChosenEntrantsFragment extends Fragment {
         Bundle bundle = getArguments();
 
         backButton.setOnClickListener(v -> {
-            Bundle newBundle = new Bundle();
-            newBundle.putString("eventID", bundle.getString("eventID"));
-            Navigation.findNavController(view).navigate(R.id.action_chosenEntrantsFragment_to_viewEventFragment, newBundle);
+            if (bundle != null) {
+                bundle.putString("eventID", bundle.getString("eventID"));
+                Navigation.findNavController(view).navigate(R.id.action_chosenEntrantsFragment_to_viewEventFragment, bundle);
+            }
         });
 
         fillLotteryButton.setOnClickListener(v -> {
