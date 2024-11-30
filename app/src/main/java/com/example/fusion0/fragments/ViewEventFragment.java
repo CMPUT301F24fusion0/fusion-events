@@ -19,11 +19,13 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -34,6 +36,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -102,7 +105,7 @@ public class ViewEventFragment extends Fragment {
     private TextView eventNameTextView, eventFacilityTextView, addFacilityText, eventDescriptionTextView, registrationDateRequirementsTextView, registrationDateTextView, registrationPassedFullTextView, dateRequirementsTextView, eventStartDateTextView, eventEndDateTextView, eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, eventLotteryCapacityTextView, waitinglistFullTextView;
     private EditText eventNameEditText, eventDescriptionEditText, eventCapacityEditText, eventLotteryCapacityEditText;
     private ImageView eventPosterImageView, qrImageView;
-    private Button startDateButton, endDateButton, registrationDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton, waitinglistButton, cancelledEntrantsButton, chosenEntrantsButton, uploadImageButton, lotteryButton;
+    private Button startDateButton, endDateButton, registrationDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton, uploadImageButton;
     private ImageButton backButton, facilityButton, mapButton, listButton;
     private EventInfo event;
     private EventFirebase eventFirebase;
@@ -185,9 +188,6 @@ public class ViewEventFragment extends Fragment {
         uploadImageButton = view.findViewById(R.id.upload_image_button);
 
         qrImageView = view.findViewById(R.id.qrImage);
-        waitinglistButton = view.findViewById(R.id.waitinglistButton);
-        chosenEntrantsButton = view.findViewById(R.id.chosenEntrantsButton);
-        cancelledEntrantsButton = view.findViewById(R.id.cancelledEntrantsButton);
 
         startDateButton = view.findViewById(R.id.start_date_button);
         endDateButton = view.findViewById(R.id.end_date_button);
@@ -201,45 +201,6 @@ public class ViewEventFragment extends Fragment {
         registrationPassedFullTextView = view.findViewById(R.id.registration_passed_text_view);
         lists = view.findViewById(R.id.lists);
         toolbar = view.findViewById(R.id.toolbar);
-
-        backButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_favouriteFragment);
-        });
-
-        facilityButton.setOnClickListener(v -> {
-            Intent intent = new Intent(requireActivity(), ViewFacilityActivity.class);
-            intent.putExtra("facilityID", event.getFacilityID());
-            intent.putExtra("deviceID", deviceID);
-            startActivity(intent);
-        });
-
-        mapButton.setOnClickListener(v->{
-            GeoLocation geoLocation = new GeoLocation(getActivity(), context, event.getLatitude(), event.getLongitude(), event.getRadius());
-
-            ArrayList<Map<String, String>> waitinglist = event.getWaitinglist();
-            List<double[]> userLatLngList = new ArrayList<>();
-            for (Map<String, String> user : waitinglist) {
-                String latStr = user.get("latitude");
-                String lonStr = user.get("longitude");
-
-                // Check if both latitude and longitude are available
-                if (latStr != null && lonStr != null) {
-                    try {
-                        // Convert latitude and longitude from String to double
-                        double latitude = Double.parseDouble(latStr);
-                        double longitude = Double.parseDouble(lonStr);
-
-                        // Add the latitude and longitude as a double array
-                        userLatLngList.add(new double[]{latitude, longitude});
-                    } catch (NumberFormatException e) {
-                        // Handle the case where parsing fails, maybe log the error
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            geoLocation.showMapDialog(userLatLngList);
-        });
 
         Bundle bundle = getArguments();
         String eventID = bundle.getString("eventID");
@@ -457,91 +418,144 @@ public class ViewEventFragment extends Fragment {
             Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_mainFragment);
         }
 
-        waitinglistButton.setOnClickListener(v -> {
-            waitlist.getWait(eventID, wait -> {
-                if (wait.isEmpty()) {
-                    Toast.makeText(context, "Waiting list is empty.", Toast.LENGTH_SHORT).show();
-                } else {
-                    ArrayList<Map<String, String>> fullWaitingListEntrants = new ArrayList<>();
+        backButton.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(requireView());
+            navController.navigate(R.id.action_viewEventFragment_to_favouriteFragment);        });
 
-                    if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
+        facilityButton.setOnClickListener(v -> {
+            Intent intent = new Intent(requireActivity(), ViewFacilityActivity.class);
+            intent.putExtra("facilityID", event.getFacilityID());
+            intent.putExtra("deviceID", deviceID);
+            startActivity(intent);
+        });
+
+        mapButton.setOnClickListener(v->{
+            GeoLocation geoLocation = new GeoLocation(getActivity(), context, event.getLatitude(), event.getLongitude(), event.getRadius());
+
+            ArrayList<Map<String, String>> waitinglist = event.getWaitinglist();
+            List<double[]> userLatLngList = new ArrayList<>();
+            for (Map<String, String> user : waitinglist) {
+                String latStr = user.get("latitude");
+                String lonStr = user.get("longitude");
+
+                // Check if both latitude and longitude are available
+                if (latStr != null && lonStr != null) {
+                    try {
+                        // Convert latitude and longitude from String to double
+                        double latitude = Double.parseDouble(latStr);
+                        double longitude = Double.parseDouble(lonStr);
+
+                        // Add the latitude and longitude as a double array
+                        userLatLngList.add(new double[]{latitude, longitude});
+                    } catch (NumberFormatException e) {
+                        // Handle the case where parsing fails, maybe log the error
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            geoLocation.showMapDialog(userLatLngList);
+        });
+
+        listButton.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(context, v);
+
+            // Inflate the menu items
+            MenuInflater inflater = popupMenu.getMenuInflater();
+            inflater.inflate(R.menu.dropdown_menu, popupMenu.getMenu());
+
+            // Create a map of item ids to actions
+            Map<Integer, Runnable> menuItemActions = new HashMap<>();
+
+            // Define the actions for each menu item
+            menuItemActions.put(R.id.menu_waiting_list, () -> {
+                waitlist.getWait(eventID, wait -> {
+                    if (wait.isEmpty()) {
+                        Toast.makeText(context, "Waiting list is empty.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        ArrayList<Map<String, String>> fullWaitingListEntrants = new ArrayList<>();
+                        // Add filtered users to the list
                         for (Map<String, String> user : event.getWaitinglist()) {
                             if (wait.contains(user.get("did")) && "waiting".equals(user.get("status"))) {
                                 fullWaitingListEntrants.add(user);
                             }
                         }
+                        // Navigate to the WaitlistFragment
+                        WaitlistFragment waitlistFragment = new WaitlistFragment();
+                        Bundle newBundle = new Bundle();
+                        newBundle.putSerializable("waitingListData", fullWaitingListEntrants);
+                        newBundle.putString("eventCapacity", event.getCapacity());
+                        newBundle.putString("eventID", event.getEventID());
+                        waitlistFragment.setArguments(newBundle);
+                        Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_waitlistFragment, newBundle);
                     }
-                    WaitlistFragment waitlistFragment = new WaitlistFragment();
-
-                    Bundle newBundle = new Bundle();
-                    newBundle.putSerializable("waitingListData", fullWaitingListEntrants);
-                    newBundle.putString("eventCapacity", event.getCapacity());
-                    newBundle.putString("eventID", event.getEventID());
-                    newBundle.putSerializable("fragment_waitlist", waitlist);
-                    waitlistFragment.setArguments(newBundle);
-
-                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_waitlistFragment, newBundle);
-                }
+                });
             });
-        });
 
-        chosenEntrantsButton.setOnClickListener(v -> {
-            waitlist.getChosen(eventID, chosen -> {
-                if (chosen.isEmpty()) {
-                    Toast.makeText(context, "Chosen list is empty.", Toast.LENGTH_SHORT).show();
-                } else {
-                    ArrayList<Map<String, String>> fullChosenEntrants = new ArrayList<>();
-
-
-                    if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
+            menuItemActions.put(R.id.menu_chosen_list, () -> {
+                waitlist.getChosen(eventID, chosen -> {
+                    if (chosen.isEmpty()) {
+                        Toast.makeText(context, "Chosen list is empty.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        ArrayList<Map<String, String>> fullChosenEntrants = new ArrayList<>();
+                        // Add filtered users to the list
                         for (Map<String, String> user : event.getWaitinglist()) {
                             if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
                                 fullChosenEntrants.add(user);
                             }
                         }
+                        // Navigate to the ChosenEntrantsFragment
+                        ChosenEntrantsFragment chosenEntrantsFragment = new ChosenEntrantsFragment();
+                        Bundle newBundle = new Bundle();
+                        newBundle.putSerializable("chosenEntrantsData", fullChosenEntrants);
+                        newBundle.putString("eventID", event.getEventID());
+                        newBundle.putString("lotteryCapacity", event.getLotteryCapacity());
+                        chosenEntrantsFragment.setArguments(newBundle);
+                        Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_chosenEntrantsFragment, newBundle);
                     }
-                    ChosenEntrantsFragment chosenEntrants = new ChosenEntrantsFragment();
-
-                    Bundle newBundle = new Bundle();
-                    newBundle.putSerializable("chosenEntrantsData", fullChosenEntrants);
-                    newBundle.putString("eventID", event.getEventID());
-                    newBundle.putSerializable("fragment_waitlist", waitlist);
-                    newBundle.putString("lotteryCapacity", event.getLotteryCapacity());
-                    chosenEntrants.setArguments(newBundle);
-                    // Launch the ChosenEntrantsFragment fragment with the filtered data
-                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_chosenEntrantsFragment, newBundle);
-                }
+                });
             });
-        });
 
-        cancelledEntrantsButton.setOnClickListener(v -> {
-            waitlist.getCancel(eventID, cancel -> {
-                if (cancel.isEmpty()) {
-                    Toast.makeText(context, "Cancelled entrants list is empty.", Toast.LENGTH_SHORT).show();
-                } else {
-                    ArrayList<Map<String, String>> fullCancelledEntrants = new ArrayList<>();
-
-
-                    if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
+            menuItemActions.put(R.id.menu_cancelled_list, () -> {
+                waitlist.getCancel(eventID, cancel -> {
+                    if (cancel.isEmpty()) {
+                        Toast.makeText(context, "Cancelled entrants list is empty.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        ArrayList<Map<String, String>> fullCancelledEntrants = new ArrayList<>();
+                        // Add filtered users to the list
                         for (Map<String, String> user : event.getWaitinglist()) {
                             if (cancel.contains(user.get("did")) && "cancel".equals(user.get("status"))) {
                                 fullCancelledEntrants.add(user);
                             }
                         }
+                        // Navigate to the CancelledEntrantsFragment
+                        CancelledEntrantsFragment cancelledEntrantsFragment = new CancelledEntrantsFragment();
+                        Bundle newBundle = new Bundle();
+                        newBundle.putSerializable("cancelledEntrantsData", fullCancelledEntrants);
+                        newBundle.putString("eventID", event.getEventID());
+                        cancelledEntrantsFragment.setArguments(newBundle);
+                        Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_cancelledEntrantsFragment, newBundle);
                     }
-
-                    CancelledEntrantsFragment cancelledEntrantsFragment = new CancelledEntrantsFragment();
-
-                    Bundle newBundle = new Bundle();
-                    newBundle.putSerializable("cancelledEntrantsData", fullCancelledEntrants);
-                    newBundle.putString("eventID", event.getEventID());
-                    newBundle.putSerializable("fragment_waitlist", waitlist);
-                    cancelledEntrantsFragment.setArguments(newBundle);
-
-                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_cancelledEntrantsFragment, newBundle);
-                }
+                });
             });
+
+            // Set a listener to handle item clicks
+            popupMenu.setOnMenuItemClickListener(item -> {
+                Runnable action = menuItemActions.get(item.getItemId());
+                if (action != null) {
+                    action.run();
+                    return true;
+                }
+                return false;
+            });
+
+            // Show the PopupMenu
+            popupMenu.show();
         });
+
+
+
+
 
         editButton.setOnClickListener(v -> {
             editButton.setVisibility(View.GONE);
@@ -552,6 +566,7 @@ public class ViewEventFragment extends Fragment {
             startDateButton.setVisibility(View.VISIBLE);
             endDateButton.setVisibility(View.VISIBLE);
             registrationDateButton.setVisibility(View.VISIBLE);
+            facilityButton.setVisibility(View.GONE);
 
 
             editEventName();
@@ -580,8 +595,30 @@ public class ViewEventFragment extends Fragment {
                                 }
                             }
                             organizer.setEvents(events);
-                            eventFirebase.deleteEvent(event.getEventID());
                             eventFirebase.editOrganizer(organizer);
+
+                            eventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
+                                @Override
+                                public void onSuccess(FacilitiesInfo facilityInfo) {
+                                    ArrayList<String> facilityEvents = facilityInfo.getEvents();
+
+                                    for (int i = facilityEvents.size() - 1; i >= 0; i--) {
+                                        String currentEvent = facilityEvents.get(i);
+                                        if (currentEvent.equals(event.getEventID())) {
+                                            facilityEvents.remove(i);
+                                            break;
+                                        }
+                                    }
+                                    eventFirebase.editFacility(facilityInfo);
+                                }
+
+                                @Override
+                                public void onFailure(String error) {
+
+                                }
+                            });
+
+                            eventFirebase.deleteEvent(event.getEventID());
                             Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_favouriteFragment);
                         })
                         .setNegativeButton("Cancel", (dialog, which) -> {
@@ -589,6 +626,8 @@ public class ViewEventFragment extends Fragment {
                         })
                         .create()
                         .show();
+
+                Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_favouriteFragment);
             } else {
                 Toast.makeText(context, "You are not the organizer, cannot delete event.", Toast.LENGTH_SHORT).show();
             }
@@ -597,6 +636,7 @@ public class ViewEventFragment extends Fragment {
         cancelButton.setOnClickListener(v -> {
             editButton.setVisibility(View.VISIBLE);
             deleteButton.setVisibility(View.VISIBLE);
+            facilityButton.setVisibility(View.VISIBLE);
             cancelButton.setVisibility(View.GONE);
             saveButton.setVisibility(View.GONE);
             uploadImageButton.setVisibility(View.GONE);
@@ -645,6 +685,7 @@ public class ViewEventFragment extends Fragment {
             event.setDescription(newDescription);
             event.setCapacity(newEventCapacity);
             event.setLotteryCapacity(newEventLotteryCapacity);
+
             if (newFacility != null) {
                 eventFirebase.addFacility(newFacility);
                 ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
@@ -737,7 +778,7 @@ public class ViewEventFragment extends Fragment {
             registrationDateTextView.setVisibility(View.VISIBLE);
             eventStartDateTextView.setVisibility(View.VISIBLE);
             eventEndDateTextView.setVisibility(View.VISIBLE);
-            ;
+
             eventStartTimeTextView.setVisibility(View.VISIBLE);
             eventEndTimeTextView.setVisibility(View.VISIBLE);
 
@@ -761,14 +802,7 @@ public class ViewEventFragment extends Fragment {
             autocompletePlaceFragment.setVisibility(View.GONE);
             eventFacilityTextView.setVisibility(View.VISIBLE);
             eventFacility.setVisibility(View.GONE);
-
-            if (newFacility != null) {
-                eventFirebase.addFacility(newFacility);
-                ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
-                facilitiesList.add(newFacility);
-                organizer.setFacilities(facilitiesList);
-                eventFirebase.editOrganizer(organizer);
-            }
+            facilityButton.setVisibility(View.VISIBLE);
 
             editButton.setVisibility(View.VISIBLE);
             deleteButton.setVisibility(View.VISIBLE);
@@ -1170,7 +1204,7 @@ public class ViewEventFragment extends Fragment {
         addFacilityText.setVisibility(View.VISIBLE);
 
         if (!Places.isInitialized()) {
-            Places.initialize(context.getApplicationContext(), BuildConfig.API_KEY);
+            Places.initializeWithNewPlacesApiEnabled(requireContext(), BuildConfig.API_KEY);
         }
 
         PlacesClient placesClient = Places.createClient(context);
