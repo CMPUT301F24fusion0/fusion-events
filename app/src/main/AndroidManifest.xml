@@ -55,6 +55,8 @@
         <activity android:name=".activities.BrowseEventsActivity"/>
         <activity android:name=".activities.EditEventActivity"/>
         <activity android:name=".activities.BrowseProfilesActivity"/>
+        <activity android:name=".fragments.TestFragmentActivity" />
+
 
     </application>
 </manifest>
