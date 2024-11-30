@@ -130,4 +130,25 @@ public class EventFirebaseTest {
                     }
                 });
     }
+
+    /**
+     * Tests if an event can be successfully deleted from Firestore.
+     * @author Simon Haile
+     */
+    @Test
+    public void deleteEventTest() throws WriterException {
+        EventInfo event = newEvent();
+        eventFirebase.addEvent(event);
+
+        eventFirebase.deleteEvent(event.getEventID());
+
+        eventsRef
+                .document(event.getEventID())
+                .get()
+                .addOnSuccessListener(task -> {
+                    if (task.exists()) {
+                        fail("Event was not deleted from Firestore.");
+                    }
+                });
+    }
 }
