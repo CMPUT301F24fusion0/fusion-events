@@ -501,8 +501,10 @@ public class MainFragment extends Fragment {
                         "The lottery is not starting. Be on the look out for the results!", "0");
                 waitlist.conductLottery(eventId, Integer.parseInt(eventDoc.getString("lotteryCapacity")));
                 waitlist.chosenNotification(eventId, "Winner!",
-                        "Congratulations, you have won the lottery! Please accept the invitation to confirm your spot.", "1");
-                waitlist.loseNotification(eventId, "Lottery Results", "Unfortunately, you have lost the lottery. You may still receive an invite if someone declines their invitation.", "0");
+                        "Congratulations, you have won the lottery! Please accept the " +
+                                "invitation to confirm your spot.", "1");
+                waitlist.loseNotification(eventId, "Lottery Results", "Unfortunately, " +
+                        "you have lost the lottery. You may still receive an invite if someone declines their invitation.", "0");
 
                 waitlist.getChosen(eventId, chosen -> {
                     if (!chosen.isEmpty()) {
