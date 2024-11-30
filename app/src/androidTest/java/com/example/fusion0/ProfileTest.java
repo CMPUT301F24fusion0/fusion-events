@@ -19,8 +19,7 @@ public class ProfileTest {
     public ActivityTestRule<MainActivity> activityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     @Rule
-    public GrantPermissionRule permissionRule =
-            GrantPermissionRule.grant(android.Manifest.permission.POST_NOTIFICATIONS);
+    public GrantPermissionRule permissionRule = GrantPermissionRule.grant(android.Manifest.permission.POST_NOTIFICATIONS);
 
     /**
      * Checks if we manage to profile from home screen

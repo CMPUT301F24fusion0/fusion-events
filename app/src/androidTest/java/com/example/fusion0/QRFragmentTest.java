@@ -19,8 +19,7 @@ public class QRFragmentTest {
     public ActivityTestRule<MainActivity> activityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     @Rule
-    public GrantPermissionRule permissionRule =
-            GrantPermissionRule.grant(android.Manifest.permission.CAMERA, android.Manifest.permission.POST_NOTIFICATIONS);
+    public GrantPermissionRule permissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA, android.Manifest.permission.POST_NOTIFICATIONS);
 
     /**
      * Checks to see if we're on the QR Fragment
