@@ -6,33 +6,43 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/adminFeaturesTitle"
-        android:layout_width="wrap_content"
+    <!-- Top Back Button and Centered Title -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/raleway_medium"
-        android:text="Facilities"
-        android:textColor="@color/textColor"
-        android:textSize="23sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:paddingBottom="8dp">
+
+        <ImageButton
+            android:id="@+id/goBackButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_arrow_back"
+            android:background="@android:color/transparent"
+            android:contentDescription="Back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:id="@+id/adminFeaturesTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/raleway_medium"
+            android:text="Facilities"
+            android:textColor="@color/textColor"
+            android:textSize="23sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ListView
         android:id="@+id/facilityListView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
-
-    <Button
-        android:id="@+id/goBackButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Go Back"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@color/figmaBlue"
-        android:textColor="@android:color/white" />
 
 </LinearLayout>
