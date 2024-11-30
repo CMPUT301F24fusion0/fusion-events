@@ -82,7 +82,7 @@ public class FavouriteFragment extends Fragment {
     private TextView emptyFacilitiesList;
 
     EventFirebase eventFirebase = new EventFirebase();
-
+    UserFirestore userFirestore = new UserFirestore();
 
     public FavouriteFragment() {
         // Required empty public constructor
@@ -152,6 +152,7 @@ public class FavouriteFragment extends Fragment {
                         user = userInfo;
                         ArrayList<String> events = user.getEvents();
                         ArrayList<String> eventNames = new ArrayList<>();
+                        ArrayList<String> validEvents = new ArrayList<>();
 
                         final int totalEvents = events.size();
                         final int[] eventsFetchedCount = {0};
@@ -162,10 +163,13 @@ public class FavouriteFragment extends Fragment {
                                 public void onSuccess(EventInfo eventInfo) throws WriterException {
                                     if (eventInfo != null) {
                                         eventNames.add(eventInfo.getEventName());
+                                        validEvents.add(eventId);
                                     }
                                     eventsFetchedCount[0]++;
 
                                     if (eventsFetchedCount[0] == totalEvents) {
+                                        user.setEvents(validEvents);
+                                        userFirestore.editUserEvents(user);
                                         ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, R.layout.spinner_dropdown_item, eventNames);
                                         joinedEventsList.setAdapter(eventsAdapter);
                                     }
