@@ -3,6 +3,7 @@ package com.example.fusion0.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -22,7 +23,7 @@ public class AdminFacilityActivity extends AppCompatActivity {
 
     private ListView facilityListView;
     private FacilityArrayAdapter facilityArrayAdapter;
-    private Button backButton;
+    private ImageButton backButton;
 
 
     @Override
