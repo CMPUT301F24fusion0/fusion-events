@@ -13,7 +13,7 @@ import java.util.Objects;
  */
 public class UserInfo {
     String firstName, lastName, email, phoneNumber, deviceID;
-    ArrayList<String> notifications, events, homePageNotifications;
+    ArrayList<String> notifications, events, homepagenotifications;
     Boolean edit;
 
 
@@ -38,7 +38,7 @@ public class UserInfo {
      */
     public UserInfo(ArrayList<String> notifications, String first, String last, String email, String phoneNumber, String dID, ArrayList<String> events) {
         this.notifications = notifications;
-        this.homePageNotifications = new ArrayList<>();
+        this.homepagenotifications = new ArrayList<>();
         this.firstName = first;
         this.lastName = last;
         this.email = email;
@@ -57,7 +57,7 @@ public class UserInfo {
      */
     public UserInfo(ArrayList<String> notifications, String first, String last, String email, String dID, ArrayList<String> events) {
         this.notifications = notifications;
-        this.homePageNotifications = new ArrayList<>();
+        this.homepagenotifications = new ArrayList<>();
         this.firstName = first;
         this.lastName = last;
         this.email = email;
@@ -74,7 +74,7 @@ public class UserInfo {
     public HashMap<String,Object> user() {
         HashMap<String, Object> user = new HashMap<>();
         user.put("notifications", this.notifications);
-        user.put("homepagenotifications", this.notifications);
+        user.put("homepagenotifications", this.homepagenotifications);
         user.put("dID", this.deviceID);
         user.put("email", this.email);
         user.put("first name", this.firstName);
@@ -92,7 +92,7 @@ public class UserInfo {
      */
     @PropertyName("homepagenotifications")
     public ArrayList<String> getHomePageNotifications() {
-        return homePageNotifications;
+        return homepagenotifications;
     }
 
     /**
@@ -102,8 +102,8 @@ public class UserInfo {
      */
     @PropertyName("homepagenotifications")
     public void setHomePageNotifications(ArrayList<String> homePageNotifications) {
-        this.homePageNotifications = homePageNotifications;
-        updateUser("homePageNotifications", this.homePageNotifications);
+        this.homepagenotifications = homePageNotifications;
+        updateUser("homePageNotifications", this.homepagenotifications);
     }
 
     /**
@@ -115,11 +115,11 @@ public class UserInfo {
      * @param eventId event id
      */
     public void addHomePageNotifications (String title, String body, String flag, String eventId) {
-        this.homePageNotifications.add(title);
-        this.homePageNotifications.add(body);
-        this.homePageNotifications.add(flag);
-        this.homePageNotifications.add(eventId);
-        updateUser("homepagenotifications", this.homePageNotifications);
+        this.homepagenotifications.add(title);
+        this.homepagenotifications.add(body);
+        this.homepagenotifications.add(flag);
+        this.homepagenotifications.add(eventId);
+        updateUser("homepagenotifications", this.homepagenotifications);
     }
 
     /**
