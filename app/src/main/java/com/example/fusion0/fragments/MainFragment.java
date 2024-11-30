@@ -1,5 +1,7 @@
 package com.example.fusion0.fragments;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -51,6 +53,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -95,7 +98,7 @@ public class MainFragment extends Fragment {
 
     private final int REQUEST_CODE = 100;
 
-    private Waitlist waitlist;
+    private Waitlist waitlist = new Waitlist();
 
 
     /**
@@ -119,8 +122,6 @@ public class MainFragment extends Fragment {
 
         loginManagement = new LoginManagement(requireContext());
         notificationList = new ArrayList<>();
-
-        waitlist = new Waitlist();
     }
 
     /**
@@ -167,9 +168,26 @@ public class MainFragment extends Fragment {
                             for (DocumentSnapshot document : querySnapshot.getDocuments()) {
                                 Timestamp registrationDeadline = document.getTimestamp("registrationDate");
 
-                                if (registrationDeadline != null) {
+                                if (registrationDeadline != null && !document.getBoolean("lotteryConducted")) {
                                     Date now = new Date();
-                                    if (now.after(registrationDeadline.toDate()) && !document.getBoolean("lotteryConducted")) {
+                                    Calendar calNow = Calendar.getInstance();
+                                    calNow.setTime(now);
+                                    calNow.set(Calendar.HOUR_OF_DAY, 0);
+                                    calNow.set(Calendar.MINUTE, 0);
+                                    calNow.set(Calendar.SECOND, 0);
+                                    calNow.set(Calendar.MILLISECOND, 0);
+
+                                    Calendar calDeadline = Calendar.getInstance();
+                                    calDeadline.setTime(registrationDeadline.toDate());
+                                    calDeadline.set(Calendar.HOUR_OF_DAY, 0);
+                                    calDeadline.set(Calendar.MINUTE, 0);
+                                    calDeadline.set(Calendar.SECOND, 0);
+                                    calDeadline.set(Calendar.MILLISECOND, 0);
+
+                                    Log.d("DateCheck", "calNow: " + calNow.getTime());
+                                    Log.d("DateCheck", "calDeadline: " + calDeadline.getTime());
+
+                                    if (calNow.after(calDeadline)) {
                                         String eventId = document.getId();
                                         runLottery(eventId, document);
                                         document.getReference().update("lotteryConducted", true);
@@ -198,7 +216,7 @@ public class MainFragment extends Fragment {
         // Retrieve login state
         loginManagement.isUserLoggedIn(isLoggedIn -> {
             if (isLoggedIn) {
-                AppNotifications.permission(requireActivity(), deviceId);
+                AppNotifications.permission(getActivity(), deviceId);
                 new UserFirestore().findUser(deviceId, new UserFirestore.Callback() {
                     @Override
                     public void onSuccess(UserInfo user) {
@@ -469,6 +487,7 @@ public class MainFragment extends Fragment {
             notificationsListView.setVisibility(View.VISIBLE);
         }
     }
+
 
     /**
      * Starting the lottery function and send notifications

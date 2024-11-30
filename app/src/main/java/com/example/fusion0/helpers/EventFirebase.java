@@ -20,19 +20,26 @@ import com.example.fusion0.models.FacilitiesInfo;
  * It includes methods to add, update, delete, and retrieve data for organizers, facilities, and events.
  */
 public class EventFirebase {
-
+    private final FirebaseFirestore firestore;
     private static final CollectionReference organizersRef;
     private static final CollectionReference facilitiesRef;
     private static final CollectionReference eventsRef;
     private static final CollectionReference adminsRef;
 
-    // Static initialization of Firebase Firestore references
     static {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         organizersRef = db.collection("organizers");
         facilitiesRef = db.collection("facilities");
         eventsRef = db.collection("events");
         adminsRef = db.collection("admins");
+    }
+
+    public EventFirebase(FirebaseFirestore firestore) {
+        this.firestore = firestore;
+    }
+
+    public EventFirebase() {
+        this.firestore = FirebaseFirestore.getInstance();
     }
 
     /**
@@ -68,7 +75,7 @@ public class EventFirebase {
      *
      * @param organizerInfo The organizer's information to be added
      */
-    public static void addOrganizer(OrganizerInfo organizerInfo) {
+    public void addOrganizer(OrganizerInfo organizerInfo) {
         HashMap<String, Object> organizer = organizerInfo.organizer();
         String deviceId = organizerInfo.getDeviceId();
         organizersRef.document(deviceId).set(organizer)
@@ -82,7 +89,7 @@ public class EventFirebase {
      *
      * @param organizer The organizer with updated data
      */
-    public static void editOrganizer(OrganizerInfo organizer) {
+    public void editOrganizer(OrganizerInfo organizer) {
         String deviceId = organizer.getDeviceId();
         organizersRef.document(deviceId).set(organizer, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> System.out.println("Organizer data updated successfully."))
@@ -96,7 +103,7 @@ public class EventFirebase {
      * @param deviceId The device ID of the organizer to be retrieved
      * @param callback The callback to handle the result of the retrieval
      */
-    public static void findOrganizer(String deviceId, OrganizerCallback callback) {
+    public void findOrganizer(String deviceId, OrganizerCallback callback) {
         organizersRef.document(deviceId).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -128,7 +135,7 @@ public class EventFirebase {
      *
      * @param facilitiesInfo The facility's information to be added
      */
-    public static void addFacility(FacilitiesInfo facilitiesInfo) {
+    public void addFacility(FacilitiesInfo facilitiesInfo) {
         HashMap<String, Object> facility = facilitiesInfo.facility();
         String facilityID = facilitiesInfo.getFacilityID();
         facilitiesRef.document(facilityID).set(facility)
@@ -142,7 +149,7 @@ public class EventFirebase {
      *
      * @param facility The facility with updated data
      */
-    public static void editFacility(FacilitiesInfo facility) {
+    public void editFacility(FacilitiesInfo facility) {
         String facilityID = facility.getFacilityID();
         facilitiesRef.document(facilityID).set(facility, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> System.out.println("Facility data updated successfully."))
@@ -156,7 +163,7 @@ public class EventFirebase {
      * @param facilityID The ID of the facility to be retrieved
      * @param callback The callback to handle the result of the retrieval
      */
-    public static void findFacility(String facilityID, FacilityCallback callback) {
+    public void findFacility(String facilityID, FacilityCallback callback) {
         facilitiesRef.document(facilityID).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -178,7 +185,7 @@ public class EventFirebase {
      *
      * @param facilityID The ID of the facility to be deleted
      */
-    public static void deleteFacility(String facilityID) {
+    public void deleteFacility(String facilityID) {
         facilitiesRef.document(facilityID).delete().addOnSuccessListener(documentReference -> System.out.println("Facility deleted successfully.")).addOnFailureListener(error -> System.err.println("Error deleting facility: " + error.getMessage()));
     }
 
@@ -188,7 +195,7 @@ public class EventFirebase {
      *
      * @param eventInfo The event's information to be added
      */
-    public static void addEvent(EventInfo eventInfo) {
+    public void addEvent(EventInfo eventInfo) {
         HashMap<String, Object> event = eventInfo.event();
         String eventID = eventInfo.getEventID();
         eventsRef.document(eventID).set(event).addOnSuccessListener(documentReference -> System.out.println("Event added successfully.")).addOnFailureListener(error -> System.err.println("Error adding event: " + error.getMessage()));
@@ -201,7 +208,7 @@ public class EventFirebase {
      * @param eventID The ID of the event to be retrieved
      * @param callback The callback to handle the result of the retrieval
      */
-    public static void findEvent(String eventID, EventCallback callback) {
+    public void findEvent(String eventID, EventCallback callback) {
         eventsRef.document(eventID).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -231,7 +238,7 @@ public class EventFirebase {
      *
      * @param event The event with updated data
      */
-    public static void editEvent(EventInfo event) {
+    public void editEvent(EventInfo event) {
         String eventID = event.getEventID();
         eventsRef.document(eventID).set(event, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> System.out.println("Event data updated successfully."))
@@ -244,7 +251,7 @@ public class EventFirebase {
      *
      * @param eventID The ID of the event to be deleted
      */
-    public static void deleteEvent(String eventID) {
+    public void deleteEvent(String eventID) {
         eventsRef.document(eventID).delete().addOnSuccessListener(documentReference -> System.out.println("Event deleted successfully.")).addOnFailureListener(error -> System.err.println("Error deleting event: " + error.getMessage()));
     }
 
