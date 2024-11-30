@@ -2,6 +2,7 @@ package com.example.fusion0.helpers;
 
 import android.util.Log;
 
+import com.example.fusion0.models.OrganizerInfo;
 import com.example.fusion0.models.UserInfo;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -40,6 +41,9 @@ public class Waitlist implements Serializable {
     }
 
 
+    public interface LotteryCallback {
+        void onComplete();
+    }
     /**
      * @author Sehej Brar
      * Samples a specified number of entrants from the waiting list for a specific event. Also
@@ -48,7 +52,7 @@ public class Waitlist implements Serializable {
      * @param eventId The unique identifier of the event.
      * @param numToSelect The number of attendees to be randomly selected from the waiting list.
      */
-    public void conductLottery(String eventId, int numToSelect) {
+    public void conductLottery(String eventId, int numToSelect, LotteryCallback callback) {
         // Fetch event details to get capacity and current acceptedCount
         eventsRef.document(eventId).get().addOnSuccessListener(eventDoc -> {
             if (eventDoc.exists()) {
@@ -117,6 +121,8 @@ public class Waitlist implements Serializable {
                                                 loseNotification(eventId, "Lottery Results", "Unfortunately, " +
                                                         "you have lost the lottery. You may still receive an invite if someone declines their invitation.", "0");
                                             });
+                                            documentReference.update("waitinglist", waitList);
+                                            callback.onComplete();
                                         }
                                     }
                                 }
