@@ -1,24 +1,11 @@
 package com.example.fusion0.activities;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.fusion0.R;
-import com.example.fusion0.fragments.AddEventFragment;
-import com.example.fusion0.fragments.ChosenEntrantsFragment;
-import com.example.fusion0.helpers.Waitlist;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * The MainActivity serves as the main entry point for the app. It manages the login state
