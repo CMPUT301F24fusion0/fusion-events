@@ -7,6 +7,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white">
 
+    <LinearLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:background="@color/royalBlue"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile"
+            android:textSize="26sp"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/white"
+            android:fontFamily="@font/dmsans_medium" />
+
+
+    </LinearLayout>
+
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/profileSkeletonLayout"
         android:layout_width="match_parent"
@@ -18,7 +41,7 @@
         app:layout_constraintBottom_toTopOf="@id/toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
         android:visibility="gone">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -71,9 +94,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:padding="16dp"
-        android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/toolbar">
 
@@ -698,7 +720,7 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
                 android:contentDescription="blue_home"
-                android:src="@drawable/ic_search"
+                android:src="@drawable/ic_activity_outline"
                 android:clickable="false"
                 android:focusable="false"/>
 
@@ -712,7 +734,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_regular"
                 android:gravity="center_horizontal"
-                android:text="Browse"
+                android:text="Activities"
                 android:textSize="11.5sp"
                 android:clickable="false"
                 android:focusable="false"/>

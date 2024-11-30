@@ -120,7 +120,7 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
                 android:contentDescription="blue_home"
-                android:src="@drawable/ic_home_outline"
+                android:src="@drawable/ic_home_filled"
                 android:clickable="false"
                 android:focusable="false"/>
 
@@ -231,7 +231,7 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
                 android:contentDescription="blue_home"
-                android:src="@drawable/ic_search"
+                android:src="@drawable/ic_activity_outline"
                 android:clickable="false"
                 android:focusable="false"/>
 
@@ -245,7 +245,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_regular"
                 android:gravity="center_horizontal"
-                android:text="Browse"
+                android:text="Activities"
                 android:textSize="11.5sp"
                 android:clickable="false"
                 android:focusable="false"/>
