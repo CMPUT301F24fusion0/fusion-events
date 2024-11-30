@@ -39,14 +39,14 @@ import java.util.Map;
 public class JoinedEventActivity extends AppCompatActivity {
 
     public UserFirestore userFirestore;
-    private ImageButton backButton;
+    private ImageButton backButton, facilityButton;
     private TextView eventName, facility, description, registrationDate;
     private ImageView uploadedImageView;
     private TextView startDateText;
     private TextView endDateText;
     private TextView capacity, lotteryCapacity;
     private ImageView qrImage;
-    private Button unjoinButton, facilityButton;
+    private Button unjoinButton;
 
     private UserInfo user;
     private EventInfo event;
