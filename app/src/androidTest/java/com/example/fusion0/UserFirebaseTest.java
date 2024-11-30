@@ -2,6 +2,9 @@ package com.example.fusion0;
 
 import static org.junit.Assert.fail;
 
+import com.example.fusion0.helpers.UserFirestore;
+import com.example.fusion0.models.EventInfo;
+import com.example.fusion0.models.UserInfo;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -25,7 +28,7 @@ public class UserFirebaseTest {
     }
 
     public UserInfo newUser() {
-        return new UserInfo(new ArrayList<String>(Arrays.asList("title", "body")), "Mike", "Ross", "mross@psl.com", "4613217890", "1234", new ArrayList<EventInfo>());
+        return new UserInfo(new ArrayList<String>(Arrays.asList("title", "body")), "Mike", "Ross", "mross@psl.com", "4613217890", "1234", new ArrayList<String>());
     }
 
     /**
@@ -48,7 +51,7 @@ public class UserFirebaseTest {
      */
     @Test
     public void addTest() {
-        firebase.addUser(newUser());
+        firebase.addUser(newUser(), () -> {});
         usersRef
                 .document("1234")
                 .get()

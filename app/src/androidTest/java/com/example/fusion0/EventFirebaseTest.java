@@ -1,9 +1,14 @@
 package com.example.fusion0;
 
-
 import static org.junit.Assert.fail;
 
+import androidx.test.core.app.ApplicationProvider;
 
+import com.example.fusion0.helpers.EventFirebase;
+import com.example.fusion0.models.EventInfo;
+import com.example.fusion0.models.FacilitiesInfo;
+import com.example.fusion0.models.OrganizerInfo;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.WriterException;
@@ -11,93 +16,139 @@ import com.google.zxing.WriterException;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Objects;
-import java.util.UUID;
 
 public class EventFirebaseTest {
-    private CollectionReference organizersRef, facilitiesRef, eventsRef;
-    private EventFirebase firebase;
+    private CollectionReference eventsRef;
+    private EventFirebase eventFirebase;
 
     @Before
-    public void firebase() {
+    public void setUp() {
+        FirebaseApp.initializeApp(ApplicationProvider.getApplicationContext());
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        organizersRef = db.collection("organizers");
-        facilitiesRef = db.collection("facilities");
-        eventsRef = db.collection("facilities");
-        firebase = new EventFirebase();
+        eventsRef = db.collection("events");
+        eventFirebase = new EventFirebase();
     }
 
-    public OrganizerInfo newOrganizer() {
-        ArrayList<EventInfo> events = new ArrayList<>();
-        ArrayList<FacilitiesInfo> facilities = new ArrayList<>();
-        return new OrganizerInfo("1234");
+    /**
+     * Helper method to create a new EventInfo object.
+     * @author Simon Haile
+     */
+    public EventInfo newEvent() throws WriterException {
+        return new EventInfo(
+                "Organizer1", "Sample Event", "123 Address", "facility1", "Sample Facility",
+                "100", "0", "Test event", new java.util.Date(), new java.util.Date(),
+                new java.util.Date(), "12:00", "14:00", "eventPosterUrl", false, 0.0, 0.0, 100
+        );
     }
 
+    /**
+     * Ensure the collection exists and is accessible.
+     * @author Simon Haile
+     */
     @Test
-    public void addOrganizerTest() {
-        EventFirebase.addOrganizer(newOrganizer());
-        organizersRef
-                .document("1234")
+    public void collectionEventTest() {
+        eventsRef
+                .limit(1)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (queryDocumentSnapshots.isEmpty()) {
+                        throw new IllegalArgumentException("This collection doesn't exist");
+                    }
+                });
+    }
+
+    /**
+     * Tests if an event can be successfully added to Firestore.
+     * @author Simon Haile
+     */
+    @Test
+    public void addEventTest() throws WriterException {
+        EventInfo event = newEvent();
+        eventFirebase.addEvent(event);
+
+        eventsRef
+                .document(event.getEventID())
                 .get()
                 .addOnSuccessListener(task -> {
                     if (!task.exists()) {
-                        fail();
+                        fail("Event was not added to Firestore.");
                     }
                 });
     }
 
-    /*
+    /**
+     * Tests if an event can be successfully retrieved from Firestore.
+     * @author Simon Haile
+     */
     @Test
-    public void editTest() throws WriterException {
-        OrganizerInfo organizer = new OrganizerInfo("1234");
+    public void findEventTest() throws WriterException {
+        EventInfo event = newEvent();
+        eventFirebase.addEvent(event);
 
-        Date startDate = new Date();
-        Date endDate = new Date();
-        EventInfo event = new EventInfo("1234", "Event1", "address", "facility1", "100", "description", startDate, endDate, "12", "2", "eventposter");
-        ArrayList<EventInfo> newEventList = organizer.getEvents();
-        newEventList.add(event);
-        organizer.setEvents(newEventList);
+        eventFirebase.findEvent(event.getEventID(), new EventFirebase.EventCallback() {
+            @Override
+            public void onSuccess(EventInfo retrievedEvent) {
+                if (!(Objects.equals(retrievedEvent.getEventID(), event.getEventID())) ||
+                        !(Objects.equals(retrievedEvent.getEventName(), "Sample Event"))) {
+                    fail("Event retrieved from Firestore does not match the expected values.");
+                }
+            }
 
-        FacilitiesInfo facility = new FacilitiesInfo("address", "facility1", "1234");
-        ArrayList<FacilitiesInfo> newFacilitiesList = organizer.getFacilities();
-        newFacilitiesList.add(facility);
-        organizer.setFacilities(newFacilitiesList);
+            @Override
+            public void onFailure(String error) {
+                fail("Failed to retrieve event: " + error);
+            }
+        });
+    }
 
-        EventFirebase.editOrganizer(organizer);
-        organizersRef
-                .document("1234")
+    /**
+     * Tests if an event's information can be successfully updated.
+     * @author Simon Haile
+     */
+    @Test
+    public void editEventTest() throws WriterException {
+        EventInfo event = newEvent();
+        eventFirebase.addEvent(event); // Add event to Firestore first
+
+        event.setEventName("Updated Event Name");
+        eventFirebase.editEvent(event);
+
+        eventsRef
+                .document(event.getEventID())
                 .get()
                 .addOnSuccessListener(task -> {
                     if (task.exists()) {
-                        if (!(Objects.equals(task.getString("events"), "Event 1"))) { // Check the correct event name
-                            fail("Expected event name not found");
+                        if (!(Objects.equals(task.getString("eventName"), "Updated Event Name"))) {
+                            fail("Event name was not updated correctly in Firestore.");
                         }
                     } else {
-                        fail("Organizer document does not exist");
+                        fail("Event document does not exist after update.");
                     }
                 });
     }
 
+    /**
+     * Tests if an event can be successfully deleted from Firestore.
+     * @author Simon Haile
      */
-
     @Test
-    public void deleteTest() {
-        firebase.deleteOrganizer("1234");
-        organizersRef
-                .document("1234")
+    public void deleteEventTest() throws WriterException {
+        EventInfo event = newEvent();
+        eventFirebase.addEvent(event);
+
+        eventFirebase.deleteEvent(event.getEventID());
+
+        eventsRef
+                .document(event.getEventID())
                 .get()
                 .addOnSuccessListener(task -> {
                     if (task.exists()) {
-                        fail();
+                        fail("Event was not deleted from Firestore.");
                     }
                 });
-
     }
 }
-
-
-

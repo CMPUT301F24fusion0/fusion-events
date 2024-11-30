@@ -148,7 +148,7 @@
 
                 <TextView
                     android:id="@+id/facilityName"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Facility 1"
                     android:textColor="@color/textColor"
@@ -156,6 +156,14 @@
                     android:fontFamily="@font/raleway_semibold"
                     android:gravity="center_vertical"
                     android:layout_weight="1"/>
+
+                <ImageButton
+                    android:id="@+id/facility_view_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/ic_eye_icon"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
             </LinearLayout>
             <View
                 android:layout_width="match_parent"
@@ -253,6 +261,40 @@
                 </LinearLayout>
 
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Registration Deadline:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical">
+                </TextView>
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
+                <TextView
+                    android:id="@+id/registration_date_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"
+                    android:text="Start Date"
+                    android:textColor="@color/textColor"
+                    android:textSize="15sp" />
+            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -269,7 +311,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Capacity:"
+                    android:text="Wishlist Capacity:"
                     android:textColor="@color/textColor"
                     android:textSize="17sp"
                     android:fontFamily="@font/raleway_semibold"/>
@@ -287,6 +329,40 @@
                     android:fontFamily="@font/raleway_semibold"
                     android:layout_weight="1"/>
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textColor"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lottery Capacity:"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"/>
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="0dp"/>
+                <TextView
+                    android:id="@+id/lotteryCapacityTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="20"
+                    android:textColor="@color/textColor"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/raleway_semibold"
+                    android:gravity="center_vertical"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+
 
             <View
                 android:layout_width="match_parent"
