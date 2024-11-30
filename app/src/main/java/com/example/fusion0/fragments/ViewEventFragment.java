@@ -319,7 +319,7 @@ public class ViewEventFragment extends Fragment {
                             waitlist.getAll(eventID, all -> {
                                 Calendar calendar = Calendar.getInstance();
                                 Date currentDate = calendar.getTime();
-                                if (!all.contains(deviceID) & (currentEntrants.size() < capacity) & !(event.getRegistrationDate().after(currentDate))) {
+                                if (!all.contains(deviceID) & (currentEntrants.size() < capacity) & !(event.getRegistrationDate().before(currentDate))) {
                                     joinButton.setVisibility(View.VISIBLE);
                                     joinButton.setOnClickListener(view -> {
                                         new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
@@ -356,7 +356,7 @@ public class ViewEventFragment extends Fragment {
                                             }
                                         });
                                     });
-                                } else if (!all.contains(deviceID) & event.getRegistrationDate().after(currentDate)) {
+                                } else if (!all.contains(deviceID) & event.getRegistrationDate().before(currentDate)) {
                                     registrationPassedFullTextView.setVisibility(View.VISIBLE);
 
                                 } else if (!all.contains(deviceID) & (currentEntrants.size() >= capacity)) {
