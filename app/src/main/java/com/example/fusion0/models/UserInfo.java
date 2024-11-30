@@ -108,6 +108,22 @@ public class UserInfo {
 
     /**
      * @author Sehej Brar
+     * Adds notification to the ArrayList
+     * @param title title
+     * @param body body
+     * @param flag flag for invite for info
+     * @param eventId event id
+     */
+    public void addHomePageNotifications (String title, String body, String flag, String eventId) {
+        this.homePageNotifications.add(title);
+        this.homePageNotifications.add(body);
+        this.homePageNotifications.add(flag);
+        this.homePageNotifications.add(eventId);
+        updateUser("homepagenotifications", this.homePageNotifications);
+    }
+
+    /**
+     * @author Sehej Brar
      * Gets the events for a user (on fragment_waitlist)
      * @return an arraylist of events
      */
@@ -152,6 +168,8 @@ public class UserInfo {
      * Adds notification to the ArrayList
      * @param title title
      * @param body body
+     * @param flag flag for invite for info
+     * @param eventId event id
      */
     public void addNotifications(String title, String body, String flag, String eventId) {
         this.notifications.add(title);

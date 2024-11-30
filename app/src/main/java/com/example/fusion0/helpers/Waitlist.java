@@ -403,12 +403,11 @@ public class Waitlist implements Serializable {
      * @param message message of notification
      */
     public void loseNotification(String eventId, String title, String message, String flag) {
-        getAll(eventId, all -> getChosen(eventId, chosen -> {
-            all.removeAll(chosen);
-            for (String dID: all) {
+        getWait(eventId, wait -> {
+            for (String dID: wait) {
                 AppNotifications.sendNotification(dID, title, message, flag, eventId);
             }
-        }));
+        });
     }
 
     /**
