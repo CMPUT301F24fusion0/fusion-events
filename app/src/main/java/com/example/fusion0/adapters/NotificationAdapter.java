@@ -98,6 +98,18 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             lotteryHolder.acceptButton.setOnClickListener(v -> {
                 Toast.makeText(context, "Event Accepted", Toast.LENGTH_SHORT).show();
                 waitlist.changeStatus(item.getEventId(), userId, "accept");
+                NotificationHelper.deleteNotification(userId, item, new NotificationHelper.Callback() {
+                    @Override
+                    public void onNotificationsUpdated(List<NotificationItem> updatedNotificationList) {}
+
+                    @Override
+                    public void onError(String error) {
+                        Log.e("Error with deleting notification item", error);
+                    }
+                });
+
+                notificationList.remove(position);
+                notifyItemRemoved(position);
             });
 
             lotteryHolder.declineButton.setOnClickListener(v -> {

@@ -110,7 +110,13 @@ public class Waitlist implements Serializable {
                                                 }
                                             }
                                             // Update the waiting list
-                                            documentReference.update("waitinglist", waitList);
+                                            documentReference.update("waitinglist", waitList).addOnSuccessListener(aVoid -> {
+                                                chosenNotification(eventId, "Winner!",
+                                                        "Congratulations, you have won the lottery! Please accept the " +
+                                                                "invitation to confirm your spot.", "1");
+                                                loseNotification(eventId, "Lottery Results", "Unfortunately, " +
+                                                        "you have lost the lottery. You may still receive an invite if someone declines their invitation.", "0");
+                                            });
                                         }
                                     }
                                 }
@@ -138,7 +144,7 @@ public class Waitlist implements Serializable {
      * @param newStatus the status to change the user to
      */
     public void changeStatus(String eventID, String userID, String newStatus) {
-        ArrayList<String> allStatus = new ArrayList<>(Arrays.asList("chosen", "waiting", "cancel", "chosen"));
+        ArrayList<String> allStatus = new ArrayList<>(Arrays.asList("accept", "waiting", "cancel", "chosen"));
 
         if (userID == null || eventID == null|| !allStatus.contains(newStatus.toLowerCase())) {
             throw new IllegalArgumentException("The argument provided is not valid");
@@ -256,7 +262,7 @@ public class Waitlist implements Serializable {
     }
 
     /**
-     * Gets all those on fragment_waitlist
+     * Gets all those on waitlist
      * @author Sehej Brar
      * @param eventId event id
      * @param waitingCB a callback for entrants on fragment_waitlist that are waiting
@@ -349,15 +355,19 @@ public class Waitlist implements Serializable {
                 DocumentSnapshot doc = task.getResult();
                 if (doc.exists()) {
                     ArrayList<Map<String, String>> all_waitingList = (ArrayList<Map<String, String>>) doc.get("waitinglist");
-
+                    Log.d("all_waitingList", "s " + all_waitingList);
+                    Log.d("Task to get chosen", "is there");
                     if (all_waitingList != null) {
+                        Log.d("list to get chosen", "is there");
                         for (Map<String, String> user: all_waitingList) {
                             if (Objects.equals(user.get("status"), "chosen")) {
                                 chosen.add(user.get("did"));
+                                Log.d("chosen: ", user.get("did"));
                             }
                         }
                     }
                 }
+                Log.d("Chosen: ", "s: " + chosen);
                 chosenCB.ChosenDid(chosen);
             } else {
                 Log.e("Error", "Error");
@@ -403,12 +413,11 @@ public class Waitlist implements Serializable {
      * @param message message of notification
      */
     public void loseNotification(String eventId, String title, String message, String flag) {
-        getAll(eventId, all -> getChosen(eventId, chosen -> {
-            all.removeAll(chosen);
-            for (String dID: all) {
+        getWait(eventId, wait -> {
+            for (String dID: wait) {
                 AppNotifications.sendNotification(dID, title, message, flag, eventId);
             }
-        }));
+        });
     }
 
     /**

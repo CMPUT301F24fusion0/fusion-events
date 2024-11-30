@@ -53,7 +53,7 @@ public class AdminFeaturesActivity extends AppCompatActivity {
                 // Example: Start a new activity
                 Intent intent = new Intent(AdminFeaturesActivity.this, AdminFacilityActivity.class);
                 startActivity(intent);
-            }
+            }});
 
         browseProfilesButton.setOnClickListener(v -> {
             Intent intent = new Intent(AdminFeaturesActivity.this, BrowseProfilesActivity.class);

@@ -103,6 +103,7 @@ public class AppNotifications {
                 if (user != null) {
                     user.editMode(true);
                     user.addNotifications(title, body, flag, eventId);
+                    user.addHomePageNotifications(title, body, flag, eventId);
                     user.editMode(false);
                 }
             }
