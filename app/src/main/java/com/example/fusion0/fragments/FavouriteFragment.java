@@ -282,7 +282,7 @@ public class FavouriteFragment extends Fragment {
                     Bundle bundle = new Bundle();
                     bundle.putString("eventID", eventID);
 
-                    Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_viewEventFragment, bundle);
+                    Navigation.findNavController(view1).navigate(R.id.action_favouriteFragment_to_viewEventFragment, bundle);
                 } else {
                     Toast.makeText(context, "Invalid event selected.", Toast.LENGTH_SHORT).show();
                 }

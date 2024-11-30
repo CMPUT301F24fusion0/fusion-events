@@ -76,6 +76,8 @@ public class RegistrationFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Bundle bundle = getArguments();
+
         register.setOnClickListener(v-> {
             String first = firstName.getText().toString().trim();
             String last = lastName.getText().toString().trim();
@@ -84,16 +86,14 @@ public class RegistrationFragment extends Fragment {
 
             @SuppressLint("HardwareIds") String dID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
             registration(dID, first, last, emails, phone);
-            Bundle bundle = getArguments();
 
             if (bundle != null) {
                 if (bundle.containsKey("eventID")) {
-                    Log.d("event", "id");
                     String eventID = bundle.getString("eventID");
-                    Intent intent = new Intent(getActivity(), ViewEventFragment.class);
-                    intent.putExtra("eventID", eventID);
+                    Bundle newBundle = new Bundle();
+                    newBundle.putString("eventID", eventID);
+                    Navigation.findNavController(v).navigate(R.id.action_registrationFragment_to_viewEventFragment, newBundle);
                     Log.d("Checkpoint", "bundle was good - going back to vea");
-                    startActivity(intent);
                 } else if (Objects.equals(bundle.getString("activity"), "ViewEventFragment")) {
                     Log.d("Checkpoint", "the bundle was null - going back to vea");
                     Intent intent = new Intent(getActivity(), MainActivity.class);
@@ -109,8 +109,10 @@ public class RegistrationFragment extends Fragment {
         });
 
         backButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), MainActivity.class);
-            startActivity(intent);
+            String eventID = bundle.getString("eventID");
+            Bundle newBundle = new Bundle();
+            newBundle.putString("eventID", eventID);
+            Navigation.findNavController(v).navigate(R.id.action_registrationFragment_to_viewEventFragment, newBundle);
         });
     }
 

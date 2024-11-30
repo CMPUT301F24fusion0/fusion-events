@@ -140,6 +140,9 @@
         <action
             android:id="@+id/action_registrationFragment_to_favFragment"
             app:destination="@id/favouriteFragment"/>
+        <action
+            android:id="@+id/action_registrationFragment_to_viewEventFragment"
+            app:destination="@id/viewEventFragment" />
     </fragment>
 
     <fragment
@@ -173,8 +176,8 @@
         android:label="Waitlist Fragment"
         tools:layout="@layout/fragment_waitlist">
         <action
-            android:id="@+id/action_cancelledEntrantsFragment_to_viewEventFragment"
-            app:destination="@id/viewEventFragment"/>
+            android:id="@+id/action_waitlistFragment_to_viewEventFragment"
+            app:destination="@id/viewEventFragment" />
     </fragment>
 
     <fragment
@@ -183,8 +186,8 @@
         android:label="Chosen Entrants Fragment"
         tools:layout="@layout/fragment_chosen_entrants">
         <action
-            android:id="@+id/action_cancelledEntrantsFragment_to_viewEventFragment"
-            app:destination="@id/viewEventFragment"/>
+            android:id="@+id/action_chosenEntrantsFragment_to_viewEventFragment"
+            app:destination="@id/viewEventFragment" />
     </fragment>
 
     <fragment

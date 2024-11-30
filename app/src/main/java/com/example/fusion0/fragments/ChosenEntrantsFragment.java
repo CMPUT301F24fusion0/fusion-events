@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.R;
@@ -162,11 +163,9 @@ public class ChosenEntrantsFragment extends Fragment {
         Bundle bundle = getArguments();
 
         backButton.setOnClickListener(v -> {
-            if (bundle != null) {
-                Intent intent = new Intent(getActivity(), ViewEventFragment.class);
-                intent.putExtra("eventID", bundle.getString("eventID"));
-                startActivity(intent);
-            }
+            Bundle newBundle = new Bundle();
+            newBundle.putString("eventID", bundle.getString("eventID"));
+            Navigation.findNavController(view).navigate(R.id.action_chosenEntrantsFragment_to_viewEventFragment, newBundle);
         });
 
         fillLotteryButton.setOnClickListener(v -> {

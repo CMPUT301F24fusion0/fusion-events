@@ -46,6 +46,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.example.fusion0.BuildConfig;
 import com.example.fusion0.R;
 import com.example.fusion0.activities.MainActivity;
+import com.example.fusion0.activities.ViewFacilityActivity;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.GeoLocation;
 import com.example.fusion0.helpers.UserFirestore;
@@ -77,10 +78,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -98,8 +102,8 @@ public class ViewEventFragment extends Fragment {
     private TextView eventNameTextView, eventFacilityTextView, addFacilityText, eventDescriptionTextView, registrationDateRequirementsTextView, registrationDateTextView, registrationPassedFullTextView, dateRequirementsTextView, eventStartDateTextView, eventEndDateTextView, eventStartTimeTextView, eventEndTimeTextView, eventCapacityTextView, eventLotteryCapacityTextView, waitinglistFullTextView;
     private EditText eventNameEditText, eventDescriptionEditText, eventCapacityEditText, eventLotteryCapacityEditText;
     private ImageView eventPosterImageView, qrImageView;
-    private Button facilityButton, startDateButton, endDateButton, registrationDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton, waitinglistButton, cancelledEntrantsButton, chosenEntrantsButton, uploadImageButton, lotteryButton;
-    private ImageButton backButton;
+    private Button startDateButton, endDateButton, registrationDateButton, editButton, deleteButton, joinButton, cancelButton, saveButton, waitinglistButton, cancelledEntrantsButton, chosenEntrantsButton, uploadImageButton, lotteryButton;
+    private ImageButton backButton, facilityButton, mapButton, listButton;
     private EventInfo event;
     private EventFirebase eventFirebase;
     private UserInfo user;
@@ -134,6 +138,7 @@ public class ViewEventFragment extends Fragment {
 
         storageRef = FirebaseStorage.getInstance().getReference();
         waitlist = new Waitlist();
+        eventFirebase = new EventFirebase();
         deviceID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
     }
@@ -151,6 +156,8 @@ public class ViewEventFragment extends Fragment {
         Context context = requireContext();
         Activity activity = requireActivity();
 
+        mapButton = view.findViewById(R.id.mapButton);
+        listButton = view.findViewById(R.id.listButton);
         backButton = view.findViewById(R.id.backButton);
         eventNameTextView = view.findViewById(R.id.EventName);
         eventDescriptionTextView = view.findViewById(R.id.description);
@@ -196,7 +203,42 @@ public class ViewEventFragment extends Fragment {
         toolbar = view.findViewById(R.id.toolbar);
 
         backButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_mainFragment);
+            Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_favouriteFragment);
+        });
+
+        facilityButton.setOnClickListener(v -> {
+            Intent intent = new Intent(requireActivity(), ViewFacilityActivity.class);
+            intent.putExtra("facilityID", event.getFacilityID());
+            intent.putExtra("deviceID", deviceID);
+            startActivity(intent);
+        });
+
+        mapButton.setOnClickListener(v->{
+            GeoLocation geoLocation = new GeoLocation(getActivity(), context, event.getLatitude(), event.getLongitude(), event.getRadius());
+
+            ArrayList<Map<String, String>> waitinglist = event.getWaitinglist();
+            List<double[]> userLatLngList = new ArrayList<>();
+            for (Map<String, String> user : waitinglist) {
+                String latStr = user.get("latitude");
+                String lonStr = user.get("longitude");
+
+                // Check if both latitude and longitude are available
+                if (latStr != null && lonStr != null) {
+                    try {
+                        // Convert latitude and longitude from String to double
+                        double latitude = Double.parseDouble(latStr);
+                        double longitude = Double.parseDouble(lonStr);
+
+                        // Add the latitude and longitude as a double array
+                        userLatLngList.add(new double[]{latitude, longitude});
+                    } catch (NumberFormatException e) {
+                        // Handle the case where parsing fails, maybe log the error
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            geoLocation.showMapDialog(userLatLngList);
         });
 
         Bundle bundle = getArguments();
@@ -215,7 +257,7 @@ public class ViewEventFragment extends Fragment {
         });
 
         if (eventID != null) {
-            EventFirebase.findEvent(eventID, new EventFirebase.EventCallback() {
+            eventFirebase.findEvent(eventID, new EventFirebase.EventCallback() {
                 @Override
                 public void onSuccess(EventInfo eventInfo) throws WriterException {
                     if (eventInfo == null) {
@@ -287,7 +329,7 @@ public class ViewEventFragment extends Fragment {
                         toolbar.setVisibility(View.VISIBLE);
 
                         if (deviceID.equals(event.getOrganizer())) {
-                            EventFirebase.findOrganizer(event.getOrganizer(), new EventFirebase.OrganizerCallback() {
+                            eventFirebase.findOrganizer(event.getOrganizer(), new EventFirebase.OrganizerCallback() {
                                 @Override
                                 public void onSuccess(OrganizerInfo organizerInfo) {
                                     organizer = organizerInfo;
@@ -307,6 +349,8 @@ public class ViewEventFragment extends Fragment {
                             deleteButton.setVisibility(View.GONE);
                             cancelButton.setVisibility(View.GONE);
                             saveButton.setVisibility(View.GONE);
+                            mapButton.setVisibility(View.GONE);
+                            listButton.setVisibility(View.GONE);
 
                             ArrayList<Map<String, String>> currentEntrants = event.getWaitinglist();
                             int capacity = Integer.parseInt(event.getCapacity());
@@ -322,7 +366,6 @@ public class ViewEventFragment extends Fragment {
                                             public void onSuccess(UserInfo userInfo) {
                                                 if (userInfo != null) {
                                                     user = userInfo;
-                                                    Log.d("Checkpoint", "the user is not null");
                                                     if (event.getGeolocation()) {
                                                         GeoLocation geoLocation = new GeoLocation(getActivity(), context, event.getLatitude(), event.getLongitude(), event.getRadius());
                                                         Log.d("ViewEventFragment", "Radius: " + event.getRadius());
@@ -342,7 +385,7 @@ public class ViewEventFragment extends Fragment {
                                                     bundle.putString("eventID", eventID);
                                                     bundle.putString("activity", activity);
                                                     registrationFragment.setArguments(bundle);
-                                                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_registrationFragment);
+                                                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_registrationFragment, bundle);
                                                 }
                                             }
 
@@ -374,7 +417,7 @@ public class ViewEventFragment extends Fragment {
                                         // Remove it on the user's collection
                                         waitlist.removeFromUserWL(deviceID, eventID, user);
 
-                                        EventFirebase.editEvent(event);
+                                        eventFirebase.editEvent(event);
 
                                         new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
                                             @Override
@@ -392,7 +435,7 @@ public class ViewEventFragment extends Fragment {
                                         user.setEvents(newEventsList);
                                         new UserFirestore().editUserEvents(user);
 
-                                        EventFirebase.editEvent(event);
+                                        eventFirebase.editEvent(event);
 
                                         Intent intent = new Intent(context, MainActivity.class);
                                         startActivity(intent);
@@ -437,34 +480,37 @@ public class ViewEventFragment extends Fragment {
                     newBundle.putSerializable("fragment_waitlist", waitlist);
                     waitlistFragment.setArguments(newBundle);
 
-                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_waitlistFragment);
+                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_waitlistFragment, newBundle);
                 }
             });
         });
 
         chosenEntrantsButton.setOnClickListener(v -> {
             waitlist.getChosen(eventID, chosen -> {
-                ArrayList<Map<String, String>> fullChosenEntrants = new ArrayList<>();
+                if (chosen.isEmpty()) {
+                    Toast.makeText(context, "Chosen list is empty.", Toast.LENGTH_SHORT).show();
+                } else {
+                    ArrayList<Map<String, String>> fullChosenEntrants = new ArrayList<>();
 
 
-                if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
-                    for (Map<String, String> user : event.getWaitinglist()) {
-                        if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
-                            fullChosenEntrants.add(user);
+                    if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
+                        for (Map<String, String> user : event.getWaitinglist()) {
+                            if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
+                                fullChosenEntrants.add(user);
+                            }
                         }
                     }
+                    ChosenEntrantsFragment chosenEntrants = new ChosenEntrantsFragment();
+
+                    Bundle newBundle = new Bundle();
+                    newBundle.putSerializable("chosenEntrantsData", fullChosenEntrants);
+                    newBundle.putString("eventID", event.getEventID());
+                    newBundle.putSerializable("fragment_waitlist", waitlist);
+                    newBundle.putString("lotteryCapacity", event.getLotteryCapacity());
+                    chosenEntrants.setArguments(newBundle);
+                    // Launch the ChosenEntrantsFragment fragment with the filtered data
+                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_chosenEntrantsFragment, newBundle);
                 }
-                ChosenEntrantsFragment chosenEntrants = new ChosenEntrantsFragment();
-
-                Bundle newBundle = new Bundle();
-                newBundle.putSerializable("chosenEntrantsData", fullChosenEntrants);
-                newBundle.putString("eventID", event.getEventID());
-                newBundle.putSerializable("fragment_waitlist", waitlist);
-                newBundle.putString("lotteryCapacity", event.getLotteryCapacity());
-                chosenEntrants.setArguments(newBundle);
-
-                // Launch the ChosenEntrantsFragment fragment with the filtered data
-                Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_chosenEntrantsFragment);
             });
         });
 
@@ -492,7 +538,7 @@ public class ViewEventFragment extends Fragment {
                     newBundle.putSerializable("fragment_waitlist", waitlist);
                     cancelledEntrantsFragment.setArguments(newBundle);
 
-                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_cancelledEntrantsFragment);
+                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_cancelledEntrantsFragment, newBundle);
                 }
             });
         });
@@ -600,15 +646,15 @@ public class ViewEventFragment extends Fragment {
             event.setCapacity(newEventCapacity);
             event.setLotteryCapacity(newEventLotteryCapacity);
             if (newFacility != null) {
-                EventFirebase.addFacility(newFacility);
+                eventFirebase.addFacility(newFacility);
                 ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
                 facilitiesList.add(newFacility);
                 organizer.setFacilities(facilitiesList);
-                EventFirebase.editOrganizer(organizer);
+                eventFirebase.editOrganizer(organizer);
             }
 
             if (!event.getFacilityID().equals(facilityID)) {
-                EventFirebase.findFacility(event.getFacilityID(), new EventFirebase.FacilityCallback() {
+                eventFirebase.findFacility(event.getFacilityID(), new EventFirebase.FacilityCallback() {
                     @Override
                     public void onSuccess(FacilitiesInfo facilitiesInfo) {
                         if (facilitiesInfo != null) {
@@ -624,7 +670,7 @@ public class ViewEventFragment extends Fragment {
                             Log.e(TAG, "Facility ID: " + facilityID);
 
                             if (facilityID != null && !facilityID.isEmpty()) {
-                                EventFirebase.editFacility(facilitiesInfo);
+                                eventFirebase.editFacility(facilitiesInfo);
                             } else {
                                 Log.e(TAG, "Invalid facility ID, cannot update facility.");
                             }
@@ -637,7 +683,7 @@ public class ViewEventFragment extends Fragment {
                     }
                 });
 
-                EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
+                eventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
                     @Override
                     public void onSuccess(FacilitiesInfo newFacility) {
                         if (newFacility != null) {
@@ -649,7 +695,7 @@ public class ViewEventFragment extends Fragment {
 
                             newFacility.setEvents(newFacilityEvents);
 
-                            EventFirebase.editFacility(newFacility);
+                            eventFirebase.editFacility(newFacility);
                         }
                     }
 
@@ -717,11 +763,11 @@ public class ViewEventFragment extends Fragment {
             eventFacility.setVisibility(View.GONE);
 
             if (newFacility != null) {
-                EventFirebase.addFacility(newFacility);
+                eventFirebase.addFacility(newFacility);
                 ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
                 facilitiesList.add(newFacility);
                 organizer.setFacilities(facilitiesList);
-                EventFirebase.editOrganizer(organizer);
+                eventFirebase.editOrganizer(organizer);
             }
 
             editButton.setVisibility(View.VISIBLE);
@@ -899,7 +945,7 @@ public class ViewEventFragment extends Fragment {
                             registrationDateTextView.setVisibility(View.GONE);
                             registrationDateCalendar = null;
                         } else if (startDate.before(registrationDateCalendar.getTime())) {
-                            registrationDateRequirementsTextView.setText("RegistrationFragment deadline must be before the event start date.");
+                            registrationDateRequirementsTextView.setText("Registration deadline must be before the event start date.");
                             registrationDateRequirementsTextView.setVisibility(View.VISIBLE);
                             registrationDateTextView.setVisibility(View.GONE);
                             registrationDateButton.setVisibility(View.VISIBLE);
@@ -933,7 +979,7 @@ public class ViewEventFragment extends Fragment {
         userLocation = geoLocation.getLocation();
         if (userLocation == null) {
             Toast.makeText(context, "Retrieving your location...", Toast.LENGTH_SHORT).show();
-            return;
+            userLocation = geoLocation.getLocation();
         }
 
         //Once the location is retrieved, proceed with registration check
@@ -986,7 +1032,7 @@ public class ViewEventFragment extends Fragment {
         event.setWaitinglist(currentEntrants);
 
 
-        EventFirebase.editEvent(event);
+        eventFirebase.editEvent(event);
         Toast.makeText(context, "Joined Waiting List Successfully.", Toast.LENGTH_SHORT).show();
         Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_favouriteFragment);
     }
@@ -1085,7 +1131,7 @@ public class ViewEventFragment extends Fragment {
                 } else {
                     // If the selected facility exists, proceed with fetching it
                     facilityID = organizer.getFacilityIdByName(selectedFacility);
-                    EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
+                    eventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
                         @Override
                         public void onSuccess(FacilitiesInfo existingFacility) {
                             address = existingFacility.getAddress();

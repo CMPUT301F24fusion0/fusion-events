@@ -51,7 +51,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
     private Button editButton, saveButton, deleteButton, cancelButton;
     private ListView facilitiesEventsList;
     private ProfileManagement profileManager;
-
+    private EventFirebase eventFirebase = new EventFirebase();
 
 
     /**
@@ -103,7 +103,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
         Intent intentReceived = getIntent();
         String facilityID = intentReceived.getStringExtra("facilityID");
 
-        EventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
+        eventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
             @Override
             public void onSuccess(FacilitiesInfo facilitiesInfo) {
                 if (facilitiesInfo == null) {
@@ -154,7 +154,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
                     if ((facility.getEvents() != null) && !(facility.getEvents().isEmpty())) {
                         ArrayList<String> filteredEvents = new ArrayList<>();
                         for (String event : facility.getEvents()) {
-                            EventFirebase.findEvent(event, new EventFirebase.EventCallback() {
+                            eventFirebase.findEvent(event, new EventFirebase.EventCallback() {
                                 @Override
                                 public void onSuccess(EventInfo eventInfo) throws WriterException {
                                     if (eventInfo != null) {
@@ -238,7 +238,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
                 addressTextView.setText(facility.getAddress());
                 ownerTextView.setText(facility.getOwner());
 
-                EventFirebase.editFacility(facility);
+                eventFirebase.editFacility(facility);
             }
         });
 
@@ -247,7 +247,7 @@ public class ViewFacilityActivity extends AppCompatActivity {
                 new AlertDialog.Builder(ViewFacilityActivity.this)
                         .setTitle("Delete entry")
                         .setMessage("Are you sure you want to delete this entry?")
-                        .setPositiveButton(android.R.string.yes, (dialog, which) -> EventFirebase.deleteFacility(facility.getFacilityID()))
+                        .setPositiveButton(android.R.string.yes, (dialog, which) -> eventFirebase.deleteFacility(facility.getFacilityID()))
                         .setNegativeButton(android.R.string.no, null)
                         .show();
             }

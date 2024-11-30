@@ -90,8 +90,19 @@ public class GeoLocation implements LocationListener {
      */
     private void initializeLocationManager() {
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
         if (isLocationPermissionGranted()) {
-            requestLocationUpdates();
+            // Try to get last known location for quicker result
+            userLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+            if (userLocation == null) {
+                userLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            }
+
+            // If no cached location is available, request location updates
+            if (userLocation == null) {
+                requestLocationUpdates();
+            }
         }
     }
 
@@ -162,14 +173,12 @@ public class GeoLocation implements LocationListener {
      * @author Derin Karas
      */
     public Location getLocation() {
-        if (userLocation != null) {
-            return userLocation;
+        if (userLocation == null) {
+            if (isLocationPermissionGranted()) {
+                requestLocationUpdates();
+            }
+            return null;
         }
-
-        if (isLocationPermissionGranted()) {
-            requestLocationUpdates();
-        }
-        // Return the current user location, which will be updated as location changes
         return userLocation;
     }
 
