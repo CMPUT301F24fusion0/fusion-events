@@ -171,6 +171,9 @@
         <action
             android:id="@+id/action_favouriteFragment_to_viewEventFragment"
             app:destination="@id/viewEventFragment"/>
+        <action
+            android:id="@+id/action_favouriteFragment_to_viewFacilityFragment"
+            app:destination="@id/viewFacilityFragment"/>
     </fragment>
 
     <fragment
@@ -234,10 +237,26 @@
             app:destination="@id/cancelledEntrantsFragment"/>
         <action
             android:id="@+id/action_viewEventFragment_to_favouriteFragment"
-            app:destination="@+id/favouriteFragment"/>
+            app:destination="@id/favouriteFragment"/>
         <action
             android:id="@+id/action_viewEventFragment_to_registrationFragment"
-            app:destination="@+id/registrationFragment"/>
+            app:destination="@id/registrationFragment"/>
+        <action
+            android:id="@+id/action_viewEventFragment_to_viewFacilityFragment"
+            app:destination="@id/viewFacilityFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/viewFacilityFragment"
+        android:name="com.example.fusion0.fragments.ViewFacilityFragment"
+        android:label="View Facility Fragment"
+        tools:layout="@layout/fragment_view_facility">
+        <action
+            android:id="@+id/action_viewFacilityFragment_to_viewEventFragment"
+            app:destination="@id/viewEventFragment" />
+        <action
+            android:id="@+id/action_viewFacilityFragment_to_favouriteFragment"
+            app:destination="@id/favouriteFragment"/>
     </fragment>
 
     <fragment

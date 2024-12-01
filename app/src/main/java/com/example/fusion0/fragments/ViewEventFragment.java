@@ -44,7 +44,6 @@ import androidx.navigation.Navigation;
 import com.bumptech.glide.Glide;
 import com.example.fusion0.BuildConfig;
 import com.example.fusion0.R;
-import com.example.fusion0.activities.ViewFacilityActivity;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.GeoLocation;
 import com.example.fusion0.helpers.UserFirestore;
@@ -301,10 +300,10 @@ public class ViewEventFragment extends Fragment {
         });
 
         facilityButton.setOnClickListener(v -> {
-            Intent intent = new Intent(requireActivity(), ViewFacilityActivity.class);
-            intent.putExtra("facilityID", event.getFacilityID());
-            intent.putExtra("deviceID", deviceID);
-            startActivity(intent);
+            Bundle eventBundle = new Bundle();
+            eventBundle.putString("facilityID", event.getFacilityID());
+            eventBundle.putString("ID", event.getEventID());
+            Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_viewFacilityFragment, eventBundle);
         });
 
         mapButton.setOnClickListener(v->{

@@ -26,7 +26,6 @@ import androidx.navigation.Navigation;
 
 import com.example.fusion0.R;
 import com.example.fusion0.activities.JoinedEventActivity;
-import com.example.fusion0.activities.ViewFacilityActivity;
 import com.example.fusion0.helpers.AnimationHelper;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
@@ -276,7 +275,6 @@ public class FavouriteFragment extends Fragment {
                                 organizer = organizerInfo;
                                 ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, R.layout.spinner_dropdown_item , organizer.getEventsNames());
                                 createdEventsList.setAdapter(eventsAdapter);
-
                                 setListViewHeightBasedOnChildren(createdEventsList);
 
 
@@ -376,7 +374,7 @@ public class FavouriteFragment extends Fragment {
 
                         if (facilitiesList.getAdapter() == null) {
                             if (organizer.getFacilitiesNames() != null) {
-                                ArrayAdapter<String> facilitiesAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, organizer.getFacilitiesNames());
+                                ArrayAdapter<String> facilitiesAdapter = new ArrayAdapter<>(context, R.layout.spinner_dropdown_item , organizer.getFacilitiesNames());
                                 facilitiesList.setAdapter(facilitiesAdapter);
                                 setListViewHeightBasedOnChildren(facilitiesList);
                             } else {
@@ -410,9 +408,10 @@ public class FavouriteFragment extends Fragment {
                             FacilitiesInfo facility = organizer.getFacilities().get(position);
                             String facilityID = facility.getFacilityID();
 
-                            Intent intent = new Intent(requireActivity(), ViewFacilityActivity.class);
-                            intent.putExtra("facilityID", facilityID);
-                            startActivity(intent);
+                            Bundle favouriteBundle = new Bundle();
+                            favouriteBundle.putString("facilityID", facilityID);
+                            favouriteBundle.putString("ID", "favouriteID");
+                            Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_viewFacilityFragment, favouriteBundle);
                         });
                     }
                 }
