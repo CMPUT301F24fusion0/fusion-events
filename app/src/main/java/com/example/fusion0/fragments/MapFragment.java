@@ -3,17 +3,26 @@ package com.example.fusion0.fragments;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.Editable;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -22,6 +31,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -48,6 +58,9 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.storage.FirebaseStorage;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -313,54 +326,76 @@ public class MapFragment extends Fragment {
                     List<PhotoMetadata> metadata = placeDetails.getPhotoMetadatas();
                     if (metadata == null || metadata.isEmpty()) {
                         Log.w(TAG, "No photo metadata available for this place.");
-                        return;
+
+                        Uri imageUri = drawableToUri(context, R.drawable.image_unavailable);
+                        facilityImage = imageUri.toString();
+
+                        if (facilityNames.contains(facilityName)) {
+                            Toast.makeText(activity.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.d(TAG, "Fetched photo URI: " + facilityImage);
+
+                            newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude, facilityImage);
+                            facility = newFacility;
+                            facilityNames.add(facilityName);
+
+
+                            helper.setFacility(facility);
+                            helper.setNewFacility(newFacility);
+                            helper.setFacilityID(newFacility.getFacilityID());
+
+                            // Notify the adapter that the data has changed
+                            adapter.notifyDataSetChanged();
+
+                            // Optionally, show a toast indicating the facility was added
+                            Toast.makeText(activity.getApplicationContext(), "New facility added: " + facilityName, Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        PhotoMetadata photoMetadata = metadata.get(0);
+                        String attributions = photoMetadata.getAttributions();
+                        AuthorAttributions authorAttributions = photoMetadata.getAuthorAttributions();
+
+                        // Create and send photo request
+                        FetchResolvedPhotoUriRequest photoRequest =
+                                FetchResolvedPhotoUriRequest.builder(photoMetadata)
+                                        .setMaxWidth(500)
+                                        .setMaxHeight(300)
+                                        .build();
+
+                        placesClient.fetchResolvedPhotoUri(photoRequest)
+                                .addOnSuccessListener((photoUriResponse) -> {
+                                    Uri photoUri = photoUriResponse.getUri();
+                                    if (photoUri != null) {
+                                        Log.d(TAG, "Fetched photo URI: " + photoUri.toString());
+                                        facilityImage = photoUri.toString();
+
+                                        // Check if the facility name already exists in the list of facility names
+                                        if (facilityNames.contains(facilityName)) {
+                                            Toast.makeText(activity.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude, facilityImage);
+
+                                            helper.setNewFacility(newFacility);
+                                            facility = newFacility;
+                                            facilityNames.add(facilityName);
+
+
+                                            helper.setFacility(facility);
+                                            helper.setNewFacility(newFacility);
+                                            helper.setFacilityID(newFacility.getFacilityID());
+
+
+
+                                            // Notify the adapter that the data has changed
+                                            adapter.notifyDataSetChanged();
+
+                                            // Optionally, show a toast indicating the facility was added
+                                            Toast.makeText(activity.getApplicationContext(), "New facility added: " + facilityName, Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
                     }
 
-                    // Fetch photo URI
-                    PhotoMetadata photoMetadata = metadata.get(0);
-                    String attributions = photoMetadata.getAttributions();
-                    AuthorAttributions authorAttributions = photoMetadata.getAuthorAttributions();
-
-                    // Create and send photo request
-                    FetchResolvedPhotoUriRequest photoRequest =
-                            FetchResolvedPhotoUriRequest.builder(photoMetadata)
-                                    .setMaxWidth(500)
-                                    .setMaxHeight(300)
-                                    .build();
-
-                    placesClient.fetchResolvedPhotoUri(photoRequest)
-                            .addOnSuccessListener((photoUriResponse) -> {
-                                Uri photoUri = photoUriResponse.getUri();
-                                if (photoUri != null) {
-                                    Log.d(TAG, "Fetched photo URI: " + photoUri.toString());
-                                    facilityImage = photoUri.toString();
-
-                                    // Check if the facility name already exists in the list of facility names
-                                    if (facilityNames.contains(facilityName)) {
-                                        Toast.makeText(activity.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude, facilityImage);
-                                        facility = newFacility;
-                                        facilityNames.add(facilityName);
-
-
-                                        helper.setFacility(facility);
-                                        helper.setNewFacility(newFacility);
-                                        helper.setFacilityID(newFacility.getFacilityID());
-
-                                        // Notify the adapter that the data has changed
-                                        adapter.notifyDataSetChanged();
-
-                                        // Optionally, show a toast indicating the facility was added
-                                        Toast.makeText(activity.getApplicationContext(), "New facility added: " + facilityName, Toast.LENGTH_SHORT).show();
-                                    }
-                                } else {
-                                    Log.w(TAG, "Fetched photo URI is null.");
-                                }
-                            })
-                            .addOnFailureListener(exception -> {
-                                Log.e(TAG, "Error fetching photo URI: " + exception.getMessage());
-                            });
                 }).addOnFailureListener(exception -> {
                     Log.e(TAG, "Error fetching place details: " + exception.getMessage());
                 });
@@ -372,6 +407,45 @@ public class MapFragment extends Fragment {
                 Log.i(TAG, "An error occurred: " + status);
             }
         });
+    }
+
+
+    public Uri drawableToUri(Context context, int drawableResId) {
+        // Get the drawable resource
+        Drawable drawable = ContextCompat.getDrawable(context, drawableResId);
+
+        // Create a bitmap from the drawable
+        Bitmap bitmap = null;
+
+        if (drawable instanceof BitmapDrawable) {
+            // If the drawable is already a BitmapDrawable, extract the Bitmap directly
+            bitmap = ((BitmapDrawable) drawable).getBitmap();
+        } else if (drawable instanceof GradientDrawable) {
+            // If the drawable is a GradientDrawable, create a Bitmap and draw the drawable onto it
+            GradientDrawable gradientDrawable = (GradientDrawable) drawable;
+            bitmap = Bitmap.createBitmap(gradientDrawable.getIntrinsicWidth(), gradientDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            gradientDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            gradientDrawable.draw(canvas);
+        }
+
+        if (bitmap == null) {
+            throw new IllegalArgumentException("Unsupported drawable type");
+        }
+
+        // Create a file in the app's cache directory
+        File cacheDir = context.getCacheDir();
+        File file = new File(cacheDir, "image_unavailable_background.png");
+
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            // Compress the bitmap and save it as a PNG file
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Return the URI pointing to the saved file
+        return Uri.fromFile(file);
     }
 
     /**

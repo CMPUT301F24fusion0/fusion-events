@@ -9,6 +9,10 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,6 +41,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -70,6 +75,8 @@ import com.google.zxing.WriterException;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -162,6 +169,8 @@ public class ViewEventFragment extends Fragment {
 
     private String newEventPoster;
     private String facility;
+    private String facilityImage;
+
     private String address;
     private String facilityID;
 
@@ -780,14 +789,6 @@ public class ViewEventFragment extends Fragment {
 
             updateDateTextView(context);
 
-            if (newFacility != null) {
-                eventFirebase.addFacility(newFacility);
-                ArrayList<FacilitiesInfo> facilitiesList = organizer.getFacilities();
-                facilitiesList.add(newFacility);
-                organizer.setFacilities(facilitiesList);
-                eventFirebase.editOrganizer(organizer);
-            }
-
             editButton.setVisibility(View.VISIBLE);
             mapButton.setVisibility(View.VISIBLE);
 
@@ -1166,7 +1167,6 @@ public class ViewEventFragment extends Fragment {
                 LatLng latLng = place.getLatLng();
                 if (latLng != null) {
                     newLatitude = latLng.latitude;
-                    newLongitude = latLng.longitude;
                 }
 
                 final List<Place.Field> fields = Collections.singletonList(Place.Field.PHOTO_METADATAS);
@@ -1179,41 +1179,49 @@ public class ViewEventFragment extends Fragment {
                     List<PhotoMetadata> metadata = placeDetails.getPhotoMetadatas();
                     if (metadata == null || metadata.isEmpty()) {
                         Log.w(TAG, "No photo metadata available for this place.");
-                        return;
-                    }
 
-                    // Fetch photo URI
-                    PhotoMetadata photoMetadata = metadata.get(0);
-                    String attributions = photoMetadata.getAttributions();
-                    AuthorAttributions authorAttributions = photoMetadata.getAuthorAttributions();
+                        Uri imageUri = drawableToUri(context, R.drawable.image_unavailable);
+                        facilityImage = imageUri.toString();
+                        if (facilityNames.contains(facility)) {
+                            Toast.makeText(context.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            newFacility = new FacilitiesInfo(address, facility, deviceID, newLatitude, newLongitude, facilityImage);
+                            facilityID = newFacility.getFacilityID();
+                            Log.d("New Facility ID One", facilityID);
+                            facilityNames.add(facility);
 
-                    // Create and send photo request
-                    FetchResolvedPhotoUriRequest photoRequest =
-                            FetchResolvedPhotoUriRequest.builder(photoMetadata)
-                                    .setMaxWidth(500)
-                                    .setMaxHeight(300)
-                                    .build();
+                            // Notify the adapter that the data has changed
+                            adapter.notifyDataSetChanged();
+                        }
+                    } else {
+                        PhotoMetadata photoMetadata = metadata.get(0);
 
-                    placesClient.fetchResolvedPhotoUri(photoRequest)
-                            .addOnSuccessListener((photoUriResponse) -> {
-                                Uri photoUri = photoUriResponse.getUri();
-                                if (photoUri != null) {
-                                    Log.d(TAG, "Fetched photo URI: " + photoUri.toString());
-                                    String facilityImage = photoUri.toString();
+                        FetchResolvedPhotoUriRequest photoRequest =
+                                FetchResolvedPhotoUriRequest.builder(photoMetadata)
+                                        .setMaxWidth(500)
+                                        .setMaxHeight(300)
+                                        .build();
 
-                                    if (facilityNames.contains(facility)) {
-                                        Toast.makeText(context.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        newFacility = new FacilitiesInfo(address, facility, deviceID, newLatitude, newLongitude, facilityImage);
-                                        facilityID = newFacility.getFacilityID();
-                                        Log.d("New Facility ID One", facilityID);
-                                        facilityNames.add(facility);
+                        placesClient.fetchResolvedPhotoUri(photoRequest)
+                                .addOnSuccessListener((photoUriResponse) -> {
+                                    Uri photoUri = photoUriResponse.getUri();
+                                    if (photoUri != null) {
+                                        Log.d(TAG, "Fetched photo URI: " + photoUri.toString());
+                                        facilityImage = photoUri.toString();
+                                        if (facilityNames.contains(facility)) {
+                                            Toast.makeText(context.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            newFacility = new FacilitiesInfo(address, facility, deviceID, newLatitude, newLongitude, facilityImage);
+                                            facilityID = newFacility.getFacilityID();
+                                            Log.d("New Facility ID One", facilityID);
+                                            facilityNames.add(facility);
 
-                                        // Notify the adapter that the data has changed
-                                        adapter.notifyDataSetChanged();
+                                            // Notify the adapter that the data has changed
+                                            adapter.notifyDataSetChanged();
+                                        }
                                     }
-                                }
-                            });
+                                });
+                    }
                 });
             }
 
@@ -1224,6 +1232,44 @@ public class ViewEventFragment extends Fragment {
         });
     }
 
+
+    public Uri drawableToUri(Context context, int drawableResId) {
+        // Get the drawable resource
+        Drawable drawable = ContextCompat.getDrawable(context, drawableResId);
+
+        // Create a bitmap from the drawable
+        Bitmap bitmap = null;
+
+        if (drawable instanceof BitmapDrawable) {
+            // If the drawable is already a BitmapDrawable, extract the Bitmap directly
+            bitmap = ((BitmapDrawable) drawable).getBitmap();
+        } else if (drawable instanceof GradientDrawable) {
+            // If the drawable is a GradientDrawable, create a Bitmap and draw the drawable onto it
+            GradientDrawable gradientDrawable = (GradientDrawable) drawable;
+            bitmap = Bitmap.createBitmap(gradientDrawable.getIntrinsicWidth(), gradientDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            gradientDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            gradientDrawable.draw(canvas);
+        }
+
+        if (bitmap == null) {
+            throw new IllegalArgumentException("Unsupported drawable type");
+        }
+
+        // Create a file in the app's cache directory
+        File cacheDir = context.getCacheDir();
+        File file = new File(cacheDir, "image_unavailable_background.png");
+
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            // Compress the bitmap and save it as a PNG file
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Return the URI pointing to the saved file
+        return Uri.fromFile(file);
+    }
 
     /**
      * @author Simon Haile

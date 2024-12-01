@@ -299,20 +299,10 @@ public class Waitlist implements Serializable {
         });
     }
 
-    /**
-     * Callback to get accepted people
-     * @author Sehej Brar
-     */
     public interface AcceptCB {
         void acceptDid(ArrayList<String> accept);
     }
 
-    /**
-     * Get accepted people
-     * @author Sehej Brar
-     * @param eventId event id
-     * @param acceptCB accept callback people
-     */
     public void getAccepted(String eventId, AcceptCB acceptCB) {
         ArrayList<String> accept = new ArrayList<>();
         DocumentReference waitingListDoc = db.collection("events")
@@ -338,6 +328,7 @@ public class Waitlist implements Serializable {
             }
         });
     }
+
 
     /**
      * Interface for all entrants who cancelled after being chosen

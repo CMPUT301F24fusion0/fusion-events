@@ -84,6 +84,8 @@ public class RegistrationPromptFragment extends Fragment {
                     Navigation.findNavController(view).navigate(R.id.action_registrationPromptFragment_to_registrationFragment, bundle);
                 } else if ("addEvent".equals(destination)) {
                     Navigation.findNavController(view).navigate(R.id.action_registrationPromptFragment_to_registrationFragment, bundle);
+                }else if ("favourite".equals(destination)) {
+                    Navigation.findNavController(view).navigate(R.id.action_registrationPromptFragment_to_registrationFragment, bundle);
                 }
             }
         });
