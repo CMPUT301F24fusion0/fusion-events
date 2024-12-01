@@ -60,14 +60,14 @@
         android:label="Admin Features"
         tools:layout="@layout/fragment_admin_features">
         <action
-            android:id="@+id/action_adminFeaturesFragment_to_BrowseProfilesFragment"
+            android:id="@+id/action_adminFeaturesFragment_to_browseProfilesFragment"
             app:destination="@id/browseProfilesFragment" />
         <action
-            android:id="@+id/action_adminFeaturesFragment_to_BrowseEventsFragment"
+            android:id="@+id/action_adminFeaturesFragment_to_browseEventsFragment"
             app:destination="@id/browseEventsFragment" />
 
         <action
-            android:id="@+id/action_adminFeaturesFragment_to_BrowseFacilitiesFragment"
+            android:id="@+id/action_adminFeaturesFragment_to_browseFacilitiesFragment"
             app:destination="@id/browseFacilitiesFragment" />
 
 
