@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -166,7 +167,9 @@ public class FavouriteFragment extends Fragment {
                     }
 
                     if (userInfo.getEvents() == null || userInfo.getEvents().isEmpty()) {
-                        Toast.makeText(context, "No Joined Events Available.", Toast.LENGTH_SHORT).show();
+                        if (!isJoinedEventsListVisible) {
+                            Toast.makeText(context, "No Joined Events Available.", Toast.LENGTH_SHORT).show();
+                        }
                         joinedEventsList.setVisibility(View.GONE);
 
                         if (isJoinedEventsListVisible) {
@@ -202,6 +205,7 @@ public class FavouriteFragment extends Fragment {
                                         userFirestore.editUserEvents(user);
                                         ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, R.layout.spinner_dropdown_item, eventNames);
                                         joinedEventsList.setAdapter(eventsAdapter);
+                                        setListViewHeightBasedOnChildren(joinedEventsList);
                                     }
                                 }
 
@@ -234,8 +238,6 @@ public class FavouriteFragment extends Fragment {
 
             joinedEventsList.setOnItemClickListener((parent, view1, position, id) -> {
                 String event = user.getEvents().get(position);
-
-
                 Intent intent = new Intent(requireActivity(), JoinedEventActivity.class);
                 intent.putExtra("eventID", event);
                 intent.putExtra("deviceID", deviceID);
@@ -255,7 +257,9 @@ public class FavouriteFragment extends Fragment {
                         if (organizerInfo.getEvents() != null) {
                             // Handle empty events list
                             if (organizerInfo.getEvents().isEmpty()) {
-                                Toast.makeText(context, "No Created Events Available.", Toast.LENGTH_SHORT).show();
+                                if (!isCreatedEventsListVisible) {
+                                    Toast.makeText(context, "No Created Events Available.", Toast.LENGTH_SHORT).show();
+                                }
                                 createdEventsList.setVisibility(View.GONE);
 
                                 if (isCreatedEventsListVisible) {
@@ -273,6 +277,8 @@ public class FavouriteFragment extends Fragment {
                                 ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, R.layout.spinner_dropdown_item , organizer.getEventsNames());
                                 createdEventsList.setAdapter(eventsAdapter);
 
+                                setListViewHeightBasedOnChildren(createdEventsList);
+
 
                                 // Toggle visibility of the created events list
                                 if (isCreatedEventsListVisible) {
@@ -286,15 +292,38 @@ public class FavouriteFragment extends Fragment {
                             }
                         } else {
                             // If no events list is found
-                            Toast.makeText(context, "No Created Events Available.", Toast.LENGTH_SHORT).show();
+                            if (!isCreatedEventsListVisible) {
+                                Toast.makeText(context, "No Created Events Available.", Toast.LENGTH_SHORT).show();
+                            }
                             createdEventsList.setVisibility(View.GONE);
-                            isCreatedEventsListVisible = false;
+
+                            if (isCreatedEventsListVisible) {
+                                AnimationHelper.fadeOutView(createdEventsListDivider, 75);
+                                AnimationHelper.fadeOutView(emptyCreatedEventsList, 225);
+                                isCreatedEventsListVisible = !isCreatedEventsListVisible;
+                            } else {
+                                AnimationHelper.fadeInView(createdEventsListDivider, 75);
+                                AnimationHelper.fadeInView(emptyCreatedEventsList, 225);
+                                isCreatedEventsListVisible = !isCreatedEventsListVisible;
+                            }
+
                         }
                     } else {
                         // If organizerInfo itself is null
-                        Toast.makeText(context, "You have created no events.", Toast.LENGTH_SHORT).show();
+                        if (!isCreatedEventsListVisible) {
+                            Toast.makeText(context, "You have created no events.", Toast.LENGTH_SHORT).show();
+                        }
                         createdEventsList.setVisibility(View.GONE);
-                        isCreatedEventsListVisible = false;
+
+                        if (isCreatedEventsListVisible) {
+                            AnimationHelper.fadeOutView(createdEventsListDivider, 75);
+                            AnimationHelper.fadeOutView(emptyCreatedEventsList, 225);
+                            isCreatedEventsListVisible = !isCreatedEventsListVisible;
+                        } else {
+                            AnimationHelper.fadeInView(createdEventsListDivider, 75);
+                            AnimationHelper.fadeInView(emptyCreatedEventsList, 225);
+                            isCreatedEventsListVisible = !isCreatedEventsListVisible;
+                        }
                     }
                 }
 
@@ -312,7 +341,6 @@ public class FavouriteFragment extends Fragment {
                     EventInfo event = organizer.getEvents().get(position);
                     String eventID = event.getEventID();
 
-
                     Bundle bundle = new Bundle();
                     bundle.putString("eventID", eventID);
 
@@ -328,7 +356,7 @@ public class FavouriteFragment extends Fragment {
             eventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
                 @Override
                 public void onSuccess(OrganizerInfo organizerInfo) {
-                    if (organizerInfo.getFacilities() == null || organizerInfo.getFacilities().isEmpty()) {
+                    if (organizerInfo == null || organizerInfo.getFacilities() == null || organizerInfo.getFacilities().isEmpty()) {
                         Toast.makeText(context, "No facilities available.", Toast.LENGTH_SHORT).show();
                         Log.d("Empty","No facilities available."); // Used for logging, don't remove
                         facilitiesList.setVisibility(View.GONE);
@@ -346,15 +374,25 @@ public class FavouriteFragment extends Fragment {
                     } else {
                         organizer = organizerInfo;
 
-
                         if (facilitiesList.getAdapter() == null) {
                             if (organizer.getFacilitiesNames() != null) {
                                 ArrayAdapter<String> facilitiesAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, organizer.getFacilitiesNames());
                                 facilitiesList.setAdapter(facilitiesAdapter);
+                                setListViewHeightBasedOnChildren(facilitiesList);
                             } else {
                                 Toast.makeText(context, "No facilities available.", Toast.LENGTH_SHORT).show();
-                                facilitiesButton.setEnabled(false);
-                                facilitiesList.setVisibility(View.GONE);
+
+                                if (isFacilitiesListVisible) {
+                                    AnimationHelper.fadeOutView(facilitiesListDivider, 75);
+                                    AnimationHelper.fadeOutView(emptyFacilitiesList, 225);
+                                    isFacilitiesListVisible = !isFacilitiesListVisible;
+                                } else {
+                                    AnimationHelper.fadeInView(facilitiesListDivider, 75);
+                                    AnimationHelper.fadeInView(emptyFacilitiesList, 225);
+                                    isFacilitiesListVisible = !isFacilitiesListVisible;
+                                }
+
+
                                 return;
                             }
                         }
@@ -365,7 +403,17 @@ public class FavouriteFragment extends Fragment {
                             AnimationHelper.fadeInView(facilitiesListDivider, 75);
                             AnimationHelper.fadeInView(facilitiesList, 250);
                         }
+
                         isFacilitiesListVisible = !isFacilitiesListVisible;
+
+                        facilitiesList.setOnItemClickListener((parent, view1, position, id) -> {
+                            FacilitiesInfo facility = organizer.getFacilities().get(position);
+                            String facilityID = facility.getFacilityID();
+
+                            Intent intent = new Intent(requireActivity(), ViewFacilityActivity.class);
+                            intent.putExtra("facilityID", facilityID);
+                            startActivity(intent);
+                        });
                     }
                 }
 
@@ -375,14 +423,7 @@ public class FavouriteFragment extends Fragment {
                     Log.e(TAG, "Error fetching organizer: " + error);
                 }
             });
-            facilitiesList.setOnItemClickListener((parent, view1, position, id) -> {
-                FacilitiesInfo facility = organizer.getFacilities().get(position);
-                String facilityID = facility.getFacilityID();
 
-                Intent intent = new Intent(requireActivity(), ViewFacilityActivity.class);
-                intent.putExtra("facilityID", facilityID);
-                startActivity(intent);
-            });
         });
     }
 
@@ -398,12 +439,12 @@ public class FavouriteFragment extends Fragment {
         updateFacilitiesList();
     }
 
-
     /**
      * Update joined events list
      * @author Simon Haile
      */
     private void updateJoinedEventsList() {
+        joinedEventsListDivider.setVisibility(View.GONE);
         joinedEventsList.setVisibility(View.GONE);
         if (user != null && user.getEvents() != null && !user.getEvents().isEmpty()) {
             ArrayList<String> eventNames = new ArrayList<>();
@@ -442,6 +483,7 @@ public class FavouriteFragment extends Fragment {
      */
     private void updateCreatedEventsList() {
         createdEventsList.setVisibility(View.GONE);
+        createdEventsList.setVisibility(View.GONE);
         if (organizer != null && organizer.getEvents() != null && !organizer.getEvents().isEmpty()) {
             ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, organizer.getEventsNames());
             createdEventsList.setAdapter(eventsAdapter);
@@ -453,6 +495,7 @@ public class FavouriteFragment extends Fragment {
      * @author Simon Haile
      */
     private void updateFacilitiesList() {
+        facilitiesListDivider.setVisibility(View.GONE);
         facilitiesList.setVisibility(View.GONE);
         if (organizer != null && organizer.getFacilities() != null && !organizer.getFacilities().isEmpty()) {
             ArrayAdapter<String> facilitiesAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, organizer.getFacilitiesNames());
@@ -489,17 +532,21 @@ public class FavouriteFragment extends Fragment {
         setAllButtonsInactive(context);
         setActiveButton(context, favouriteImageButton, searchTextView);
 
+
         homeButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_mainFragment);
         });
+
 
         scannerButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_qrFragment);
         });
 
+
         addButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_eventFragment);
         });
+
 
         profileButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_profileFragment);
@@ -536,18 +583,26 @@ public class FavouriteFragment extends Fragment {
     }
 
     /**
-     * Fade in animation
+     * Set list view height
      * @author Simon Haile
-     * @param view view
+     * @param listView listview object
      */
-    private void fadeInView(View view) {
-        view.setAlpha(0f);
-        view.setVisibility(View.VISIBLE);
-        view.animate()
-                .alpha(1f)
-                .setDuration(300) // Set duration for smoothness
-                .setListener(null);
+    public void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            return;
+        }
+
+        int totalHeight = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
     }
 }
-
-
