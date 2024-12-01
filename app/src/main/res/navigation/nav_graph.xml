@@ -136,7 +136,7 @@
         android:id="@+id/eventFragment"
         android:name="com.example.fusion0.fragments.AddEventFragment"
         android:label="Event Fragment"
-        tools:layout="@layout/fragment_event">
+        tools:layout="@layout/fragment_add_event">
         <action
             android:id="@+id/action_eventFragment_to_mainFragment"
             app:destination="@id/mainFragment"/>
@@ -217,9 +217,9 @@
 
     <fragment
         android:id="@+id/viewEventFragment"
-        android:name="com.example.fusion0.fragments.TestViewEventFragment"
+        android:name="com.example.fusion0.fragments.ViewEventFragment"
         android:label="View Event Fragment"
-        tools:layout="@layout/fragment_test_view_event">
+        tools:layout="@layout/fragment_view_event">
         <action
             android:id="@+id/action_viewEventFragment_to_mainFragment"
             app:destination="@id/mainFragment"/>

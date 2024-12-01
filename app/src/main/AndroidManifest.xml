@@ -46,9 +46,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.AdminFeaturesActivity" />
         <activity android:name=".activities.ViewFacilityActivity"/>
         <activity android:name=".activities.JoinedEventActivity"/>
+        <activity android:name="com.yalantis.ucrop.UCropActivity" />
 
 
     </application>
