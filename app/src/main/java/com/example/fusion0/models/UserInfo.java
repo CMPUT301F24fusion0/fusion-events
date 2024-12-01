@@ -92,6 +92,30 @@ public class UserInfo {
         return user;
     }
 
+    @PropertyName("numaccepted")
+    public String getNumAccepted() {
+        return numAccepted;
+    }
+
+    @PropertyName("numaccepted")
+    public void setNumAccepted(String numAccepted) {
+        this.numAccepted = numAccepted;
+        updateUser("numAccepted", new ArrayList<String>(Collections.singletonList(numAccepted)));
+
+    }
+
+    @PropertyName("numdeclined")
+    public String getNumDeclined() {
+        return numDeclined;
+    }
+
+    @PropertyName("numdeclined")
+    public void setNumDeclined(String numDeclined) {
+        this.numDeclined = numDeclined;
+        updateUser("numDeclined", new ArrayList<String>(Collections.singletonList(numDeclined)));
+
+    }
+
     /**
      * Gets the number of accepted events for the user
      * @return string of number of accepted events
