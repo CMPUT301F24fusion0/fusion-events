@@ -368,8 +368,6 @@ public class FavouriteFragment extends Fragment {
     }
 
 
-
-
     private void updateJoinedEventsList() {
         joinedEventsList.setVisibility(View.GONE);
         if (user != null && user.getEvents() != null && !user.getEvents().isEmpty()) {

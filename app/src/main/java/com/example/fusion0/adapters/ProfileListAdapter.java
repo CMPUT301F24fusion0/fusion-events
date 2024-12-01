@@ -113,6 +113,7 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
         return convertView;
     }
 
+
     // Toggle selection state for an item at the given position
     public void toggleSelection(int position) {
         if (selectedItems.get(position, false)) {
@@ -135,39 +136,11 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
         notifyDataSetChanged();  // Refresh the view
     }
 
+
+
     // Get the list of selected items (useful for removing items, etc.)
     public SparseBooleanArray getSelectedItems() {
         return selectedItems;
     }
 }
 
-
- /*
-            manageImage.checkImageExists(new ManageImageProfile.ImageCheckCallback() {
-                @Override
-                public void onImageExists() {
-                    manageImage.getImage(new ManageImageProfile.ImageRetrievedCallback() {
-                        @Override
-                        public void onImageRetrieved(Uri uri) {
-                            Log.d("ProfileImage", "Image URI: " + uri.toString());
-
-                            Glide.with(ProfileListAdapter.this.getContext())
-                                    .load(uri)
-                                    .into(viewHolder.profilePic);
-                        }
-
-                        @Override
-                        public void onFailure(Exception e) {
-                            Toast.makeText(ProfileListAdapter.this.getContext(), "Error fetching image", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onImageDoesNotExist() {
-                    String fullName = user.getFirstName() + " " + user.getLastName();
-                    Drawable image = ManageImageProfile.generateArtFromName(ProfileListAdapter.this.getContext(), fullName, 100, 100);
-                    viewHolder.profilePic.setImageDrawable(image);
-                }
-            });
-             */
