@@ -96,7 +96,7 @@ public class ChosenEntrantsFragment extends Fragment {
 
             chosenList = (ArrayList<Map<String, String>>) bundle.getSerializable("chosenEntrantsData");
 
-            if (chosenList != null && !chosenList.isEmpty()) {
+            if ((chosenList != null && !chosenList.isEmpty())) {
                 pendingRequests = chosenList.size();
 
                 for (Map<String, String> entry : chosenList) {
@@ -170,7 +170,7 @@ public class ChosenEntrantsFragment extends Fragment {
             chosenEntrantsListView.setVisibility(View.VISIBLE);
         }
 
-        adapter = new ProfileListAdapter(getContext(), users);
+        adapter = new ProfileListAdapter(getContext(), users, chosenList);
         chosenEntrantsListView.setAdapter(adapter);
     }
 
@@ -208,14 +208,13 @@ public class ChosenEntrantsFragment extends Fragment {
                                 if (eventInfo.getWaitinglist() != null && !eventInfo.getWaitinglist().isEmpty()) {
                                     for (Map<String, String> user : eventInfo.getWaitinglist()) {
                                         if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
-                                            Log.e(TAG, "user:" + user.get("did") );
                                             userFirestore.findUser(user.get("did"), new UserFirestore.Callback() {
                                                 @Override
                                                 public void onSuccess(UserInfo userInfo) {
                                                     users.add(userInfo);
 
                                                     if (users.size() == chosen.size()) {
-                                                        adapter = new ProfileListAdapter(getContext(), users);
+                                                        adapter = new ProfileListAdapter(getContext(), users, chosenList);
                                                         chosenEntrantsListView.setAdapter(adapter);
                                                         updateUI();
                                                     }
