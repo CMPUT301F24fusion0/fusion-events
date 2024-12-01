@@ -37,8 +37,11 @@ import com.google.zxing.WriterException;
 
 import java.util.ArrayList;
 
+/**
+ * Favourite fragment contains the events that the user signed up for
+ * @author Simon Haile
+ */
 public class FavouriteFragment extends Fragment {
-
 
     private static final String TAG = "FavouriteFragment";
     private ImageButton joinedEventsButton;
@@ -84,11 +87,19 @@ public class FavouriteFragment extends Fragment {
     EventFirebase eventFirebase = new EventFirebase();
     UserFirestore userFirestore = new UserFirestore();
 
+    /**
+     * Required empty public constructor
+     * @author Simon Haile
+     */
     public FavouriteFragment() {
-        // Required empty public constructor
     }
 
-
+    /**
+     * Set device ID
+     * @author Simon Haile
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @SuppressLint("HardwareIds")
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -97,12 +108,31 @@ public class FavouriteFragment extends Fragment {
         deviceID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
+    /**
+     * Inflate the view
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return the view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_favourite, container, false);
     }
 
+    /**
+     * Contains the logic for favourite fragment
+     * @author Simon Haile
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Context context = requireContext();
 
@@ -293,9 +323,6 @@ public class FavouriteFragment extends Fragment {
             });
         });
 
-
-
-
         facilitiesButton.setOnClickListener(v -> {
             AnimationHelper.rotateView(facilitiesButton, 45f, 300);
             eventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
@@ -359,6 +386,10 @@ public class FavouriteFragment extends Fragment {
         });
     }
 
+    /**
+     * Update the lists after paused
+     * @author Simon Haile
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -368,6 +399,10 @@ public class FavouriteFragment extends Fragment {
     }
 
 
+    /**
+     * Update joined events list
+     * @author Simon Haile
+     */
     private void updateJoinedEventsList() {
         joinedEventsList.setVisibility(View.GONE);
         if (user != null && user.getEvents() != null && !user.getEvents().isEmpty()) {
@@ -401,10 +436,10 @@ public class FavouriteFragment extends Fragment {
         }
     }
 
-
-
-
-
+    /**
+     * Update created event list
+     * @author Simon Haile
+     */
     private void updateCreatedEventsList() {
         createdEventsList.setVisibility(View.GONE);
         if (organizer != null && organizer.getEvents() != null && !organizer.getEvents().isEmpty()) {
@@ -413,7 +448,10 @@ public class FavouriteFragment extends Fragment {
         }
     }
 
-
+    /**
+     * Update facility list
+     * @author Simon Haile
+     */
     private void updateFacilitiesList() {
         facilitiesList.setVisibility(View.GONE);
         if (organizer != null && organizer.getFacilities() != null && !organizer.getFacilities().isEmpty()) {
@@ -422,6 +460,12 @@ public class FavouriteFragment extends Fragment {
         }
     }
 
+    /**
+     * Initialize toolbar to use to different fragments
+     * @author Simon Haile
+     * @param view view
+     * @param context context
+     */
     private void initializeToolbarButtons(View view, Context context) {
         homeButton = view.findViewById(R.id.toolbar_home);
         scannerButton = view.findViewById(R.id.toolbar_qrscanner);
@@ -445,27 +489,28 @@ public class FavouriteFragment extends Fragment {
         setAllButtonsInactive(context);
         setActiveButton(context, favouriteImageButton, searchTextView);
 
-
         homeButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_mainFragment);
         });
-
 
         scannerButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_qrFragment);
         });
 
-
         addButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_eventFragment);
         });
-
 
         profileButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_profileFragment);
         });
     }
 
+    /**
+     * Set buttons to inactive if not needed
+     * @author Simon Haile
+     * @param context context
+     */
     private void setAllButtonsInactive(Context context) {
         profileImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
         scannerImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
@@ -478,11 +523,23 @@ public class FavouriteFragment extends Fragment {
         profileTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
     }
 
+    /**
+     * Activate the button
+     * @author Simon Haile
+     * @param context context
+     * @param activeButton button to active
+     * @param activeTextView textview to activate
+     */
     private void setActiveButton(Context context, ImageButton activeButton, TextView activeTextView) {
         activeButton.setColorFilter(ContextCompat.getColor(context, R.color.royalBlue));
         activeTextView.setTextColor(ContextCompat.getColor(context, R.color.royalBlue));
     }
 
+    /**
+     * Fade in animation
+     * @author Simon Haile
+     * @param view view
+     */
     private void fadeInView(View view) {
         view.setAlpha(0f);
         view.setVisibility(View.VISIBLE);

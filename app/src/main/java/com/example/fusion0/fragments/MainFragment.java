@@ -55,6 +55,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Main fragment contains all the logic for the entire app
+ * @author Everyone
+ */
 public class MainFragment extends Fragment {
 
     private LoginManagement loginManagement;

@@ -82,6 +82,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Copy of View Event Fragment
+ */
 public class TestViewEventFragment extends Fragment {
     private String deviceID;
     private Boolean isOwner = false;

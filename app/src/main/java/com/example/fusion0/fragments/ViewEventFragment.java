@@ -130,6 +130,12 @@ public class ViewEventFragment extends Fragment {
         // Required empty public constructor
     }
 
+    /**
+     * Initialize variables
+     * @author Simon Haile
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,12 +147,31 @@ public class ViewEventFragment extends Fragment {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
     }
 
+    /**
+     * Inflate the view
+     * @author Simon Haile
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return the view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_view_event, container, false);
     }
 
+    /**
+     * Contains the main logic for joining an event
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -553,10 +578,6 @@ public class ViewEventFragment extends Fragment {
             popupMenu.show();
         });
 
-
-
-
-
         editButton.setOnClickListener(v -> {
             editButton.setVisibility(View.GONE);
             deleteButton.setVisibility(View.GONE);
@@ -567,7 +588,6 @@ public class ViewEventFragment extends Fragment {
             endDateButton.setVisibility(View.VISIBLE);
             registrationDateButton.setVisibility(View.VISIBLE);
             facilityButton.setVisibility(View.GONE);
-
 
             editEventName();
             editDescription();
