@@ -15,10 +15,18 @@ import org.junit.Test;
 
 import java.util.Objects;
 
+/**
+ * Facility test with firebase
+ * @author Simon Haile
+ */
 public class FacilityTest {
     private CollectionReference facilitiesRef;
     private EventFirebase eventFirebase;
 
+    /**
+     * Initialize the required facility objects
+     * @author Sehej Brar
+     */
     @Before
     public void initialize() {
         FirebaseApp.initializeApp(ApplicationProvider.getApplicationContext());

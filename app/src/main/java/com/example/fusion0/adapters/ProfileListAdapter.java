@@ -27,6 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
+/**
+ * Adapter to see user's profile information
+ * @author Nimi Akinroye
+ */
 public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
     private Context context;
     private List<UserInfo> listUsers;
@@ -42,6 +47,13 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
         TextView userStatus;
     }
 
+    /**
+     * Initializer
+     * @author Nimi Akinroye
+     * @param context context
+     * @param objects users list
+     * @param combinedList waitlist
+     */
     public ProfileListAdapter(@NonNull Context context, @NonNull List<UserInfo> objects, ArrayList<Map<String, String>> combinedList) {
         super(context, 0, objects);
         this.context = context;
@@ -50,6 +62,14 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
         this.waitingList = combinedList;
     }
 
+    /**
+     * Contains much of the logic for the adapter
+     * @author Nimi Akinroye
+     * @param position position
+     * @param convertView convertView
+     * @param parent parent
+     * @return view
+     */
     @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
@@ -131,8 +151,11 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
         return convertView;
     }
 
-
-    // Toggle selection state for an item at the given position
+    /**
+     * Toggle selection state for an item at the given position
+     * @author Nimi Akinroye
+     * @param position position of selection
+     */
     public void toggleSelection(int position) {
         if (selectedItems.get(position, false)) {
             selectedItems.delete(position);  // Deselect if already selected
@@ -142,25 +165,33 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
         notifyDataSetChanged();  // Notify the adapter to refresh the view
     }
 
-    // Clear all selections
+    /**
+     * Clear all selections
+     * @author Nimi Akinroye
+     */
     public void clearSelections() {
         selectedItems.clear();
         notifyDataSetChanged();
     }
 
-    // Set the selection mode (true to enable selection, false to disable)
+    /**
+     * Set the selection mode (true to enable selection, false to disable)
+     * @author Nimi Akinroye
+     * @param isSelectionMode whether selection mode
+     */
     public void setSelectionMode(boolean isSelectionMode) {
         this.isSelectionMode = isSelectionMode;
         notifyDataSetChanged();  // Refresh the view
     }
 
-
-
-    // Get the list of selected items (useful for removing items, etc.)
+    /**
+     * Get the list of selected items (useful for removing items, etc.)
+     * @author Nimi Akinroye
+     * @return selectedItems
+     */
     public SparseBooleanArray getSelectedItems() {
         return selectedItems;
     }
-
 
     private String getUserStatus(String deviceId) {
         // Default status in case the user is not found

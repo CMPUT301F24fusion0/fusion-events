@@ -7,6 +7,10 @@ import com.example.fusion0.helpers.AddEventHelper;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * Helper class to allow for organizer to add event
+ * @author Sehej Brar
+ */
 public class AddEventHelperTest {
     static AddEventHelper addEventHelper;
 

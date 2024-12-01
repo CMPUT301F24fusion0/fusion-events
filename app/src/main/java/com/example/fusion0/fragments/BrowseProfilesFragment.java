@@ -21,6 +21,10 @@ import com.example.fusion0.models.UserInfo;
 
 import java.util.ArrayList;
 
+/**
+ * Browse people's profiles
+ * @author Ali Abouei
+ */
 public class BrowseProfilesFragment extends Fragment {
 
     private ListView userListView;
@@ -53,6 +57,9 @@ public class BrowseProfilesFragment extends Fragment {
 
     }
 
+    /**
+     * Get all users in firebase
+     */
     private void fetchUsers() {
         userFirestore.getAllUsers(new UserFirestore.UserListCallback() {
             @Override
@@ -80,6 +87,11 @@ public class BrowseProfilesFragment extends Fragment {
         });
     }
 
+    /**
+     * Confirmation to delete
+     * @param user user to delete
+     * @param position position of user to delete on list
+     */
     private void showDeleteConfirmationDialog(UserInfo user, int position) {
         new AlertDialog.Builder(requireContext())
                 .setTitle("Delete User")
@@ -89,6 +101,11 @@ public class BrowseProfilesFragment extends Fragment {
                 .show();
     }
 
+    /**
+     * Delete the user after confirmation
+     * @param user user
+     * @param position position of user
+     */
     private void deleteUser(UserInfo user, int position) {
         userFirestore.deleteUserAndImage(user.getDeviceID(), new UserFirestore.DeleteCallback() {
             @Override
@@ -107,7 +124,5 @@ public class BrowseProfilesFragment extends Fragment {
                 );
             }
         });
-
-
     }
 }

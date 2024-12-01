@@ -16,6 +16,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 
+/**
+ * Integration tests for UserFirebase
+ * @author Sehej Brar
+ */
 public class UserFirebaseTest {
     private CollectionReference usersRef;
     private UserFirestore firebase;

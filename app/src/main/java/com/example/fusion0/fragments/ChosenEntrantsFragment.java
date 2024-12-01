@@ -35,6 +35,10 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Chosen entrants is those that won the lottery
+ * @author Simon Haile
+ */
 public class ChosenEntrantsFragment extends Fragment {
     ImageButton backButton;
     TextView chosenEntrantsCapacityRatio, fullCapacityTextView, emptyTextView, waitinglistEmptyTextView;
@@ -47,7 +51,6 @@ public class ChosenEntrantsFragment extends Fragment {
     private Waitlist waitlist;
     Boolean waitinglistEmpty = false;
 
-
     private ProfileListAdapter adapter;
     ArrayList<Map<String, String>> chosenList;
 
@@ -57,8 +60,6 @@ public class ChosenEntrantsFragment extends Fragment {
 
     private String lotteryCapacity, eventID;
     UserFirestore userFirestore = new UserFirestore();
-
-
 
     /**
      * Sets up the variables required in this class and uses the adapter to show selected entrants
@@ -138,6 +139,10 @@ public class ChosenEntrantsFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Update the user interface
+     * @author Simon Haile
+     */
     private void updateUI() {
         String ratio = users.size() + "/" + lotteryCapacity;
         chosenEntrantsCapacityRatio.setText(ratio);
@@ -239,9 +244,6 @@ public class ChosenEntrantsFragment extends Fragment {
             });
         });
 
-
-
-
         removeEntrantsButton.setOnClickListener(v -> {
             chosenEntrantsListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
@@ -281,8 +283,6 @@ public class ChosenEntrantsFragment extends Fragment {
             adapter.setSelectionMode(isSelectionMode);  // Notify adapter
             updateUI();
         });
-
-
 
         cancelButton.setOnClickListener(v->{
             isSelectionMode = false;

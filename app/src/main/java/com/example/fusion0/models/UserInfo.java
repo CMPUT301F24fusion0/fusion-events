@@ -10,6 +10,7 @@ import java.util.Objects;
 
 /**
  * This class contains the information for users.
+ * @author Sehej Brar
  */
 public class UserInfo {
     String firstName, lastName, email, phoneNumber, deviceID, numAccepted, numDeclined;
@@ -91,23 +92,38 @@ public class UserInfo {
         return user;
     }
 
+    /**
+     * Gets the number of accepted events for the user
+     * @return string of number of accepted events
+     */
     @PropertyName("numaccepted")
     public String getNumAccepted() {
         return numAccepted;
     }
 
+    /**
+     * Sets number of accepted events
+     * @param numAccepted number of accepted events
+     */
     @PropertyName("numaccepted")
     public void setNumAccepted(String numAccepted) {
         this.numAccepted = numAccepted;
         updateUser("numAccepted", new ArrayList<String>(Collections.singletonList(numAccepted)));
-
     }
 
+    /**
+     * Gets number of events declined
+     * @return number of events declined
+     */
     @PropertyName("numdeclined")
     public String getNumDeclined() {
         return numDeclined;
     }
 
+    /**
+     * Sets number of events declined
+     * @param numDeclined number of declined events
+     */
     @PropertyName("numdeclined")
     public void setNumDeclined(String numDeclined) {
         this.numDeclined = numDeclined;

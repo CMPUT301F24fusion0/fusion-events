@@ -14,6 +14,10 @@ import com.example.fusion0.activities.MainActivity;
 import org.junit.Rule;
 import org.junit.Test;
 
+/**
+ * Instrumental test for the profile fragment
+ * @author Sehej Brar
+ */
 public class ProfileTest {
     @Rule
     public ActivityTestRule<MainActivity> activityTestRule = new ActivityTestRule<>(MainActivity.class);

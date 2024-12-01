@@ -5,6 +5,10 @@ import com.example.fusion0.models.OrganizerInfo;
 
 import java.util.Date;
 
+/**
+ * Helper for organizer to add events
+ * @author Simon Haile
+ */
 public class AddEventHelper {
 
     public OrganizerInfo organizer;

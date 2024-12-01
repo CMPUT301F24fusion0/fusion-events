@@ -14,6 +14,10 @@ import androidx.navigation.Navigation;
 
 import com.example.fusion0.R;
 
+/**
+ * Asks the user to register to use certain features
+ * @author Nimi Akinroye
+ */
 public class RegistrationPromptFragment extends Fragment {
 
     Button acceptButton;
@@ -50,7 +54,7 @@ public class RegistrationPromptFragment extends Fragment {
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
+     * @return view
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

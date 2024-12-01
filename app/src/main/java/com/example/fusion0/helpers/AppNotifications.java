@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 /**
  * This class provides the methods needed to send/receive notifications
+ * @author Sehej Brar
  * Sources:
  *      <a href="https://stackoverflow.com/questions/44305206/ask-permission-for-push-notification">...</a>
  *      <a href="https://learn.microsoft.com/en-gb/answers/questions/1181354/how-can-i-request-permission-for-push-notification">...</a>

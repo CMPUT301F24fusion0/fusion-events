@@ -8,6 +8,10 @@ import com.example.fusion0.models.FacilitiesInfo;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Tests for the facility class
+ * @author Sehej Brar
+ */
 public class FacilitiesInfoTest {
     private FacilitiesInfo facilitiesInfo;
 

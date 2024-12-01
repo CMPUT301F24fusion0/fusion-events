@@ -15,6 +15,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Test for the EventInfo class
+ * @author Sehej Brar
+ */
 public class EventInfoTest {
     private EventInfo event;
 

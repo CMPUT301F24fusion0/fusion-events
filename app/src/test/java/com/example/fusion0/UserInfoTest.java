@@ -12,6 +12,10 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * Test for the UserInfo class
+ * @author Sehej Brar
+ */
 public class UserInfoTest {
     private UserInfo user;
 

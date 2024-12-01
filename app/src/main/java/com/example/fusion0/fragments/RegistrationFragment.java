@@ -27,6 +27,7 @@ import java.util.Objects;
 /**
  * This is the registration fragment that will be displayed when a user signs up for an waiting
  * for the first time. It will only be used once per user.
+ * @author Sehej Brar
  */
 public class RegistrationFragment extends Fragment {
     EditText firstName, lastName, email, phoneNumber;
