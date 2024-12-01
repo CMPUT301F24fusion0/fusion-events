@@ -129,20 +129,6 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <ImageButton
-                android:id="@+id/upload_image_button"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/ic_upload_image"
-                android:background="@drawable/rectangular_background"
-                android:backgroundTint="@color/royalBlue"
-                android:scaleType="centerInside"
-                android:padding="8dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:tint="@color/white"
-                android:visibility="gone" />
-
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/eventDetails"
                 android:layout_width="match_parent"
@@ -808,58 +794,22 @@
         </LinearLayout>
 
     </ScrollView>
-
-    <LinearLayout
-        android:id="@+id/warningButtons"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:orientation="vertical"
-        android:layout_marginBottom="30dp">
-
-        <TextView
-            android:id="@+id/registration_passed_text_view"
-            android:layout_width="300dp"
-            android:layout_height="50dp"
-            android:text="Registration Deadline Passed"
-            android:textColor="@color/red"
-            android:fontFamily="@font/dmsans_regular"
-            android:gravity="center"
-            android:textSize="15sp"
-            android:padding="10dp"
-            android:visibility="gone"/>
-
-        <TextView
-            android:id="@+id/waitinglist_full_text_view"
-            android:layout_width="300dp"
-            android:layout_height="50dp"
-            android:text="Waiting List Is Full At The Moment"
-            android:textColor="@color/red"
-            android:fontFamily="@font/dmsans_regular"
-            android:gravity="center"
-            android:textSize="15sp"
-            android:padding="10dp"
-            android:visibility="gone"/>
-
-
-    </LinearLayout>
+    
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/join_button"
+        android:id="@+id/unjoin_button"
         android:layout_width="wrap_content"
         android:layout_height="80dp"
-        android:src="@drawable/ic_add_user"
+        android:src="@drawable/ic_minus"
         android:background="@android:color/white"
-        android:contentDescription="join"
+        android:contentDescription="unjoin"
         android:paddingBottom="30dp"
         android:layout_marginRight="24dp"
         android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:backgroundTint="@color/textFieldColor"
-        app:tint="@color/royalBlue"
+        android:backgroundTint="#ffa0a0"
+        app:tint="@color/red"
         app:rippleColor="@color/textColor"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

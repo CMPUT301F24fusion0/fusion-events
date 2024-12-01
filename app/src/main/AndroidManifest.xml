@@ -47,7 +47,6 @@
         </activity>
 
         <activity android:name=".activities.ViewFacilityActivity"/>
-        <activity android:name=".activities.JoinedEventActivity"/>
         <activity android:name="com.yalantis.ucrop.UCropActivity" />
 
 

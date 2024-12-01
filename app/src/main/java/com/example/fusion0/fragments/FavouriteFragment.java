@@ -3,7 +3,6 @@ package com.example.fusion0.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -25,8 +24,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.fusion0.R;
-import com.example.fusion0.activities.JoinedEventActivity;
-import com.example.fusion0.activities.ViewFacilityActivity;
 import com.example.fusion0.helpers.AnimationHelper;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
@@ -238,10 +235,10 @@ public class FavouriteFragment extends Fragment {
 
             joinedEventsList.setOnItemClickListener((parent, view1, position, id) -> {
                 String event = user.getEvents().get(position);
-                Intent intent = new Intent(requireActivity(), JoinedEventActivity.class);
-                intent.putExtra("eventID", event);
-                intent.putExtra("deviceID", deviceID);
-                startActivity(intent);
+                Bundle joinedBundle = new Bundle();
+                joinedBundle.putString("eventID", event);
+                joinedBundle.putString("deviceID", deviceID);
+                Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_joinedEventFragment, joinedBundle);
             });
         });
 
@@ -276,7 +273,6 @@ public class FavouriteFragment extends Fragment {
                                 organizer = organizerInfo;
                                 ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, R.layout.spinner_dropdown_item , organizer.getEventsNames());
                                 createdEventsList.setAdapter(eventsAdapter);
-
                                 setListViewHeightBasedOnChildren(createdEventsList);
 
 
@@ -376,7 +372,7 @@ public class FavouriteFragment extends Fragment {
 
                         if (facilitiesList.getAdapter() == null) {
                             if (organizer.getFacilitiesNames() != null) {
-                                ArrayAdapter<String> facilitiesAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, organizer.getFacilitiesNames());
+                                ArrayAdapter<String> facilitiesAdapter = new ArrayAdapter<>(context, R.layout.spinner_dropdown_item , organizer.getFacilitiesNames());
                                 facilitiesList.setAdapter(facilitiesAdapter);
                                 setListViewHeightBasedOnChildren(facilitiesList);
                             } else {
@@ -410,9 +406,11 @@ public class FavouriteFragment extends Fragment {
                             FacilitiesInfo facility = organizer.getFacilities().get(position);
                             String facilityID = facility.getFacilityID();
 
-                            Intent intent = new Intent(requireActivity(), ViewFacilityActivity.class);
-                            intent.putExtra("facilityID", facilityID);
-                            startActivity(intent);
+                            Bundle favouriteBundle = new Bundle();
+                            favouriteBundle.putString("facilityID", facilityID);
+                            favouriteBundle.putString("eventID", "none");
+                            favouriteBundle.putString("ID", "favourite");
+                            Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_viewFacilityFragment, favouriteBundle);
                         });
                     }
                 }
@@ -483,7 +481,7 @@ public class FavouriteFragment extends Fragment {
      */
     private void updateCreatedEventsList() {
         createdEventsList.setVisibility(View.GONE);
-        createdEventsList.setVisibility(View.GONE);
+        createdEventsListDivider.setVisibility(View.GONE);
         if (organizer != null && organizer.getEvents() != null && !organizer.getEvents().isEmpty()) {
             ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, organizer.getEventsNames());
             createdEventsList.setAdapter(eventsAdapter);

@@ -26,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -43,7 +44,6 @@ import androidx.navigation.Navigation;
 import com.bumptech.glide.Glide;
 import com.example.fusion0.BuildConfig;
 import com.example.fusion0.R;
-import com.example.fusion0.activities.ViewFacilityActivity;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.GeoLocation;
 import com.example.fusion0.helpers.UserFirestore;
@@ -52,6 +52,7 @@ import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.FacilitiesInfo;
 import com.example.fusion0.models.OrganizerInfo;
 import com.example.fusion0.models.UserInfo;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
@@ -81,11 +82,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * @author Simon Haile
- * This activity allows organizers to view the selected joined event and users that have scanned
- * a qr code to view the scanned event
- */
 public class ViewEventFragment extends Fragment {
     private String deviceID;
     private Boolean isOwner = false;
@@ -173,6 +169,9 @@ public class ViewEventFragment extends Fragment {
     private Date startDate;
     private Date registrationDate;
 
+    private ShimmerFrameLayout viewEventSkeletonLayout;
+    private ScrollView scrollContainer;
+
     public ViewEventFragment() {
         // Required empty public constructor
     }
@@ -243,6 +242,9 @@ public class ViewEventFragment extends Fragment {
 
         Context context = requireContext();
 
+        viewEventSkeletonLayout = view.findViewById(R.id.viewEventSkeletonLayout);
+        scrollContainer = view.findViewById(R.id.scroll_container);
+
         backButton = view.findViewById(R.id.backButton);
         eventNameTextView = view.findViewById(R.id.EventName);
         eventDescriptionTextView = view.findViewById(R.id.description);
@@ -291,16 +293,18 @@ public class ViewEventFragment extends Fragment {
         listButtons = view.findViewById(R.id.listButtons);
 
         updateDateTextView(context);
+        loadScreen();
 
         backButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_mainFragment);
+            Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_favouriteFragment);
         });
 
         facilityButton.setOnClickListener(v -> {
-            Intent intent = new Intent(requireActivity(), ViewFacilityActivity.class);
-            intent.putExtra("facilityID", event.getFacilityID());
-            intent.putExtra("deviceID", deviceID);
-            startActivity(intent);
+            Bundle eventBundle = new Bundle();
+            eventBundle.putString("facilityID", event.getFacilityID());
+            eventBundle.putString("eventID", event.getEventID());
+            eventBundle.putString("ID", "viewEvent");
+            Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_viewFacilityFragment, eventBundle);
         });
 
         mapButton.setOnClickListener(v->{
@@ -423,6 +427,8 @@ public class ViewEventFragment extends Fragment {
 
                             isOwner = true;
                         }
+
+                        populateScreen();
                     }
                 }
 
@@ -460,7 +466,7 @@ public class ViewEventFragment extends Fragment {
                     newBundle.putSerializable("fragment_waitlist", waitlist);
                     waitlistFragment.setArguments(newBundle);
 
-                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_waitlistFragment, bundle);
+                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_waitlistFragment, newBundle);
                 }
             });
         });
@@ -487,7 +493,7 @@ public class ViewEventFragment extends Fragment {
                     chosenEntrants.setArguments(newBundle);
 
                     // Launch the ChosenEntrantsFragment fragment with the filtered data
-                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_chosenEntrantsFragment, bundle);
+                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_chosenEntrantsFragment, newBundle);
             });
         });
 
@@ -515,7 +521,7 @@ public class ViewEventFragment extends Fragment {
                     newBundle.putSerializable("fragment_waitlist", waitlist);
                     cancelledEntrantsFragment.setArguments(newBundle);
 
-                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_cancelledEntrantsFragment, bundle);
+                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_cancelledEntrantsFragment, newBundle);
                 }
             });
         });
@@ -999,7 +1005,7 @@ public class ViewEventFragment extends Fragment {
             dialog.show();
         });
 
-        
+
     }
 
     /**
@@ -1280,6 +1286,7 @@ public class ViewEventFragment extends Fragment {
         }
     }
 
+
     /**
      * Show view with transition
      * @author Nimi Akinroye
@@ -1383,5 +1390,29 @@ public class ViewEventFragment extends Fragment {
         eventEndTimeTextView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, context.getTheme()));
         eventStartDateTextView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, context.getTheme()));
 
+    }
+
+    /**
+     * Load the screen
+     * @author Nimi Akinroye
+     */
+    private void loadScreen() {
+        scrollContainer.setVisibility(View.GONE);
+        eventPosterImageView.setVisibility(View.GONE);
+
+        viewEventSkeletonLayout.startShimmerAnimation();
+        viewEventSkeletonLayout.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Populate the screen
+     * @author Nimi Akinroye
+     */
+    private void populateScreen() {
+        viewEventSkeletonLayout.stopShimmerAnimation();
+        viewEventSkeletonLayout.setVisibility(View.GONE);
+
+        eventPosterImageView.setVisibility(View.VISIBLE);
+        scrollContainer.setVisibility(View.VISIBLE);
     }
 }
