@@ -15,6 +15,9 @@ import androidx.navigation.Navigation;
 
 import com.example.fusion0.R;
 
+/**
+ * Manages logic for all admin features
+ */
 public class AdminFeaturesFragment extends Fragment {
 
     private TextView browseEventsButton, browseProfilesButton, browseFacilitiesButton;
