@@ -48,7 +48,7 @@ public class FavouriteActivity extends AppCompatActivity {
     private boolean isFacilitiesListVisible = false;
     private boolean isCreatedEventsListVisible = false;
     private boolean isJoinedEventsListVisible = false;
-
+    private EventFirebase eventFirebase = new EventFirebase();
     private ImageButton profileButton;
     private ImageButton addButton;
     private ImageButton scannerButton;
@@ -104,7 +104,7 @@ public class FavouriteActivity extends AppCompatActivity {
                     if (user.getEvents() != null) {
                         ArrayList<String> filteredEvents = new ArrayList<>();
                         for (String event : user.getEvents()) {
-                            EventFirebase.findEvent(event, new EventFirebase.EventCallback() {
+                            eventFirebase.findEvent(event, new EventFirebase.EventCallback() {
                                 @Override
                                 public void onSuccess(EventInfo eventInfo) throws WriterException {
                                     if (eventInfo != null) {
@@ -160,7 +160,7 @@ public class FavouriteActivity extends AppCompatActivity {
             });
         });
 
-        createdEventsButton.setOnClickListener(view -> {EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
+        createdEventsButton.setOnClickListener(view -> {eventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
                 @Override
                 public void onSuccess(OrganizerInfo organizerInfo) {
                     if (organizerInfo == null) {
@@ -203,7 +203,7 @@ public class FavouriteActivity extends AppCompatActivity {
         });
 
         facilitiesButton.setOnClickListener(view -> {
-            EventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
+            eventFirebase.findOrganizer(deviceID, new EventFirebase.OrganizerCallback() {
                 @Override
                 public void onSuccess(OrganizerInfo organizerInfo) {
                     if (organizerInfo == null) {

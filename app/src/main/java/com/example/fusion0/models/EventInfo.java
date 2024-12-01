@@ -41,10 +41,10 @@ public class EventInfo {
     private String qrCode;
     EventFirebase firebase;
     private String acceptedCount;
-    private Boolean geolocation;
+    private Boolean geolocation = false;
     private Double latitude;
     private Double longitude;
-    private Integer radius;
+    private Integer radius = 0;
     private Boolean lotteryConducted = false;
 
     /**
@@ -195,8 +195,12 @@ public class EventInfo {
         event.put("radius", this.radius);
         event.put("acceptedCount", this.acceptedCount);
         event.put("lotteryCapacity", this.lotteryCapacity);
+        event.put("registrationDate", this.registrationDate);
+        event.put("lotteryConducted", this.lotteryConducted);
         return event;
     }
+
+
 
 
     public String getEventID(){

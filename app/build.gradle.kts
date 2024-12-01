@@ -79,7 +79,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
     implementation("me.dm7.barcodescanner:zxing:1.9.8")
 
     androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
@@ -94,4 +94,7 @@ dependencies {
     implementation("com.github.ybq:Android-SpinKit:1.4.0")
 
     implementation("com.airbnb.android:lottie-compose:6.6.0")
+    implementation("androidx.activity:activity:1.9.3")
+    implementation("com.facebook.shimmer:shimmer:0.1.0@aar")
+
 }

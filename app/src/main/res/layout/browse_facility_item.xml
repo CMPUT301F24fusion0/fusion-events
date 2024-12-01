@@ -1,7 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
+    android:gravity="center_vertical"
     android:padding="8dp">
 
     <TextView
@@ -13,14 +15,16 @@
         android:maxLines="1"
         android:text="Facility Name"
         android:textAlignment="center"
+        android:gravity="center"
         android:textSize="18sp" />
 
-    <Button
+    <ImageButton
         android:id="@+id/editFacilityButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@color/figmaBlue"
-        android:text="View"
-        android:textColor="@android:color/white" />
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:background="@drawable/ic_edit_button"
+        android:src="@drawable/ic_edit"
+        android:scaleType="center"
+        app:tint="@android:color/white"
+        android:contentDescription="Edit Facility" />
 </LinearLayout>

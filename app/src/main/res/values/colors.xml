@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
+    <color name="grey">#969796</color>
     <color name="white">#FFFFFFFF</color>
     <color name="appBackground">#EDF7FA</color>
     <color name="red">#D32F2F </color>
+    <color name="green">#228B22</color>
     <color name="figmaBlue">#2D51AA</color>
 
     <!-- Colours used for the Profile page -->
+    <color name="royalBlue">#003366</color>
     <color name="textFieldColor">#F2F8FD</color>
     <color name="textColor">#243B55</color>
 
 
     <color name="light_red">#fce2e2</color>
+
+    <color name="selectedTabColor">#003366</color> <!-- Example selected color -->
+    <color name="unselectedTabColor">#888888</color> <!-- Example unselected color -->
 
 </resources>

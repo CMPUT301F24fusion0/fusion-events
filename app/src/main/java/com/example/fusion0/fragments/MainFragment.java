@@ -1,10 +1,13 @@
 package com.example.fusion0.fragments;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -14,12 +17,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -35,6 +44,7 @@ import com.example.fusion0.helpers.NotificationHelper;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.NotificationItem;
+import com.example.fusion0.models.OrganizerInfo;
 import com.example.fusion0.models.UserInfo;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseApp;
@@ -44,8 +54,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public class MainFragment extends Fragment {
 
@@ -54,11 +66,25 @@ public class MainFragment extends Fragment {
     private String deviceId;
 
 
-    private ImageButton profileButton;
-    private ImageButton addButton;
-    private ImageButton homeButton;
-    private ImageButton scannerButton;
-    private ImageButton favouriteButton;
+    private LinearLayout profileButton;
+    private LinearLayout addButton;
+    private LinearLayout homeButton;
+    private LinearLayout scannerButton;
+    private LinearLayout favouriteButton;
+
+    private ImageButton profileImageButton;
+    private ImageButton addImageButton;
+    private ImageButton homeImageButton;
+    private ImageButton scannerImageButton;
+    private ImageButton favouriteImageButton;
+
+
+    private TextView homeTextView;
+    private TextView scannerTextView;
+    private TextView addTextView;
+    private TextView searchTextView;
+    private TextView profileTextView;
+
 
     // Message related fields
     private TextView userName;
@@ -73,7 +99,7 @@ public class MainFragment extends Fragment {
 
     private final int REQUEST_CODE = 100;
 
-    private Waitlist waitlist;
+    private Waitlist waitlist = new Waitlist();
 
 
     /**
@@ -97,8 +123,6 @@ public class MainFragment extends Fragment {
 
         loginManagement = new LoginManagement(requireContext());
         notificationList = new ArrayList<>();
-
-        waitlist = new Waitlist();
     }
 
     /**
@@ -131,6 +155,8 @@ public class MainFragment extends Fragment {
 
         Context context = requireContext();
 
+        initializeToolbarButtons(view, context);
+
         FirebaseApp.initializeApp(context);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -138,14 +164,32 @@ public class MainFragment extends Fragment {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         QuerySnapshot querySnapshot = task.getResult();
+                        Log.d("In", "task.isSuccessful");
 
                         if (querySnapshot != null) {
                             for (DocumentSnapshot document : querySnapshot.getDocuments()) {
                                 Timestamp registrationDeadline = document.getTimestamp("registrationDate");
-
-                                if (registrationDeadline != null) {
+                                Log.d("query", "snapshot is null");
+                                if (registrationDeadline != null && !document.getBoolean("lotteryConducted")) {
                                     Date now = new Date();
-                                    if (now.after(registrationDeadline.toDate()) && !document.getBoolean("lotteryConducted")) {
+                                    Calendar calNow = Calendar.getInstance();
+                                    calNow.setTime(now);
+                                    calNow.set(Calendar.HOUR_OF_DAY, 0);
+                                    calNow.set(Calendar.MINUTE, 0);
+                                    calNow.set(Calendar.SECOND, 0);
+                                    calNow.set(Calendar.MILLISECOND, 0);
+
+                                    Calendar calDeadline = Calendar.getInstance();
+                                    calDeadline.setTime(registrationDeadline.toDate());
+                                    calDeadline.set(Calendar.HOUR_OF_DAY, 0);
+                                    calDeadline.set(Calendar.MINUTE, 0);
+                                    calDeadline.set(Calendar.SECOND, 0);
+                                    calDeadline.set(Calendar.MILLISECOND, 0);
+
+                                    Log.d("DateCheck", "calNow: " + calNow.getTime());
+                                    Log.d("DateCheck", "calDeadline: " + calDeadline.getTime());
+
+                                    if (calNow.after(calDeadline)) {
                                         String eventId = document.getId();
                                         runLottery(eventId, document);
                                         document.getReference().update("lotteryConducted", true);
@@ -174,7 +218,7 @@ public class MainFragment extends Fragment {
         // Retrieve login state
         loginManagement.isUserLoggedIn(isLoggedIn -> {
             if (isLoggedIn) {
-                AppNotifications.permission(requireActivity(), deviceId);
+                AppNotifications.permission(getActivity(), deviceId);
                 new UserFirestore().findUser(deviceId, new UserFirestore.Callback() {
                     @Override
                     public void onSuccess(UserInfo user) {
@@ -279,7 +323,6 @@ public class MainFragment extends Fragment {
                 });
 
                 itemTouchHelper.attachToRecyclerView(notificationsListView);
-                initializeToolbarButtons(view);
 
             } else {
                 profileButton = view.findViewById(R.id.toolbar_person);
@@ -358,11 +401,28 @@ public class MainFragment extends Fragment {
     /**
      * Initializes the toolbar and sends them to the correct page if the button is clicked.
      */
-    private void initializeToolbarButtons(View view) {
-        profileButton = view.findViewById(R.id.toolbar_person);
+    private void initializeToolbarButtons(View view, Context context) {
+        homeButton = view.findViewById(R.id.toolbar_home);
         scannerButton = view.findViewById(R.id.toolbar_qrscanner);
         addButton = view.findViewById(R.id.toolbar_add);
         favouriteButton = view.findViewById(R.id.toolbar_favourite);
+        profileButton = view.findViewById(R.id.toolbar_person);
+
+        homeImageButton = view.findViewById(R.id.toolbar_home_image);
+        scannerImageButton = view.findViewById(R.id.toolbar_qrscanner_image);
+        addImageButton = view.findViewById(R.id.toolbar_add_image);
+        favouriteImageButton = view.findViewById(R.id.toolbar_favourite_image);
+        profileImageButton = view.findViewById(R.id.toolbar_person_image);
+
+        homeTextView = view.findViewById(R.id.homeTextView);
+        scannerTextView = view.findViewById(R.id.qrTextView);
+        addTextView = view.findViewById(R.id.addTextView);
+        searchTextView = view.findViewById(R.id.searchTextView);
+        profileTextView = view.findViewById(R.id.profileTextView);
+
+        // Set all buttons
+        setAllButtonsInactive(context);
+        setActiveButton(context, homeImageButton, homeTextView);
 
         profileButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_profileFragment));
 
@@ -371,7 +431,23 @@ public class MainFragment extends Fragment {
         addButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_eventFragment));
 
         favouriteButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_favouriteFragment));
+    }
 
+    private void setAllButtonsInactive(Context context) {
+        profileImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        scannerImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        addImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+        favouriteImageButton.setColorFilter(ContextCompat.getColor(context, R.color.grey));
+
+        scannerTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+        addTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+        searchTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+        profileTextView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+    }
+
+    private void setActiveButton(Context context, ImageButton activeButton, TextView activeTextView) {
+        activeButton.setColorFilter(ContextCompat.getColor(context, R.color.royalBlue));
+        activeTextView.setTextColor(ContextCompat.getColor(context, R.color.royalBlue));
     }
 
     /**
@@ -414,6 +490,7 @@ public class MainFragment extends Fragment {
         }
     }
 
+
     /**
      * Starting the lottery function and send notifications
      * @param eventId event id
@@ -424,10 +501,11 @@ public class MainFragment extends Fragment {
             if (!eventDoc.getString("lotteryCapacity").equals("0")) {
                 waitlist.allNotification(eventId, "Lottery Starting",
                         "The lottery is not starting. Be on the look out for the results!", "0");
-                waitlist.conductLottery(eventId, Integer.parseInt(eventDoc.getString("lotteryCapacity")));
-                waitlist.chosenNotification(eventId, "Winner!",
-                        "Congratulations, you have won the lottery! Please accept the invitation to confirm your spot.", "1");
-                waitlist.loseNotification(eventId, "Lottery Results", "Unfortunately, you have lost the lottery. You may still receive an invite if someone declines their invitation.", "0");
+                waitlist.conductLottery(eventId, Integer.parseInt(eventDoc.getString("lotteryCapacity")), new Waitlist.LotteryCallback() {
+                    @Override
+                    public void onComplete() {
+                    }
+                });
 
                 waitlist.getChosen(eventId, chosen -> {
                     if (!chosen.isEmpty()) {

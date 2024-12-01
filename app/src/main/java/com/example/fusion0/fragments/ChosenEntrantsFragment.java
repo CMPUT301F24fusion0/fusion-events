@@ -2,7 +2,7 @@ package com.example.fusion0.fragments;
 
 import static android.content.ContentValues.TAG;
 
-import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -13,41 +13,50 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
-import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.R;
 import com.example.fusion0.adapters.ProfileListAdapter;
-
+import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.EventInfo;
+import com.example.fusion0.models.OrganizerInfo;
 import com.example.fusion0.models.UserInfo;
 import com.google.zxing.WriterException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ChosenEntrantsFragment extends Fragment {
     ImageButton backButton;
-    TextView chosenEntrantsCapacityRatio, fullCapacityTextView, emptyTextView;
+    TextView chosenEntrantsCapacityRatio, fullCapacityTextView, emptyTextView, waitinglistEmptyTextView;
     ListView chosenEntrantsListView;
     Button fillLotteryButton, removeEntrantsButton, secondRemoveButton, cancelButton;
-    EventFirebase firebase;
-    EventInfo event = null;
     List<UserInfo> users = new ArrayList<>();
 
     private int pendingRequests = 0;
 
     private Waitlist waitlist;
+    Boolean waitinglistEmpty = false;
+
 
     private ProfileListAdapter adapter;
     ArrayList<Map<String, String>> chosenList;
 
     private boolean isSelectionMode = false;
+
+    EventFirebase eventFirebase = new EventFirebase();
+
+    private String lotteryCapacity, eventID;
+    UserFirestore userFirestore = new UserFirestore();
 
 
 
@@ -76,9 +85,11 @@ public class ChosenEntrantsFragment extends Fragment {
         cancelButton = view.findViewById(R.id.cancel_button);
         fullCapacityTextView = view.findViewById(R.id.full_capacity_text_view);
         emptyTextView = view.findViewById(R.id.emptyText);
-        firebase = new EventFirebase();
+        waitinglistEmptyTextView = view.findViewById(R.id.empty_waitinglist_text_view);
 
         Bundle bundle = getArguments();
+        lotteryCapacity = bundle.getString("lotteryCapacity");
+        eventID = bundle.getString("eventID");
 
         if (bundle != null) {
             waitlist = (Waitlist) bundle.getSerializable("fragment_waitlist");
@@ -102,7 +113,7 @@ public class ChosenEntrantsFragment extends Fragment {
                                 pendingRequests--;
 
                                 if (pendingRequests == 0) {
-                                    updateUI(bundle);
+                                    updateUI();
                                 }
                             }
 
@@ -113,27 +124,42 @@ public class ChosenEntrantsFragment extends Fragment {
                                 pendingRequests--;
 
                                 if (pendingRequests == 0) {
-                                    updateUI(bundle);
+                                    updateUI();
                                 }
                             }
                         });
                     }
                 }
             } else {
-                updateUI(bundle);
+                updateUI();
             }
         }
 
         return view;
     }
-    private void updateUI(Bundle bundle) {
-        String lotteryCapacity = bundle != null ? bundle.getString("lotteryCapacity", "0") : "0";
+
+    private void updateUI() {
         String ratio = users.size() + "/" + lotteryCapacity;
         chosenEntrantsCapacityRatio.setText(ratio);
+
+        waitlist.getWait(eventID, new Waitlist.WaitingCB() {
+            @Override
+            public void waitDid(ArrayList<String> wait) {
+                waitinglistEmpty = wait.isEmpty();
+            }
+        });
 
         if (users.size() == Integer.parseInt(lotteryCapacity)){
             fullCapacityTextView.setVisibility(View.VISIBLE);
             fillLotteryButton.setVisibility(View.GONE);
+        } else if (waitinglistEmpty) {
+            waitinglistEmptyTextView.setVisibility(View.VISIBLE);
+            fullCapacityTextView.setVisibility(View.GONE);
+            fillLotteryButton.setVisibility(View.GONE);
+        }else{
+            fullCapacityTextView.setVisibility(View.GONE);
+            fillLotteryButton.setVisibility(View.VISIBLE);
+            waitinglistEmptyTextView.setVisibility(View.GONE);
         }
 
         if (users.isEmpty()) {
@@ -161,44 +187,61 @@ public class ChosenEntrantsFragment extends Fragment {
 
         backButton.setOnClickListener(v -> {
             if (bundle != null) {
-                Intent intent = new Intent(getActivity(), ViewEventFragment.class);
-                intent.putExtra("eventID", bundle.getString("eventID"));
-                startActivity(intent);
+                bundle.putString("eventID", eventID);
+                Navigation.findNavController(view).navigate(R.id.action_chosenEntrantsFragment_to_viewEventFragment, bundle);
             }
         });
 
         fillLotteryButton.setOnClickListener(v -> {
-            int numToSelect = Integer.parseInt(bundle.getString("lotteryCapacity")) - users.size()  ;
-            waitlist.conductLottery(bundle.getString("eventID"),numToSelect);
+            int numToSelect = Integer.parseInt(lotteryCapacity) - users.size();
+            waitlist.conductLottery(eventID, numToSelect, new Waitlist.LotteryCallback() {
+                @Override
+                public void onComplete() {
+                    users = new ArrayList<>();
 
-            waitlist.getChosen(bundle.getString("eventID"), chosen -> {
-                ArrayList<Map<String, String>> fullChosenEntrants = new ArrayList<>();
+                    Toast.makeText(requireActivity(), "Conducting...", Toast.LENGTH_SHORT).show();
 
-                if(event == null){
-                    EventFirebase.findEvent(bundle.getString("eventID"), new EventFirebase.EventCallback() {
-                        @Override
-                        public void onSuccess(EventInfo eventInfo) throws WriterException {
-                            event = eventInfo;
+                    waitlist.getChosen(eventID, chosen -> {
+                        eventFirebase.findEvent(eventID, new EventFirebase.EventCallback() {
+                            @Override
+                            public void onSuccess(EventInfo eventInfo) throws WriterException {
+                                if (eventInfo.getWaitinglist() != null && !eventInfo.getWaitinglist().isEmpty()) {
+                                    for (Map<String, String> user : eventInfo.getWaitinglist()) {
+                                        if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
+                                            Log.e(TAG, "user:" + user.get("did") );
+                                            userFirestore.findUser(user.get("did"), new UserFirestore.Callback() {
+                                                @Override
+                                                public void onSuccess(UserInfo userInfo) {
+                                                    users.add(userInfo);
 
-                            if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
-                                for (Map<String, String> user :  event.getWaitinglist()) {
-                                    if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
-                                        fullChosenEntrants.add(user);
+                                                    if (users.size() == chosen.size()) {
+                                                        adapter = new ProfileListAdapter(getContext(), users);
+                                                        chosenEntrantsListView.setAdapter(adapter);
+                                                        updateUI();
+                                                    }
+                                                }
+                                                @Override
+                                                public void onFailure(String error) {
+                                                    Log.e(TAG, "Failed to fetch user: " + error);
+                                                }
+                                            });
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        @Override
-                        public void onFailure(String error) {
-
-                        }
+                            @Override
+                            public void onFailure(String error) {
+                                Log.e(TAG, "Failed to fetch event: " + error);
+                            }
+                        });
                     });
                 }
-
-                chosenList = fullChosenEntrants;
             });
         });
+
+
+
 
         removeEntrantsButton.setOnClickListener(v -> {
             chosenEntrantsListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -220,7 +263,7 @@ public class ChosenEntrantsFragment extends Fragment {
             for (int i = 0; i < checkedItems.size(); i++) {
                 int position = checkedItems.keyAt(i);
                 if (checkedItems.valueAt(i)) {
-                    waitlist.organizerCancel(bundle.getString("eventID"), users.get(position).getDeviceID());
+                    waitlist.organizerCancel(eventID, users.get(position).getDeviceID());
                     usersToRemove.add(users.get(position));
                 }
             }
@@ -231,20 +274,13 @@ public class ChosenEntrantsFragment extends Fragment {
             chosenEntrantsListView.clearChoices();
             adapter.clearSelections();
 
-            // Update UI visibility
-            if (users.size() == Integer.parseInt(bundle.getString("lotteryCapacity"))) {
-                fullCapacityTextView.setVisibility(View.VISIBLE);
-                fillLotteryButton.setVisibility(View.GONE);
-            } else{
-                fullCapacityTextView.setVisibility(View.GONE);
-                fillLotteryButton.setVisibility(View.VISIBLE);
-            }
             cancelButton.setVisibility(View.GONE);
             secondRemoveButton.setVisibility(View.GONE);
             removeEntrantsButton.setVisibility(View.VISIBLE);
 
             isSelectionMode = false;  // Disable selection mode
             adapter.setSelectionMode(isSelectionMode);  // Notify adapter
+            updateUI();
         });
 
 
@@ -252,7 +288,7 @@ public class ChosenEntrantsFragment extends Fragment {
         cancelButton.setOnClickListener(v->{
             isSelectionMode = false;
             adapter.setSelectionMode(isSelectionMode);
-            if (users.size() == Integer.parseInt(bundle.getString("lotteryCapacity"))){
+            if (users.size() == Integer.parseInt(lotteryCapacity)){
                 fullCapacityTextView.setVisibility(View.VISIBLE);
                 fillLotteryButton.setVisibility(View.GONE);
             } else{
