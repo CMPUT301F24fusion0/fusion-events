@@ -131,7 +131,9 @@ public class MapFragment extends Fragment {
         radius.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
-                helper.setGeolocationRadius(Integer.parseInt(radius.getText().toString()) * 1000);
+                if (radius != null && !radius.getText().toString().equals("")) {
+                    helper.setGeolocationRadius(Integer.parseInt(radius.getText().toString()) * 1000);
+                }
             }
         });
 
