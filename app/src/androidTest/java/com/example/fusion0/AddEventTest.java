@@ -16,6 +16,10 @@ import com.example.fusion0.activities.MainActivity;
 import org.junit.Rule;
 import org.junit.Test;
 
+/**
+ * Checks to see if the add event screen functions as required
+ * @author Sehej Brar
+ */
 public class AddEventTest {
     @Rule
     public ActivityTestRule<MainActivity> activityTestRule = new ActivityTestRule<>(MainActivity.class);

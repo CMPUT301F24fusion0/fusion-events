@@ -14,6 +14,10 @@ import com.example.fusion0.activities.MainActivity;
 import org.junit.Rule;
 import org.junit.Test;
 
+/**
+ * Instrumental tests for the QR Fragment
+ * @author Sehej Brar
+ */
 public class QRFragmentTest {
     @Rule
     public ActivityTestRule<MainActivity> activityTestRule = new ActivityTestRule<>(MainActivity.class);

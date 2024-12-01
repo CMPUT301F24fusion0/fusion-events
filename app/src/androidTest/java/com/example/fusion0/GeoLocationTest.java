@@ -25,9 +25,6 @@ import com.example.fusion0.helpers.GeoLocation;
  * determining whether a user can register based on proximity to the event location.
  * @author Derin Karas
  */
-
-
-
 @RunWith(AndroidJUnit4.class)
 public class GeoLocationTest {
 
@@ -51,6 +48,7 @@ public class GeoLocationTest {
     /**
      * Sets up the test environment.
      * Initializes GeoLocation objects with and without event data by launching TestFragmentActivity
+     * @author Derin Karas
      */
     @Before
     public void setUp() {
@@ -67,6 +65,7 @@ public class GeoLocationTest {
     /**
      * Tests the constructor that initializes GeoLocation with event data.
      * Validates that event latitude, longitude, and radius are correctly set.
+     * @author Derin Karas
      */
     @Test
     public void testConstructorWithEventLocation() {
@@ -78,6 +77,7 @@ public class GeoLocationTest {
     /**
      * Tests the constructor that initializes GeoLocation without event data.
      * Validates that default values (0.0) are assigned to event latitude and longitude.
+     * @author Derin Karas
      */
     @Test
     public void testConstructorWithoutEventLocation() {
@@ -88,6 +88,7 @@ public class GeoLocationTest {
     /**
      * Tests the setEventLocation method.
      * Verifies that the event location latitude and longitude are correctly updated.
+     * @author Derin Karas
      */
     @Test
     public void testSetEventLocation() {
@@ -99,6 +100,7 @@ public class GeoLocationTest {
     /**
      * Tests the setUserLocation method.
      * Validates that the user location latitude and longitude are correctly set.
+     * @author Derin Karas
      */
     @Test
     public void testSetUserLocation() {
@@ -110,6 +112,7 @@ public class GeoLocationTest {
     /**
      * Tests the setEventRadius method.
      * Verifies that the event radius is updated to the specified value.
+     * @author Derin Karas
      */
     @Test
     public void testSetEventRadius() {
@@ -120,6 +123,7 @@ public class GeoLocationTest {
     /**
      * Tests user location retrieval when permissions are granted.
      * Verifies that user location latitude and longitude are correctly retrieved.
+     * @author Derin Karas
      */
     @Test
     public void testGetLocationWhenPermissionGranted() {
@@ -131,6 +135,7 @@ public class GeoLocationTest {
     /**
      * Tests the onLocationChanged method.
      * Verifies that the user's location is updated when the location changes.
+     * @author Derin Karas
      */
     @Test
     public void testOnLocationChangedUpdatesUserLocation() {
@@ -146,6 +151,7 @@ public class GeoLocationTest {
     /**
      * Tests the canRegister method when the user is within the acceptable radius.
      * Validates that the method returns true.
+     * @author Derin Karas
      */
     @Test
     public void testCanRegisterWithinRadius() {
@@ -157,6 +163,7 @@ public class GeoLocationTest {
     /**
      * Tests the canRegister method when the user is outside the acceptable radius.
      * Validates that the method returns false.
+     * @author Derin Karas
      */
     @Test
     public void testCanRegisterOutsideRadius() {

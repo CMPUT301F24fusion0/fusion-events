@@ -15,6 +15,10 @@ import org.junit.Test;
 
 import java.util.Objects;
 
+/**
+ * Organizer integration tests with firebase
+ * @author Simon Haile
+ */
 public class OrganizersTest {
     private EventFirebase eventFirebase;
     private CollectionReference organizersRef;

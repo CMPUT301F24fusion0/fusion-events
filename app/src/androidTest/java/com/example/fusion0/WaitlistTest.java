@@ -20,6 +20,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Tests for waitlist
+ * @author Sehej Brar
+ */
 public class WaitlistTest {
     private static CollectionReference eventRef;
     private static Waitlist waitlist;
