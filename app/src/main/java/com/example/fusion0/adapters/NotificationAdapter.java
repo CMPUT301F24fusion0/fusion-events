@@ -14,9 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.fusion0.helpers.AppNotifications;
 import com.example.fusion0.helpers.NotificationHelper;
+import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.NotificationItem;
 import com.example.fusion0.R;
+import com.example.fusion0.models.UserInfo;
 
 import java.util.List;
 
@@ -91,6 +93,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         NotificationItem item = notificationList.get(position);
 
         if (holder instanceof LotteryNotificationViewHolder) {
+            UserFirestore uf = new UserFirestore();
             LotteryNotificationViewHolder lotteryHolder = (LotteryNotificationViewHolder) holder;
             lotteryHolder.notificationTitle.setText(item.getTitle());
             lotteryHolder.notificationBody.setText(item.getBody());
@@ -98,6 +101,20 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             lotteryHolder.acceptButton.setOnClickListener(v -> {
                 Toast.makeText(context, "Event Accepted", Toast.LENGTH_SHORT).show();
                 waitlist.changeStatus(item.getEventId(), userId, "accept");
+                uf.findUser(userId, new UserFirestore.Callback() {
+                    @Override
+                    public void onSuccess(UserInfo user) {
+                        user.editMode(true);
+                        user.setNumAccepted(Integer.toString(Integer.parseInt(user.getNumAccepted()) + 1));
+                        user.editMode(false);
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        Log.e("error", error);
+                    }
+                });
+
                 NotificationHelper.deleteNotification(userId, item, new NotificationHelper.Callback() {
                     @Override
                     public void onNotificationsUpdated(List<NotificationItem> updatedNotificationList) {}
@@ -114,6 +131,19 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             lotteryHolder.declineButton.setOnClickListener(v -> {
                 waitlist.changeStatus(item.getEventId(), userId, "cancel");
+                uf.findUser(userId, new UserFirestore.Callback() {
+                    @Override
+                    public void onSuccess(UserInfo user) {
+                        user.editMode(true);
+                        user.setNumDeclined(Integer.toString(Integer.parseInt(user.getNumDeclined()) + 1));
+                        user.editMode(false);
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        Log.e("error", error);
+                    }
+                });
                 AppNotifications.sendNotification(userId, "Lottery Results",
                         "Unfortunately, you have not been chosen for the lottery. " +
                                 "If someone declines the event, you may be selected for the lottery.",
