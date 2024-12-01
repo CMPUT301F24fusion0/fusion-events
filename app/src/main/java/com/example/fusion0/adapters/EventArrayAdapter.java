@@ -1,4 +1,4 @@
-package com.example.fusion0.activities;
+package com.example.fusion0.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
