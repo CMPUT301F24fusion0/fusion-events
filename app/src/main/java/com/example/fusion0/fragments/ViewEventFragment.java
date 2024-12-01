@@ -1322,7 +1322,6 @@ public class ViewEventFragment extends Fragment {
      * @param longitude longitude
      * @param context context
      */
-    private void d
     private void displayMapView(ImageView mapView, Double latitude, Double longitude, Context context) {
         String staticMapUrl;
         if (latitude > longitude) {
