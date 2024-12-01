@@ -1,6 +1,5 @@
 package com.example.fusion0.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,15 +43,15 @@ public class AdminFeaturesFragment extends Fragment {
 
         // Set up navigation for buttons
         browseEventsButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_adminFeaturesFragment_to_BrowseEventsFragment);
+            Navigation.findNavController(view).navigate(R.id.action_adminFeaturesFragment_to_browseEventsFragment);
         });
 
         browseProfilesButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_adminFeaturesFragment_to_BrowseProfilesFragment);
+            Navigation.findNavController(view).navigate(R.id.action_adminFeaturesFragment_to_browseProfilesFragment);
         });
 
         browseFacilitiesButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_adminFeaturesFragment_to_BrowseFacilitiesFragment);
+            Navigation.findNavController(view).navigate(R.id.action_adminFeaturesFragment_to_browseFacilitiesFragment);
         });
     }
 }

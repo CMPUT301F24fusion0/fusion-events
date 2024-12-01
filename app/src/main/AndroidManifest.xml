@@ -46,17 +46,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.AdminFacilityActivity" />
-        <activity android:name=".activities.AdminFeaturesActivity" />
-        <activity android:name=".activities.EventActivity" />
-        <activity android:name=".activities.FavouriteActivity"/>
         <activity android:name=".activities.ViewFacilityActivity"/>
         <activity android:name=".activities.JoinedEventActivity"/>
-        <activity android:name="com.yalantis.ucrop.UCropActivity" /> <!-- for cropping pictures when adding event poster -->
-        <activity android:name=".activities.BrowseEventsActivity"/>
-        <activity android:name=".activities.EditEventActivity"/>
-        <activity android:name=".activities.BrowseProfilesActivity"/>
-        <activity android:name=".fragments.TestFragmentActivity" />
+        <activity android:name="com.yalantis.ucrop.UCropActivity" />
 
 
     </application>

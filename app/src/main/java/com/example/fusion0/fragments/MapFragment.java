@@ -340,12 +340,13 @@ public class MapFragment extends Fragment {
                                         Toast.makeText(activity.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
                                     } else {
                                         newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude, facilityImage);
-                                        helper.setNewFacility(newFacility);
                                         facility = newFacility;
-                                        helper.setFacility(facility);
-
-                                        // Add the new facility name to the facilityNames list
                                         facilityNames.add(facilityName);
+
+
+                                        helper.setFacility(facility);
+                                        helper.setNewFacility(newFacility);
+                                        helper.setFacilityID(newFacility.getFacilityID());
 
                                         // Notify the adapter that the data has changed
                                         adapter.notifyDataSetChanged();

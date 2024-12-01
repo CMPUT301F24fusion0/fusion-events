@@ -60,14 +60,14 @@
         android:label="Admin Features"
         tools:layout="@layout/fragment_admin_features">
         <action
-            android:id="@+id/action_adminFeaturesFragment_to_BrowseProfilesFragment"
+            android:id="@+id/action_adminFeaturesFragment_to_browseProfilesFragment"
             app:destination="@id/browseProfilesFragment" />
         <action
-            android:id="@+id/action_adminFeaturesFragment_to_BrowseEventsFragment"
+            android:id="@+id/action_adminFeaturesFragment_to_browseEventsFragment"
             app:destination="@id/browseEventsFragment" />
 
         <action
-            android:id="@+id/action_adminFeaturesFragment_to_BrowseFacilitiesFragment"
+            android:id="@+id/action_adminFeaturesFragment_to_browseFacilitiesFragment"
             app:destination="@id/browseFacilitiesFragment" />
 
 
@@ -127,13 +127,16 @@
         <action
             android:id="@+id/action_qrFragment_to_viewEventFragment"
             app:destination="@id/viewEventFragment"/>
+        <action
+            android:id="@+id/action_qrFragment_to_userJoinFragment"
+            app:destination="@id/userJoinFragment"/>
     </fragment>
 
     <fragment
         android:id="@+id/eventFragment"
         android:name="com.example.fusion0.fragments.AddEventFragment"
         android:label="Event Fragment"
-        tools:layout="@layout/fragment_event">
+        tools:layout="@layout/fragment_add_event">
         <action
             android:id="@+id/action_eventFragment_to_mainFragment"
             app:destination="@id/mainFragment"/>
@@ -235,6 +238,21 @@
         <action
             android:id="@+id/action_viewEventFragment_to_registrationFragment"
             app:destination="@+id/registrationFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/userJoinFragment"
+        android:name="com.example.fusion0.fragments.UserJoinFragment"
+        android:label="User Join Fragment"
+        tools:layout="@layout/fragment_user_join">
+        <action
+            android:id="@+id/action_userJoinFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_userJoinFragment_to_viewFacilityFragment" />
+        <action
+            android:id="@+id/action_userJoinFragment_to_favouriteFragment"
+            app:destination="@id/favouriteFragment" />
     </fragment>
 
     <fragment
