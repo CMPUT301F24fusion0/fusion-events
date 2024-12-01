@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.text.SimpleDateFormat;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -57,7 +58,7 @@ public class EditEventFragment extends Fragment {
     private TextView startDateTextView, endDateTextView, locationTextView, radiusLabel, addPosterText;
     private ImageView uploadedPosterView, qrCodeImageView;
     private ImageButton editPosterButton, deletePosterButton;
-    private Button saveButton, cancelButton, generateQrCodeButton, deleteQrCodeButton;
+    private Button saveButton, cancelButton, generateQrCodeButton, deleteQrCodeButton, startDateButton, endDateButton;
     private androidx.appcompat.widget.SwitchCompat geolocationSwitch;
 
     private EventInfo event;
@@ -82,6 +83,10 @@ public class EditEventFragment extends Fragment {
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
 
+        startDateButton = view.findViewById(R.id.start_date_button);
+        endDateButton = view.findViewById(R.id.end_date_button);
+
+        initializeDatePickers();
         initializeViews(view);
         initializeImagePicker();
         initializeGooglePlaces();
@@ -147,6 +152,45 @@ public class EditEventFragment extends Fragment {
         );
     }
 
+    private void initializeDatePickers() {
+        // Set up the listener for "Start Date" button
+        startDateButton.setOnClickListener(v -> showDateTimePicker(date -> {
+            startDate = date;
+            startDateTextView.setText(formatDateTime(date));
+        }));
+
+        // Set up the listener for "End Date" button
+        endDateButton.setOnClickListener(v -> showDateTimePicker(date -> {
+            endDate = date;
+            endDateTextView.setText(formatDateTime(date));
+        }));
+    }
+
+    private void showDateTimePicker(OnDateTimeSelectedListener listener) {
+        Calendar calendar = Calendar.getInstance();
+
+        // Show Date Picker
+        new DatePickerDialog(requireContext(), (view, year, month, dayOfMonth) -> {
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH, month);
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+            // Show Time Picker
+            new TimePickerDialog(requireContext(), (timeView, hourOfDay, minute) -> {
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendar.set(Calendar.MINUTE, minute);
+                listener.onDateTimeSelected(calendar.getTime());
+            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+
+    // Interface for handling date and time selection
+    private interface OnDateTimeSelectedListener {
+        void onDateTimeSelected(Date date);
+    }
+
+
     private void pickImage() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
@@ -154,36 +198,42 @@ public class EditEventFragment extends Fragment {
     }
 
     private void initializeGooglePlaces() {
+        // Ensure Places API is initialized
         if (!Places.isInitialized()) {
             Places.initialize(requireContext(), BuildConfig.API_KEY);
         }
 
-        // Retrieve the fragment by ID
+        // Locate the AutocompleteSupportFragment
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                requireActivity().getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
-        if (autocompleteFragment == null) {
-            //Toast.makeText(requireContext(), "Error initializing Autocomplete fragment.", Toast.LENGTH_SHORT).show();
-            return;
+        if (autocompleteFragment != null) {
+            // Set the fields to retrieve from the Place object
+            autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.FORMATTED_ADDRESS, Place.Field.LAT_LNG));
+
+            // Set a PlaceSelectionListener to handle selected places
+            autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+                @Override
+                public void onPlaceSelected(@NonNull Place place) {
+                    // Handle the selected place
+                    eventAddress = place.getFormattedAddress();
+                    eventLatLng = place.getLatLng();
+                    locationTextView.setText(eventAddress);
+                    Toast.makeText(requireContext(), "Location updated to: " + eventAddress, Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onError(@NonNull Status status) {
+                    // Handle errors
+                    Toast.makeText(requireContext(), "Error selecting place: " + status.getStatusMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            // Handle case where the fragment is not found
+            Toast.makeText(requireContext(), "Autocomplete fragment not found!", Toast.LENGTH_SHORT).show();
         }
-
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.FORMATTED_ADDRESS, Place.Field.LAT_LNG));
-
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(@NonNull Place place) {
-                eventAddress = place.getFormattedAddress();
-                eventLatLng = place.getLatLng();
-                locationTextView.setText(eventAddress);
-                Toast.makeText(requireContext(), "Location updated to: " + eventAddress, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(@NonNull Status status) {
-                Toast.makeText(requireContext(), "Error selecting place: " + status.getStatusMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
     }
+
 
 
     private void loadEventDetails() {
@@ -348,13 +398,8 @@ public class EditEventFragment extends Fragment {
     }
 
     private String formatDateTime(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return String.format(Locale.US, "%d/%d/%d %02d:%02d",
-                calendar.get(Calendar.MONTH) + 1,
-                calendar.get(Calendar.DAY_OF_MONTH),
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.US);
+        return dateFormat.format(date);
     }
+
 }

@@ -126,6 +126,7 @@ public class EditFacilityFragment extends Fragment {
         }
 
         if (deviceID.equals(facility.getOwner()) || EventFirebase.isDeviceIDAdmin(deviceID)) {
+            // Toast to confirm admin statusw
             isOwner = true;
             toolbar.setVisibility(View.VISIBLE);
         }
