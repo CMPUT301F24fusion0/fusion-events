@@ -43,6 +43,6 @@ public class AddEventTest {
         Espresso.onView(withId(R.id.EventName)).perform(replaceText("Event Name"), closeSoftKeyboard());
         Espresso.onView(withId(R.id.Description)).perform(replaceText("Event Description"), closeSoftKeyboard());
         Espresso.onView(withId(R.id.save_button)).perform(click());
-        Espresso.onView(withId(R.id.createEventHeader)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
+        Espresso.onView(withId(R.id.header_text)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
     }
 }
