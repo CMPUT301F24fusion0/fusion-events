@@ -42,6 +42,7 @@ public class ViewFacilityFragment extends Fragment {
 
     private String deviceID;
     private String ID;
+    private String eventID;
     private String facilityID;
     
     private TextView facilityNameTextView;
@@ -120,16 +121,25 @@ public class ViewFacilityFragment extends Fragment {
         Bundle bundle = getArguments();
         if (bundle != null) {
             facilityID  = bundle.getString("facilityID");
+            eventID = bundle.getString("eventID");
             ID = bundle.getString("ID");
         }
 
         backButton.setOnClickListener(v -> {
-            if ("favouriteID".equals(ID)) {
+            if ("favourite".equals(ID)) {
                 Navigation.findNavController(view).navigate(R.id.action_viewFacilityFragment_to_favouriteFragment);
-            } else {
+            } else if ("viewEvent".equals(ID)) {
                 Bundle eventBundle = new Bundle();
-                eventBundle.putString("eventID", ID);
+                eventBundle.putString("eventID", eventID);
                 Navigation.findNavController(view).navigate(R.id.action_viewFacilityFragment_to_viewEventFragment, eventBundle);
+            } else if ("joinedEvent".equals(ID)) {
+                Bundle joinedBundle = new Bundle();
+                joinedBundle.putString("eventID", eventID);
+                Navigation.findNavController(view).navigate(R.id.action_viewFacilityFragment_to_userJoinFragment, joinedBundle);
+            } else if ("userJoinedEvent".equals(ID)) {
+                Bundle userJoinedBundle = new Bundle();
+                userJoinedBundle.putString("eventID", eventID);
+                Navigation.findNavController(view).navigate(R.id.action_viewFacilityFragment_to_joinedEventsFragment, userJoinedBundle);
             }
         });
 

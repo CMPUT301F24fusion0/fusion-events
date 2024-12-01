@@ -3,7 +3,6 @@ package com.example.fusion0.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -25,7 +24,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.fusion0.R;
-import com.example.fusion0.activities.JoinedEventActivity;
 import com.example.fusion0.helpers.AnimationHelper;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
@@ -237,10 +235,10 @@ public class FavouriteFragment extends Fragment {
 
             joinedEventsList.setOnItemClickListener((parent, view1, position, id) -> {
                 String event = user.getEvents().get(position);
-                Intent intent = new Intent(requireActivity(), JoinedEventActivity.class);
-                intent.putExtra("eventID", event);
-                intent.putExtra("deviceID", deviceID);
-                startActivity(intent);
+                Bundle joinedBundle = new Bundle();
+                joinedBundle.putString("eventID", event);
+                joinedBundle.putString("deviceID", deviceID);
+                Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_joinedEventFragment, joinedBundle);
             });
         });
 
@@ -410,7 +408,8 @@ public class FavouriteFragment extends Fragment {
 
                             Bundle favouriteBundle = new Bundle();
                             favouriteBundle.putString("facilityID", facilityID);
-                            favouriteBundle.putString("ID", "favouriteID");
+                            favouriteBundle.putString("eventID", "none");
+                            favouriteBundle.putString("ID", "favourite");
                             Navigation.findNavController(view).navigate(R.id.action_favouriteFragment_to_viewFacilityFragment, favouriteBundle);
                         });
                     }

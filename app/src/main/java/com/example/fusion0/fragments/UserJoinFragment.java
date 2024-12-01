@@ -4,7 +4,6 @@ import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
@@ -32,7 +31,6 @@ import androidx.navigation.Navigation;
 import com.bumptech.glide.Glide;
 import com.example.fusion0.BuildConfig;
 import com.example.fusion0.R;
-import com.example.fusion0.activities.ViewFacilityActivity;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.GeoLocation;
 import com.example.fusion0.helpers.UserFirestore;
@@ -172,10 +170,11 @@ public class UserJoinFragment extends Fragment {
         });
 
         facilityButton.setOnClickListener(v -> {
-            Intent intent = new Intent(requireActivity(), ViewFacilityActivity.class);
-            intent.putExtra("facilityID", event.getFacilityID());
-            intent.putExtra("deviceID", deviceID);
-            startActivity(intent);
+            Bundle userJoinedBundle = new Bundle();
+            userJoinedBundle.putString("facilityID", event.getFacilityID());
+            userJoinedBundle.putString("eventID", event.getEventID());
+            userJoinedBundle.putString("ID", "userJoinedEvent");
+            Navigation.findNavController(view).navigate(R.id.action_userJoinFragment_to_viewFacilityFragment, userJoinedBundle);
         });
 
         Bundle bundle = getArguments();
@@ -372,7 +371,7 @@ public class UserJoinFragment extends Fragment {
 
                                     @Override
                                     public void onFailure(String error) {
-                                        Log.e("JoinedEventActivity", "Error fetching user: " + error);
+                                        Log.e("JoinedEventFragment", "Error fetching user: " + error);
                                     }
                                 });
 

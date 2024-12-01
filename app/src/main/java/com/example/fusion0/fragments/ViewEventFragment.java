@@ -302,7 +302,8 @@ public class ViewEventFragment extends Fragment {
         facilityButton.setOnClickListener(v -> {
             Bundle eventBundle = new Bundle();
             eventBundle.putString("facilityID", event.getFacilityID());
-            eventBundle.putString("ID", event.getEventID());
+            eventBundle.putString("eventID", event.getEventID());
+            eventBundle.putString("ID", "viewEvent");
             Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_viewFacilityFragment, eventBundle);
         });
 
