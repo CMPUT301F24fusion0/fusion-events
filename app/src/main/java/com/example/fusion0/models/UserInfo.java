@@ -12,7 +12,7 @@ import java.util.Objects;
  * This class contains the information for users.
  */
 public class UserInfo {
-    String firstName, lastName, email, phoneNumber, deviceID;
+    String firstName, lastName, email, phoneNumber, deviceID, numAccepted, numDeclined;
     ArrayList<String> notifications, events, homepagenotifications;
     Boolean edit;
 
@@ -46,6 +46,8 @@ public class UserInfo {
         this.edit = false;
         this.deviceID = dID;
         this.events = new ArrayList<>();
+        this.numAccepted = "0";
+        this.numDeclined = "0";
     }
 
     /**
@@ -64,6 +66,8 @@ public class UserInfo {
         this.edit = false;
         this.deviceID = dID;
         this.events = new ArrayList<>();
+        this.numAccepted = "0";
+        this.numDeclined = "0";
     }
 
     /**
@@ -81,8 +85,34 @@ public class UserInfo {
         user.put("last name", this.lastName);
         user.put("phone number", this.phoneNumber);
         user.put("events", this.events);
+        user.put("numaccepted", this.numAccepted);
+        user.put("numdeclined", this.numDeclined);
 
         return user;
+    }
+
+    @PropertyName("numaccepted")
+    public String getNumAccepted() {
+        return numAccepted;
+    }
+
+    @PropertyName("numaccepted")
+    public void setNumAccepted(String numAccepted) {
+        this.numAccepted = numAccepted;
+        updateUser("numAccepted", new ArrayList<String>(Collections.singletonList(numAccepted)));
+
+    }
+
+    @PropertyName("numdeclined")
+    public String getNumDeclined() {
+        return numDeclined;
+    }
+
+    @PropertyName("numdeclined")
+    public void setNumDeclined(String numDeclined) {
+        this.numDeclined = numDeclined;
+        updateUser("numDeclined", new ArrayList<String>(Collections.singletonList(numDeclined)));
+
     }
 
     /**
@@ -196,8 +226,9 @@ public class UserInfo {
      */
     @PropertyName("dID")
     public void setDeviceID(String deviceID) {
-        updateUser("DID", new ArrayList<String>(Collections.singletonList(deviceID)));
         this.deviceID = deviceID;
+        updateUser("DID", new ArrayList<String>(Collections.singletonList(deviceID)));
+
     }
 
     /**
