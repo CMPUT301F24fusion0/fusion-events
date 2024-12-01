@@ -8,13 +8,16 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +41,7 @@ import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.FacilitiesInfo;
 import com.example.fusion0.models.OrganizerInfo;
 import com.example.fusion0.models.UserInfo;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -106,6 +110,9 @@ public class UserJoinFragment extends Fragment {
     private Date startDate;
     private Date registrationDate;
 
+    private ShimmerFrameLayout userJoinEventSkeletonLayout;
+    private ScrollView scrollContainer;
+
     public UserJoinFragment() {
         // Required empty public constructor
     }
@@ -131,6 +138,9 @@ public class UserJoinFragment extends Fragment {
 
         Context context = requireContext();
 
+        userJoinEventSkeletonLayout = view.findViewById(R.id.userJoinEventSkeletonLayout);
+        scrollContainer = view.findViewById(R.id.scroll_container);
+
         backButton = view.findViewById(R.id.backButton);
         eventNameTextView = view.findViewById(R.id.EventName);
         eventDescriptionTextView = view.findViewById(R.id.description);
@@ -154,6 +164,8 @@ public class UserJoinFragment extends Fragment {
         startDateTextView = view.findViewById(R.id.startDateTextView);
         organizerName = view.findViewById(R.id.organizerName);
         joinButton = view.findViewById(R.id.join_button);
+
+        loadScreen();
 
         backButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_userJoinFragment_to_mainFragment);
@@ -284,6 +296,7 @@ public class UserJoinFragment extends Fragment {
 
                             isOwner = true;
                         }
+                        populateScreen();
                     }
 
 
@@ -331,10 +344,10 @@ public class UserJoinFragment extends Fragment {
                                 });
                             });
                         } else if (!all.contains(deviceID) & event.getRegistrationDate().before(currentDate)) {
-                            registrationPassedFullTextView.setVisibility(View.VISIBLE);
+                            showWithTransition(registrationPassedFullTextView);
 
                         } else if (!all.contains(deviceID) & (currentEntrants.size() >= capacity)) {
-                            waitinglistFullTextView.setVisibility(View.VISIBLE);
+                            showWithTransition(waitinglistFullTextView);
 
                         } else if (all.contains(deviceID)) {
                             joinButton.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_minus));
@@ -454,6 +467,41 @@ public class UserJoinFragment extends Fragment {
         Navigation.findNavController(view).navigate(R.id.action_userJoinFragment_to_favouriteFragment);
     }
 
+    /**
+     * Show view with transition
+     * @author Nimi Akinroye
+     * @param view
+     */
+    public void showWithTransition(View view) {
+        // Fade in animation
+        AlphaAnimation fadeIn = new AlphaAnimation(0.0f, 1.0f);
+        fadeIn.setDuration(500); // Duration for fade-in (500ms)
+        fadeIn.setFillAfter(true);
+
+        // Fade out animation
+        AlphaAnimation fadeOut = new AlphaAnimation(1.0f, 0.0f);
+        fadeOut.setDuration(500); // Duration for fade-out (500ms)
+        fadeOut.setFillAfter(true);
+
+        // Make the view visible and start fade-in
+        view.setVisibility(View.VISIBLE);
+        view.startAnimation(fadeIn);
+
+        // Delay for 4 seconds, then start fade-out and hide the view
+        new Handler().postDelayed(() -> {
+            view.startAnimation(fadeOut);
+            new Handler().postDelayed(() -> view.setVisibility(View.GONE), fadeOut.getDuration());
+        }, 4000);
+    }
+
+    /**
+     * Display map of entrants
+     * @author Nimi Akinroye
+     * @param mapView map image
+     * @param latitude latitude
+     * @param longitude longitude
+     * @param context context
+     */
     private void displayMapView(ImageView mapView, Double latitude, Double longitude, Context context) {
         String staticMapUrl;
         if (latitude > longitude) {
@@ -476,6 +524,30 @@ public class UserJoinFragment extends Fragment {
         Glide.with(context)
                 .load(staticMapUrl)
                 .into(mapView);
+    }
+
+    /**
+     * Load the screen
+     * @author Nimi Akinroye
+     */
+    private void loadScreen() {
+        scrollContainer.setVisibility(View.GONE);
+        eventPosterImageView.setVisibility(View.GONE);
+
+        userJoinEventSkeletonLayout.startShimmerAnimation();
+        userJoinEventSkeletonLayout.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Populate the screen
+     * @author Nimi Akinroye
+     */
+    private void populateScreen() {
+        userJoinEventSkeletonLayout.stopShimmerAnimation();
+        userJoinEventSkeletonLayout.setVisibility(View.GONE);
+
+        eventPosterImageView.setVisibility(View.VISIBLE);
+        scrollContainer.setVisibility(View.VISIBLE);
     }
 
 

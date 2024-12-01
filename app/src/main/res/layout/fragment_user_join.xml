@@ -41,31 +41,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/map_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:layout_marginEnd="24dp"
-            android:contentDescription="Back"
-            android:src="@drawable/ic_map"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/edit_button"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:tint="@color/white" />
-
-
-        <ImageButton
-            android:id="@+id/edit_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:contentDescription="Back"
-            android:src="@drawable/ic_pencil"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/white" />
 
         <ImageButton
             android:id="@+id/delete_button"
@@ -82,6 +57,52 @@
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/userJoinEventSkeletonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:foregroundGravity="center"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayoutOne"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/placeholderOne"
+                android:layout_width="match_parent"
+                android:layout_height="290dp"
+                android:layout_marginTop="32dp"
+                android:background="#abaeab"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/placeholderTwo"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:layout_marginTop="16dp"
+                android:background="#abaeab"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/placeholderOne" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
 
     <ImageView
         android:id="@+id/uploaded_image_view"
@@ -788,31 +809,42 @@
 
     </ScrollView>
 
-    <TextView
-        android:id="@+id/registration_passed_text_view"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:text="Registrtion Deadline Passed"
-        android:background="@android:color/white"
-        android:backgroundTint="@color/figmaBlue"
-        android:textColor="@color/white"
-        android:gravity="center"
-        android:textSize="16sp"
-        android:padding="10dp"
-        android:visibility="gone"/>
+    <LinearLayout
+        android:id="@+id/warningButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="vertical"
+        android:layout_marginBottom="30dp">
 
-    <TextView
-        android:id="@+id/waitinglist_full_text_view"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:text="Waiting List Is Full At The Moment"
-        android:background="@android:color/white"
-        android:backgroundTint="@color/figmaBlue"
-        android:textColor="@color/white"
-        android:gravity="center"
-        android:textSize="16sp"
-        android:padding="10dp"
-        android:visibility="gone"/>
+        <TextView
+            android:id="@+id/registration_passed_text_view"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:text="Registration Deadline Passed"
+            android:textColor="@color/red"
+            android:fontFamily="@font/dmsans_regular"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:padding="10dp"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/waitinglist_full_text_view"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:text="Waiting List Is Full At The Moment"
+            android:textColor="@color/red"
+            android:fontFamily="@font/dmsans_regular"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:padding="10dp"
+            android:visibility="gone"/>
+
+
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/join_button"
