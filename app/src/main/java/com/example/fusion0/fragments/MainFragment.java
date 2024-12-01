@@ -152,6 +152,7 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Log.d("did", deviceId);
         Context context = requireContext();
 
         initializeToolbarButtons(view, context);
@@ -502,7 +503,7 @@ public class MainFragment extends Fragment {
             if (!eventDoc.getString("lotteryCapacity").equals("0")) {
                 waitlist.allNotification(eventId, "Lottery Starting",
                         "The lottery is not starting. Be on the look out for the results!", "0");
-                waitlist.conductLottery(eventId, Integer.parseInt(eventDoc.getString("lotteryCapacity")));
+                waitlist.conductLottery(eventId, Integer.parseInt(eventDoc.getString("lotteryCapacity")), () -> {});
 //                waitlist.loseNotification(eventId, "Lottery Results", "Unfortunately, " +
 //                        "you have lost the lottery. You may still receive an invite if someone declines their invitation.", "0");
 
