@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -172,6 +173,8 @@ public class FavouriteFragment extends Fragment {
                                         userFirestore.editUserEvents(user);
                                         ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, R.layout.spinner_dropdown_item, eventNames);
                                         joinedEventsList.setAdapter(eventsAdapter);
+
+                                        setListViewHeightBasedOnChildren(joinedEventsList);
                                     }
                                 }
 
@@ -204,8 +207,6 @@ public class FavouriteFragment extends Fragment {
 
             joinedEventsList.setOnItemClickListener((parent, view1, position, id) -> {
                 String event = user.getEvents().get(position);
-
-
                 Intent intent = new Intent(requireActivity(), JoinedEventActivity.class);
                 intent.putExtra("eventID", event);
                 intent.putExtra("deviceID", deviceID);
@@ -242,6 +243,8 @@ public class FavouriteFragment extends Fragment {
                                 organizer = organizerInfo;
                                 ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(context, R.layout.spinner_dropdown_item , organizer.getEventsNames());
                                 createdEventsList.setAdapter(eventsAdapter);
+
+                                setListViewHeightBasedOnChildren(createdEventsList);
 
 
                                 // Toggle visibility of the created events list
@@ -324,6 +327,7 @@ public class FavouriteFragment extends Fragment {
                             if (organizer.getFacilitiesNames() != null) {
                                 ArrayAdapter<String> facilitiesAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, organizer.getFacilitiesNames());
                                 facilitiesList.setAdapter(facilitiesAdapter);
+                                setListViewHeightBasedOnChildren(facilitiesList);
                             } else {
                                 Toast.makeText(context, "No facilities available.", Toast.LENGTH_SHORT).show();
                                 facilitiesButton.setEnabled(false);
@@ -485,13 +489,23 @@ public class FavouriteFragment extends Fragment {
         activeTextView.setTextColor(ContextCompat.getColor(context, R.color.royalBlue));
     }
 
-    private void fadeInView(View view) {
-        view.setAlpha(0f);
-        view.setVisibility(View.VISIBLE);
-        view.animate()
-                .alpha(1f)
-                .setDuration(300) // Set duration for smoothness
-                .setListener(null);
+    public void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            return;
+        }
+
+        int totalHeight = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
     }
 }
 

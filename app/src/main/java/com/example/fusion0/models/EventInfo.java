@@ -443,4 +443,31 @@ public class EventInfo {
         return waitingList;
     }
 
+    @Override
+    public String toString() {
+        return "EventInfo{" +
+                "eventID='" + eventID + '\'' +
+                ", eventName='" + eventName + '\'' +
+                ", address='" + address + '\'' +
+                ", facilityName='" + facilityName + '\'' +
+                ", capacity='" + capacity + '\'' +
+                ", lotteryCapacity='" + lotteryCapacity + '\'' +
+                ", description='" + description + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", registrationDate=" + registrationDate +
+                ", startTime='" + startTime + '\'' +
+                ", endTime='" + endTime + '\'' +
+                ", eventPoster='" + eventPoster + '\'' +
+                ", waitinglist=" + waitinglist +
+                ", acceptedCount='" + acceptedCount + '\'' +
+                ", geolocation='" + geolocation + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", radius=" + radius +
+                ", lotteryConducted=" + lotteryConducted +
+                ", organizer='" + organizer + '\'' +
+                '}';
+    }
+
 }

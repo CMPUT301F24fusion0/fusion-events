@@ -60,6 +60,9 @@
         <action
             android:id="@+id/action_qrFragment_to_viewEventFragment"
             app:destination="@id/viewEventFragment"/>
+        <action
+            android:id="@+id/action_qrFragment_to_userJoinFragment"
+            app:destination="@id/userJoinFragment"/>
     </fragment>
 
     <fragment
@@ -147,9 +150,9 @@
 
     <fragment
         android:id="@+id/viewEventFragment"
-        android:name="com.example.fusion0.fragments.ViewEventFragment"
+        android:name="com.example.fusion0.fragments.TestViewEventFragment"
         android:label="View Event Fragment"
-        tools:layout="@layout/fragment_view_event">
+        tools:layout="@layout/fragment_test_view_event">
         <action
             android:id="@+id/action_viewEventFragment_to_mainFragment"
             app:destination="@id/mainFragment"/>
@@ -168,6 +171,21 @@
         <action
             android:id="@+id/action_viewEventFragment_to_registrationFragment"
             app:destination="@+id/registrationFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/userJoinFragment"
+        android:name="com.example.fusion0.fragments.UserJoinFragment"
+        android:label="User Join Fragment"
+        tools:layout="@layout/fragment_user_join">
+        <action
+            android:id="@+id/action_userJoinFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_userJoinFragment_to_viewFacilityFragment" />
+        <action
+            android:id="@+id/action_userJoinFragment_to_favouriteFragment"
+            app:destination="@id/favouriteFragment" />
     </fragment>
 
     <fragment

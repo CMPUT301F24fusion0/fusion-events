@@ -146,26 +146,6 @@
                         android:textColor="@color/royalBlue"
                         android:textSize="24sp" />
 
-                    <EditText
-                        android:id="@+id/editEventName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:hint="Meetup Mondays"
-                        android:paddingVertical="6dp"
-                        android:fontFamily="@font/dmsans_regular"
-                        android:background="@null"
-                        android:textColor="@color/black"
-                        android:visibility="gone"
-                        android:textSize="24sp" />
-
-                    <View
-                        android:id="@+id/eventNameBar"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginBottom="10dp"
-                        android:background="@color/royalBlue"
-                        android:visibility="gone"/>
-
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -277,8 +257,9 @@
 
                     <ImageView
                         android:id="@+id/facility_view_button"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:background="@drawable/custom_border_two"
                         android:src="@drawable/ic_location"
                         android:layout_marginBottom="10dp" />
 
@@ -288,8 +269,9 @@
 
                     <ImageView
                         android:id="@+id/qrImage"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:background="@drawable/custom_border_two"
                         android:src="@drawable/ic_qr_code"
                         android:layout_marginBottom="10dp" />
 
@@ -316,7 +298,7 @@
                     android:layout_gravity="start"
                     android:text="About Event"
                     android:textColor="@color/royalBlue"
-                    android:textSize="20sp"
+                    android:textSize="22sp"
                     android:fontFamily="@font/dmsans_medium" />
 
                 <TextView
@@ -326,28 +308,7 @@
                     android:text="Lorem ipsumunc interdum laoreet. Nullam nibh magna, facilisis vitae semper vel, gravida eu sapien. Ut finibus magna ut lectus scelerisque eleifend. Curabitur nec quam metus."
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/black"
-                    android:textSize="15sp" />
-
-                <EditText
-                    android:id="@+id/description_edit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:hint="Bake sale is lovely"
-                    android:paddingVertical="6dp"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:background="@null"
-                    android:textColor="@color/black"
-                    android:textSize="15sp"
-                    android:visibility="gone"/>
-
-                <View
-                    android:id="@+id/descriptionBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@color/royalBlue"
-                    android:visibility="gone"/>
-
+                    android:textSize="17sp" />
 
             </LinearLayout>
 
@@ -390,7 +351,7 @@
                             android:text="Start Date"
                             android:textColor="@color/royalBlue"
                             android:fontFamily="@font/dmsans_medium"
-                            android:textSize="17sp"
+                            android:textSize="18sp"
                             android:clickable="false"
                             android:focusable="false"/>
 
@@ -415,8 +376,8 @@
                                 android:focusable="false">
 
                                 <ImageButton
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
                                     android:background="@drawable/ic_calendar"
                                     android:backgroundTint="@color/royalBlue"
                                     android:clickable="false"
@@ -433,9 +394,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="MM / DD / YYYY"
-                                    android:textSize="14sp"
+                                    android:textSize="15sp"
                                     android:fontFamily="@font/dmsans_regular"
-                                    android:textColor="@android:color/darker_gray"
+                                    android:textColor="@color/black"
                                     android:clickable="false"
                                     android:focusable="false"/>
 
@@ -463,7 +424,7 @@
                             android:fontFamily="@font/dmsans_medium"
                             android:text="Start Time"
                             android:textColor="@color/royalBlue"
-                            android:textSize="17sp"
+                            android:textSize="18sp"
                             android:clickable="false"
                             android:focusable="false"/>
 
@@ -494,8 +455,8 @@
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/dmsans_regular"
                                     android:text="HH / MM"
-                                    android:textColor="@android:color/darker_gray"
-                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black"
+                                    android:textSize="15sp"
                                     android:clickable="false"
                                     android:focusable="false"/>
 
@@ -506,15 +467,6 @@
                     </LinearLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <View
-                    android:id="@+id/startDateBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@color/royalBlue"
-                    android:visibility="gone" />
 
                 <Space
                     android:layout_width="0dp"
@@ -540,12 +492,12 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:clickable="false"
+                            android:focusable="false"
+                            android:fontFamily="@font/dmsans_medium"
                             android:text="End Date"
                             android:textColor="@color/royalBlue"
-                            android:fontFamily="@font/dmsans_medium"
-                            android:textSize="17sp"
-                            android:clickable="false"
-                            android:focusable="false"/>
+                            android:textSize="18sp" />
 
                         <Space
                             android:layout_width="0dp"
@@ -568,8 +520,8 @@
                                 android:focusable="false">
 
                                 <ImageButton
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
                                     android:background="@drawable/ic_calendar"
                                     android:backgroundTint="@color/royalBlue"
                                     android:clickable="false"
@@ -586,9 +538,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="MM / DD / YYYY"
-                                    android:textSize="14sp"
+                                    android:textSize="15sp"
                                     android:fontFamily="@font/dmsans_regular"
-                                    android:textColor="@android:color/darker_gray"
+                                    android:textColor="@android:color/black"
                                     android:clickable="false"
                                     android:focusable="false"/>
 
@@ -616,7 +568,7 @@
                             android:fontFamily="@font/dmsans_medium"
                             android:text="End Time"
                             android:textColor="@color/royalBlue"
-                            android:textSize="17sp"
+                            android:textSize="18sp"
                             android:clickable="false"
                             android:focusable="false"/>
 
@@ -646,8 +598,8 @@
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/dmsans_regular"
                                     android:text="HH / MM"
-                                    android:textColor="@android:color/darker_gray"
-                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black"
+                                    android:textSize="15sp"
                                     android:clickable="false"
                                     android:focusable="false"/>
 
@@ -658,15 +610,6 @@
                     </LinearLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <View
-                    android:id="@+id/endDateBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@color/royalBlue"
-                    android:visibility="gone" />
 
                 <Space
                     android:layout_width="0dp"
@@ -704,7 +647,7 @@
                             android:text="RSVP Deadline"
                             android:textColor="@color/royalBlue"
                             android:fontFamily="@font/dmsans_medium"
-                            android:textSize="17sp"
+                            android:textSize="18sp"
                             android:clickable="false"
                             android:focusable="false"/>
 
@@ -729,8 +672,8 @@
                                 android:focusable="false">
 
                                 <ImageButton
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
                                     android:background="@drawable/ic_calendar"
                                     android:backgroundTint="@color/royalBlue"
                                     android:clickable="false"
@@ -747,9 +690,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="MM / DD / YYYY"
-                                    android:textSize="14sp"
+                                    android:textSize="15sp"
                                     android:fontFamily="@font/dmsans_regular"
-                                    android:textColor="@android:color/darker_gray"
+                                    android:textColor="@android:color/black"
                                     android:clickable="false"
                                     android:focusable="false"/>
 
@@ -760,15 +703,6 @@
                     </LinearLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <View
-                    android:id="@+id/registrationDateBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@color/royalBlue"
-                    android:visibility="gone"/>
 
                 <Space
                     android:layout_width="0dp"
@@ -782,7 +716,7 @@
                     android:text="Waitlist Capacity"
                     android:fontFamily="@font/dmsans_medium"
                     android:textColor="@color/royalBlue"
-                    android:textSize="17sp" />
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/capacity"
@@ -792,7 +726,7 @@
                     android:text="100"
                     android:background="@null"
                     android:inputType="number"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:textColor="@color/black"
                     android:fontFamily="@font/dmsans_regular"
                     android:layout_gravity="start" />
@@ -811,14 +745,6 @@
                     android:layout_gravity="start"
                     android:visibility="gone"/>
 
-                <View
-                    android:id="@+id/waitlistBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@color/royalBlue"
-                    android:visibility="gone"/>
-
                 <!-- Lottery Capacity -->
                 <TextView
                     android:layout_width="wrap_content"
@@ -827,7 +753,7 @@
                     android:text="Lottery Capacity"
                     android:fontFamily="@font/dmsans_medium"
                     android:textColor="@color/royalBlue"
-                    android:textSize="17sp" />
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/lotteryCapacity"
@@ -837,7 +763,7 @@
                     android:text="10"
                     android:background="@null"
                     android:inputType="number"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:textColor="@color/black"
                     android:fontFamily="@font/dmsans_regular"
                     android:layout_gravity="start" />
@@ -856,178 +782,52 @@
                     android:layout_gravity="start"
                     android:visibility="gone" />
 
-                <View
-                    android:id="@+id/lotteryBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@color/royalBlue"
-                    android:visibility="gone"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="70dp"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:id="@+id/waitinglistButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:clickable="true"
-                        android:focusable="true" >
-
-                        <ImageButton
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:background="@android:color/white"
-                            android:contentDescription="blue_home"
-                            android:src="@drawable/ic_waitlist_people"
-                            android:clickable="false"
-                            android:focusable="false"
-                            app:tint="@color/royalBlue"/>
-
-                        <Space
-                            android:layout_width="0dp"
-                            android:layout_height="2dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/dmsans_regular"
-                            android:gravity="center_horizontal"
-                            android:text="Waitlist"
-                            android:textSize="13sp"
-                            android:textColor="@color/royalBlue"
-                            android:clickable="false"
-                            android:focusable="false"/>
-
-                    </LinearLayout>
-
-                    <Space
-                        android:layout_width="48dp"
-                        android:layout_height="0dp" />
-
-
-                    <LinearLayout
-                        android:id="@+id/chosenEntrantsButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:clickable="true"
-                        android:focusable="true" >
-
-                        <ImageButton
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:background="@android:color/white"
-                            android:contentDescription="blue_home"
-                            android:src="@drawable/ic_chosen_people"
-                            android:clickable="false"
-                            android:focusable="false"
-                            app:tint="@color/green"/>
-
-                        <Space
-                            android:layout_width="0dp"
-                            android:layout_height="2dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/dmsans_regular"
-                            android:gravity="center_horizontal"
-                            android:text="Chosen"
-                            android:textSize="13sp"
-                            android:textColor="@color/green"
-                            android:clickable="false"
-                            android:focusable="false"/>
-
-                    </LinearLayout>
-
-                    <Space
-                        android:layout_width="48dp"
-                        android:layout_height="0dp" />
-
-
-                    <LinearLayout
-                        android:id="@+id/cancelledEntrantsButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:clickable="true"
-                        android:focusable="true" >
-
-                        <ImageButton
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:background="@android:color/white"
-                            android:contentDescription="blue_home"
-                            android:src="@drawable/ic_cancelled_people"
-                            android:clickable="false"
-                            android:focusable="false"
-                            app:tint="@color/red"/>
-                        <Space
-                            android:layout_width="0dp"
-                            android:layout_height="2dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/dmsans_regular"
-                            android:gravity="center_horizontal"
-                            android:text="Cancelled"
-                            android:textSize="13sp"
-                            android:textColor="@color/red"
-                            android:clickable="false"
-                            android:focusable="false"/>
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="20dp"/>
-
-                <LinearLayout
-                    android:id="@+id/editStateButtons"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="30dp"
-                    android:visibility="gone">
-
-                    <Button
-                        android:id="@+id/save_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Save"
-                        android:fontFamily="@font/dmsans_regular"
-                        android:backgroundTint="@color/royalBlue" />
-
-                    <Space
-                        android:layout_width="48dp"
-                        android:layout_height="0dp" />
-
-                    <Button
-                        android:id="@+id/cancel_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Cancel"
-                        android:fontFamily="@font/dmsans_regular"
-                        android:backgroundTint="@color/red" />
-
-                </LinearLayout>
-
             </LinearLayout>
 
         </LinearLayout>
 
     </ScrollView>
+
+    <TextView
+        android:id="@+id/registration_passed_text_view"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:text="Registrtion Deadline Passed"
+        android:background="@android:color/white"
+        android:backgroundTint="@color/figmaBlue"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:padding="10dp"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/waitinglist_full_text_view"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:text="Waiting List Is Full At The Moment"
+        android:background="@android:color/white"
+        android:backgroundTint="@color/figmaBlue"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:padding="10dp"
+        android:visibility="gone"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/join_button"
+        android:layout_width="wrap_content"
+        android:layout_height="80dp"
+        android:src="@drawable/ic_add_user"
+        android:background="@android:color/white"
+        android:contentDescription="join"
+        android:paddingBottom="30dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:backgroundTint="@color/textFieldColor"
+        app:tint="@color/textColor"
+        app:rippleColor="@color/textColor"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -40,10 +40,13 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
 import com.example.fusion0.BuildConfig;
 import com.example.fusion0.R;
+import com.example.fusion0.activities.ViewFacilityActivity;
 import com.example.fusion0.helpers.EventFirebase;
+import com.example.fusion0.helpers.GeoLocation;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.EventInfo;
@@ -115,10 +118,12 @@ public class TestViewEventFragment extends Fragment {
     private ImageView facilityButton;
     private ImageButton backButton;
     private ImageButton uploadImageButton;
+    private ImageButton mapButton;
     private ImageButton editButton;
     private ImageButton deleteButton;
 
-    private Button joinButton, cancelButton, saveButton;
+    private Button cancelButton;
+    private Button saveButton;
 
     // Manipulative objects
     private EventInfo event;
@@ -174,6 +179,7 @@ public class TestViewEventFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        eventFirebase = new EventFirebase();
         storageRef = FirebaseStorage.getInstance().getReference();
         waitlist = new Waitlist();
         deviceID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -220,6 +226,7 @@ public class TestViewEventFragment extends Fragment {
         cancelledEntrantsButton = view.findViewById(R.id.cancelledEntrantsButton);
         startDateButton = view.findViewById(R.id.start_date_button);
         endDateButton = view.findViewById(R.id.end_date_button);
+        mapButton = view.findViewById(R.id.map_button);
         editButton = view.findViewById(R.id.edit_button);
         deleteButton = view.findViewById(R.id.delete_button);
         cancelButton = view.findViewById(R.id.cancel_button);
@@ -238,6 +245,41 @@ public class TestViewEventFragment extends Fragment {
 
         backButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_mainFragment);
+        });
+
+        facilityButton.setOnClickListener(v -> {
+            Intent intent = new Intent(requireActivity(), ViewFacilityActivity.class);
+            intent.putExtra("facilityID", event.getFacilityID());
+            intent.putExtra("deviceID", deviceID);
+            startActivity(intent);
+        });
+
+        mapButton.setOnClickListener(v->{
+            GeoLocation geoLocation = new GeoLocation(getActivity(), context, event.getLatitude(), event.getLongitude(), event.getRadius());
+
+            ArrayList<Map<String, String>> waitinglist = event.getWaitinglist();
+            List<double[]> userLatLngList = new ArrayList<>();
+            for (Map<String, String> user : waitinglist) {
+                String latStr = user.get("latitude");
+                String lonStr = user.get("longitude");
+
+                // Check if both latitude and longitude are available
+                if (latStr != null && lonStr != null) {
+                    try {
+                        // Convert latitude and longitude from String to double
+                        double latitude = Double.parseDouble(latStr);
+                        double longitude = Double.parseDouble(lonStr);
+
+                        // Add the latitude and longitude as a double array
+                        userLatLngList.add(new double[]{latitude, longitude});
+                    } catch (NumberFormatException e) {
+                        // Handle the case where parsing fails, maybe log the error
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            geoLocation.showMapDialog(userLatLngList);
         });
 
         Bundle bundle = getArguments();
@@ -297,15 +339,20 @@ public class TestViewEventFragment extends Fragment {
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTime(startDate);
 
+                        // Set the card view
                         String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
                         int monthIndex = calendar.get(Calendar.MONTH);
-
                         String monthAbbreviation = new DateFormatSymbols().getShortMonths()[monthIndex].toUpperCase();
 
                         startMonth.setText(monthAbbreviation);
                         startDateTextView.setText(day);
 
                         newEventPoster = event.getEventPoster();
+
+                        Double latitudeSet = event.getLatitude();
+                        Double longitudeSet = event.getLongitude();
+
+                        displayMapView(facilityButton, latitudeSet, longitudeSet, context);
 
                         if (newEventPoster != null && !newEventPoster.isEmpty()) {
                             Glide.with(context)
@@ -380,27 +427,31 @@ public class TestViewEventFragment extends Fragment {
 
         chosenEntrantsButton.setOnClickListener(v -> {
             waitlist.getChosen(eventID, chosen -> {
-                ArrayList<Map<String, String>> fullChosenEntrants = new ArrayList<>();
+                if (chosen.isEmpty()) {
+                    Toast.makeText(context, "Chosen entrants list is empty.", Toast.LENGTH_SHORT).show();
+                } else {
+                    ArrayList<Map<String, String>> fullChosenEntrants = new ArrayList<>();
 
 
-                if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
-                    for (Map<String, String> user : event.getWaitinglist()) {
-                        if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
-                            fullChosenEntrants.add(user);
+                    if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
+                        for (Map<String, String> user : event.getWaitinglist()) {
+                            if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
+                                fullChosenEntrants.add(user);
+                            }
                         }
                     }
+                    ChosenEntrantsFragment chosenEntrants = new ChosenEntrantsFragment();
+
+                    Bundle newBundle = new Bundle();
+                    newBundle.putSerializable("chosenEntrantsData", fullChosenEntrants);
+                    newBundle.putString("eventID", event.getEventID());
+                    newBundle.putSerializable("fragment_waitlist", waitlist);
+                    newBundle.putString("lotteryCapacity", event.getLotteryCapacity());
+                    chosenEntrants.setArguments(newBundle);
+
+                    // Launch the ChosenEntrantsFragment fragment with the filtered data
+                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_chosenEntrantsFragment, bundle);
                 }
-                ChosenEntrantsFragment chosenEntrants = new ChosenEntrantsFragment();
-
-                Bundle newBundle = new Bundle();
-                newBundle.putSerializable("chosenEntrantsData", fullChosenEntrants);
-                newBundle.putString("eventID", event.getEventID());
-                newBundle.putSerializable("fragment_waitlist", waitlist);
-                newBundle.putString("lotteryCapacity", event.getLotteryCapacity());
-                chosenEntrants.setArguments(newBundle);
-
-                // Launch the ChosenEntrantsFragment fragment with the filtered data
-                Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_chosenEntrantsFragment, bundle);
             });
         });
 
@@ -480,8 +531,8 @@ public class TestViewEventFragment extends Fragment {
                                 }
                             }
                             organizer.setEvents(events);
-                            eventFirebase.deleteEvent(event.getEventID());
                             eventFirebase.editOrganizer(organizer);
+                            eventFirebase.deleteEvent(event.getEventID());
                             Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_favouriteFragment);
                         })
                         .setNegativeButton("Cancel", (dialog, which) -> {
@@ -696,6 +747,11 @@ public class TestViewEventFragment extends Fragment {
             registrationDateButton.setClickable(false);
             registrationDateButton.setFocusable(false);
             registrationDateBar.setVisibility(View.GONE);
+
+            eventNameBar.setVisibility(View.GONE);
+            descriptionBar.setVisibility(View.GONE);
+            waitlistBar.setVisibility(View.GONE);
+            lotteryBar.setVisibility(View.GONE);
 
             ArrayList<EventInfo> events = organizer.getEvents();
             for (int i = 0; i < events.size(); i++) {
@@ -1210,6 +1266,30 @@ public class TestViewEventFragment extends Fragment {
             view.startAnimation(fadeOut);
             new Handler().postDelayed(() -> view.setVisibility(View.GONE), fadeOut.getDuration());
         }, 4000);
+    }
+
+    private void displayMapView(ImageView mapView, Double latitude, Double longitude, Context context) {
+        String staticMapUrl;
+        if (latitude > longitude) {
+            staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?center="
+                    + latitude + "," + longitude
+                    + "&zoom=15&size=640x480&maptype=roadmap"
+                    + "&markers=color:red%7Clabel:F%7C" + latitude + "," + longitude
+                    + "&key=" + BuildConfig.API_KEY;
+        } else {
+            staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?center="
+                    + longitude + "," + latitude
+                    + "&zoom=15&size=640x480&maptype=roadmap"
+                    + "&markers=color:red%7Clabel:F%7C" + longitude + "," + latitude
+                    + "&key=" + BuildConfig.API_KEY;
+        }
+
+        Log.d("StaticMapURL", staticMapUrl); // Log the URL for debugging
+
+        mapView.setVisibility(View.VISIBLE);
+        Glide.with(context)
+                .load(staticMapUrl)
+                .into(mapView);
     }
 
 
