@@ -26,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -52,6 +53,7 @@ import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.FacilitiesInfo;
 import com.example.fusion0.models.OrganizerInfo;
 import com.example.fusion0.models.UserInfo;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
@@ -168,6 +170,9 @@ public class ViewEventFragment extends Fragment {
     private Date startDate;
     private Date registrationDate;
 
+    private ShimmerFrameLayout viewEventSkeletonLayout;
+    private ScrollView scrollContainer;
+
     public ViewEventFragment() {
         // Required empty public constructor
     }
@@ -212,6 +217,9 @@ public class ViewEventFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Context context = requireContext();
+
+        viewEventSkeletonLayout = view.findViewById(R.id.viewEventSkeletonLayout);
+        scrollContainer = view.findViewById(R.id.scroll_container);
 
         backButton = view.findViewById(R.id.backButton);
         eventNameTextView = view.findViewById(R.id.EventName);
@@ -261,9 +269,10 @@ public class ViewEventFragment extends Fragment {
         listButtons = view.findViewById(R.id.listButtons);
 
         updateDateTextView(context);
+        loadScreen();
 
         backButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_mainFragment);
+            Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_favouriteFragment);
         });
 
         facilityButton.setOnClickListener(v -> {
@@ -393,6 +402,8 @@ public class ViewEventFragment extends Fragment {
 
                             isOwner = true;
                         }
+
+                        populateScreen();
                     }
                 }
 
@@ -430,7 +441,7 @@ public class ViewEventFragment extends Fragment {
                     newBundle.putSerializable("fragment_waitlist", waitlist);
                     waitlistFragment.setArguments(newBundle);
 
-                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_waitlistFragment, bundle);
+                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_waitlistFragment, newBundle);
                 }
             });
         });
@@ -457,7 +468,7 @@ public class ViewEventFragment extends Fragment {
                     chosenEntrants.setArguments(newBundle);
 
                     // Launch the ChosenEntrantsFragment fragment with the filtered data
-                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_chosenEntrantsFragment, bundle);
+                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_chosenEntrantsFragment, newBundle);
             });
         });
 
@@ -485,7 +496,7 @@ public class ViewEventFragment extends Fragment {
                     newBundle.putSerializable("fragment_waitlist", waitlist);
                     cancelledEntrantsFragment.setArguments(newBundle);
 
-                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_cancelledEntrantsFragment, bundle);
+                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_cancelledEntrantsFragment, newBundle);
                 }
             });
         });
@@ -1323,5 +1334,21 @@ public class ViewEventFragment extends Fragment {
         eventEndTimeTextView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, context.getTheme()));
         eventStartDateTextView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, context.getTheme()));
 
+    }
+
+    private void loadScreen() {
+        scrollContainer.setVisibility(View.GONE);
+        eventPosterImageView.setVisibility(View.GONE);
+
+        viewEventSkeletonLayout.startShimmerAnimation();
+        viewEventSkeletonLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void populateScreen() {
+        viewEventSkeletonLayout.stopShimmerAnimation();
+        viewEventSkeletonLayout.setVisibility(View.GONE);
+
+        eventPosterImageView.setVisibility(View.VISIBLE);
+        scrollContainer.setVisibility(View.VISIBLE);
     }
 }
