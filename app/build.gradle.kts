@@ -44,7 +44,6 @@ android {
     }
 }
 
-
 dependencies {
     testImplementation ("androidx.test:core:1.4.0")
     testImplementation("org.mockito:mockito-core:4.11.0")
