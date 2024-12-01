@@ -121,8 +121,8 @@ public class Waitlist implements Serializable {
                                                 loseNotification(eventId, "Lottery Results", "Unfortunately, " +
                                                         "you have lost the lottery. You may still receive an invite if someone declines their invitation.", "0");
                                             });
-                                            documentReference.update("waitinglist", waitList);
                                             callback.onComplete();
+
                                         }
                                     }
                                 }
@@ -293,6 +293,36 @@ public class Waitlist implements Serializable {
                     }
                 }
                 waitingCB.waitDid(wait);
+            } else {
+                Log.e("Error", "Error");
+            }
+        });
+    }
+
+    public interface AcceptCB {
+        void acceptDid(ArrayList<String> accept);
+    }
+
+    public void getAccepted(String eventId, AcceptCB acceptCB) {
+        ArrayList<String> accept = new ArrayList<>();
+        DocumentReference waitingListDoc = db.collection("events")
+                .document(eventId);
+
+        waitingListDoc.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot doc = task.getResult();
+                if (doc.exists()) {
+                    ArrayList<Map<String, String>> all_waitingList = (ArrayList<Map<String, String>>) doc.get("waitinglist");
+
+                    if (all_waitingList != null) {
+                        for (Map<String, String> user: all_waitingList) {
+                            if (Objects.equals(user.get("status"), "accept")) {
+                                accept.add(user.get("did"));
+                            }
+                        }
+                    }
+                }
+                acceptCB.acceptDid(accept);
             } else {
                 Log.e("Error", "Error");
             }

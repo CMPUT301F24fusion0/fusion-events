@@ -23,25 +23,31 @@ import com.example.fusion0.R;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
     private Context context;
     private List<UserInfo> listUsers;
     private ManageImageProfile manageImage;
     private SparseBooleanArray selectedItems = new SparseBooleanArray(); // Track selected items
     private boolean isSelectionMode = false; // Selection mode state
+    private ArrayList<Map<String, String>> waitingList;
 
     static class ViewHolder {
         CircleImageView profilePic;
         TextView userName;
         TextView userEmail;
+        TextView userStatus;
     }
 
-    public ProfileListAdapter(@NonNull Context context, @NonNull List<UserInfo> objects) {
+    public ProfileListAdapter(@NonNull Context context, @NonNull List<UserInfo> objects, ArrayList<Map<String, String>> combinedList) {
         super(context, 0, objects);
         this.context = context;
         this.listUsers = objects;
         this.manageImage = new ManageImageProfile(context);
+        this.waitingList = combinedList;
     }
 
     @NonNull
@@ -55,6 +61,8 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
             viewHolder.profilePic = convertView.findViewById(R.id.userProfilePic);
             viewHolder.userName = convertView.findViewById(R.id.userName);
             viewHolder.userEmail = convertView.findViewById(R.id.userEmail);
+            viewHolder.userStatus = convertView.findViewById(R.id.userStatus);
+
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -65,6 +73,16 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
             String userNameString = user.getFirstName() + " " + user.getLastName();
             viewHolder.userName.setText(userNameString);
             viewHolder.userEmail.setText(user.getEmail());
+            String userStatus = getUserStatus(user.getDeviceID());
+            if (userStatus.equals("accept")){
+                userStatus += "ed";
+            }else if(userStatus.equals("cancel")){
+                userStatus += "led";
+            }else if(userStatus.equals("chosen")){
+                userStatus = "unaccepted";
+            }
+            viewHolder.userStatus.setText(userStatus);
+
 
             manageImage.checkImageExists(new ManageImageProfile.ImageCheckCallback() {
                 @Override
@@ -141,6 +159,23 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
     // Get the list of selected items (useful for removing items, etc.)
     public SparseBooleanArray getSelectedItems() {
         return selectedItems;
+    }
+
+
+    private String getUserStatus(String deviceId) {
+        // Default status in case the user is not found
+        String status = "waiting";  // Assume status is "waiting" if not in the list
+
+        // Iterate over the waitingList to find the status for the given deviceId
+        for (Map<String, String> entry : waitingList) {
+            String did = entry.get("did");
+            if (did != null && did.equals(deviceId)) {
+                status = entry.get("status");  // Get the status from the entry
+                break;
+            }
+        }
+
+        return status;
     }
 }
 
