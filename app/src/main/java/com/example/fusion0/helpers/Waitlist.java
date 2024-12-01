@@ -299,6 +299,11 @@ public class Waitlist implements Serializable {
         });
     }
 
+
+    /**
+     * Callback to get accepted people
+     * @author Sehej Brar
+     */
     public interface AcceptCB {
         void acceptDid(ArrayList<String> accept);
     }
