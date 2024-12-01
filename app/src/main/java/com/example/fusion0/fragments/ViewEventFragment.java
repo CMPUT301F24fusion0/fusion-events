@@ -493,14 +493,15 @@ public class ViewEventFragment extends Fragment {
             });
 
             menuItemActions.put(R.id.menu_chosen_list, () -> {
-                waitlist.getChosen(eventID, chosen -> {
+                waitlist.getAll(eventID, all -> {
                     ArrayList<Map<String, String>> fullChosenEntrants = new ArrayList<>();
-                    // Add filtered users to the list
+
                     for (Map<String, String> user : event.getWaitinglist()) {
-                        if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
+                        if (all.contains(user.get("did")) &&  ("chosen".equals(user.get("status")) || "accept".equals(user.get("status"))))  {
                             fullChosenEntrants.add(user);
                         }
                     }
+
                     // Navigate to the ChosenEntrantsFragment
                     ChosenEntrantsFragment chosenEntrantsFragment = new ChosenEntrantsFragment();
                     Bundle newBundle = new Bundle();
@@ -510,6 +511,7 @@ public class ViewEventFragment extends Fragment {
                     newBundle.putString("lotteryCapacity", event.getLotteryCapacity());
                     chosenEntrantsFragment.setArguments(newBundle);
                     Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_chosenEntrantsFragment, newBundle);
+
                 });
             });
 

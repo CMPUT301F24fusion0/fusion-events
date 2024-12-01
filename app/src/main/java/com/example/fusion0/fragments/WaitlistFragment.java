@@ -38,7 +38,7 @@ public class WaitlistFragment extends Fragment {
     List<UserInfo> users = new ArrayList<>();
 
     private int pendingRequests = 0;
-
+    ArrayList<Map<String, String>> waitingList;
     private Waitlist waitlist;
 
     /**
@@ -68,7 +68,7 @@ public class WaitlistFragment extends Fragment {
 
 
         if (bundle != null) {
-            ArrayList<Map<String, String>> waitingList = (ArrayList<Map<String, String>>) bundle.getSerializable("waitingListData");
+            waitingList  = (ArrayList<Map<String, String>>) bundle.getSerializable("waitingListData");
             Log.e(TAG, "user " + waitingList);
 
             if (waitingList != null && !waitingList.isEmpty()) {
@@ -122,7 +122,7 @@ public class WaitlistFragment extends Fragment {
         String ratio = users.size() + "/" + eventCapacity;
         waitlistCapacityRatio.setText(ratio);
 
-        ProfileListAdapter adapter = new ProfileListAdapter(getContext(), users);
+        ProfileListAdapter adapter = new ProfileListAdapter(getContext(), users, waitingList);
         waitlistListView.setAdapter(adapter);
 
         if (users.isEmpty()) {

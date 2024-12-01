@@ -34,7 +34,7 @@ public class CancelledEntrantsFragment extends Fragment {
     EventFirebase firebase;
     List<UserInfo> users = new ArrayList<>();
     Waitlist waitlist;
-
+    ArrayList<Map<String, String>> cancelledList;
     private int pendingRequests = 0;
 
     /**
@@ -65,7 +65,7 @@ public class CancelledEntrantsFragment extends Fragment {
         if (bundle != null) {
             waitlist = (Waitlist) bundle.getSerializable("fragment_waitlist");
 
-            ArrayList<Map<String, String>> cancelledList = (ArrayList<Map<String, String>>) bundle.getSerializable("cancelledEntrantsData");
+           cancelledList = (ArrayList<Map<String, String>>) bundle.getSerializable("cancelledEntrantsData");
 
             if (cancelledList != null && !cancelledList.isEmpty()) {
                 pendingRequests = cancelledList.size();
@@ -114,7 +114,7 @@ public class CancelledEntrantsFragment extends Fragment {
      * @param bundle contains information
      */
     private void updateUI(Bundle bundle) {
-        ProfileListAdapter adapter = new ProfileListAdapter(getContext(), users);
+        ProfileListAdapter adapter = new ProfileListAdapter(getContext(), users, cancelledList);
         cancelledEntrantsListView.setAdapter(adapter);
 
         if (users.isEmpty()) {
