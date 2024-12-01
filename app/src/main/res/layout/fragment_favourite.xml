@@ -68,6 +68,7 @@
                     tools:ignore="HardcodedText" />
 
                 <TextView
+                    android:id="@+id/joined_eventTV"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal|bottom"
@@ -103,8 +104,7 @@
                 android:id="@+id/joined_events_list"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                tools:ignore="NestedScrolling"/>
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -125,6 +125,7 @@
                     tools:ignore="HardcodedText" />
 
                 <TextView
+                    android:id="@+id/created_eventsTV"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal|bottom"
@@ -182,6 +183,7 @@
                     tools:ignore="HardcodedText" />
 
                 <TextView
+                    android:id="@+id/user_facilitiesTV"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal|bottom"
@@ -217,8 +219,7 @@
                 android:id="@+id/facilities_list"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                tools:ignore="NestedScrolling" />
+                android:visibility="gone" />
 
         </LinearLayout>
 

@@ -22,15 +22,27 @@ import com.example.fusion0.models.UserInfo;
 
 import java.util.List;
 
+/**
+ * Adapter to see users
+ */
 public class UserArrayAdapter extends ArrayAdapter<UserInfo> {
     private final Context context;
     private final List<UserInfo> users;
     private final UserActionListener userActionListener;
 
+    /**
+     * Listener for deleting
+     */
     public interface UserActionListener {
         void onDeleteUser(UserInfo user, int position);
     }
 
+    /**
+     * Constructor
+     * @param context context
+     * @param users users
+     * @param listener listener
+     */
     public UserArrayAdapter(@NonNull Context context, @NonNull List<UserInfo> users, @NonNull UserActionListener listener) {
         super(context, R.layout.user_item, users);
         this.context = context;
@@ -38,6 +50,13 @@ public class UserArrayAdapter extends ArrayAdapter<UserInfo> {
         this.userActionListener = listener;
     }
 
+    /**
+     * Contains the logic required for the adapter
+     * @param position position
+     * @param convertView view
+     * @param parent parent view
+     * @return view
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -106,6 +125,11 @@ public class UserArrayAdapter extends ArrayAdapter<UserInfo> {
         return convertView;
     }
 
+    /**
+     * Load deterministic profile picture
+     * @param user user
+     * @param imageView image
+     */
     private void loadDeterministicImage(UserInfo user, ImageView imageView) {
         String fullName = user.getFirstName() + " " + user.getLastName();
         Drawable deterministicImage = ManageImageProfile.generateArtFromName(context, fullName, 100, 100);

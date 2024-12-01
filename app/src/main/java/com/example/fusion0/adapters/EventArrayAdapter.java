@@ -16,11 +16,21 @@ import com.example.fusion0.models.EventInfo;
 
 import java.util.ArrayList;
 
+/**
+ * To show all events
+ */
 public class EventArrayAdapter extends ArrayAdapter<EventInfo> {
 
     private final EventEditCallback editCallback;
     private final EventDeleteCallback deleteCallback;
 
+    /**
+     * Event Initializer
+     * @param context context
+     * @param events event array
+     * @param editCallback callback for editing
+     * @param deleteCallback callback for deleting
+     */
     public EventArrayAdapter(Context context, ArrayList<EventInfo> events, EventEditCallback editCallback, EventDeleteCallback deleteCallback) {
         super(context, 0, events);
         this.editCallback = editCallback;
@@ -51,10 +61,16 @@ public class EventArrayAdapter extends ArrayAdapter<EventInfo> {
         return view;
     }
 
+    /**
+     * Edit callback
+     */
     public interface EventEditCallback {
         void onEdit(EventInfo event);
     }
 
+    /**
+     * Delete callback
+     */
     public interface EventDeleteCallback {
         void onDelete(EventInfo event);
     }

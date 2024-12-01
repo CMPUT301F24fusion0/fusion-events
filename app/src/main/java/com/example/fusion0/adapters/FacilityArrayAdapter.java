@@ -17,10 +17,19 @@ import com.example.fusion0.models.FacilitiesInfo;
 
 import java.util.ArrayList;
 
+/**
+ * Facility array
+ */
 public class FacilityArrayAdapter extends ArrayAdapter<FacilitiesInfo> {
 
     private final FacilityEditCallback editCallback;
 
+    /**
+     * Initializer for adapter
+     * @param context context
+     * @param facilities array of facilities
+     * @param editCallback callback for edits
+     */
     public FacilityArrayAdapter(Context context, ArrayList<FacilitiesInfo> facilities, FacilityEditCallback editCallback) {
         super(context, 0, facilities);
         this.editCallback = editCallback;
@@ -52,6 +61,9 @@ public class FacilityArrayAdapter extends ArrayAdapter<FacilitiesInfo> {
         return view;
     }
 
+    /**
+     * Callback to edit facility
+     */
     public interface FacilityEditCallback {
         void onEdit(FacilitiesInfo facility);
     }

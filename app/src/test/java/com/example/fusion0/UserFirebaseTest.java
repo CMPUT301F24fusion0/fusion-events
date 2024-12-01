@@ -14,6 +14,10 @@ import org.junit.Before;
 import org.junit.Test;
 import java.util.HashMap;
 
+/**
+ * Test for the firebase using mockito
+ * @author Sehej Brar
+ */
 public class UserFirebaseTest {
     private CollectionReference mockedCollectionRef;
     private DocumentReference mockedDocRef;

@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
  * Instrumented test class for the ManageImageProfile class.
  * This class tests the image upload, deletion, existence check,
  * and retrieval functionality in Firebase Storage.
+ * @author Nimi Akinroye
  */
 @RunWith(AndroidJUnit4.class)
 public class ManageImageProfileTest {

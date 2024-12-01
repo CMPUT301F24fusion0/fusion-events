@@ -35,6 +35,10 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Chosen entrants is those that won the lottery
+ * @author Simon Haile
+ */
 public class ChosenEntrantsFragment extends Fragment {
     ImageButton backButton;
     TextView chosenEntrantsCapacityRatio, fullCapacityTextView, emptyTextView, waitinglistEmptyTextView;
@@ -47,7 +51,6 @@ public class ChosenEntrantsFragment extends Fragment {
     private Waitlist waitlist;
     Boolean waitinglistEmpty = false;
 
-
     private ProfileListAdapter adapter;
     ArrayList<Map<String, String>> chosenList;
 
@@ -57,8 +60,6 @@ public class ChosenEntrantsFragment extends Fragment {
 
     private String lotteryCapacity, eventID;
     UserFirestore userFirestore = new UserFirestore();
-
-
 
     /**
      * Sets up the variables required in this class and uses the adapter to show selected entrants
@@ -96,7 +97,7 @@ public class ChosenEntrantsFragment extends Fragment {
 
             chosenList = (ArrayList<Map<String, String>>) bundle.getSerializable("chosenEntrantsData");
 
-            if (chosenList != null && !chosenList.isEmpty()) {
+            if ((chosenList != null && !chosenList.isEmpty())) {
                 pendingRequests = chosenList.size();
 
                 for (Map<String, String> entry : chosenList) {
@@ -138,6 +139,10 @@ public class ChosenEntrantsFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Update the user interface
+     * @author Simon Haile
+     */
     private void updateUI() {
         String ratio = users.size() + "/" + lotteryCapacity;
         chosenEntrantsCapacityRatio.setText(ratio);
@@ -170,7 +175,7 @@ public class ChosenEntrantsFragment extends Fragment {
             chosenEntrantsListView.setVisibility(View.VISIBLE);
         }
 
-        adapter = new ProfileListAdapter(getContext(), users);
+        adapter = new ProfileListAdapter(getContext(), users, chosenList);
         chosenEntrantsListView.setAdapter(adapter);
     }
 
@@ -208,14 +213,13 @@ public class ChosenEntrantsFragment extends Fragment {
                                 if (eventInfo.getWaitinglist() != null && !eventInfo.getWaitinglist().isEmpty()) {
                                     for (Map<String, String> user : eventInfo.getWaitinglist()) {
                                         if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
-                                            Log.e(TAG, "user:" + user.get("did") );
                                             userFirestore.findUser(user.get("did"), new UserFirestore.Callback() {
                                                 @Override
                                                 public void onSuccess(UserInfo userInfo) {
                                                     users.add(userInfo);
 
                                                     if (users.size() == chosen.size()) {
-                                                        adapter = new ProfileListAdapter(getContext(), users);
+                                                        adapter = new ProfileListAdapter(getContext(), users, chosenList);
                                                         chosenEntrantsListView.setAdapter(adapter);
                                                         updateUI();
                                                     }
@@ -239,9 +243,6 @@ public class ChosenEntrantsFragment extends Fragment {
                 }
             });
         });
-
-
-
 
         removeEntrantsButton.setOnClickListener(v -> {
             chosenEntrantsListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -282,8 +283,6 @@ public class ChosenEntrantsFragment extends Fragment {
             adapter.setSelectionMode(isSelectionMode);  // Notify adapter
             updateUI();
         });
-
-
 
         cancelButton.setOnClickListener(v->{
             isSelectionMode = false;

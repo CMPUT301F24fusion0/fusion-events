@@ -13,6 +13,10 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
+/**
+ * Tests if the notifications are updated
+ * @author Sehej Brar
+ */
 public class AppNotificationsTest {
     private static UserInfo user;
     private static DocumentReference users;

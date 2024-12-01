@@ -9,6 +9,10 @@ import com.example.fusion0.models.AddEventViewModel;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Test for the AddEventViewModel class that contains info about the event
+ * @author Sehej Brar
+ */
 public class AddEventVMTest {
     AddEventViewModel aevm;
     AddEventHelper aeh;

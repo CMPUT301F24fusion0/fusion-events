@@ -14,6 +14,10 @@ import com.example.fusion0.activities.MainActivity;
 import org.junit.Rule;
 import org.junit.Test;
 
+/**
+ * Tests to see if the correct things are shown on the activities page
+ * @author Sehej Brar
+ */
 public class FavouriteFragmentTest {
     @Rule
     public ActivityTestRule<MainActivity> activityTestRule = new ActivityTestRule<>(MainActivity.class);

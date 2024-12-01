@@ -51,6 +51,7 @@ import java.util.Locale;
  * Fragment for editing an event's details such as name, description, capacity, geolocation,
  * start/end dates, event poster, and QR code. Users can upload/delete posters,
  * generate/delete QR codes, and save changes.
+ * @author Simon Haile
  */
 public class EditEventFragment extends Fragment {
 
@@ -99,6 +100,10 @@ public class EditEventFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Initialize the UI components
+     * @param view the view
+     */
     private void initializeViews(View view) {
         eventName = view.findViewById(R.id.EventName);
         description = view.findViewById(R.id.Description);
@@ -129,8 +134,6 @@ public class EditEventFragment extends Fragment {
 
         cancelButton.setOnClickListener(v -> Navigation.findNavController(v).navigateUp());
 
-
-
         geolocationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> toggleGeolocation(isChecked));
 
         editPosterButton.setOnClickListener(v -> pickImage());
@@ -139,6 +142,10 @@ public class EditEventFragment extends Fragment {
         deleteQrCodeButton.setOnClickListener(v -> deleteQRCode());
     }
 
+    /**
+     * Allow for the image poster to be uploaded
+     * @author Simon Haile
+     */
     private void initializeImagePicker() {
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -152,6 +159,10 @@ public class EditEventFragment extends Fragment {
         );
     }
 
+    /**
+     * Initialize the user to choose start/end dates
+     * @author Simon Haile
+     */
     private void initializeDatePickers() {
         // Set up the listener for "Start Date" button
         startDateButton.setOnClickListener(v -> showDateTimePicker(date -> {
@@ -166,6 +177,11 @@ public class EditEventFragment extends Fragment {
         }));
     }
 
+    /**
+     * Let user pick time
+     * @author Simon Haile
+     * @param listener to listen to change in time
+     */
     private void showDateTimePicker(OnDateTimeSelectedListener listener) {
         Calendar calendar = Calendar.getInstance();
 
@@ -185,18 +201,28 @@ public class EditEventFragment extends Fragment {
     }
 
 
-    // Interface for handling date and time selection
+    /**
+     * Interface for handling date and time selection
+     * @author Simon Haile
+     */
     private interface OnDateTimeSelectedListener {
         void onDateTimeSelected(Date date);
     }
 
-
+    /**
+     * Let user pick image
+     * @author Simon Haile
+     */
     private void pickImage() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         imagePickerLauncher.launch(intent);
     }
 
+    /**
+     * For choosing facility
+     * @author Simon Haile
+     */
     private void initializeGooglePlaces() {
         // Ensure Places API is initialized
         if (!Places.isInitialized()) {
@@ -234,8 +260,10 @@ public class EditEventFragment extends Fragment {
         }
     }
 
-
-
+    /**
+     * Load event details from firebase
+     * @author Simon Haile
+     */
     private void loadEventDetails() {
         eventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
             @Override
@@ -257,6 +285,11 @@ public class EditEventFragment extends Fragment {
         });
     }
 
+    /**
+     * Populate event fields from the data from firebase
+     * @author Simon Haile
+     * @param event event info
+     */
     private void populateFields(EventInfo event) {
         eventName.setText(event.getEventName());
         description.setText(event.getDescription());
@@ -300,18 +333,33 @@ public class EditEventFragment extends Fragment {
         endDate = event.getEndDate();
     }
 
+    /**
+     * Hide poster
+     * @author Simon Haile
+     * @param hasPoster to hide poster
+     */
     private void updatePosterVisibility(boolean hasPoster) {
         uploadedPosterView.setVisibility(hasPoster ? View.VISIBLE : View.GONE);
         addPosterText.setVisibility(hasPoster ? View.GONE : View.VISIBLE);
         deletePosterButton.setVisibility(hasPoster ? View.VISIBLE : View.GONE);
     }
 
+    /**
+     * if geolocation is on
+     * @author Simon Haile
+     * @param isEnabled geolocation enabled
+     */
     private void toggleGeolocation(boolean isEnabled) {
         geolocationEnabled = isEnabled;
         radiusInput.setVisibility(isEnabled ? View.VISIBLE : View.GONE);
         radiusLabel.setVisibility(isEnabled ? View.VISIBLE : View.GONE);
     }
 
+    /**
+     * Uploads the image to firebase
+     * @author Simon Haile
+     * @param imageUri image
+     */
     private void uploadPosterToFirebase(Uri imageUri) {
         StorageReference imageRef = storageRef.child("event_posters/" + eventId + ".jpg");
         imageRef.putFile(imageUri)
@@ -322,6 +370,10 @@ public class EditEventFragment extends Fragment {
                 .addOnFailureListener(e -> Toast.makeText(requireContext(), "Failed to upload poster.", Toast.LENGTH_SHORT).show());
     }
 
+    /**
+     * Remove poster if it is changed
+     * @author Simon Haile
+     */
     private void removePoster() {
         if (eventPosterUrl != null && !eventPosterUrl.isEmpty()) {
             posterMarkedForDeletion = true;
@@ -331,6 +383,10 @@ public class EditEventFragment extends Fragment {
         }
     }
 
+    /**
+     * Generate QR code for event
+     * @author Simon Haile
+     */
     private void generateQRCode() {
         try {
             QRCode newQrCode = new QRCode(event.getEventID());
@@ -344,12 +400,20 @@ public class EditEventFragment extends Fragment {
         }
     }
 
+    /**
+     * Delete QR code
+     * @author Simon Haile
+     */
     private void deleteQRCode() {
         event.setQrCode(null);
         qrCodeImageView.setVisibility(View.GONE);
         deleteQrCodeButton.setVisibility(View.GONE);
     }
 
+    /**
+     * Save new event details
+     * @author Simon Haile
+     */
     private void saveEventDetails() {
         String updatedName = eventName.getText().toString().trim();
         String updatedDescription = description.getText().toString().trim();
@@ -397,6 +461,12 @@ public class EditEventFragment extends Fragment {
         requireActivity().getSupportFragmentManager().popBackStack();
     }
 
+    /**
+     * Format data and time for object
+     * @author Simon Haile
+     * @param date date
+     * @return formatted date
+     */
     private String formatDateTime(Date date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.US);
         return dateFormat.format(date);

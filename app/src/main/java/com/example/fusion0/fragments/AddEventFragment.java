@@ -1,10 +1,14 @@
 package com.example.fusion0.fragments;
 
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,7 +86,7 @@ public class AddEventFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_event, container, false);
+        return inflater.inflate(R.layout.fragment_add_event, container, false);
     }
 
     @Override
@@ -170,6 +174,7 @@ public class AddEventFragment extends Fragment {
                 Toast.makeText(context, "Facility is missing", Toast.LENGTH_SHORT).show();
                 return;
             }
+
 
             EventInfo newEvent;
             try {

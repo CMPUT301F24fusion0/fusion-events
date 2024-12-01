@@ -8,6 +8,10 @@ import com.example.fusion0.models.NotificationItem;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Notification item test which displays notifications on the front page
+ * @author Sehej Brar
+ */
 public class NotificationItemTest {
     private NotificationItem notificationItem;
 

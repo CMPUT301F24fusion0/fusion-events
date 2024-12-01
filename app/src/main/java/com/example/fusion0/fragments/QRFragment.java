@@ -1,10 +1,13 @@
 package com.example.fusion0.fragments;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +23,11 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.fusion0.R;
+import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.QRCode;
+import com.example.fusion0.models.EventInfo;
 import com.google.zxing.Result;
+import com.google.zxing.WriterException;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
@@ -33,6 +39,9 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
  */
 public class QRFragment extends Fragment implements ZXingScannerView.ResultHandler {
 
+    private String deviceID;
+    private EventFirebase eventFirebase = new EventFirebase();
+    private EventInfo event;
     private ZXingScannerView scannerView;
     private Button cancelButton;
     private TextView instructionText;
@@ -42,8 +51,10 @@ public class QRFragment extends Fragment implements ZXingScannerView.ResultHandl
         // Required empty public constructor
     }
 
+    @SuppressLint("HardwareIds")
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        deviceID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         super.onCreate(savedInstanceState);
     }
 
@@ -121,7 +132,23 @@ public class QRFragment extends Fragment implements ZXingScannerView.ResultHandl
         bundle.putString("eventID", eventId);
         bundle.putString("QR_CODE_HASH", qrCodeHash);
 
-        Navigation.findNavController(getView()).navigate(R.id.action_qrFragment_to_viewEventFragment, bundle);
+        eventFirebase.findEvent(eventId, new EventFirebase.EventCallback() {
+            @Override
+            public void onSuccess(EventInfo eventInfo) throws WriterException {
+                if (eventInfo.getOrganizer() == deviceID) {
+                    Navigation.findNavController(getView()).navigate(R.id.action_qrFragment_to_viewEventFragment, bundle);
+                } else {
+                    Navigation.findNavController(getView()).navigate(R.id.action_qrFragment_to_userJoinFragment, bundle);
+                }
+
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e("QR Fragment", "Error" + error);
+            }
+        });
+
     }
 
     /**
