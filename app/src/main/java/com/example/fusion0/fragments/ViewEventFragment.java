@@ -177,6 +177,12 @@ public class ViewEventFragment extends Fragment {
         // Required empty public constructor
     }
 
+    /**
+     * Initialize variables
+     * @author Simon Haile
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @SuppressLint("HardwareIds")
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -206,12 +212,31 @@ public class ViewEventFragment extends Fragment {
         );
     }
 
+    /**
+     * Inflate the view
+     * @author Simon Haile
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return the view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_view_event, container, false);
     }
 
+    /**
+     * Contains the main logic for joining an event
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -980,7 +1005,7 @@ public class ViewEventFragment extends Fragment {
             dialog.show();
         });
 
-        
+
     }
 
     /**
@@ -1261,6 +1286,12 @@ public class ViewEventFragment extends Fragment {
         }
     }
 
+
+    /**
+     * Show view with transition
+     * @author Nimi Akinroye
+     * @param view
+     */
     public void showWithTransition(View view) {
         // Fade in animation
         AlphaAnimation fadeIn = new AlphaAnimation(0.0f, 1.0f);
@@ -1283,6 +1314,15 @@ public class ViewEventFragment extends Fragment {
         }, 4000);
     }
 
+    /**
+     * Display map of entrants
+     * @author Nimi Akinroye
+     * @param mapView map image
+     * @param latitude latitude
+     * @param longitude longitude
+     * @param context context
+     */
+    private void d
     private void displayMapView(ImageView mapView, Double latitude, Double longitude, Context context) {
         String staticMapUrl;
         if (latitude > longitude) {
@@ -1307,6 +1347,13 @@ public class ViewEventFragment extends Fragment {
                 .into(mapView);
     }
 
+    /**
+     * Update date for event
+     * @author Nimi Akinroye
+     * @param startDate start data
+     * @param startMonth start month
+     * @param startDateTextView start date in text
+     */
     private void updateStartDateCard(Date startDate, TextView startMonth, TextView startDateTextView) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startDate);
@@ -1319,6 +1366,11 @@ public class ViewEventFragment extends Fragment {
 
     }
 
+    /**
+     * Change textview colour
+     * @author Nimi Akinroye
+     * @param context context
+     */
     private void editDateTextViews(Context context) {
         eventStartDateTextView.setTextColor(ResourcesCompat.getColor(getResources(), android.R.color.darker_gray, context.getTheme()));
         eventStartTimeTextView.setTextColor(ResourcesCompat.getColor(getResources(), android.R.color.darker_gray, context.getTheme()));
@@ -1327,6 +1379,11 @@ public class ViewEventFragment extends Fragment {
         eventStartDateTextView.setTextColor(ResourcesCompat.getColor(getResources(), android.R.color.darker_gray, context.getTheme()));
     }
 
+    /**
+     * Update text view for dates
+     * @author Nimi Akinroye
+     * @param context context
+     */
     private void updateDateTextView(Context context) {
         eventStartDateTextView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, context.getTheme()));
         eventStartTimeTextView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, context.getTheme()));
@@ -1336,6 +1393,10 @@ public class ViewEventFragment extends Fragment {
 
     }
 
+    /**
+     * Load the screen
+     * @author Nimi Akinroye
+     */
     private void loadScreen() {
         scrollContainer.setVisibility(View.GONE);
         eventPosterImageView.setVisibility(View.GONE);
@@ -1344,6 +1405,10 @@ public class ViewEventFragment extends Fragment {
         viewEventSkeletonLayout.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Populate the screen
+     * @author Nimi Akinroye
+     */
     private void populateScreen() {
         viewEventSkeletonLayout.stopShimmerAnimation();
         viewEventSkeletonLayout.setVisibility(View.GONE);

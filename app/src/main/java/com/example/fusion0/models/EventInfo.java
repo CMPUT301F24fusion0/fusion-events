@@ -200,9 +200,6 @@ public class EventInfo {
         return event;
     }
 
-
-
-
     public String getEventID(){
         return eventID;
     }
@@ -210,7 +207,6 @@ public class EventInfo {
     public String getOrganizer(){
         return organizer;
     }
-
 
     public void setOrganizer(String organizer) {
         this.organizer = organizer;
@@ -220,51 +216,41 @@ public class EventInfo {
         return facilityID;
     }
 
-
     public void setFacilityID(String facilityID) {
         this.facilityID = facilityID;
     }
-
 
     public String getEventName() {
         return eventName;
     }
 
-
     public void setEventName(String eventName) {
         this.eventName = eventName;
     }
-
 
     public String getAddress() {
         return address;
     }
 
-
     public void setAddress(String address) {
         this.address = address;
     }
-
 
     public String getFacilityName() {
         return facilityName;
     }
 
-
     public void setFacilityName(String facilityName) {
         this.facilityName = facilityName;
     }
-
 
     public String getDescription() {
         return description;
     }
 
-
     public void setDescription(String description) {
         this.description = description;
     }
-
 
     public String getCapacity() {
         return capacity;
@@ -290,22 +276,17 @@ public class EventInfo {
         this.acceptedCount = acceptedCount;
     }
 
-
-
     public Date getStartDate() {
         return startDate;
     }
-
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-
     public Date getEndDate() {
         return endDate;
     }
-
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
@@ -315,36 +296,29 @@ public class EventInfo {
         return registrationDate;
     }
 
-
     public void setRegistrationDate(Date registrationDate) {
         this.registrationDate = registrationDate;
     }
-
 
     public String getStartTime() {
         return startTime;
     }
 
-
     public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
-
 
     public String getEndTime() {
         return endTime;
     }
 
-
     public void setEndTime(String endTime) {
         this.endTime = endTime;
     }
 
-
     public ArrayList<Map<String, String>> getWaitinglist() {
         return waitinglist;
     }
-
 
     public void setWaitinglist(ArrayList<Map<String, String>> waitinglist) {
         this.waitinglist = waitinglist;
@@ -442,32 +416,4 @@ public class EventInfo {
         waitingList.removeIf(next -> next.containsKey("did") && Objects.equals(next.get("did"), deviceID));
         return waitingList;
     }
-
-    @Override
-    public String toString() {
-        return "EventInfo{" +
-                "eventID='" + eventID + '\'' +
-                ", eventName='" + eventName + '\'' +
-                ", address='" + address + '\'' +
-                ", facilityName='" + facilityName + '\'' +
-                ", capacity='" + capacity + '\'' +
-                ", lotteryCapacity='" + lotteryCapacity + '\'' +
-                ", description='" + description + '\'' +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                ", registrationDate=" + registrationDate +
-                ", startTime='" + startTime + '\'' +
-                ", endTime='" + endTime + '\'' +
-                ", eventPoster='" + eventPoster + '\'' +
-                ", waitinglist=" + waitinglist +
-                ", acceptedCount='" + acceptedCount + '\'' +
-                ", geolocation='" + geolocation + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", radius=" + radius +
-                ", lotteryConducted=" + lotteryConducted +
-                ", organizer='" + organizer + '\'' +
-                '}';
-    }
-
 }

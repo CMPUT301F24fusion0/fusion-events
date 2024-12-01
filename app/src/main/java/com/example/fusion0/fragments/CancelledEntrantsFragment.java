@@ -27,6 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * For the entrants who cancelled their invitation
+ * @author Simon Haile
+ */
 public class CancelledEntrantsFragment extends Fragment {
     ImageButton backButton;
     ListView cancelledEntrantsListView;

@@ -29,6 +29,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Waitlist fragment to see capacity and lottery
+ * @author Simon Haile
+ */
 public class WaitlistFragment extends Fragment {
     ImageButton backButton;
     TextView waitlistCapacityRatio, emptyTextView;

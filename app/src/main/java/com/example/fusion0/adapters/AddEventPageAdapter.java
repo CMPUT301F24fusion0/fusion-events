@@ -7,6 +7,10 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.example.fusion0.fragments.InfoFragment;
 import com.example.fusion0.fragments.MapFragment;
 
+/**
+ * Add event page
+ * @author Simon Haile
+ */
 public class AddEventPageAdapter extends FragmentStateAdapter {
 
     public AddEventPageAdapter(@NonNull Fragment fragment) {

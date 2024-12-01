@@ -14,6 +14,7 @@ import java.util.HashMap;
 
 /**
  * This class serves as the connection to the Firebase. It includes common CRUD operations.
+ * @author Sehej Brar
  */
 public class UserFirestore {
 

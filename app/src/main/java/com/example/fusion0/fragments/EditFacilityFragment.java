@@ -31,6 +31,10 @@ import com.example.fusion0.models.FacilitiesInfo;
 
 import java.util.ArrayList;
 
+/**
+ * Edit a facility
+ * @author Simon Haile
+ */
 public class EditFacilityFragment extends Fragment {
 
     private String deviceID;
@@ -46,6 +50,19 @@ public class EditFacilityFragment extends Fragment {
     private ListView facilitiesEventsList;
     private EventFirebase eventFirebase = new EventFirebase();
 
+    /**
+     * Initialize UI components
+     * @author Simon Haile
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return views
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -88,6 +105,11 @@ public class EditFacilityFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Get facility data
+     * @author Simon Haile
+     * @param facilityID id of facility
+     */
     private void fetchFacilityData(String facilityID) {
         eventFirebase.findFacility(facilityID, new EventFirebase.FacilityCallback() {
             @Override
@@ -110,10 +132,13 @@ public class EditFacilityFragment extends Fragment {
         });
     }
 
+    /**
+     * Add in facility details
+     * @author Simon Haile
+     */
     private void populateFacilityDetails() {
         facilityNameTextView.setText(facility.getFacilityName());
         addressTextView.setText(facility.getAddress());
-
 
         if (facility.getFacilityImage() != null && !facility.getFacilityImage().isEmpty()) {
             Glide.with(requireContext())
@@ -123,7 +148,6 @@ public class EditFacilityFragment extends Fragment {
         }
 
         checkOwnershipAndAdminStatus();
-
 
         ArrayList<String> eventNames = new ArrayList<>();
         ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, eventNames);
@@ -145,7 +169,6 @@ public class EditFacilityFragment extends Fragment {
                     @Override
                     public void onFailure(String error) {
                         //Log.e(TAG, "Error fetching event data: " + error);
-
                     }
                 });
             }
@@ -160,12 +183,20 @@ public class EditFacilityFragment extends Fragment {
         setupButtons();
     }
 
+    /**
+     * Check check if the user is admin
+     * @author Simon Haile
+     */
     private void checkOwnershipAndAdminStatus() {
         //isOwner = deviceID.equals(facility.getOwner()) || EventFirebase.isDeviceIDAdmin(deviceID);
         toolbar.setVisibility(View.VISIBLE);
 
     }
 
+    /**
+     * Setup buttons based on context
+     * @author Simon Haile
+     */
     private void setupButtons() {
         editButton.setOnClickListener(v -> {
                 toggleEditMode(true);
@@ -197,11 +228,14 @@ public class EditFacilityFragment extends Fragment {
                     .show();
         });
 
-
-
         cancelButton.setOnClickListener(v -> toggleEditMode(false));
     }
 
+    /**
+     * Allow organizer to edit
+     * @author Simon Haile
+     * @param isEditing whether editing is allowed
+     */
     private void toggleEditMode(boolean isEditing) {
         facilityNameTextView.setVisibility(isEditing ? View.GONE : View.VISIBLE);
         addressTextView.setVisibility(isEditing ? View.GONE : View.VISIBLE);

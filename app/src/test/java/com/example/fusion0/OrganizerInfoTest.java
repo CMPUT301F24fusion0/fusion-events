@@ -13,6 +13,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
+/**
+ * Tests for the organizer
+ * @author Sehej Brar
+ */
 public class OrganizerInfoTest {
     OrganizerInfo organizerInfo;
     ArrayList<String> facility;

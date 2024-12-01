@@ -16,6 +16,10 @@ import com.example.fusion0.activities.MainActivity;
 import org.junit.Rule;
 import org.junit.Test;
 
+/**
+ * Checks to see if the add event screen functions as required
+ * @author Sehej Brar
+ */
 public class AddEventTest {
     @Rule
     public ActivityTestRule<MainActivity> activityTestRule = new ActivityTestRule<>(MainActivity.class);
@@ -43,6 +47,6 @@ public class AddEventTest {
         Espresso.onView(withId(R.id.EventName)).perform(replaceText("Event Name"), closeSoftKeyboard());
         Espresso.onView(withId(R.id.Description)).perform(replaceText("Event Description"), closeSoftKeyboard());
         Espresso.onView(withId(R.id.save_button)).perform(click());
-        Espresso.onView(withId(R.id.createEventHeader)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
+        Espresso.onView(withId(R.id.header_text)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
     }
 }

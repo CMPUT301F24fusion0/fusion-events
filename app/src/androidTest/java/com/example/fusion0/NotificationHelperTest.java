@@ -17,6 +17,10 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Notification helper that allows for the notificaiton to be on the front page
+ * @author Sehej Brar
+ */
 public class NotificationHelperTest {
     private static UserInfo user;
     private static DocumentReference users;

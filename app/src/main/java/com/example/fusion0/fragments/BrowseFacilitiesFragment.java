@@ -21,6 +21,10 @@ import com.example.fusion0.models.FacilitiesInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Browse all facilities
+ * @author Malshaan
+ */
 public class BrowseFacilitiesFragment extends Fragment {
 
     private ListView facilityListView;
@@ -56,6 +60,9 @@ public class BrowseFacilitiesFragment extends Fragment {
         getFacilities();
     }
 
+    /**
+     * Get all facilities
+     */
     private void getFacilities() {
         EventFirebase.getAllFacilities(new EventFirebase.FacilityListCallBack() {
             @Override
@@ -72,6 +79,10 @@ public class BrowseFacilitiesFragment extends Fragment {
         });
     }
 
+    /**
+     * Allow facility to be edited
+     * @param facility facility to be added
+     */
     private void onEditFacility(FacilitiesInfo facility) {
         String facilityId = facility.getFacilityID();
         if (facilityId == null) {
@@ -84,6 +95,9 @@ public class BrowseFacilitiesFragment extends Fragment {
         Navigation.findNavController(requireView()).navigate(R.id.action_browseFacilitiesFragment_to_EditFacilityFragment, bundle);
     }
 
+    /**
+     * Go up
+     */
     private void navigateUp() {
         if (getParentFragmentManager().getBackStackEntryCount() > 0) {
             getParentFragmentManager().popBackStack();
