@@ -110,7 +110,7 @@ public class UserFirestore {
         field = field.toLowerCase();
         Log.d("Field to change", field);
         ArrayList<String> fields = new ArrayList<>(
-                Arrays.asList("first name", "last name", "phone number", "email", "did", "notifications", "events", "homepagenotifications"));
+                Arrays.asList("first name", "last name", "phone number", "email", "did", "notifications", "events", "homepagenotifications", "numaccepted", "numdeclined"));
 
         if (!fields.contains(field)) {
             throw new IllegalArgumentException("The field you've tried to change is not valid");
