@@ -13,6 +13,7 @@ public class AddEventViewModel extends ViewModel {
 
     /**
      * Initialize with default values
+     * @author Nimi Akinroye
      * @param helper the helper object to initialize
      */
     public void initializeHelper(AddEventHelper helper) {
@@ -21,6 +22,7 @@ public class AddEventViewModel extends ViewModel {
 
     /**
      * Gets helper
+     * @author Nimi Akinroye
      * @return the helper
      */
     public AddEventHelper getHelper() {
@@ -29,6 +31,7 @@ public class AddEventViewModel extends ViewModel {
 
     /**
      * Updates helper
+     * @author Nimi Akinroye
      * @param newHelper helper to change
      */
     public void updateHelper(AddEventHelper newHelper) {
