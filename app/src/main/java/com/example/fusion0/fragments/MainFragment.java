@@ -44,6 +44,7 @@ import com.example.fusion0.helpers.NotificationHelper;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.NotificationItem;
+import com.example.fusion0.models.OrganizerInfo;
 import com.example.fusion0.models.UserInfo;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseApp;
@@ -171,26 +172,24 @@ public class MainFragment extends Fragment {
                                 Log.d("query", "snapshot is null");
                                 if (registrationDeadline != null && !document.getBoolean("lotteryConducted")) {
                                     Date now = new Date();
-                                    Date deadlineDate = registrationDeadline.toDate();
-//                                    Calendar calNow = Calendar.getInstance();
-//                                    calNow.setTime(now);
-//                                    calNow.set(Calendar.HOUR_OF_DAY, 0);
-//                                    calNow.set(Calendar.MINUTE, 0);
-//                                    calNow.set(Calendar.SECOND, 0);
-//                                    calNow.set(Calendar.MILLISECOND, 0);
-//
-//                                    Calendar calDeadline = Calendar.getInstance();
-//                                    calDeadline.setTime(registrationDeadline.toDate());
-//                                    calDeadline.set(Calendar.HOUR_OF_DAY, 0);
-//                                    calDeadline.set(Calendar.MINUTE, 0);
-//                                    calDeadline.set(Calendar.SECOND, 0);
-//                                    calDeadline.set(Calendar.MILLISECOND, 0);
+                                    Calendar calNow = Calendar.getInstance();
+                                    calNow.setTime(now);
+                                    calNow.set(Calendar.HOUR_OF_DAY, 0);
+                                    calNow.set(Calendar.MINUTE, 0);
+                                    calNow.set(Calendar.SECOND, 0);
+                                    calNow.set(Calendar.MILLISECOND, 0);
 
-                                    Log.d("DateCheck", "calNow: " + now.getTime());
-                                    Log.d("DateCheck", "calDeadline: " + deadlineDate.getTime());
+                                    Calendar calDeadline = Calendar.getInstance();
+                                    calDeadline.setTime(registrationDeadline.toDate());
+                                    calDeadline.set(Calendar.HOUR_OF_DAY, 0);
+                                    calDeadline.set(Calendar.MINUTE, 0);
+                                    calDeadline.set(Calendar.SECOND, 0);
+                                    calDeadline.set(Calendar.MILLISECOND, 0);
 
-                                    if (now.after(deadlineDate)) {
-                                        Log.d("calNow", "after the calDeadline");
+                                    Log.d("DateCheck", "calNow: " + calNow.getTime());
+                                    Log.d("DateCheck", "calDeadline: " + calDeadline.getTime());
+
+                                    if (calNow.after(calDeadline)) {
                                         String eventId = document.getId();
                                         runLottery(eventId, document);
                                         document.getReference().update("lotteryConducted", true);
@@ -502,9 +501,11 @@ public class MainFragment extends Fragment {
             if (!eventDoc.getString("lotteryCapacity").equals("0")) {
                 waitlist.allNotification(eventId, "Lottery Starting",
                         "The lottery is not starting. Be on the look out for the results!", "0");
-                waitlist.conductLottery(eventId, Integer.parseInt(eventDoc.getString("lotteryCapacity")));
-//                waitlist.loseNotification(eventId, "Lottery Results", "Unfortunately, " +
-//                        "you have lost the lottery. You may still receive an invite if someone declines their invitation.", "0");
+                waitlist.conductLottery(eventId, Integer.parseInt(eventDoc.getString("lotteryCapacity")), new Waitlist.LotteryCallback() {
+                    @Override
+                    public void onComplete() {
+                    }
+                });
 
                 waitlist.getChosen(eventId, chosen -> {
                     if (!chosen.isEmpty()) {

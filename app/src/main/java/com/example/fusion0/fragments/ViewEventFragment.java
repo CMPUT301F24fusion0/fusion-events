@@ -246,6 +246,7 @@ public class ViewEventFragment extends Fragment {
                         startDate = event.getStartDate();
                         registrationDate = event.getRegistrationDate();
                         facility = event.getFacilityName();
+                        facilityID = event.getFacilityID();
 
                         newEventPoster = event.getEventPoster();
 
@@ -481,6 +482,7 @@ public class ViewEventFragment extends Fragment {
                         // Navigate to the WaitlistFragment
                         WaitlistFragment waitlistFragment = new WaitlistFragment();
                         Bundle newBundle = new Bundle();
+                        newBundle.putSerializable("fragment_waitlist", waitlist);
                         newBundle.putSerializable("waitingListData", fullWaitingListEntrants);
                         newBundle.putString("eventCapacity", event.getCapacity());
                         newBundle.putString("eventID", event.getEventID());
@@ -492,25 +494,22 @@ public class ViewEventFragment extends Fragment {
 
             menuItemActions.put(R.id.menu_chosen_list, () -> {
                 waitlist.getChosen(eventID, chosen -> {
-                    if (chosen.isEmpty()) {
-                        Toast.makeText(context, "Chosen list is empty.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        ArrayList<Map<String, String>> fullChosenEntrants = new ArrayList<>();
-                        // Add filtered users to the list
-                        for (Map<String, String> user : event.getWaitinglist()) {
-                            if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
-                                fullChosenEntrants.add(user);
-                            }
+                    ArrayList<Map<String, String>> fullChosenEntrants = new ArrayList<>();
+                    // Add filtered users to the list
+                    for (Map<String, String> user : event.getWaitinglist()) {
+                        if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
+                            fullChosenEntrants.add(user);
                         }
-                        // Navigate to the ChosenEntrantsFragment
-                        ChosenEntrantsFragment chosenEntrantsFragment = new ChosenEntrantsFragment();
-                        Bundle newBundle = new Bundle();
-                        newBundle.putSerializable("chosenEntrantsData", fullChosenEntrants);
-                        newBundle.putString("eventID", event.getEventID());
-                        newBundle.putString("lotteryCapacity", event.getLotteryCapacity());
-                        chosenEntrantsFragment.setArguments(newBundle);
-                        Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_chosenEntrantsFragment, newBundle);
                     }
+                    // Navigate to the ChosenEntrantsFragment
+                    ChosenEntrantsFragment chosenEntrantsFragment = new ChosenEntrantsFragment();
+                    Bundle newBundle = new Bundle();
+                    newBundle.putSerializable("chosenEntrantsData", fullChosenEntrants);
+                    newBundle.putSerializable("fragment_waitlist", waitlist);
+                    newBundle.putString("eventID", event.getEventID());
+                    newBundle.putString("lotteryCapacity", event.getLotteryCapacity());
+                    chosenEntrantsFragment.setArguments(newBundle);
+                    Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_chosenEntrantsFragment, newBundle);
                 });
             });
 
@@ -529,6 +528,7 @@ public class ViewEventFragment extends Fragment {
                         // Navigate to the CancelledEntrantsFragment
                         CancelledEntrantsFragment cancelledEntrantsFragment = new CancelledEntrantsFragment();
                         Bundle newBundle = new Bundle();
+                        newBundle.putSerializable("fragment_waitlist", waitlist);
                         newBundle.putSerializable("cancelledEntrantsData", fullCancelledEntrants);
                         newBundle.putString("eventID", event.getEventID());
                         cancelledEntrantsFragment.setArguments(newBundle);
@@ -625,7 +625,6 @@ public class ViewEventFragment extends Fragment {
                         .create()
                         .show();
 
-                Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_favouriteFragment);
             } else {
                 Toast.makeText(context, "You are not the organizer, cannot delete event.", Toast.LENGTH_SHORT).show();
             }

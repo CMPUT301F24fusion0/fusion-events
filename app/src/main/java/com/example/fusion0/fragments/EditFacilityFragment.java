@@ -1,5 +1,6 @@
 package com.example.fusion0.fragments;
 
+
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -34,6 +35,7 @@ public class EditFacilityFragment extends Fragment {
 
     private String deviceID;
     private TextView facilityNameTextView, addressTextView, facilitiesEventsTextView;
+
     private EditText facilityNameEditText, addressEditText;
     private FacilitiesInfo facility;
     private ImageView facilityImageView;
@@ -53,6 +55,7 @@ public class EditFacilityFragment extends Fragment {
         facilityNameTextView = view.findViewById(R.id.facilityName);
         addressTextView = view.findViewById(R.id.address);
         facilityImageView = view.findViewById(R.id.facilityImage);
+
         facilitiesEventsTextView = view.findViewById(R.id.facilities_events_list_text);
         facilityNameEditText = view.findViewById(R.id.editFacilityName);
         addressEditText = view.findViewById(R.id.editAddress);
@@ -71,6 +74,7 @@ public class EditFacilityFragment extends Fragment {
 
         // Set up back button navigation
         backButton.setOnClickListener(v -> Navigation.findNavController(v).navigateUp());
+
 
         // Get facility ID from arguments
         if (getArguments() != null) {
@@ -100,6 +104,7 @@ public class EditFacilityFragment extends Fragment {
             @Override
             public void onFailure(String error) {
                 //Log.e(TAG, "Error fetching facility data: " + error);
+
                 Toast.makeText(requireContext(), "Failed to load facility data.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -109,6 +114,7 @@ public class EditFacilityFragment extends Fragment {
         facilityNameTextView.setText(facility.getFacilityName());
         addressTextView.setText(facility.getAddress());
 
+
         if (facility.getFacilityImage() != null && !facility.getFacilityImage().isEmpty()) {
             Glide.with(requireContext())
                     .load(facility.getFacilityImage())
@@ -117,6 +123,7 @@ public class EditFacilityFragment extends Fragment {
         }
 
         checkOwnershipAndAdminStatus();
+
 
         ArrayList<String> eventNames = new ArrayList<>();
         ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, eventNames);
@@ -138,11 +145,13 @@ public class EditFacilityFragment extends Fragment {
                     @Override
                     public void onFailure(String error) {
                         //Log.e(TAG, "Error fetching event data: " + error);
+
                     }
                 });
             }
 
             facility.setEvents(filteredEvents);
+
         } else {
             facilitiesEventsTextView.setVisibility(View.VISIBLE);
             facilitiesEventsList.setVisibility(View.GONE);
@@ -163,6 +172,7 @@ public class EditFacilityFragment extends Fragment {
         });
 
         saveButton.setOnClickListener(v -> {
+
                 facility.setFacilityName(facilityNameEditText.getText().toString());
                 facility.setAddress(addressEditText.getText().toString());
                 eventFirebase.editFacility(facility);
@@ -188,6 +198,7 @@ public class EditFacilityFragment extends Fragment {
         });
 
 
+
         cancelButton.setOnClickListener(v -> toggleEditMode(false));
     }
 
@@ -200,5 +211,6 @@ public class EditFacilityFragment extends Fragment {
         cancelButton.setVisibility(isEditing ? View.VISIBLE : View.GONE);
         editButton.setVisibility(isEditing ? View.GONE : View.VISIBLE);
         deleteButton.setVisibility(isEditing ? View.GONE : View.VISIBLE);
+
     }
 }
