@@ -219,6 +219,9 @@
         <action
             android:id="@+id/action_registrationFragment_to_viewEventFragment"
             app:destination="@id/viewEventFragment" />
+        <action
+            android:id="@+id/action_registrationFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
     </fragment>
 
     <fragment

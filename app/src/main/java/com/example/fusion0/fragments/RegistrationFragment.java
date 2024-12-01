@@ -110,10 +110,7 @@ public class RegistrationFragment extends Fragment {
         });
 
         backButton.setOnClickListener(v -> {
-            String eventID = bundle.getString("eventID");
-            Bundle newBundle = new Bundle();
-            newBundle.putString("eventID", eventID);
-            Navigation.findNavController(v).navigate(R.id.action_registrationFragment_to_viewEventFragment, newBundle);
+            Navigation.findNavController(v).navigate(R.id.action_registrationFragment_to_mainFragment);
         });
     }
 
