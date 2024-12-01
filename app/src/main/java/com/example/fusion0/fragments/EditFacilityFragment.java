@@ -1,7 +1,5 @@
 package com.example.fusion0.fragments;
 
-import static android.content.ContentValues.TAG;
-
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -32,13 +30,10 @@ import com.example.fusion0.models.FacilitiesInfo;
 
 import java.util.ArrayList;
 
-/**
- * Fragment for editing and managing facility details.
- */
 public class EditFacilityFragment extends Fragment {
 
     private String deviceID;
-    private TextView facilityNameTextView, addressTextView, ownerTextView, facilitiesEventsTextView;
+    private TextView facilityNameTextView, addressTextView, facilitiesEventsTextView;
     private EditText facilityNameEditText, addressEditText;
     private FacilitiesInfo facility;
     private ImageView facilityImageView;
@@ -58,7 +53,6 @@ public class EditFacilityFragment extends Fragment {
         facilityNameTextView = view.findViewById(R.id.facilityName);
         addressTextView = view.findViewById(R.id.address);
         facilityImageView = view.findViewById(R.id.facilityImage);
-        ownerTextView = view.findViewById(R.id.owner);
         facilitiesEventsTextView = view.findViewById(R.id.facilities_events_list_text);
         facilityNameEditText = view.findViewById(R.id.editFacilityName);
         addressEditText = view.findViewById(R.id.editAddress);
@@ -76,9 +70,7 @@ public class EditFacilityFragment extends Fragment {
         deviceID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         // Set up back button navigation
-        backButton.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigateUp();
-        });
+        backButton.setOnClickListener(v -> Navigation.findNavController(v).navigateUp());
 
         // Get facility ID from arguments
         if (getArguments() != null) {
@@ -107,7 +99,7 @@ public class EditFacilityFragment extends Fragment {
 
             @Override
             public void onFailure(String error) {
-                Log.e(TAG, "Error fetching facility data: " + error);
+                //Log.e(TAG, "Error fetching facility data: " + error);
                 Toast.makeText(requireContext(), "Failed to load facility data.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -116,7 +108,6 @@ public class EditFacilityFragment extends Fragment {
     private void populateFacilityDetails() {
         facilityNameTextView.setText(facility.getFacilityName());
         addressTextView.setText(facility.getAddress());
-        ownerTextView.setVisibility(View.GONE);
 
         if (facility.getFacilityImage() != null && !facility.getFacilityImage().isEmpty()) {
             Glide.with(requireContext())
@@ -125,11 +116,7 @@ public class EditFacilityFragment extends Fragment {
             facilityImageView.setVisibility(View.VISIBLE);
         }
 
-        if (deviceID.equals(facility.getOwner()) || EventFirebase.isDeviceIDAdmin(deviceID)) {
-            // Toast to confirm admin statusw
-            isOwner = true;
-            toolbar.setVisibility(View.VISIBLE);
-        }
+        checkOwnershipAndAdminStatus();
 
         ArrayList<String> eventNames = new ArrayList<>();
         ArrayAdapter<String> eventsAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, eventNames);
@@ -150,15 +137,12 @@ public class EditFacilityFragment extends Fragment {
 
                     @Override
                     public void onFailure(String error) {
+                        //Log.e(TAG, "Error fetching event data: " + error);
                     }
                 });
             }
 
             facility.setEvents(filteredEvents);
-            facilitiesEventsList.setOnItemClickListener((parent, view, position, id) -> {
-                Toast.makeText(requireContext(), "Event: " + filteredEvents.get(position), Toast.LENGTH_SHORT).show();
-            });
-
         } else {
             facilitiesEventsTextView.setVisibility(View.VISIBLE);
             facilitiesEventsList.setVisibility(View.GONE);
@@ -167,78 +151,54 @@ public class EditFacilityFragment extends Fragment {
         setupButtons();
     }
 
-    private void setupButtons() {
-        facilityImageView.setOnClickListener(v -> {
-            if (isOwner) {
-                new AlertDialog.Builder(requireContext())
-                        .setTitle("Delete Image")
-                        .setMessage("Are you sure you want to delete this facility's image?")
-                        .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                            facility.setFacilityImage(null);
-                            eventFirebase.editFacility(facility);
-                            facilityImageView.setVisibility(View.GONE);
-                        })
-                        .setNegativeButton(android.R.string.no, null)
-                        .show();
-            }
-        });
+    private void checkOwnershipAndAdminStatus() {
+        //isOwner = deviceID.equals(facility.getOwner()) || EventFirebase.isDeviceIDAdmin(deviceID);
+        toolbar.setVisibility(View.VISIBLE);
 
+    }
+
+    private void setupButtons() {
         editButton.setOnClickListener(v -> {
-            if (isOwner) {
                 toggleEditMode(true);
-            }
         });
 
         saveButton.setOnClickListener(v -> {
-            if (isOwner) {
                 facility.setFacilityName(facilityNameEditText.getText().toString());
                 facility.setAddress(addressEditText.getText().toString());
                 eventFirebase.editFacility(facility);
                 toggleEditMode(false);
                 populateFacilityDetails();
-            }
+                Toast.makeText(requireContext(), "Facility details updated.", Toast.LENGTH_SHORT).show();
+                Navigation.findNavController(v).navigateUp(); // Navigate up after deletion
+
+
         });
 
         deleteButton.setOnClickListener(v -> {
-            if (facility.getEvents() == null || facility.getEvents().isEmpty()) {
-                if (isOwner) {
-                    new AlertDialog.Builder(requireContext())
-                            .setTitle("Delete Facility")
-                            .setMessage("Are you sure you want to delete this facility?")
-                            .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                                eventFirebase.deleteFacility(facility.getFacilityID());
-                                requireActivity().onBackPressed();
-                            })
-                            .setNegativeButton(android.R.string.no, null)
-                            .show();
-                }
-            } else {
-                Toast.makeText(requireContext(), "Update the locations of the facility's events.", Toast.LENGTH_SHORT).show();
-            }
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Delete Facility")
+                    .setMessage("Are you sure you want to delete this facility?")
+                    .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                        eventFirebase.deleteFacility(facility.getFacilityID());
+                        Toast.makeText(requireContext(), "Facility deleted successfully.", Toast.LENGTH_SHORT).show();
+                        Navigation.findNavController(v).navigateUp(); // Navigate up after deletion
+                    })
+                    .setNegativeButton(android.R.string.no, null)
+                    .show();
         });
+
 
         cancelButton.setOnClickListener(v -> toggleEditMode(false));
     }
 
     private void toggleEditMode(boolean isEditing) {
-        if (isEditing) {
-            facilityNameTextView.setVisibility(View.GONE);
-            addressTextView.setVisibility(View.GONE);
-            facilityNameEditText.setVisibility(View.VISIBLE);
-            addressEditText.setVisibility(View.VISIBLE);
-            saveButton.setVisibility(View.VISIBLE);
-            cancelButton.setVisibility(View.VISIBLE);
-            editButton.setVisibility(View.GONE);
-            deleteButton.setVisibility(View.GONE);
-        } else {
-            facilityNameTextView.setVisibility(View.VISIBLE);
-            addressTextView.setVisibility(View.VISIBLE);
-            facilityNameEditText.setVisibility(View.GONE);
-            addressEditText.setVisibility(View.GONE);
-            saveButton.setVisibility(View.GONE);
-            cancelButton.setVisibility(View.GONE);
-            editButton.setVisibility(View.VISIBLE);
-            deleteButton.setVisibility(View.VISIBLE);
-        }
+        facilityNameTextView.setVisibility(isEditing ? View.GONE : View.VISIBLE);
+        addressTextView.setVisibility(isEditing ? View.GONE : View.VISIBLE);
+        facilityNameEditText.setVisibility(isEditing ? View.VISIBLE : View.GONE);
+        addressEditText.setVisibility(isEditing ? View.VISIBLE : View.GONE);
+        saveButton.setVisibility(isEditing ? View.VISIBLE : View.GONE);
+        cancelButton.setVisibility(isEditing ? View.VISIBLE : View.GONE);
+        editButton.setVisibility(isEditing ? View.GONE : View.VISIBLE);
+        deleteButton.setVisibility(isEditing ? View.GONE : View.VISIBLE);
     }
 }
