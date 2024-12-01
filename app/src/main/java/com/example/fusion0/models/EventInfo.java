@@ -41,10 +41,10 @@ public class EventInfo {
     private String qrCode;
     EventFirebase firebase;
     private String acceptedCount;
-    private Boolean geolocation;
+    private Boolean geolocation = false;
     private Double latitude;
     private Double longitude;
-    private Integer radius;
+    private Integer radius = 0;
     private Boolean lotteryConducted = false;
 
     /**

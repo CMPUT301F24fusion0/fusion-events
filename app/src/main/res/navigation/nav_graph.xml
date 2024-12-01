@@ -25,6 +25,7 @@
         <action
             android:id="@+id/action_mainFragment_to_registrationPromptFragment"
             app:destination="@id/registrationPromptFragment"/>
+
     </fragment>
 
     <fragment
@@ -47,6 +48,72 @@
         <action
             android:id="@+id/action_profileFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_adminFeaturesFragment"
+            app:destination="@id/adminFeaturesFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/adminFeaturesFragment"
+        android:name="com.example.fusion0.fragments.AdminFeaturesFragment"
+        android:label="Admin Features"
+        tools:layout="@layout/fragment_admin_features">
+        <action
+            android:id="@+id/action_adminFeaturesFragment_to_BrowseProfilesFragment"
+            app:destination="@id/browseProfilesFragment" />
+        <action
+            android:id="@+id/action_adminFeaturesFragment_to_BrowseEventsFragment"
+            app:destination="@id/browseEventsFragment" />
+
+        <action
+            android:id="@+id/action_adminFeaturesFragment_to_BrowseFacilitiesFragment"
+            app:destination="@id/browseFacilitiesFragment" />
+
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/browseFacilitiesFragment"
+        android:name="com.example.fusion0.fragments.BrowseFacilitiesFragment"
+        android:label="Browse Facilities"
+        tools:layout="@layout/fragment_browse_facilities">
+        <action
+            android:id="@+id/action_browseFacilitiesFragment_to_EditFacilityFragment"
+            app:destination="@id/editFacilityFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/editFacilityFragment"
+        android:name="com.example.fusion0.fragments.EditFacilityFragment"
+        android:label="Edit Facility"
+        tools:layout="@layout/facility_view">
+    </fragment>
+
+    <fragment
+        android:id="@+id/browseProfilesFragment"
+        android:name="com.example.fusion0.fragments.BrowseProfilesFragment"
+        android:label="Browse Profiles"
+        tools:layout="@layout/fragment_browse_profiles">
+    </fragment>
+
+    <fragment
+        android:id="@+id/browseEventsFragment"
+        android:name="com.example.fusion0.fragments.BrowseEventsFragment"
+        android:label="Browse Events"
+        tools:layout="@layout/fragment_browse_events">
+        <action
+            android:id="@+id/action_browseEventsFragment_to_editEventFragment"
+            app:destination="@id/editEventFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/editEventFragment"
+        android:name="com.example.fusion0.fragments.EditEventFragment"
+        android:label="Edit Event"
+        tools:layout="@layout/fragment_edit_event">
     </fragment>
 
     <fragment
@@ -217,4 +284,5 @@
             android:id="@+id/action_cancelledEntrantsFragment_to_viewEventFragment"
             app:destination="@id/viewEventFragment"/>
     </fragment>
+
 </navigation>

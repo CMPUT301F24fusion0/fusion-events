@@ -26,16 +26,16 @@
 
 
             <TextView
+                android:id="@+id/createEventHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Create Event"
-                android:fontFamily="sans-serif"
-                android:textColor="@color/figmaBlue"
                 android:layout_gravity="center_horizontal"
+                android:layout_margin="5dp"
+                android:fontFamily="sans-serif"
+                android:text="Create Event"
+                android:textColor="@color/figmaBlue"
                 android:textFontWeight="800"
-                android:textSize="30sp"
-                android:layout_margin="5dp">
-            </TextView>
+                android:textSize="30sp"></TextView>
 
 
             <TextView
