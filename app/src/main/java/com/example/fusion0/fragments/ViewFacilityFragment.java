@@ -176,6 +176,11 @@ public class ViewFacilityFragment extends Fragment {
                                 .load(facility.getFacilityImage())
                                 .into(facilityImageView);
                         facilityImageView.setVisibility(View.VISIBLE);
+                    }else{
+                        Glide.with(context)
+                                .load(R.drawable.image_unavailable)
+                                .into(facilityImageView);
+                        facilityImageView.setVisibility(View.VISIBLE);
                     }
 
                     if (deviceID.equals(facility.getOwner()) || EventFirebase.isDeviceIDAdmin(deviceID)) {

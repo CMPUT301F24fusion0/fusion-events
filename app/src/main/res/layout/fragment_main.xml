@@ -62,7 +62,8 @@
                 android:text=" "
                 android:textSize="36sp"
                 android:textColor="@color/white"
-                android:fontFamily="@font/raleway_bold"/>
+                android:fontFamily="@font/raleway_bold"
+                android:gravity="center_horizontal"/>
 
         </LinearLayout>
 

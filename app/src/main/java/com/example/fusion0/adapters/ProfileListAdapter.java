@@ -22,15 +22,14 @@ import com.example.fusion0.models.UserInfo;
 import com.example.fusion0.R;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.List;
 
 
 /**
  * Adapter to see user's profile information
- * @author Nimi Akinroye
+ * @author Simon Haile
  */
 public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
     private Context context;
@@ -49,7 +48,7 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
 
     /**
      * Initializer
-     * @author Nimi Akinroye
+     * @author Simon Haile
      * @param context context
      * @param objects users list
      * @param combinedList waitlist
@@ -64,7 +63,7 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
 
     /**
      * Contains much of the logic for the adapter
-     * @author Nimi Akinroye
+     * @author Simon Haile
      * @param position position
      * @param convertView convertView
      * @param parent parent
@@ -153,7 +152,7 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
 
     /**
      * Toggle selection state for an item at the given position
-     * @author Nimi Akinroye
+     * @author Simon Haile
      * @param position position of selection
      */
     public void toggleSelection(int position) {
@@ -167,7 +166,7 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
 
     /**
      * Clear all selections
-     * @author Nimi Akinroye
+     * @author Simon Haile
      */
     public void clearSelections() {
         selectedItems.clear();
@@ -176,7 +175,7 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
 
     /**
      * Set the selection mode (true to enable selection, false to disable)
-     * @author Nimi Akinroye
+     * @author Simon Haile
      * @param isSelectionMode whether selection mode
      */
     public void setSelectionMode(boolean isSelectionMode) {
@@ -186,12 +185,13 @@ public class ProfileListAdapter extends ArrayAdapter<UserInfo> {
 
     /**
      * Get the list of selected items (useful for removing items, etc.)
-     * @author Nimi Akinroye
+     * @author Simon Haile
      * @return selectedItems
      */
     public SparseBooleanArray getSelectedItems() {
         return selectedItems;
     }
+
 
     private String getUserStatus(String deviceId) {
         // Default status in case the user is not found
