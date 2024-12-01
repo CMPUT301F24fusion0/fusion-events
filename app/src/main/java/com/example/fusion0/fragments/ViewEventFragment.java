@@ -437,9 +437,6 @@ public class ViewEventFragment extends Fragment {
 
         chosenEntrantsButton.setOnClickListener(v -> {
             waitlist.getChosen(eventID, chosen -> {
-                if (chosen.isEmpty()) {
-                    Toast.makeText(context, "Chosen entrants list is empty.", Toast.LENGTH_SHORT).show();
-                } else {
                     ArrayList<Map<String, String>> fullChosenEntrants = new ArrayList<>();
 
 
@@ -461,7 +458,6 @@ public class ViewEventFragment extends Fragment {
 
                     // Launch the ChosenEntrantsFragment fragment with the filtered data
                     Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_chosenEntrantsFragment, bundle);
-                }
             });
         });
 
