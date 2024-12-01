@@ -232,6 +232,7 @@ public class ViewFacilityFragment extends Fragment {
                     }else {
                         facilitiesEventsTextView.setVisibility(View.VISIBLE);
                         facilitiesEventsList.setVisibility(View.GONE);
+                        populateScreen();
                     }
                 }
             }

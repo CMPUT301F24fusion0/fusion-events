@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -342,6 +344,31 @@ public class ViewEventFragment extends Fragment {
             }
 
             geoLocation.showMapDialog(userLatLngList);
+        });
+
+        eventPosterImageView.setOnClickListener(v -> {
+            View popupView = LayoutInflater.from(getActivity()).inflate(R.layout.popup_image_view, null);
+
+            ImageView fullScreenImageView = popupView.findViewById(R.id.full_screen_image_view);
+
+            Glide.with(getActivity())
+                    .load(Uri.parse(event.getEventPoster()))
+                    .into(fullScreenImageView);
+
+            // Get the exit button from the popup layout
+            Button exitButton = popupView.findViewById(R.id.exit_button);
+
+            // Create a PopupWindow to display the custom popup layout
+            PopupWindow dialog = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+            dialog.setOutsideTouchable(true);
+            dialog.setFocusable(true);
+
+            dialog.showAtLocation(eventPosterImageView, Gravity.CENTER, 0, 0);
+
+            // Set up the exit button to dismiss the popup
+            exitButton.setOnClickListener(v1 -> {
+                dialog.dismiss();
+            });
         });
 
         Bundle bundle = getArguments();
