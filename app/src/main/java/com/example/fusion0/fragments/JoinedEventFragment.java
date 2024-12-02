@@ -1,5 +1,6 @@
 package com.example.fusion0.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -15,6 +16,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatImageView$InspectionCompanion;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -24,6 +27,7 @@ import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.UserInfo;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.WriterException;
 
 import java.text.SimpleDateFormat;
@@ -34,14 +38,15 @@ import java.util.Map;
 public class JoinedEventFragment extends Fragment {
 
     public UserFirestore userFirestore;
-    private ImageButton backButton, facilityButton;
+    private ImageButton backButton;
+    private AppCompatImageView facilityButton;
     private TextView eventName, facility, description, registrationDate;
     private ImageView uploadedImageView;
     private TextView startDateText;
     private TextView endDateText;
     private TextView capacity, lotteryCapacity;
     private ImageView qrImage;
-    private Button unjoinButton;
+    private FloatingActionButton unjoinButton;
 
     private UserInfo user;
     private EventInfo event;
@@ -70,6 +75,7 @@ public class JoinedEventFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_joined_event, container, false);
     }
     
+    @SuppressLint("WrongViewCast")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -85,7 +91,7 @@ public class JoinedEventFragment extends Fragment {
         endDateText = view.findViewById(R.id.end_date_text);
         registrationDate = view.findViewById(R.id.registration_date_text);
         capacity = view.findViewById(R.id.capacity);
-        lotteryCapacity = view.findViewById(R.id.lotteryCapacityTextView);
+        lotteryCapacity = view.findViewById(R.id.lotteryCapacity);
         qrImage = view.findViewById(R.id.qrImage);
         unjoinButton = view.findViewById(R.id.unjoin_button);
         facilityButton = view.findViewById(R.id.facility_view_button);
@@ -140,7 +146,7 @@ public class JoinedEventFragment extends Fragment {
                         description.setText(event.getDescription());
                         facility.setText(event.getFacilityName());
                         capacity.setText(String.valueOf(event.getCapacity()));
-                        lotteryCapacity.setText(String.valueOf(event.getLotteryCapacity()));
+                        lotteryCapacity.setText(event.getLotteryCapacity());
 
                         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a", Locale.getDefault());
 
