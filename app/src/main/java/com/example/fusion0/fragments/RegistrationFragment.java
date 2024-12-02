@@ -109,7 +109,6 @@ public class RegistrationFragment extends Fragment {
             });
         });
 
-
         backButton.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.action_registrationFragment_to_mainFragment));
     }
 
