@@ -378,7 +378,7 @@ public class MainFragment extends Fragment {
                 scannerButton.setOnClickListener(v -> {
                     Bundle bundle = new Bundle();
                     bundle.putString("destination", "qr");
-                    Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_registrationFragment, bundle);
+                    Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_qrFragment, bundle);
                 });
 
                 favouriteButton.setOnClickListener(v -> {
