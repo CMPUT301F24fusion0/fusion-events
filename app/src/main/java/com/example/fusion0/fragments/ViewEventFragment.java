@@ -1045,6 +1045,37 @@ public class ViewEventFragment extends Fragment {
                 dialog.dismiss();
             });
         });
+        qrImageView.setOnClickListener(v -> {
+            View popupView = LayoutInflater.from(getActivity()).inflate(R.layout.popup_image_view, null);
+
+            ImageView fullScreenImageView = popupView.findViewById(R.id.full_screen_image_view);
+
+            String qrCode = event.getQrCode();
+
+            if (qrCode != null && !qrCode.isEmpty()) {
+                Bitmap qrBitmap = null;
+                try {
+                    qrBitmap = event.generateQRCodeImage(500, 500, qrCode);
+                } catch (WriterException e) {
+                    throw new RuntimeException(e);
+                }
+                fullScreenImageView.setImageBitmap(qrBitmap);
+            }
+            // Get the exit button from the popup layout
+            Button exitButton = popupView.findViewById(R.id.exit_button);
+
+            // Create a PopupWindow to display the custom popup layout
+            PopupWindow dialog = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+            dialog.setOutsideTouchable(true);
+            dialog.setFocusable(true);
+
+            dialog.showAtLocation(qrImageView, Gravity.CENTER, 0, 0);
+
+            // Set up the exit button to dismiss the popup
+            exitButton.setOnClickListener(v1 -> {
+                dialog.dismiss();
+            });
+        });
     }
 
     /**
