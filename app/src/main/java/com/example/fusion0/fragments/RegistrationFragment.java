@@ -109,7 +109,7 @@ public class RegistrationFragment extends Fragment {
                     }
                     else if (Objects.equals(bundle.getString("destination"), "userjoin")) {
                         Bundle newBundle = new Bundle();
-                        newBundle.putString("eventID", bundle.getString("eventID"));
+                        newBundle.putString("eventID", bundle.getString("eventIDJ"));
                         Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_userJoinFragment, newBundle);
                     }
                 }

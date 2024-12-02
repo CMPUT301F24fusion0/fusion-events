@@ -192,7 +192,7 @@ public class UserJoinFragment extends Fragment {
                 public void onSuccess(EventInfo eventInfo) throws WriterException {
                     if (eventInfo == null) {
                         Toast.makeText(context, "Event Unavailable.", Toast.LENGTH_SHORT).show();
-                        Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_mainFragment);
+                        Navigation.findNavController(view).navigate(R.id.action_userJoinFragment_to_mainFragment);
                     } else {
 
                         event = eventInfo;
@@ -305,7 +305,7 @@ public class UserJoinFragment extends Fragment {
                                         } else {
                                             Bundle bundle = new Bundle();
                                             bundle.putString("destination", "userjoin");
-                                            bundle.putString("eventID", eventID);
+                                            bundle.putString("eventIDJ", eventID);
                                             Navigation.findNavController(view).navigate(R.id.action_userJoinFragment_to_registrationFragment, bundle);
                                         }
                                     }
