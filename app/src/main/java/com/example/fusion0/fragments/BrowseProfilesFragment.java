@@ -1,9 +1,12 @@
+// com/example/fusion0/fragments/BrowseProfilesFragment.java
+
 package com.example.fusion0.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+// Additional imports
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -23,7 +26,10 @@ import com.example.fusion0.models.UserInfo;
 import java.util.ArrayList;
 
 /**
- * Browse people's profiles
+ * Fragment to browse and manage users' profiles in an admin interface.
+ * <p>
+ * This fragment displays a list of users and allows the admin to delete users or their profile pictures.
+ * </p>
  * @author Ali Abouei
  */
 public class BrowseProfilesFragment extends Fragment {
@@ -36,7 +42,8 @@ public class BrowseProfilesFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_browse_profiles, container, false);
     }
 
@@ -46,7 +53,17 @@ public class BrowseProfilesFragment extends Fragment {
 
         userListView = view.findViewById(R.id.userListView);
 
-        userArrayAdapter = new UserArrayAdapter(requireContext(), users, this::showDeleteConfirmationDialog);
+        userArrayAdapter = new UserArrayAdapter(requireContext(), users, new UserArrayAdapter.UserActionListener() {
+            @Override
+            public void onDeleteUser(UserInfo user, int position) {
+                showDeleteConfirmationDialog(user, position);
+            }
+
+            @Override
+            public void onDeletePicture(UserInfo user, int position) {
+                deleteUserProfilePicture(user, position);
+            }
+        });
         userListView.setAdapter(userArrayAdapter);
         goBackButton = view.findViewById(R.id.goBackButton);
 
@@ -59,7 +76,10 @@ public class BrowseProfilesFragment extends Fragment {
     }
 
     /**
-     * Get all users in firebase
+     * Fetches all users from Firebase Firestore.
+     * <p>
+     * Retrieves the list of users and updates the adapter to display them.
+     * </p>
      */
     private void fetchUsers() {
         userFirestore.getAllUsers(new UserFirestore.UserListCallback() {
@@ -89,9 +109,10 @@ public class BrowseProfilesFragment extends Fragment {
     }
 
     /**
-     * Confirmation to delete
-     * @param user user to delete
-     * @param position position of user to delete on list
+     * Shows a confirmation dialog before deleting a user.
+     *
+     * @param user     The user to delete.
+     * @param position The position of the user in the list.
      */
     private void showDeleteConfirmationDialog(UserInfo user, int position) {
         new AlertDialog.Builder(requireContext())
@@ -103,9 +124,10 @@ public class BrowseProfilesFragment extends Fragment {
     }
 
     /**
-     * Delete the user after confirmation
-     * @param user user
-     * @param position position of user
+     * Deletes the user after confirmation.
+     *
+     * @param user     The user to delete.
+     * @param position The position of the user in the list.
      */
     private void deleteUser(UserInfo user, int position) {
         userFirestore.deleteUserAndImage(user.getDeviceID(), new UserFirestore.DeleteCallback() {
@@ -122,6 +144,32 @@ public class BrowseProfilesFragment extends Fragment {
             public void onFailure(Exception e) {
                 requireActivity().runOnUiThread(() ->
                         Toast.makeText(requireContext(), "Failed to delete user: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
+            }
+        });
+    }
+
+    /**
+     * Deletes the user's profile picture.
+     *
+     * @param user     The user whose profile picture is to be deleted.
+     * @param position The position of the user in the list.
+     */
+    private void deleteUserProfilePicture(UserInfo user, int position) {
+        userFirestore.deleteUserProfileImage(user.getDeviceID(), new UserFirestore.DeleteCallback() {
+            @Override
+            public void onSuccess() {
+                requireActivity().runOnUiThread(() -> {
+                    // Refresh the user's image in the list
+                    userArrayAdapter.notifyDataSetChanged();
+                    Toast.makeText(requireContext(), "User's profile picture deleted successfully.", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(requireContext(), "Failed to delete profile picture: " + e.getMessage(), Toast.LENGTH_SHORT).show()
                 );
             }
         });
