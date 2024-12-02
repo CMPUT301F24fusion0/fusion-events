@@ -1,5 +1,6 @@
 package com.example.fusion0.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -74,6 +75,7 @@ public class JoinedEventFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_joined_event, container, false);
     }
     
+    @SuppressLint("WrongViewCast")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
