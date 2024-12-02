@@ -39,6 +39,7 @@
                 <map>
                   <entry key="Duration" value="90" />
                   <entry key="Pixel_2_API_35" value="120" />
+                  <entry key="Pixel_8a_API_35" value="120" />
                   <entry key="Pixel_Fold_API_35" value="120" />
                   <entry key="Tests" value="360" />
                 </map>
@@ -83,6 +84,7 @@
                   <entry key="Duration" value="90" />
                   <entry key="Pixel_4_API_35" value="120" />
                   <entry key="Pixel_8_Pro_API_35" value="120" />
+                  <entry key="Pixel_8a_API_35" value="120" />
                   <entry key="Tests" value="360" />
                 </map>
               </option>
@@ -299,6 +301,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="Duration" value="90" />
+                  <entry key="Pixel_8a_API_35" value="120" />
                   <entry key="Pixel_Fold_API_35" value="120" />
                   <entry key="Tests" value="360" />
                 </map>
