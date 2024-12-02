@@ -216,7 +216,22 @@
                     android:layout_height="match_parent"
                     android:layout_margin="0dp"/>
 
+
             </LinearLayout>
+            <ImageButton
+                android:id="@+id/upload_image_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_upload_image"
+                android:background="@drawable/rectangular_background"
+                android:backgroundTint="@color/royalBlue"
+                android:scaleType="centerInside"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:tint="@color/white"
+                android:layout_gravity="center_horizontal"
+                android:visibility="gone" />
 
             <!-- Divider Line -->
 
