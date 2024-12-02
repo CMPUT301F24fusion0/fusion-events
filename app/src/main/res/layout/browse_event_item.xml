@@ -1,9 +1,11 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="8dp">
 
+    <!-- Event Name -->
     <TextView
         android:id="@+id/browseEventName"
         android:layout_width="0dp"
@@ -14,15 +16,24 @@
         android:ellipsize="end"
         android:maxLines="1" />
 
-    <Button
+    <!-- Edit Icon -->
+    <ImageButton
         android:id="@+id/editEventButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Edit" />
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_edit"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Edit Event"
+        android:tooltipText="Edit Event" />
 
-    <Button
+    <!-- Delete Icon -->
+    <ImageButton
         android:id="@+id/deleteEventButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Delete" />
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:src="@drawable/ic_delete"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Delete Event"
+        android:tooltipText="Delete Event" />
 </LinearLayout>
