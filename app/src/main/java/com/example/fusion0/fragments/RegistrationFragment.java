@@ -142,6 +142,7 @@ public class RegistrationFragment extends Fragment {
                     } else {
                         newUser = new UserInfo(new ArrayList<String>(), first, last, emails, dID, new ArrayList<String>());
                     }
+
                     firebase.addUser(newUser, () -> {onRegistrationComplete.run();});
                 }
             }
