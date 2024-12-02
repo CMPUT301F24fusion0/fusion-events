@@ -67,7 +67,7 @@
                 android:layout_gravity="center"
                 android:textColor="@color/white"
                 android:fontFamily="@font/dmsans_semibold"
-                android:gravity="center_horizontal"/>
+                android:gravity="center"/>
 
         </LinearLayout>
 
