@@ -6,8 +6,9 @@
     android:padding="16dp">
 
     <LinearLayout
+        android:id="@+id/body"
         android:layout_width="match_parent"
-        android:layout_height="110dp">
+        android:layout_height="wrap_content">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/senderImage"
@@ -22,7 +23,7 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="90dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginStart="4dp">
 
@@ -32,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:text="Title"
                 android:textSize="20sp"
-                android:fontFamily="@font/raleway_bold"
+                android:fontFamily="@font/dmsans_medium"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toEndOf="@id/senderImage"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -43,8 +44,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                android:textSize="16sp"
-                android:fontFamily="@font/raleway_medium"
+                android:textSize="15sp"
+                android:fontFamily="@font/dmsans_regular"
                 app:layout_constraintTop_toBottomOf="@id/notificationTitle"
                 app:layout_constraintStart_toEndOf="@id/senderImage"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -60,15 +61,16 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/body"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageView
             android:id="@+id/acceptButton"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:background="@null"
-            android:src="@drawable/ic_check_circle"
-            app:tint="#38753a"
+            android:src="@drawable/ic_checked"
+            app:tint="@color/green"
             android:contentDescription="Accept" />
 
         <Space
@@ -77,11 +79,11 @@
 
         <ImageView
             android:id="@+id/declineButton"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:background="@null"
-            android:src="@drawable/ic_cancel_circle"
-            app:tint="#c60606"
+            android:src="@drawable/ic_cancel"
+            app:tint="@color/red"
             android:layout_marginStart="16dp"
             android:contentDescription="Decline" />
 

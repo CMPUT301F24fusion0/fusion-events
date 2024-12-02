@@ -12,12 +12,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.fusion0.R;
 import com.example.fusion0.helpers.AppNotifications;
 import com.example.fusion0.helpers.NotificationHelper;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.helpers.Waitlist;
 import com.example.fusion0.models.NotificationItem;
-import com.example.fusion0.R;
 import com.example.fusion0.models.UserInfo;
 
 import java.util.List;
@@ -30,10 +30,15 @@ import java.util.List;
  */
 public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    public interface OnNotificationActionListener {
+        void onAcceptClicked(boolean showConfetti);
+    }
+
     private static final int TYPE_STANDARD = 0;
     private static final int TYPE_LOTTERY = 1;
 
     private Context context;
+    private OnNotificationActionListener listener;
     private List<NotificationItem> notificationList;
     private Waitlist waitlist;
     private String userId;
@@ -44,11 +49,12 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      * @param context       The context of the activity where the adapter is used.
      * @param notifications The list of NotificationItem objects to display.
      */
-    public NotificationAdapter(@NonNull Context context, @NonNull List<NotificationItem> notifications, String userId) {
+    public NotificationAdapter(@NonNull Context context, @NonNull List<NotificationItem> notifications, String userId, OnNotificationActionListener listener) {
         this.context = context;
         this.notificationList = notifications;
         this.waitlist = new Waitlist();
         this.userId = userId;
+        this.listener = listener;
     }
 
     /**
@@ -124,6 +130,10 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         Log.e("Error with deleting notification item", error);
                     }
                 });
+
+                if (listener != null) {
+                    listener.onAcceptClicked(true);
+                }
 
                 notificationList.remove(position);
                 notifyItemRemoved(position);

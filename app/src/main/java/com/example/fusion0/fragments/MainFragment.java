@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +31,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.fusion0.R;
 import com.example.fusion0.adapters.NotificationAdapter;
 import com.example.fusion0.helpers.AppNotifications;
@@ -90,6 +93,7 @@ public class MainFragment extends Fragment {
     private RecyclerView notificationsListView;
     private NotificationAdapter notificationAdapter;
     private List<NotificationItem> notificationList;
+    private LottieAnimationView confettiAnimation;
 
     private final int REQUEST_CODE = 100;
 
@@ -207,6 +211,7 @@ public class MainFragment extends Fragment {
 
         notificationsListView = view.findViewById(R.id.notificationsList);
         notificationsListView.setLayoutManager(new LinearLayoutManager(context));
+        confettiAnimation = view.findViewById(R.id.confettiAnimation);
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(context, LinearLayoutManager.VERTICAL);
         notificationsListView.addItemDecoration(dividerItemDecoration);
@@ -249,7 +254,22 @@ public class MainFragment extends Fragment {
                     }
                 });
 
-                notificationAdapter = new NotificationAdapter(context, notificationList, deviceId);
+                notificationAdapter = new NotificationAdapter(context, notificationList, deviceId, new NotificationAdapter.OnNotificationActionListener() {
+                    @Override
+                    public void onAcceptClicked(boolean showConfetti) {
+                        if (showConfetti) {
+                            confettiAnimation.setVisibility(View.VISIBLE);
+                            confettiAnimation.playAnimation();
+
+                            // Stop animation after 3 seconds
+                            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                confettiAnimation.cancelAnimation();
+                                confettiAnimation.setVisibility(View.GONE);
+                            }, 3000);
+                        }
+                    }
+                });
+
                 notificationsListView.setAdapter(notificationAdapter);
 
                 NotificationHelper.updateNotifications(deviceId, new NotificationHelper.Callback() {
@@ -267,6 +287,7 @@ public class MainFragment extends Fragment {
                         Log.e("NotificationHelper", "Error: " + error);
                     }
                 });
+
 
                 ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
                     @Override
@@ -550,5 +571,4 @@ public class MainFragment extends Fragment {
             Log.e("Lottery", "Event document is null.");
         }
     }
-
 }
