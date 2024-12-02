@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -141,6 +143,7 @@ public class ViewEventFragment extends Fragment {
     private FacilitiesInfo newFacility;
     public static Waitlist waitlist;
     private StorageReference storageRef;
+    private Uri newImageUri;
 
     private androidx.fragment.app.FragmentContainerView autocompletePlaceFragment;
 
@@ -167,7 +170,6 @@ public class ViewEventFragment extends Fragment {
     private Double newLongitude = null;
     private Double newLatitude = null;
 
-    private String newEventPoster;
     private String facility;
     private String facilityImage;
 
@@ -208,6 +210,7 @@ public class ViewEventFragment extends Fragment {
                         Uri imageUri = result.getData().getData();
                         eventPosterImageView.setVisibility(View.VISIBLE);
                         eventPosterImageView.setImageURI(imageUri);
+                        newImageUri = imageUri;
 
                         Uri destinationUri = Uri.fromFile(new File(requireContext().getCacheDir(), "cropped_image.jpg"));
 
@@ -400,16 +403,15 @@ public class ViewEventFragment extends Fragment {
 
                         updateStartDateCard(startDate, startMonth, startDateTextView);
 
-                        newEventPoster = event.getEventPoster();
 
                         Double latitudeSet = event.getLatitude();
                         Double longitudeSet = event.getLongitude();
 
                         displayMapView(facilityButton, latitudeSet, longitudeSet, context);
 
-                        if (newEventPoster != null && !newEventPoster.isEmpty()) {
+                        if (event.getEventPoster() != null && !event.getEventPoster().isEmpty()) {
                             Glide.with(context)
-                                    .load(newEventPoster)
+                                    .load(event.getEventPoster())
                                     .centerCrop()
                                     .into(eventPosterImageView);
                         }
@@ -605,6 +607,12 @@ public class ViewEventFragment extends Fragment {
         cancelButton.setOnClickListener(v -> {
             updateDateTextView(context);
 
+
+            Glide.with(context)
+                    .load(event.getEventPoster())
+                    .centerCrop()
+                    .into(eventPosterImageView);
+
             editButton.setVisibility(View.VISIBLE);
             mapButton.setVisibility(View.VISIBLE);
 
@@ -666,6 +674,7 @@ public class ViewEventFragment extends Fragment {
             event.setDescription(newDescription);
             event.setCapacity(newEventCapacity);
             event.setLotteryCapacity(newEventLotteryCapacity);
+
             if (newFacility != null) {
                 eventFirebase.addFacility(newFacility);
                 Log.d("AddEventFragment", newFacility.getFacilityName());
@@ -746,7 +755,7 @@ public class ViewEventFragment extends Fragment {
             event.setStartTime(newStartTime);
             event.setEndTime(newEndTime);
             event.setRegistrationDate(registrationDate);
-            event.setEventPoster(newEventPoster);
+            event.setEventPoster(newImageUri.toString());
 
             eventNameTextView.setText(newEventName);
             eventDescriptionTextView.setText(newDescription);
@@ -1007,6 +1016,66 @@ public class ViewEventFragment extends Fragment {
         });
 
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        eventPosterImageView.setOnClickListener(v -> {
+            View popupView = LayoutInflater.from(getActivity()).inflate(R.layout.popup_image_view, null);
+
+            ImageView fullScreenImageView = popupView.findViewById(R.id.full_screen_image_view);
+
+            Glide.with(getActivity())
+                    .load(Uri.parse(event.getEventPoster()))
+                    .into(fullScreenImageView);
+
+            // Get the exit button from the popup layout
+            Button exitButton = popupView.findViewById(R.id.exit_button);
+
+            // Create a PopupWindow to display the custom popup layout
+            PopupWindow dialog = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+            dialog.setOutsideTouchable(true);
+            dialog.setFocusable(true);
+
+            dialog.showAtLocation(eventPosterImageView, Gravity.CENTER, 0, 0);
+
+            // Set up the exit button to dismiss the popup
+            exitButton.setOnClickListener(v1 -> {
+                dialog.dismiss();
+            });
+        });
+        qrImageView.setOnClickListener(v -> {
+            View popupView = LayoutInflater.from(getActivity()).inflate(R.layout.popup_image_view, null);
+
+            ImageView fullScreenImageView = popupView.findViewById(R.id.full_screen_image_view);
+
+            String qrCode = event.getQrCode();
+
+            if (qrCode != null && !qrCode.isEmpty()) {
+                Bitmap qrBitmap = null;
+                try {
+                    qrBitmap = event.generateQRCodeImage(500, 500, qrCode);
+                } catch (WriterException e) {
+                    throw new RuntimeException(e);
+                }
+                fullScreenImageView.setImageBitmap(qrBitmap);
+            }
+            // Get the exit button from the popup layout
+            Button exitButton = popupView.findViewById(R.id.exit_button);
+
+            // Create a PopupWindow to display the custom popup layout
+            PopupWindow dialog = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+            dialog.setOutsideTouchable(true);
+            dialog.setFocusable(true);
+
+            dialog.showAtLocation(qrImageView, Gravity.CENTER, 0, 0);
+
+            // Set up the exit button to dismiss the popup
+            exitButton.setOnClickListener(v1 -> {
+                dialog.dismiss();
+            });
+        });
     }
 
     /**
@@ -1306,14 +1375,12 @@ public class ViewEventFragment extends Fragment {
         if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             Uri resultUri = UCrop.getOutput(data);
             if (resultUri != null) {
-                eventPosterImageView.setImageURI(resultUri);
-
                 StorageReference imageRef = storageRef.child("event_posters/" + UUID.randomUUID().toString() + ".jpg");
 
                 imageRef.putFile(resultUri)
                         .addOnSuccessListener(taskSnapshot -> {
                             imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                                newEventPoster = uri.toString();
+                                newImageUri = uri;
                             }).addOnFailureListener(e -> {
                                 Log.e(TAG, "Error getting download URL", e);
                             });
