@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.example.fusion0"},{"l":"com.example.fusion0.activities"},{"l":"com.example.fusion0.adapters"},{"l":"com.example.fusion0.fragments"},{"l":"com.example.fusion0.helpers"},{"l":"com.example.fusion0.models"}];updateSearchResults();
