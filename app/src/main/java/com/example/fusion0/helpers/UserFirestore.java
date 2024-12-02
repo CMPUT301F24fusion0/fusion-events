@@ -7,6 +7,9 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageException;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -202,44 +205,65 @@ public class UserFirestore {
 
     /**
      * Deletes a user from Firestore and their profile picture from Firebase Storage.
-     *
      * @author Ali Abouei
-     * @param dID The device ID of the user to delete.
+     * @param dID      The device ID of the user to delete.
      * @param callback The callback to handle the result of the deletion.
      */
     public void deleteUserAndImage(String dID, DeleteCallback callback) {
         usersRef.document(dID).delete()
                 .addOnSuccessListener(aVoid -> {
-                    ManageImageProfile manageImage = new ManageImageProfile(FirebaseFirestore.getInstance().getApp().getApplicationContext());
-
-                    // Check if the image exists before attempting deletion
-                    manageImage.checkImageExists(new ManageImageProfile.ImageCheckCallback() {
+                    // Delete the user's profile image from Firebase Storage
+                    deleteUserProfileImage(dID, new DeleteCallback() {
                         @Override
-                        public void onImageExists() {
-                            manageImage.deleteImage(new ManageImageProfile.ImageDeleteCallback() {
-                                @Override
-                                public void onSuccess() {
-                                    if (callback != null) callback.onSuccess();
-                                }
-
-                                @Override
-                                public void onFailure(Exception e) {
-                                    System.err.println("Error deleting profile image: " + e.getMessage());
-                                    if (callback != null) callback.onFailure(e);
-                                }
-                            });
+                        public void onSuccess() {
+                            if (callback != null) callback.onSuccess();
                         }
 
                         @Override
-                        public void onImageDoesNotExist() {
-                            if (callback != null) callback.onSuccess(); // No image, still a success
+                        public void onFailure(Exception e) {
+                            if (callback != null) callback.onFailure(e);
                         }
                     });
                 })
                 .addOnFailureListener(e -> {
-                    System.err.println("Error deleting user: " + e.getMessage());
+                    Log.e("UserFirestore", "Error deleting user: " + e.getMessage());
                     if (callback != null) callback.onFailure(e);
                 });
     }
+
+    /**
+     * Deletes a user's profile image from Firebase Storage.
+     * @author Ali Abouei
+     * @param dID      The device ID of the user whose profile image is to be deleted.
+     * @param callback The callback to handle the result of the deletion.
+     *
+     */
+    public void deleteUserProfileImage(String dID, DeleteCallback callback) {
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+        StorageReference userImageRef = storageReference.child("profile_images/" + dID + ".jpg");
+
+        userImageRef.delete()
+                .addOnSuccessListener(unused -> {
+                    // Image deleted successfully
+                    if (callback != null) callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    // Check if the error indicates that the object does not exist
+                    if (e instanceof StorageException) {
+                        int errorCode = ((StorageException) e).getErrorCode();
+                        if (errorCode == StorageException.ERROR_OBJECT_NOT_FOUND) {
+                            // Image does not exist, consider deletion successful
+                            if (callback != null) callback.onSuccess();
+                        } else {
+                            Log.e("UserFirestore", "Error deleting profile image: " + e.getMessage());
+                            if (callback != null) callback.onFailure(e);
+                        }
+                    } else {
+                        Log.e("UserFirestore", "Error deleting profile image: " + e.getMessage());
+                        if (callback != null) callback.onFailure(e);
+                    }
+                });
+    }
+
 
 }
