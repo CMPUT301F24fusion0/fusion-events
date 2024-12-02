@@ -179,7 +179,7 @@ public class ViewFacilityFragment extends Fragment {
             } else if ("userJoinedEvent".equals(ID)) {
                 Bundle userJoinedBundle = new Bundle();
                 userJoinedBundle.putString("eventID", eventID);
-                Navigation.findNavController(view).navigate(R.id.action_viewFacilityFragment_to_joinedEventsFragment, userJoinedBundle);
+                Navigation.findNavController(view).navigate(R.id.action_viewFacilityFragment_to_userJoinFragment, userJoinedBundle);
             }
         });
 
@@ -244,16 +244,29 @@ public class ViewFacilityFragment extends Fragment {
 
                         facility.setEvents(filteredEvents);
                         populateScreen();
-                        facilitiesEventsList.setOnItemClickListener((parent, view1, position, id) -> {
-                            ViewEventFragment eventFragment = new ViewEventFragment();
+                        if(isOwner){
+                            facilitiesEventsList.setOnItemClickListener((parent, view1, position, id) -> {
+                                ViewEventFragment eventFragment = new ViewEventFragment();
 
-                            Bundle bundle = new Bundle();
-                            bundle.putString("eventID", filteredEvents.get(position));
-                            bundle.putString("deviceID", deviceID);
-                            eventFragment.setArguments(bundle);
+                                Bundle bundle = new Bundle();
+                                bundle.putString("eventID", filteredEvents.get(position));
+                                bundle.putString("deviceID", deviceID);
+                                eventFragment.setArguments(bundle);
 
-                            Navigation.findNavController(view).navigate(R.id.action_viewFacilityFragment_to_viewEventFragment, bundle);
-                        });
+                                Navigation.findNavController(view).navigate(R.id.action_viewFacilityFragment_to_viewEventFragment, bundle);
+                            });
+                        } else{
+                            facilitiesEventsList.setOnItemClickListener((parent, view1, position, id) -> {
+                                ViewEventFragment eventFragment = new ViewEventFragment();
+
+                                Bundle bundle = new Bundle();
+                                bundle.putString("eventID", filteredEvents.get(position));
+                                bundle.putString("deviceID", deviceID);
+                                eventFragment.setArguments(bundle);
+
+                                Navigation.findNavController(view).navigate(R.id.action_viewFacilityFragment_to_joinedEventsFragment, bundle);
+                            });
+                        }
 
                     }else {
                         facilitiesEventsTextView.setVisibility(View.VISIBLE);
