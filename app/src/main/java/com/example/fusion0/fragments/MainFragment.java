@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,15 +19,11 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -33,6 +31,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.fusion0.R;
 import com.example.fusion0.adapters.NotificationAdapter;
 import com.example.fusion0.helpers.AppNotifications;
@@ -50,10 +49,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Main fragment contains all the logic for the entire app
@@ -96,6 +93,7 @@ public class MainFragment extends Fragment {
     private RecyclerView notificationsListView;
     private NotificationAdapter notificationAdapter;
     private List<NotificationItem> notificationList;
+    private LottieAnimationView confettiAnimation;
 
     private final int REQUEST_CODE = 100;
 
@@ -213,6 +211,7 @@ public class MainFragment extends Fragment {
 
         notificationsListView = view.findViewById(R.id.notificationsList);
         notificationsListView.setLayoutManager(new LinearLayoutManager(context));
+        confettiAnimation = view.findViewById(R.id.confettiAnimation);
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(context, LinearLayoutManager.VERTICAL);
         notificationsListView.addItemDecoration(dividerItemDecoration);
@@ -255,7 +254,22 @@ public class MainFragment extends Fragment {
                     }
                 });
 
-                notificationAdapter = new NotificationAdapter(context, notificationList, deviceId);
+                notificationAdapter = new NotificationAdapter(context, notificationList, deviceId, new NotificationAdapter.OnNotificationActionListener() {
+                    @Override
+                    public void onAcceptClicked(boolean showConfetti) {
+                        if (showConfetti) {
+                            confettiAnimation.setVisibility(View.VISIBLE);
+                            confettiAnimation.playAnimation();
+
+                            // Stop animation after 3 seconds
+                            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                confettiAnimation.cancelAnimation();
+                                confettiAnimation.setVisibility(View.GONE);
+                            }, 3000);
+                        }
+                    }
+                });
+
                 notificationsListView.setAdapter(notificationAdapter);
 
                 NotificationHelper.updateNotifications(deviceId, new NotificationHelper.Callback() {
@@ -273,6 +287,7 @@ public class MainFragment extends Fragment {
                         Log.e("NotificationHelper", "Error: " + error);
                     }
                 });
+
 
                 ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
                     @Override
@@ -327,6 +342,22 @@ public class MainFragment extends Fragment {
                 itemTouchHelper.attachToRecyclerView(notificationsListView);
 
             } else {
+                welcomeMessage = view.findViewById(R.id.welcomeMessage);
+                userName = view.findViewById(R.id.userName);
+                emptyUserName = view.findViewById(R.id.emptyUserName);
+                emptyWelcomeMessage = view.findViewById(R.id.emptyWelcomeMessage);
+
+                welcomeMessage.setVisibility(View.GONE);
+                userName.setVisibility(View.GONE);
+                emptyWelcomeMessage.setVisibility(View.VISIBLE);
+                emptyUserName.setVisibility(View.VISIBLE);
+
+                String fakeWelcomeMessage = "Welcome";
+                String newUserMessage = "New User";
+
+                emptyWelcomeMessage.setText(fakeWelcomeMessage);
+                emptyUserName.setText(newUserMessage);
+
                 profileButton = view.findViewById(R.id.toolbar_person);
                 scannerButton = view.findViewById(R.id.toolbar_qrscanner);
                 addButton = view.findViewById(R.id.toolbar_add);
@@ -540,5 +571,4 @@ public class MainFragment extends Fragment {
             Log.e("Lottery", "Event document is null.");
         }
     }
-
 }

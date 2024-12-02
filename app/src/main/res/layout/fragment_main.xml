@@ -33,7 +33,7 @@
                 android:text="Welcome"
                 android:textSize="24sp"
                 android:textColor="@color/white"
-                android:fontFamily="@font/raleway_semibold"
+                android:fontFamily="@font/dmsans_medium"
                 android:visibility="gone"/>
 
             <TextView
@@ -43,7 +43,7 @@
                 android:text="New User"
                 android:textSize="36sp"
                 android:textColor="@color/white"
-                android:fontFamily="@font/raleway_bold"
+                android:fontFamily="@font/dmsans_semibold"
                 android:visibility="gone"/>
 
             <TextView
@@ -61,36 +61,52 @@
                 android:layout_height="wrap_content"
                 android:text=" "
                 android:textSize="36sp"
+                android:layout_gravity="center"
                 android:textColor="@color/white"
-                android:fontFamily="@font/raleway_bold"
+                android:fontFamily="@font/dmsans_semibold"
                 android:gravity="center_horizontal"/>
 
         </LinearLayout>
 
     </FrameLayout>
 
-    <TextView
-        android:id="@+id/noNotifications"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="No Notifications"
-        android:gravity="center_vertical"
-        android:textSize="30sp"
-        android:layout_marginTop="20dp"
-        android:fontFamily="@font/raleway_semibold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/frameLayout"
-        android:visibility="gone"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/notificationsList"
+    <FrameLayout
+        android:id="@+id/notificationContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/frameLayout"
         app:layout_constraintBottom_toTopOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- TextView for No Notifications -->
+        <TextView
+            android:id="@+id/noNotifications"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Notifications"
+            android:gravity="center_horizontal"
+            android:textSize="30sp"
+            android:fontFamily="@font/dmsans_semibold"
+            android:visibility="gone"
+            android:paddingVertical="32dp"
+            android:layout_gravity="center_horizontal" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/notificationsList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/confettiAnimation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            app:lottie_rawRes="@raw/confetti"
+            app:lottie_autoPlay="false"
+            app:lottie_loop="false" />
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/toolbar"
