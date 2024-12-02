@@ -349,7 +349,7 @@ public class MapFragment extends Fragment {
                                             // If facility is not already added, create new facility object
                                             Log.d(TAG, "Fetched photo URI: " + facilityImage);
 
-                                            newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude, facilityImage);
+                                            newFacility = new FacilitiesInfo(address, facilityName, deviceID,longitude, latitude, facilityImage);
                                             facility = newFacility;
                                             facilityNames.add(facilityName);
 
@@ -393,7 +393,7 @@ public class MapFragment extends Fragment {
                                         if (facilityNames.contains(facilityName)) {
                                             Toast.makeText(activity.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
                                         } else {
-                                            newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude, facilityImage);
+                                            newFacility = new FacilitiesInfo(address, facilityName, deviceID, longitude, latitude, facilityImage);
 
                                             helper.setNewFacility(newFacility);
                                             facility = newFacility;

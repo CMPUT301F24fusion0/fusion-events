@@ -1262,7 +1262,7 @@ public class ViewEventFragment extends Fragment {
                                         if (facilityNames.contains(facility)) {
                                             Toast.makeText(context.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
                                         } else {
-                                            newFacility = new FacilitiesInfo(address, facility, deviceID, newLatitude, newLongitude, facilityImage);
+                                            newFacility = new FacilitiesInfo(address, facility, deviceID,newLongitude, newLatitude, facilityImage);
                                             facilityID = newFacility.getFacilityID();
                                             Log.d("New Facility ID One", facilityID);
                                             facilityNames.add(facility);
@@ -1296,7 +1296,7 @@ public class ViewEventFragment extends Fragment {
                                         if (facilityNames.contains(facility)) {
                                             Toast.makeText(context.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
                                         } else {
-                                            newFacility = new FacilitiesInfo(address, facility, deviceID, newLatitude, newLongitude, facilityImage);
+                                            newFacility = new FacilitiesInfo(address, facility, deviceID, newLongitude, newLatitude, facilityImage);
                                             facilityID = newFacility.getFacilityID();
                                             Log.d("New Facility ID One", facilityID);
                                             facilityNames.add(facility);
