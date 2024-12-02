@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:contentDescription="Back"
-            android:src="@drawable/back_button"
+            android:src="@drawable/arrow_back"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -111,6 +111,8 @@
         android:background="@drawable/placeholder_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintTop_toBottomOf="@id/headerLayout" />
 
     <ScrollView
@@ -280,6 +282,8 @@
                         android:layout_height="65dp"
                         android:background="@drawable/custom_border_two"
                         android:src="@drawable/ic_qr_code"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:layout_marginBottom="10dp" />
 
                 </LinearLayout>

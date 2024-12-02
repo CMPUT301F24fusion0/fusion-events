@@ -335,21 +335,25 @@ public class MainFragment extends Fragment {
                 profileButton.setOnClickListener(v -> {
                     Bundle bundle = new Bundle();
                     bundle.putString("destination", "profile");
-                    Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_registrationPromptFragment, bundle);
+                    Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_registrationFragment, bundle);
                 });
 
                 addButton.setOnClickListener(v -> {
                     Bundle bundle = new Bundle();
                     bundle.putString("destination", "addEvent");
-                    Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_registrationPromptFragment, bundle);
+                    Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_registrationFragment, bundle);
                 });
 
-                scannerButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_qrFragment));
+                scannerButton.setOnClickListener(v -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("destination", "qr");
+                    Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_registrationFragment, bundle);
+                });
 
                 favouriteButton.setOnClickListener(v -> {
                     Bundle bundle = new Bundle();
                     bundle.putString("destination", "favourite");
-                    Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_registrationPromptFragment, bundle);
+                    Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_registrationFragment, bundle);
                 });
             }
         });
