@@ -755,7 +755,6 @@ public class ViewEventFragment extends Fragment {
             if(newImageUri != null){
                 event.setEventPoster(newImageUri.toString());
             }
-
             eventNameTextView.setText(newEventName);
             eventDescriptionTextView.setText(newDescription);
             eventWaitlistCapacityTextView.setText(newEventCapacity);
