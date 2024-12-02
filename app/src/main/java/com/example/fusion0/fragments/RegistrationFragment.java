@@ -104,6 +104,13 @@ public class RegistrationFragment extends Fragment {
                         Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_profileFragment);
                     } else if (Objects.equals(bundle.getString("destination"), "favourite")) {
                         Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_favFragment);
+                    }else if (Objects.equals(bundle.getString("destination"), "qr")) {
+                        Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_qrFragment);
+                    }
+                    else if (Objects.equals(bundle.getString("destination"), "userjoin")) {
+                        Bundle newBundle = new Bundle();
+                        newBundle.putString("eventID", bundle.getString("eventIDJ"));
+                        Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_userJoinFragment, newBundle);
                     }
                 }
             });
