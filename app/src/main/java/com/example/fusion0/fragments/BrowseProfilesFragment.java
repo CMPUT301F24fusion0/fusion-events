@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -31,7 +32,7 @@ public class BrowseProfilesFragment extends Fragment {
     private UserArrayAdapter userArrayAdapter;
     private final UserFirestore userFirestore = new UserFirestore();
     private final ArrayList<UserInfo> users = new ArrayList<>();
-    private Button goBackButton;
+    private ImageButton goBackButton;
 
     @Nullable
     @Override
