@@ -17,15 +17,11 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -50,10 +46,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Main fragment contains all the logic for the entire app
@@ -327,6 +321,22 @@ public class MainFragment extends Fragment {
                 itemTouchHelper.attachToRecyclerView(notificationsListView);
 
             } else {
+                welcomeMessage = view.findViewById(R.id.welcomeMessage);
+                userName = view.findViewById(R.id.userName);
+                emptyUserName = view.findViewById(R.id.emptyUserName);
+                emptyWelcomeMessage = view.findViewById(R.id.emptyWelcomeMessage);
+
+                welcomeMessage.setVisibility(View.GONE);
+                userName.setVisibility(View.GONE);
+                emptyWelcomeMessage.setVisibility(View.VISIBLE);
+                emptyUserName.setVisibility(View.VISIBLE);
+
+                String fakeWelcomeMessage = "Welcome";
+                String newUserMessage = "New User";
+
+                emptyWelcomeMessage.setText(fakeWelcomeMessage);
+                emptyUserName.setText(newUserMessage);
+
                 profileButton = view.findViewById(R.id.toolbar_person);
                 scannerButton = view.findViewById(R.id.toolbar_qrscanner);
                 addButton = view.findViewById(R.id.toolbar_add);
