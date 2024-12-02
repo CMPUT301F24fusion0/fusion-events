@@ -185,22 +185,6 @@ public class UserJoinFragment extends Fragment {
         assert bundle != null;
         String eventID = bundle.getString("eventID");
 
-        new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onSuccess(UserInfo userInfo) {
-                user = userInfo;
-                String firstName = user.getFirstName();
-                String lastName = user.getLastName();
-                organizerName.setText(firstName + " " + lastName);
-            }
-
-            @Override
-            public void onFailure(String error) {
-                Log.e("ViewEventFragment", "Error fetching user: " + error);
-            }
-        });
-
 
         if (eventID != null) {
             eventFirebase.findEvent(eventID, new EventFirebase.EventCallback() {
@@ -319,14 +303,10 @@ public class UserJoinFragment extends Fragment {
                                                 addUserToWaitingList(view, context);
                                             }
                                         } else {
-                                            String activity = "ViewEventFragment";
-                                            Log.d("Checkpoint", "the user is null, we're going to registrationFragment");
-                                            RegistrationFragment registrationFragment = new RegistrationFragment();
                                             Bundle bundle = new Bundle();
+                                            bundle.putString("destination", "userjoin");
                                             bundle.putString("eventID", eventID);
-                                            bundle.putString("activity", activity);
-                                            registrationFragment.setArguments(bundle);
-                                            Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_registrationFragment, bundle);
+                                            Navigation.findNavController(view).navigate(R.id.action_userJoinFragment_to_registrationFragment, bundle);
                                         }
                                     }
 

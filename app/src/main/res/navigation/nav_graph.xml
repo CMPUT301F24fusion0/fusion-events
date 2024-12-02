@@ -212,6 +212,9 @@
         <action
             android:id="@+id/action_registrationFragment_to_qrFragment"
             app:destination="@id/qrFragment" />
+        <action
+            android:id="@+id/action_registrationFragment_to_userJoinFragment"
+            app:destination="@id/userJoinFragment" />
     </fragment>
 
     <fragment
@@ -278,6 +281,9 @@
         <action
             android:id="@+id/action_userJoinFragment_to_viewEventFragment"
             app:destination="@id/viewEventFragment" />
+        <action
+            android:id="@+id/action_userJoinFragment_to_registrationFragment"
+            app:destination="@id/registrationFragment" />
     </fragment>
 
     <fragment
