@@ -159,7 +159,7 @@
                     android:textColor="@color/royalBlue"
                     android:textSize="24sp"
                     android:fontFamily="@font/dmsans_medium"
-                    android:gravity="center_vertical" />
+                    android:gravity="center" />
 
                 <EditText
                     android:id="@+id/editFacilityName"
