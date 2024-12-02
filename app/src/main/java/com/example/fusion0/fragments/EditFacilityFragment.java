@@ -1,6 +1,15 @@
 package com.example.fusion0.fragments;
 
 
+import static android.content.ContentValues.TAG;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -20,6 +29,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -28,8 +38,14 @@ import com.example.fusion0.R;
 import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.FacilitiesInfo;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Edit a facility
@@ -49,6 +65,8 @@ public class EditFacilityFragment extends Fragment {
     private Button editButton, saveButton, deleteButton, cancelButton;
     private ListView facilitiesEventsList;
     private EventFirebase eventFirebase = new EventFirebase();
+    private StorageReference storageRef;
+
 
     /**
      * Initialize UI components
@@ -67,6 +85,7 @@ public class EditFacilityFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.facility_view, container, false);
+        storageRef = FirebaseStorage.getInstance().getReference();
 
         // Initialize UI components
         facilityNameTextView = view.findViewById(R.id.facilityName);
@@ -200,10 +219,10 @@ public class EditFacilityFragment extends Fragment {
     private void setupButtons() {
         editButton.setOnClickListener(v -> {
                 toggleEditMode(true);
+
         });
 
         saveButton.setOnClickListener(v -> {
-
                 facility.setFacilityName(facilityNameEditText.getText().toString());
                 facility.setAddress(addressEditText.getText().toString());
                 eventFirebase.editFacility(facility);
@@ -237,6 +256,9 @@ public class EditFacilityFragment extends Fragment {
      * @param isEditing whether editing is allowed
      */
     private void toggleEditMode(boolean isEditing) {
+        facilityNameEditText.setText(facilityNameTextView.getText());
+        addressEditText.setText(addressTextView.getText());
+
         facilityNameTextView.setVisibility(isEditing ? View.GONE : View.VISIBLE);
         addressTextView.setVisibility(isEditing ? View.GONE : View.VISIBLE);
         facilityNameEditText.setVisibility(isEditing ? View.VISIBLE : View.GONE);
@@ -245,6 +267,74 @@ public class EditFacilityFragment extends Fragment {
         cancelButton.setVisibility(isEditing ? View.VISIBLE : View.GONE);
         editButton.setVisibility(isEditing ? View.GONE : View.VISIBLE);
         deleteButton.setVisibility(isEditing ? View.GONE : View.VISIBLE);
+        facilityImageView.setOnClickListener(v -> {
+            // Prompt user to delete image, if yes set image to null and hide image view
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Delete Image")
+                    .setMessage("Are you sure you want to delete this facility's image?")
+                    .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                        Uri imageUri = drawableToUri(requireContext(), R.drawable.image_unavailable);
 
+                        // Create a unique filename for Firebase Storage
+                        String fileName = "facility_images/" + UUID.randomUUID().toString() + ".jpg";
+                        StorageReference imageRef = storageRef.child(fileName);
+
+                        imageRef.putFile(imageUri)
+                                .addOnSuccessListener(taskSnapshot -> {
+                                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                        facility.setFacilityImage(uri.toString());
+                                        facilityImageView.setImageURI(uri);
+                                        eventFirebase.editFacility(facility);
+                                        facilityImageView.setVisibility(View.GONE);
+                                    });
+                                })
+                                .addOnFailureListener(e -> {
+                                    // Handle errors in the file upload
+                                    Log.e(TAG, "Upload failed", e);
+                                    Toast.makeText(requireActivity().getApplicationContext(), "Failed to upload image", Toast.LENGTH_SHORT).show();
+                                });
+                    })
+                    .setNegativeButton(android.R.string.no, null)
+                    .show();
+        });
+    }
+
+
+    public Uri drawableToUri(Context context, int drawableResId) {
+        // Get the drawable resource
+        Drawable drawable = ContextCompat.getDrawable(context, drawableResId);
+
+        // Create a bitmap from the drawable
+        Bitmap bitmap = null;
+
+        if (drawable instanceof BitmapDrawable) {
+            // If the drawable is already a BitmapDrawable, extract the Bitmap directly
+            bitmap = ((BitmapDrawable) drawable).getBitmap();
+        } else if (drawable instanceof GradientDrawable) {
+            // If the drawable is a GradientDrawable, create a Bitmap and draw the drawable onto it
+            GradientDrawable gradientDrawable = (GradientDrawable) drawable;
+            bitmap = Bitmap.createBitmap(gradientDrawable.getIntrinsicWidth(), gradientDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            gradientDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            gradientDrawable.draw(canvas);
+        }
+
+        if (bitmap == null) {
+            throw new IllegalArgumentException("Unsupported drawable type");
+        }
+
+        // Create a file in the app's cache directory
+        File cacheDir = context.getCacheDir();
+        File file = new File(cacheDir, "image_unavailable_background.png");
+
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            // Compress the bitmap and save it as a PNG file
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Return the URI pointing to the saved file
+        return Uri.fromFile(file);
     }
 }
