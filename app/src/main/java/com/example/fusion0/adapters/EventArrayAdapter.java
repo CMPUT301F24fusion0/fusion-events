@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -49,8 +50,8 @@ public class EventArrayAdapter extends ArrayAdapter<EventInfo> {
         EventInfo event = getItem(position);
 
         TextView eventName = view.findViewById(R.id.browseEventName);
-        Button editButton = view.findViewById(R.id.editEventButton);
-        Button deleteButton = view.findViewById(R.id.deleteEventButton);
+        ImageButton editButton = view.findViewById(R.id.editEventButton);
+        ImageButton deleteButton = view.findViewById(R.id.deleteEventButton);
 
         if (event != null) {
             eventName.setText(event.getEventName());
