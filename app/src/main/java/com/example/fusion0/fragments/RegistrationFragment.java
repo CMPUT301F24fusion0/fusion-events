@@ -86,35 +86,30 @@ public class RegistrationFragment extends Fragment {
             String phone = phoneNumber.getText().toString().trim();
 
             @SuppressLint("HardwareIds") String dID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-            registration(dID, first, last, emails, phone);
-
-            if (bundle != null) {
-                if (bundle.containsKey("eventID")) {
-                    String eventID = bundle.getString("eventID");
-                    Bundle newBundle = new Bundle();
-                    newBundle.putString("eventID", eventID);
-                    Navigation.findNavController(v).navigate(R.id.action_registrationFragment_to_viewEventFragment, newBundle);
-                    Log.d("Checkpoint", "bundle was good - going back to vea");
-                } else if (Objects.equals(bundle.getString("activity"), "ViewEventFragment")) {
-                    Log.d("Checkpoint", "the bundle was null - going back to vea");
-                    Intent intent = new Intent(getActivity(), MainActivity.class);
-                    startActivity(intent);
-                } else if (Objects.equals(bundle.getString("destination"), "addEvent")) {
-                    Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_eventFragment);
-                } else if (Objects.equals(bundle.getString("destination"), "profile")) {
-                    Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_profileFragment);
-                } else if (Objects.equals(bundle.getString("destination"), "favourite")) {
-                    Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_favFragment);
-                } else if (Objects.equals(bundle.getString("destination"), "qr")) {
-                    Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_qrFragment);
+            registration(dID, first, last, emails, phone, () -> {
+                if (bundle != null) {
+                    if (bundle.containsKey("eventID")) {
+                        String eventID = bundle.getString("eventID");
+                        Bundle newBundle = new Bundle();
+                        newBundle.putString("eventID", eventID);
+                        Navigation.findNavController(v).navigate(R.id.action_registrationFragment_to_viewEventFragment, newBundle);
+                        Log.d("Checkpoint", "bundle was good - going back to vea");
+                    } else if (Objects.equals(bundle.getString("activity"), "ViewEventFragment")) {
+                        Log.d("Checkpoint", "the bundle was null - going back to vea");
+                        Intent intent = new Intent(getActivity(), MainActivity.class);
+                        startActivity(intent);
+                    } else if (Objects.equals(bundle.getString("destination"), "addEvent")) {
+                        Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_eventFragment);
+                    } else if (Objects.equals(bundle.getString("destination"), "profile")) {
+                        Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_profileFragment);
+                    } else if (Objects.equals(bundle.getString("destination"), "favourite")) {
+                        Navigation.findNavController(view).navigate(R.id.action_registrationFragment_to_favFragment);
+                    }
                 }
-
-            }
+            });
         });
 
-        backButton.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.action_registrationFragment_to_mainFragment);
-        });
+        backButton.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.action_registrationFragment_to_mainFragment));
     }
 
     /**
@@ -126,7 +121,7 @@ public class RegistrationFragment extends Fragment {
      * @param emails email
      * @param phone phone number
      */
-    private void registration(String dID, String first, String last, String emails, String phone) {
+    private void registration(String dID, String first, String last, String emails, String phone, Runnable onRegistrationComplete) {
         new UserFirestore().findUser(dID, new UserFirestore.Callback() {
             /**
              * @author Sehej Brar
@@ -139,18 +134,15 @@ public class RegistrationFragment extends Fragment {
                 UserInfo newUser;
                 if (user != null) {
                     System.out.println("This user already exists.");
+                    onRegistrationComplete.run();
                 } else {
                     if (!phone.isEmpty()) {
                         newUser = new UserInfo(new ArrayList<String>(), first, last, emails, phone, dID, new ArrayList<String>());
                     } else {
                         newUser = new UserInfo(new ArrayList<String>(), first, last, emails, dID, new ArrayList<String>());
                     }
-                    firebase.addUser(newUser, new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.d("Checkpoint", "Registering new user");
-                        }
-                    });
+
+                    firebase.addUser(newUser, () -> {onRegistrationComplete.run();});
                 }
             }
 
