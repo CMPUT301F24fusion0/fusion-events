@@ -72,6 +72,12 @@
                     android:contentDescription="Event Poster"
                     android:visibility="gone" />
 
+                <!-- Semi-Transparent Overlay -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#80000000" /> <!-- Semi-transparent black -->
+
                 <!-- Add Poster Text -->
                 <TextView
                     android:id="@+id/add_poster_text"
@@ -84,33 +90,51 @@
                     android:visibility="visible" />
 
                 <!-- Edit and Delete Icons -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center_horizontal"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="8dp">
+                <!-- Delete Button -->
+                <FrameLayout
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="end|top"
+                    android:layout_margin="8dp">
 
-                    <ImageButton
-                        android:id="@+id/upload_image_button"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="Edit Poster"
-                        android:src="@drawable/ic_edit"
-                        android:tooltipText="Edit Poster" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/circular_background" />
 
                     <ImageButton
                         android:id="@+id/delete_image_button"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_marginStart="16dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="Remove Poster"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:src="@drawable/ic_delete"
-                        android:tooltipText="Remove Poster"
-                        android:visibility="gone" />
-                </LinearLayout>
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Delete Picture"
+                        android:tooltipText="Delete Picture" />
+                </FrameLayout>
+
+                <!-- Edit Button -->
+                <FrameLayout
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="end|bottom"
+                    android:layout_margin="8dp">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/circular_background" />
+
+                    <ImageButton
+                        android:id="@+id/upload_image_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_edit"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Edit Picture"
+                        android:tooltipText="Edit Picture" />
+                </FrameLayout>
+
+
             </FrameLayout>
 
             <!-- QR Code Section -->
@@ -123,15 +147,24 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp" />
 
-            <ImageView
-                android:id="@+id/event_qr_code_image"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:contentDescription="Event QR Code"
-                android:scaleType="centerCrop"
-                android:visibility="gone"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="8dp"
+                app:cardElevation="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="@android:color/white">
+
+                <ImageView
+                    android:id="@+id/event_qr_code_image"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Event QR Code"
+                    android:visibility="gone" />
+            </androidx.cardview.widget.CardView>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
