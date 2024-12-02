@@ -338,9 +338,18 @@ public class UserJoinFragment extends Fragment {
                             });
                         } else if (!all.contains(deviceID) & event.getRegistrationDate().before(currentDate)) {
                             showWithTransition(registrationPassedFullTextView);
+                            joinButton.setOnClickListener(v->{
+                                Toast.makeText(context, "Registration Deadline has passed.", Toast.LENGTH_SHORT).show();
+
+                            });
 
                         } else if (!all.contains(deviceID) & (currentEntrants.size() >= capacity)) {
                             showWithTransition(waitinglistFullTextView);
+                            joinButton.setOnClickListener(v->{
+                                Toast.makeText(context, "Waiting List is full.", Toast.LENGTH_SHORT).show();
+
+                            });
+
 
                         } else if (all.contains(deviceID)) {
                             joinButton.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_minus));
