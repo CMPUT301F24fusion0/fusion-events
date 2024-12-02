@@ -86,6 +86,7 @@ public class RegistrationFragment extends Fragment {
             String phone = phoneNumber.getText().toString().trim();
 
             @SuppressLint("HardwareIds") String dID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
             registration(dID, first, last, emails, phone);
 
             if (bundle != null) {
@@ -112,9 +113,7 @@ public class RegistrationFragment extends Fragment {
             }
         });
 
-        backButton.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.action_registrationFragment_to_mainFragment);
-        });
+        backButton.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.action_registrationFragment_to_mainFragment));
     }
 
     /**
@@ -126,7 +125,7 @@ public class RegistrationFragment extends Fragment {
      * @param emails email
      * @param phone phone number
      */
-    private void registration(String dID, String first, String last, String emails, String phone) {
+    private void registration(String dID, String first, String last, String emails, String phone, Runnable onRegistrationComplete) {
         new UserFirestore().findUser(dID, new UserFirestore.Callback() {
             /**
              * @author Sehej Brar
@@ -139,18 +138,15 @@ public class RegistrationFragment extends Fragment {
                 UserInfo newUser;
                 if (user != null) {
                     System.out.println("This user already exists.");
+                    onRegistrationComplete.run();
                 } else {
                     if (!phone.isEmpty()) {
                         newUser = new UserInfo(new ArrayList<String>(), first, last, emails, phone, dID, new ArrayList<String>());
                     } else {
                         newUser = new UserInfo(new ArrayList<String>(), first, last, emails, dID, new ArrayList<String>());
                     }
-                    firebase.addUser(newUser, new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.d("Checkpoint", "Registering new user");
-                        }
-                    });
+
+                    firebase.addUser(newUser, () -> {onRegistrationComplete.run();});
                 }
             }
 
