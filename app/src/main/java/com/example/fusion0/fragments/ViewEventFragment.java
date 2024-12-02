@@ -483,13 +483,13 @@ public class ViewEventFragment extends Fragment {
         });
 
         chosenEntrantsButton.setOnClickListener(v -> {
-            waitlist.getChosen(eventID, chosen -> {
+            waitlist.getAll(eventID, all -> {
                     ArrayList<Map<String, String>> fullChosenEntrants = new ArrayList<>();
 
 
                     if (event.getWaitinglist() != null && !event.getWaitinglist().isEmpty()) {
                         for (Map<String, String> user : event.getWaitinglist()) {
-                            if (chosen.contains(user.get("did")) && "chosen".equals(user.get("status"))) {
+                            if (all.contains(user.get("did")) && ("chosen".equals(user.get("status")) || "accept".equals(user.get("status")))) {
                                 fullChosenEntrants.add(user);
                             }
                         }
@@ -684,9 +684,6 @@ public class ViewEventFragment extends Fragment {
                 eventFirebase.editOrganizer(organizer);
             }
 
-            Log.d("Current FacilityID", event.getFacilityID());
-            Log.d("Logged FacilityID", facilityID);
-
             if (!event.getFacilityID().equals(facilityID)) {
                 eventFirebase.findFacility(event.getFacilityID(), new EventFirebase.FacilityCallback() {
                     @Override
@@ -755,8 +752,9 @@ public class ViewEventFragment extends Fragment {
             event.setStartTime(newStartTime);
             event.setEndTime(newEndTime);
             event.setRegistrationDate(registrationDate);
-            event.setEventPoster(newImageUri.toString());
-
+            if(newImageUri != null){
+                event.setEventPoster(newImageUri.toString());
+            }
             eventNameTextView.setText(newEventName);
             eventDescriptionTextView.setText(newDescription);
             eventWaitlistCapacityTextView.setText(newEventCapacity);
@@ -1137,7 +1135,7 @@ public class ViewEventFragment extends Fragment {
         eventFacility.setVisibility(View.VISIBLE);
 
         ArrayList<String> facilityNames = new ArrayList<>();
-
+        facilityNames.add("Add Facility");
         // Add existing facilities to the facilityNames list
         if (organizer.getFacilities() != null) {
             ArrayList<FacilitiesInfo> facilities = organizer.getFacilities();
@@ -1149,9 +1147,6 @@ public class ViewEventFragment extends Fragment {
                 }
             }
         }
-
-        // Add the "Add Facility" option at the end
-        facilityNames.add("Add Facility");
 
         // Create the ArrayAdapter for the spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
@@ -1225,8 +1220,11 @@ public class ViewEventFragment extends Fragment {
 
         // Specify the types of place data to return
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.FORMATTED_ADDRESS, Place.Field.LAT_LNG));
-
-        // Set up the PlaceSelectionListener
+        facilityID = event.getFacilityID();
+        newLatitude=event.getLatitude();
+        newLongitude =event.getLongitude();
+        address = event.getAddress();
+        facility =event.getFacilityName();
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
@@ -1236,6 +1234,7 @@ public class ViewEventFragment extends Fragment {
                 LatLng latLng = place.getLatLng();
                 if (latLng != null) {
                     newLatitude = latLng.latitude;
+                    newLongitude = latLng.longitude;
                 }
 
                 final List<Place.Field> fields = Collections.singletonList(Place.Field.PHOTO_METADATAS);
@@ -1250,19 +1249,36 @@ public class ViewEventFragment extends Fragment {
                         Log.w(TAG, "No photo metadata available for this place.");
 
                         Uri imageUri = drawableToUri(context, R.drawable.image_unavailable);
-                        facilityImage = imageUri.toString();
-                        if (facilityNames.contains(facility)) {
-                            Toast.makeText(context.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
-                        } else {
-                            newFacility = new FacilitiesInfo(address, facility, deviceID, newLatitude, newLongitude, facilityImage);
-                            facilityID = newFacility.getFacilityID();
-                            Log.d("New Facility ID One", facilityID);
-                            facilityNames.add(facility);
 
-                            // Notify the adapter that the data has changed
-                            adapter.notifyDataSetChanged();
-                        }
-                    } else {
+                        // Create a unique filename for Firebase Storage
+                        String fileName = "facility_images/" + UUID.randomUUID().toString() + ".jpg";
+                        StorageReference imageRef = storageRef.child(fileName);
+
+                        imageRef.putFile(imageUri)
+                                .addOnSuccessListener(taskSnapshot -> {
+                                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                        facilityImage = uri.toString();
+
+                                        if (facilityNames.contains(facility)) {
+                                            Toast.makeText(context.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            newFacility = new FacilitiesInfo(address, facility, deviceID, newLatitude, newLongitude, facilityImage);
+                                            facilityID = newFacility.getFacilityID();
+                                            Log.d("New Facility ID One", facilityID);
+                                            facilityNames.add(facility);
+
+                                            adapter.notifyDataSetChanged();
+
+                                            Toast.makeText(requireActivity().getApplicationContext(), "New facility added: " + facility, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                })
+                                .addOnFailureListener(e -> {
+                                    // Handle errors in the file upload
+                                    Log.e(TAG, "Upload failed", e);
+                                    Toast.makeText(requireActivity().getApplicationContext(), "Failed to upload image", Toast.LENGTH_SHORT).show();
+                                });
+                    }else {
                         PhotoMetadata photoMetadata = metadata.get(0);
 
                         FetchResolvedPhotoUriRequest photoRequest =

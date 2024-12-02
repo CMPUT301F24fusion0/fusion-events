@@ -57,6 +57,7 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -66,6 +67,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class MapFragment extends Fragment {
 
@@ -90,7 +92,7 @@ public class MapFragment extends Fragment {
     private Double longitude;
     private Boolean geolocation = false;
 
-    private FirebaseStorage storage;
+    private StorageReference storageRef;
     private OrganizerInfo organizer;
     private AddEventViewModel viewModel;
 
@@ -109,7 +111,7 @@ public class MapFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         deviceID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        storage = FirebaseStorage.getInstance();
+        storageRef = FirebaseStorage.getInstance().getReference();
     }
 
     @Override
@@ -197,7 +199,8 @@ public class MapFragment extends Fragment {
     private void handleFacility(OrganizerInfo organizer, Context context, AddEventHelper helper) {
         ArrayList<String> facilityNames = new ArrayList<>();
 
-        // Add existing facilities to the facilityNames list
+        facilityNames.add("Add Facility");
+
         if (organizer.getFacilities() != null) {
             ArrayList<FacilitiesInfo> facilities = organizer.getFacilities();
             for (FacilitiesInfo facility : facilities) {
@@ -209,8 +212,6 @@ public class MapFragment extends Fragment {
             }
         }
 
-        // Add the "Add Facility" option at the end
-        facilityNames.add("Add Facility");
 
         // Create the ArrayAdapter for the spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.spinner_dropdown_item, facilityNames);
@@ -327,30 +328,49 @@ public class MapFragment extends Fragment {
                     if (metadata == null || metadata.isEmpty()) {
                         Log.w(TAG, "No photo metadata available for this place.");
 
+                        // Convert the drawable to a URI by saving it to a temporary file
                         Uri imageUri = drawableToUri(context, R.drawable.image_unavailable);
-                        facilityImage = imageUri.toString();
 
-                        if (facilityNames.contains(facilityName)) {
-                            Toast.makeText(activity.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Log.d(TAG, "Fetched photo URI: " + facilityImage);
+                        // Create a unique filename for Firebase Storage
+                        String fileName = "facility_images/" + UUID.randomUUID().toString() + ".jpg";
+                        StorageReference imageRef = storageRef.child(fileName);
 
-                            newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude, facilityImage);
-                            facility = newFacility;
-                            facilityNames.add(facilityName);
+                        // Upload the file to Firebase Storage
+                        imageRef.putFile(imageUri)
+                                .addOnSuccessListener(taskSnapshot -> {
+                                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                        // On successful upload, get the download URL
+                                        facilityImage = uri.toString();
 
+                                        // Check if the facility name already exists in the list of facility names
+                                        if (facilityNames.contains(facilityName)) {
+                                            Toast.makeText(activity.getApplicationContext(), "This facility has already been added.", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            // If facility is not already added, create new facility object
+                                            Log.d(TAG, "Fetched photo URI: " + facilityImage);
 
-                            helper.setFacility(facility);
-                            helper.setNewFacility(newFacility);
-                            helper.setFacilityID(newFacility.getFacilityID());
+                                            newFacility = new FacilitiesInfo(address, facilityName, deviceID, latitude, longitude, facilityImage);
+                                            facility = newFacility;
+                                            facilityNames.add(facilityName);
 
-                            // Notify the adapter that the data has changed
-                            adapter.notifyDataSetChanged();
+                                            helper.setFacility(facility);
+                                            helper.setNewFacility(newFacility);
+                                            helper.setFacilityID(newFacility.getFacilityID());
 
-                            // Optionally, show a toast indicating the facility was added
-                            Toast.makeText(activity.getApplicationContext(), "New facility added: " + facilityName, Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
+                                            // Notify the adapter that the data has changed
+                                            adapter.notifyDataSetChanged();
+
+                                            // Optionally, show a toast indicating the facility was added
+                                            Toast.makeText(activity.getApplicationContext(), "New facility added: " + facilityName, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                })
+                                .addOnFailureListener(e -> {
+                                    // Handle errors in the file upload
+                                    Log.e(TAG, "Upload failed", e);
+                                    Toast.makeText(activity.getApplicationContext(), "Failed to upload image", Toast.LENGTH_SHORT).show();
+                                });
+                    }else {
                         PhotoMetadata photoMetadata = metadata.get(0);
                         String attributions = photoMetadata.getAttributions();
                         AuthorAttributions authorAttributions = photoMetadata.getAuthorAttributions();

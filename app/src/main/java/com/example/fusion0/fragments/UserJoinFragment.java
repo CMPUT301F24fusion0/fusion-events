@@ -6,16 +6,20 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -281,19 +285,9 @@ public class UserJoinFragment extends Fragment {
                         }
 
                         if (deviceID.equals(event.getOrganizer())) {
-                            eventFirebase.findOrganizer(event.getOrganizer(), new EventFirebase.OrganizerCallback() {
-                                @Override
-                                public void onSuccess(OrganizerInfo organizerInfo) {
-                                    organizer = organizerInfo;
-                                }
-
-                                @Override
-                                public void onFailure(String error) {
-                                    Log.e(TAG, "Unable to find organizer.");
-                                }
-                            });
-
-                            isOwner = true;
+                            Bundle bundle = new Bundle();
+                            bundle.putString("eventID", eventID);
+                            Navigation.findNavController(view).navigate(R.id.action_userJoinFragment_to_viewEventFragment, bundle);
                         }
                         populateScreen();
                     }
@@ -398,6 +392,68 @@ public class UserJoinFragment extends Fragment {
             Navigation.findNavController(view).navigate(R.id.action_viewEventFragment_to_mainFragment);
         }
     }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        eventPosterImageView.setOnClickListener(v -> {
+            View popupView = LayoutInflater.from(getActivity()).inflate(R.layout.popup_image_view, null);
+
+            ImageView fullScreenImageView = popupView.findViewById(R.id.full_screen_image_view);
+
+            Glide.with(getActivity())
+                    .load(Uri.parse(event.getEventPoster()))
+                    .into(fullScreenImageView);
+
+            // Get the exit button from the popup layout
+            Button exitButton = popupView.findViewById(R.id.exit_button);
+
+            // Create a PopupWindow to display the custom popup layout
+            PopupWindow dialog = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+            dialog.setOutsideTouchable(true);
+            dialog.setFocusable(true);
+
+            dialog.showAtLocation(eventPosterImageView, Gravity.CENTER, 0, 0);
+
+            // Set up the exit button to dismiss the popup
+            exitButton.setOnClickListener(v1 -> {
+                dialog.dismiss();
+            });
+        });
+        qrImageView.setOnClickListener(v -> {
+            View popupView = LayoutInflater.from(getActivity()).inflate(R.layout.popup_image_view, null);
+
+            ImageView fullScreenImageView = popupView.findViewById(R.id.full_screen_image_view);
+
+            String qrCode = event.getQrCode();
+
+            if (qrCode != null && !qrCode.isEmpty()) {
+                Bitmap qrBitmap = null;
+                try {
+                    qrBitmap = event.generateQRCodeImage(500, 500, qrCode);
+                } catch (WriterException e) {
+                    throw new RuntimeException(e);
+                }
+                fullScreenImageView.setImageBitmap(qrBitmap);
+            }
+            // Get the exit button from the popup layout
+            Button exitButton = popupView.findViewById(R.id.exit_button);
+
+            // Create a PopupWindow to display the custom popup layout
+            PopupWindow dialog = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+            dialog.setOutsideTouchable(true);
+            dialog.setFocusable(true);
+
+            dialog.showAtLocation(qrImageView, Gravity.CENTER, 0, 0);
+
+            // Set up the exit button to dismiss the popup
+            exitButton.setOnClickListener(v1 -> {
+                dialog.dismiss();
+            });
+        });
+    }
+
 
     /**
      * @param geoLocation Geolocation object of the user
