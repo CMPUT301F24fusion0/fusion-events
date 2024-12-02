@@ -1,20 +1,26 @@
 package com.example.fusion0.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatImageView$InspectionCompanion;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -24,6 +30,7 @@ import com.example.fusion0.helpers.EventFirebase;
 import com.example.fusion0.helpers.UserFirestore;
 import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.UserInfo;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.WriterException;
 
 import java.text.SimpleDateFormat;
@@ -34,14 +41,15 @@ import java.util.Map;
 public class JoinedEventFragment extends Fragment {
 
     public UserFirestore userFirestore;
-    private ImageButton backButton, facilityButton;
+    private ImageButton backButton;
+    private AppCompatImageView facilityButton;
     private TextView eventName, facility, description, registrationDate;
     private ImageView uploadedImageView;
     private TextView startDateText;
     private TextView endDateText;
     private TextView capacity, lotteryCapacity;
     private ImageView qrImage;
-    private Button unjoinButton;
+    private FloatingActionButton unjoinButton;
 
     private UserInfo user;
     private EventInfo event;
@@ -70,6 +78,7 @@ public class JoinedEventFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_joined_event, container, false);
     }
     
+    @SuppressLint("WrongViewCast")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -85,7 +94,7 @@ public class JoinedEventFragment extends Fragment {
         endDateText = view.findViewById(R.id.end_date_text);
         registrationDate = view.findViewById(R.id.registration_date_text);
         capacity = view.findViewById(R.id.capacity);
-        lotteryCapacity = view.findViewById(R.id.lotteryCapacityTextView);
+        lotteryCapacity = view.findViewById(R.id.lotteryCapacity);
         qrImage = view.findViewById(R.id.qrImage);
         unjoinButton = view.findViewById(R.id.unjoin_button);
         facilityButton = view.findViewById(R.id.facility_view_button);
@@ -140,7 +149,7 @@ public class JoinedEventFragment extends Fragment {
                         description.setText(event.getDescription());
                         facility.setText(event.getFacilityName());
                         capacity.setText(String.valueOf(event.getCapacity()));
-                        lotteryCapacity.setText(String.valueOf(event.getLotteryCapacity()));
+                        lotteryCapacity.setText(event.getLotteryCapacity());
 
                         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a", Locale.getDefault());
 
@@ -200,5 +209,66 @@ public class JoinedEventFragment extends Fragment {
 
 
     }
-    
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        uploadedImageView.setOnClickListener(v -> {
+            View popupView = LayoutInflater.from(getActivity()).inflate(R.layout.popup_image_view, null);
+
+            ImageView fullScreenImageView = popupView.findViewById(R.id.full_screen_image_view);
+
+            Glide.with(getActivity())
+                    .load(Uri.parse(event.getEventPoster()))
+                    .into(fullScreenImageView);
+
+            // Get the exit button from the popup layout
+            Button exitButton = popupView.findViewById(R.id.exit_button);
+
+            // Create a PopupWindow to display the custom popup layout
+            PopupWindow dialog = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+            dialog.setOutsideTouchable(true);
+            dialog.setFocusable(true);
+
+            dialog.showAtLocation(uploadedImageView, Gravity.CENTER, 0, 0);
+
+            // Set up the exit button to dismiss the popup
+            exitButton.setOnClickListener(v1 -> {
+                dialog.dismiss();
+            });
+        });
+        qrImage.setOnClickListener(v -> {
+            View popupView = LayoutInflater.from(getActivity()).inflate(R.layout.popup_image_view, null);
+
+            ImageView fullScreenImageView = popupView.findViewById(R.id.full_screen_image_view);
+
+            String qrCode = event.getQrCode();
+
+            if (qrCode != null && !qrCode.isEmpty()) {
+                Bitmap qrBitmap = null;
+                try {
+                    qrBitmap = event.generateQRCodeImage(500, 500, qrCode);
+                } catch (WriterException e) {
+                    throw new RuntimeException(e);
+                }
+                fullScreenImageView.setImageBitmap(qrBitmap);
+            }
+            // Get the exit button from the popup layout
+            Button exitButton = popupView.findViewById(R.id.exit_button);
+
+            // Create a PopupWindow to display the custom popup layout
+            PopupWindow dialog = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+            dialog.setOutsideTouchable(true);
+            dialog.setFocusable(true);
+
+            dialog.showAtLocation(qrImage, Gravity.CENTER, 0, 0);
+
+            // Set up the exit button to dismiss the popup
+            exitButton.setOnClickListener(v1 -> {
+                dialog.dismiss();
+            });
+        });
+    }
+
+
 }

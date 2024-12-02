@@ -1,8 +1,11 @@
 package com.example.fusion0.fragments;
 
+import static android.app.Activity.RESULT_OK;
 import static android.content.ContentValues.TAG;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -20,6 +23,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -34,9 +39,14 @@ import com.example.fusion0.models.EventInfo;
 import com.example.fusion0.models.FacilitiesInfo;
 import com.example.fusion0.models.OrganizerInfo;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.zxing.WriterException;
+import com.yalantis.ucrop.UCrop;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class ViewFacilityFragment extends Fragment {
 
@@ -61,6 +71,8 @@ public class ViewFacilityFragment extends Fragment {
     private ImageButton backButton;
     private ImageButton editButton;
     private ImageButton deleteButton;
+    private ImageButton uploadImageButton;
+
 
     private Button saveButton;
     private Button cancelButton;
@@ -71,6 +83,11 @@ public class ViewFacilityFragment extends Fragment {
 
     private ShimmerFrameLayout viewFacilitySkeletonLayout;
     private ScrollView scrollContainer;
+    private ActivityResultLauncher<Intent> imagePickerLauncher;
+    private Uri newImageUri;
+    private Uri oldImageUri;
+    private StorageReference storageRef;
+
 
     public ViewFacilityFragment() {
         // Required empty public constructor
@@ -81,6 +98,27 @@ public class ViewFacilityFragment extends Fragment {
         super.onCreate(savedInstanceState);
         
         deviceID = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        storageRef = FirebaseStorage.getInstance().getReference();
+
+        imagePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri imageUri = result.getData().getData();
+                        facilityImageView.setVisibility(View.VISIBLE);
+                        facilityImageView.setImageURI(imageUri);
+                        facilityImageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
+                        newImageUri= imageUri;
+
+                        Uri destinationUri = Uri.fromFile(new File(requireContext().getCacheDir(), "cropped_image.jpg"));
+
+                        UCrop.of(imageUri, destinationUri)
+                                .withMaxResultSize(500, 300)
+                                .start(requireContext(), this);
+                    }
+                }
+        );
     }
 
     @Override
@@ -111,6 +149,8 @@ public class ViewFacilityFragment extends Fragment {
         saveButton = view.findViewById(R.id.save_button);
         deleteButton = view.findViewById(R.id.delete_button);
         cancelButton = view.findViewById(R.id.cancel_button);
+        uploadImageButton = view.findViewById(R.id.upload_image_button);
+
 
         profileManager = new ProfileManagement();
 
@@ -139,7 +179,7 @@ public class ViewFacilityFragment extends Fragment {
             } else if ("userJoinedEvent".equals(ID)) {
                 Bundle userJoinedBundle = new Bundle();
                 userJoinedBundle.putString("eventID", eventID);
-                Navigation.findNavController(view).navigate(R.id.action_viewFacilityFragment_to_joinedEventsFragment, userJoinedBundle);
+                Navigation.findNavController(view).navigate(R.id.action_viewFacilityFragment_to_userJoinFragment, userJoinedBundle);
             }
         });
 
@@ -154,23 +194,9 @@ public class ViewFacilityFragment extends Fragment {
                     facilityNameTextView.setText(facility.getFacilityName());
                     addressTextView.setText(facility.getAddress());
                     ownerTextView.setVisibility(View.GONE);
+                    oldImageUri = Uri.parse(facility.getFacilityImage());
 
-                    /*
-                    new UserFirestore().findUser(deviceID, new UserFirestore.Callback() {
-                        @Override
-                        public void onSuccess(UserInfo user) {
-                            String fullName = user.getFirstName() + ' ' + user.getLastName();
-                            ownerTextView.setText(fullName);
-                        }
 
-                        @Override
-                        public void onFailure(String error) {
-                            ownerTextView.setText(facility.getOwner());
-
-                        }
-                    });
-
-                     */
                     if (facility.getFacilityImage() != null && !facility.getFacilityImage().isEmpty()) {
                         Glide.with(context)
                                 .load(facility.getFacilityImage())
@@ -218,20 +244,34 @@ public class ViewFacilityFragment extends Fragment {
 
                         facility.setEvents(filteredEvents);
                         populateScreen();
-                        facilitiesEventsList.setOnItemClickListener((parent, view1, position, id) -> {
-                            ViewEventFragment eventFragment = new ViewEventFragment();
+                        if(isOwner){
+                            facilitiesEventsList.setOnItemClickListener((parent, view1, position, id) -> {
+                                ViewEventFragment eventFragment = new ViewEventFragment();
 
-                            Bundle bundle = new Bundle();
-                            bundle.putString("eventID", filteredEvents.get(position));
-                            bundle.putString("deviceID", deviceID);
-                            eventFragment.setArguments(bundle);
+                                Bundle bundle = new Bundle();
+                                bundle.putString("eventID", filteredEvents.get(position));
+                                bundle.putString("deviceID", deviceID);
+                                eventFragment.setArguments(bundle);
 
-                            Navigation.findNavController(view).navigate(R.id.action_viewFacilityFragment_to_viewEventFragment, bundle);
-                        });
+                                Navigation.findNavController(view).navigate(R.id.action_viewFacilityFragment_to_viewEventFragment, bundle);
+                            });
+                        } else{
+                            facilitiesEventsList.setOnItemClickListener((parent, view1, position, id) -> {
+                                ViewEventFragment eventFragment = new ViewEventFragment();
+
+                                Bundle bundle = new Bundle();
+                                bundle.putString("eventID", filteredEvents.get(position));
+                                bundle.putString("deviceID", deviceID);
+                                eventFragment.setArguments(bundle);
+
+                                Navigation.findNavController(view).navigate(R.id.action_viewFacilityFragment_to_joinedEventsFragment, bundle);
+                            });
+                        }
 
                     }else {
                         facilitiesEventsTextView.setVisibility(View.VISIBLE);
                         facilitiesEventsList.setVisibility(View.GONE);
+                        populateScreen();
                     }
                 }
             }
@@ -245,6 +285,10 @@ public class ViewFacilityFragment extends Fragment {
 
         editButton.setOnClickListener(v -> {
             if (isOwner) {
+                uploadNewImage(view, context);
+
+                uploadImageButton.setVisibility(View.VISIBLE);
+
                 facilityNameTextView.setVisibility(View.GONE);
                 addressTextView.setVisibility(View.GONE);
 
@@ -259,12 +303,17 @@ public class ViewFacilityFragment extends Fragment {
 
                 editButton.setVisibility(View.GONE);
                 deleteButton.setVisibility(View.VISIBLE);
+                saveButton.setVisibility(View.VISIBLE);
+                cancelButton.setVisibility(View.VISIBLE);
 
             }
         });
 
         saveButton.setOnClickListener(v -> {
             if (isOwner) {
+                uploadImageButton.setVisibility(View.GONE);
+
+                facility.setFacilityImage(newImageUri.toString());
                 facility.setFacilityName(facilityNameEditText.getText().toString());
                 facility.setAddress(addressEditText.getText().toString());
 
@@ -277,6 +326,8 @@ public class ViewFacilityFragment extends Fragment {
 
                 editButton.setVisibility(View.VISIBLE);
                 deleteButton.setVisibility(View.GONE);
+                saveButton.setVisibility(View.GONE);
+                cancelButton.setVisibility(View.GONE);
                 toolbar.setVisibility(View.VISIBLE);
 
                 facilityNameTextView.setText(facility.getFacilityName());
@@ -329,6 +380,10 @@ public class ViewFacilityFragment extends Fragment {
         });
 
         cancelButton.setOnClickListener(v ->{
+            uploadImageButton.setVisibility(View.GONE);
+            facilityImageView.setImageURI(oldImageUri);
+
+
             facilityNameTextView.setVisibility(View.VISIBLE);
             addressTextView.setVisibility(View.VISIBLE);
 
@@ -363,5 +418,54 @@ public class ViewFacilityFragment extends Fragment {
         viewFacilitySkeletonLayout.setVisibility(View.GONE);
 
         scrollContainer.setVisibility(View.VISIBLE);
+    }
+
+    private void uploadNewImage(View view, Context context) {
+        ImageButton uploadImageButton = view.findViewById(R.id.upload_image_button);
+
+        uploadImageButton.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
+            imagePickerLauncher.launch(intent);
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Handle the result of UCrop crop request
+        if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+            Uri croppedUri = UCrop.getOutput(data);  // Get the cropped image URI
+
+            if (croppedUri != null) {
+                // Upload the cropped image to Firebase Storage
+                StorageReference imageRef = storageRef.child("facility_posters/" + UUID.randomUUID().toString() + ".jpg");
+
+                imageRef.putFile(croppedUri)  // Upload the image
+                        .addOnSuccessListener(taskSnapshot -> {
+                            // After upload success, get the download URL
+                            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                newImageUri = uri;
+                            }).addOnFailureListener(e -> {
+                                // Handle failure to get the download URL
+                                Log.e(TAG, "Error getting download URL", e);
+                            });
+                        })
+                        .addOnFailureListener(e -> {
+                            // Handle upload failure
+                            Log.e(TAG, "Upload failed", e);
+                        });
+
+                // Optionally set image scaling
+                facilityImageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            }
+        } else if (resultCode == UCrop.RESULT_ERROR) {
+            // Handle crop error
+            Throwable cropError = UCrop.getError(data);
+            if (cropError != null) {
+                Log.e(TAG, "Crop error", cropError);
+            }
+        }
     }
 }

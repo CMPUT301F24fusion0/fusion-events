@@ -23,8 +23,8 @@
             android:id="@+id/action_mainFragment_to_favouriteFragment"
             app:destination="@id/favouriteFragment"/>
         <action
-            android:id="@+id/action_mainFragment_to_registrationPromptFragment"
-            app:destination="@id/registrationPromptFragment"/>
+            android:id="@+id/action_mainFragment_to_registrationFragment"
+            app:destination="@id/registrationFragment" />
 
     </fragment>
 
@@ -180,19 +180,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/registrationPromptFragment"
-        android:name="com.example.fusion0.fragments.RegistrationPromptFragment"
-        android:label="Registration Prompt Fragment"
-        tools:layout="@layout/fragment_registration_prompt">
-        <action
-            android:id="@+id/action_registrationPromptFragment_to_mainFragment"
-            app:destination="@id/mainFragment"/>
-        <action
-            android:id="@+id/action_registrationPromptFragment_to_registrationFragment"
-            app:destination="@id/registrationFragment"/>
-    </fragment>
-
-    <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.fusion0.fragments.SettingsFragment"
         android:label="Settings Fragment"
@@ -222,6 +209,9 @@
         <action
             android:id="@+id/action_registrationFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_registrationFragment_to_qrFragment"
+            app:destination="@id/qrFragment" />
     </fragment>
 
     <fragment
@@ -285,6 +275,9 @@
         <action
             android:id="@+id/action_userJoinFragment_to_favouriteFragment"
             app:destination="@id/favouriteFragment" />
+        <action
+            android:id="@+id/action_userJoinFragment_to_viewEventFragment"
+            app:destination="@id/viewEventFragment" />
     </fragment>
 
     <fragment
